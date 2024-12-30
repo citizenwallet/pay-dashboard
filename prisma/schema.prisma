@@ -1,0 +1,260 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model a_profiles {
+  created_at                                     DateTime         @default(now()) @db.Timestamptz(6)
+  account                                        String           @id(map: "Profiles_pkey")
+  username                                       String
+  name                                           String           @default("")
+  description                                    String           @default("")
+  image                                          String           @default("")
+  image_medium                                   String           @default("")
+  image_small                                    String           @default("")
+  token_id                                       String           @default("")
+  updated_at                                     DateTime         @default(now()) @db.Timestamp(6)
+  place_id                                       BigInt?
+  places                                         places?          @relation(fields: [place_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  a_transactions_a_transactions_fromToa_profiles a_transactions[] @relation("a_transactions_fromToa_profiles")
+  a_transactions_a_transactions_toToa_profiles   a_transactions[] @relation("a_transactions_toToa_profiles")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model a_transactions {
+  id                                         String     @id(map: "Transactions_pkey")
+  hash                                       String
+  created_at                                 DateTime   @default(now()) @db.Timestamptz(6)
+  updated_at                                 DateTime   @default(now()) @db.Timestamptz(6)
+  from                                       String
+  to                                         String
+  value                                      String     @default("0")
+  description                                String     @default("")
+  status                                     String     @default("pending")
+  a_profiles_a_transactions_fromToa_profiles a_profiles @relation("a_transactions_fromToa_profiles", fields: [from], references: [account], onDelete: NoAction, onUpdate: NoAction, map: "Transactions_from_fkey")
+  a_profiles_a_transactions_toToa_profiles   a_profiles @relation("a_transactions_toToa_profiles", fields: [to], references: [account], onDelete: NoAction, onUpdate: NoAction, map: "Transactions_to_fkey")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model businesses {
+  id              BigInt           @id(map: "Businesses_pkey") @default(autoincrement())
+  created_at      DateTime         @default(now()) @db.Timestamptz(6)
+  name            String?
+  status          String?
+  vat_number      String?
+  uuid            String?          @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  business_status business_status? @default(created)
+  account         String?
+  invite_code     String?
+  email           String?
+  phone           String?
+  iban_number     String?
+  website         String?
+  address_legal   String?
+  legal_name      String?
+  places          places[]
+  users           users[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model old_Accounts {
+  address                                  String       @id(map: "Accounts_pkey")
+  account_name                             String?
+  status                                   String?
+  TransactionsFrom                         String?
+  TransactionsTo                           String?
+  wallet_type                              String?
+  linked_user_id                           BigInt?
+  users                                    users?       @relation(fields: [linked_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Accounts_linked_user_id_fkey")
+  old_ledger_old_ledger_FromToold_Accounts old_ledger[] @relation("old_ledger_FromToold_Accounts") @ignore
+  old_ledger_old_ledger_ToToold_Accounts   old_ledger[] @relation("old_ledger_ToToold_Accounts") @ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model old_ledger {
+  TransactionHash                            String
+  DateTime                                   DateTime?     @db.Timestamp(6)
+  From                                       String?
+  To                                         String?
+  Amount                                     Float?
+  Status                                     String?
+  Description                                String?
+  blockexplorer_URL                          String?       @map("blockexplorer URL")
+  Method                                     String?
+  Blocknumber                                BigInt?
+  UnixTimestamp                              BigInt?
+  Error                                      String?
+  To_account_name                            String?       @map("To account name")
+  From_account_name                          String?       @map("From account name")
+  Amount_with_symbol                         String?       @map("Amount with symbol")
+  ChainID                                    String?
+  Source                                     String?
+  From___file_import                         String?       @map("From - file import")
+  To___file_import                           String?       @map("To - file import")
+  old_Accounts_old_ledger_FromToold_Accounts old_Accounts? @relation("old_ledger_FromToold_Accounts", fields: [From], references: [address], onDelete: NoAction, onUpdate: NoAction, map: "ledger_From_fkey")
+  old_Accounts_old_ledger_ToToold_Accounts   old_Accounts? @relation("old_ledger_ToToold_Accounts", fields: [To], references: [address], onDelete: NoAction, onUpdate: NoAction, map: "ledger_To_fkey")
+
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model orders {
+  id           BigInt   @id @default(autoincrement())
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  total        BigInt?
+  due          BigInt?
+  items        Json?
+  status       String?
+  place_id     BigInt?
+  completed_at String?
+  description  String?
+  tx_hash      String?
+  places       places?  @relation(fields: [place_id], references: [id], onDelete: Cascade)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model places {
+  id          BigInt       @id(map: "establishments_pkey") @default(autoincrement())
+  created_at  DateTime     @default(now()) @db.Timestamptz(6)
+  name        String?
+  business_id BigInt?
+  slug        String?      @unique
+  accounts    Json?        @default("[]")
+  invite_code String?
+  a_profiles  a_profiles[]
+  orders      orders[]
+  businesses  businesses?  @relation(fields: [business_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  pos_items   pos_items[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model pos_items {
+  id          BigInt   @id @unique @default(autoincrement())
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  place_id    BigInt?
+  image       String?
+  price       BigInt?
+  name        String?
+  category    String?
+  vat         Int?
+  emoji       String?
+  description String?
+  order       Float    @default(0)
+  places      places?  @relation(fields: [place_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_events_100 {
+  contract        String
+  event_signature String
+  name            String
+  created_at      DateTime @default(now()) @db.Timestamp(6)
+  updated_at      DateTime @default(now()) @db.Timestamp(6)
+
+  @@unique([contract, event_signature])
+  @@index([contract], map: "idx_events_100_contract")
+  @@index([contract, event_signature], map: "idx_events_100_contract_signature")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
+model t_logs_100 {
+  hash       String   @id
+  tx_hash    String
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @default(now()) @db.Timestamp(6)
+  nonce      Int
+  sender     String
+  dest       String
+  value      String
+  data       Json?
+  status     String   @default("success")
+
+  @@index([dest], map: "idx_logs_100_dest")
+  @@index([dest, created_at], map: "idx_logs_100_dest_date")
+  @@index([tx_hash], map: "idx_logs_100_tx_hash")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_logs_data_100 {
+  hash       String   @id
+  data       Json?
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @default(now()) @db.Timestamp(6)
+
+  @@index([hash], map: "idx_logs_data_100_hash")
+}
+
+model t_push_token_100_0x56cc38bda01be6ec6d854513c995f6621ee71229 {
+  token      String
+  account    String
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @default(now()) @db.Timestamp(6)
+
+  @@unique([token, account], map: "t_push_token_100_0x56cc38bda01be6ec6d854513c9_token_account_key")
+  @@index([account], map: "idx_push_100_0x__e71229_account")
+  @@index([token, account], map: "idx_push_100_0x__e71229_token_account")
+}
+
+model t_push_token_100_0x5815e61ef72c9e6107b5c5a05fd121f334f7a7f1 {
+  token      String
+  account    String
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @default(now()) @db.Timestamp(6)
+
+  @@unique([token, account], map: "t_push_token_100_0x5815e61ef72c9e6107b5c5a05f_token_account_key")
+  @@index([account], map: "idx_push_100_0x__f7a7f1_account")
+  @@index([token, account], map: "idx_push_100_0x__f7a7f1_token_account")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_sponsors_100 {
+  contract   String   @id
+  pk         String
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @default(now()) @db.Timestamp(6)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model users {
+  id                 BigInt         @id(map: "Users_pkey") @default(autoincrement())
+  created_at         DateTime       @default(now()) @db.Timestamptz(6)
+  email              String?
+  name               String?
+  avatar             String?
+  magic_link         String?
+  usergroup          String?
+  linked_business_id BigInt?
+  uuid               String?        @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  phone              String?
+  description        String?
+  old_Accounts       old_Accounts[]
+  businesses         businesses?    @relation(fields: [linked_business_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Users_linked_business_id_fkey")
+}
+
+enum business_status {
+  verified
+  created
+}
+
+enum user_status {
+  signed_up            @map("signed up")
+  onboarding_completed @map("onboarding completed")
+}
+
+enum wallet_type {
+  kiosk
+  app
+  pos_app @map("pos app")
+}
