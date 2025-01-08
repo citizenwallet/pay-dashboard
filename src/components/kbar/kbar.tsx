@@ -6,23 +6,27 @@ import {
   KBarPortal,
   KBarPositioner,
   KBarProvider,
-  KBarSearch,
-  useKBar, useRegisterActions
+  KBarSearch
 } from 'kbar';
 import useSWR from 'swr';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import RenderResults from './render-result';
 import useThemeSwitching from './use-theme-switching';
-import { Result } from '@/types/result';
+
+type Result = {
+  guideid: string;
+  title: string;
+  description: string;
+  url: string;
+};
 
 export default function KBar({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [search, setSearch] = useState('electrolux');
   const [actions, setActions] = useState<Action[]>([]);
-  const { data, isLoading } = useSWR(
-    `/api/search?search=${search}`,
-    (url: string) => fetch(url).then((res) => res.json())
+  const { data } = useSWR(`/api/search?search=${search}`, (url: string) =>
+    fetch(url).then((res) => res.json())
   );
 
   const navigateTo = (url: string) => {
@@ -33,7 +37,7 @@ export default function KBar({ children }: { children: React.ReactNode }) {
   const loadActions = async () => {
     let searchData: Action[] = [];
 
-    if(data?.results){
+    if (data?.results) {
       console.log('data', data.results);
       searchData = data?.results?.map((result: Result) => ({
         id: `${result.guideid}Action`,
@@ -55,7 +59,6 @@ export default function KBar({ children }: { children: React.ReactNode }) {
             ? {
                 id: `${navItem.title.toLowerCase()}Action`,
                 name: navItem.title,
-                shortcut: navItem.shortcut,
                 keywords: navItem.title.toLowerCase(),
                 section: 'Navigation',
                 subtitle: `Go to ${navItem.title}`,
@@ -68,7 +71,6 @@ export default function KBar({ children }: { children: React.ReactNode }) {
           navItem.items?.map((childItem) => ({
             id: `${childItem.title.toLowerCase()}Action`,
             name: childItem.title,
-            shortcut: childItem.shortcut,
             keywords: childItem.title.toLowerCase(),
             section: navItem.title,
             subtitle: `Go to ${childItem.title}`,
@@ -97,8 +99,7 @@ export default function KBar({ children }: { children: React.ReactNode }) {
           onOpen: () => {
             loadActions();
           }
-        },
-
+        }
       }}
       actions={actions}
     >
