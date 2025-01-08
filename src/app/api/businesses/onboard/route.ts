@@ -1,12 +1,9 @@
 'use server';
-import { validate } from '@/utils/zod';
 import { NextRequest } from 'next/server';
-import { z } from 'zod';
-import { getTranslations } from 'next-intl/server';
 import { BusinessService } from '@/services/business.service';
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 import { StatusCodes, ReasonPhrases } from 'http-status-codes';
-import "@/lib/utils";
+import '@/lib/utils';
 
 export async function POST(req: NextRequest) {
   const formData = await req.json();
@@ -14,14 +11,14 @@ export async function POST(req: NextRequest) {
 
   const businessService = new BusinessService();
 
-  if(!token) {
+  if (!token) {
     return NextResponse.json(
       {
         status: StatusCodes.NOT_FOUND, // 404
-        message: ReasonPhrases.NOT_FOUND, // "Not Found" message
+        message: ReasonPhrases.NOT_FOUND // "Not Found" message
       },
       {
-        status: StatusCodes.NOT_FOUND, // Using the 404 constant
+        status: StatusCodes.NOT_FOUND // Using the 404 constant
       }
     );
   }
@@ -32,14 +29,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         status: StatusCodes.NOT_FOUND, // 404
-        message: ReasonPhrases.NOT_FOUND, // "Not Found" message
+        message: ReasonPhrases.NOT_FOUND // "Not Found" message
       },
       {
-        status: StatusCodes.NOT_FOUND, // Using the 404 constant
+        status: StatusCodes.NOT_FOUND // Using the 404 constant
       }
     );
   }
-
 
   delete formData.token;
   delete formData.id;

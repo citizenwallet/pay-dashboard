@@ -71,7 +71,7 @@ export function CompanyVATStep({ onNext, initialData }: VATStepProps) {
     if (initialData) {
       setValue('vat_number', initialData.vat_number);
     }
-  }, [initialData]);
+  }, [initialData, setValue]);
 
   return (
     <form
