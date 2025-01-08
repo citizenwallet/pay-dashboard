@@ -8,11 +8,13 @@
   },
   "scripts": {
     "dev": "next dev --turbo -p 3006",
-    "build": "next build",
+    "prebuild": "prisma generate",
+    "build": "prisma generate",
     "start": "next start",
     "lint": "next lint",
     "format": "prettier . --write",
-    "prepare": "husky"
+    "prepare": "husky",
+    "postinstall": "prisma generate"
   },
   "lint-staged": {
     "**/*": [
