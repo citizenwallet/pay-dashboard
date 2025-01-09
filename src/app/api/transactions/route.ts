@@ -1,7 +1,7 @@
-// Generate transactions for a user
+import '@/lib/utils';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
-import {StatusCodes} from 'http-status-codes';
+import { StatusCodes } from 'http-status-codes';
 import { Transaction } from '@/types/transaction';
 import { NextRequest } from 'next/server';
 
@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   const query = request.nextUrl.searchParams;
   const session = await auth();
 
-  if(!session?.user) {
+  if (!session?.user) {
     return Response.redirect('/');
   }
 
@@ -19,8 +19,11 @@ export async function GET(request: NextRequest) {
     }
   });
 
-  if(!user) {
-    return Response.json({ error: 'User not found', status: StatusCodes.NOT_FOUND });
+  if (!user) {
+    return Response.json({
+      error: 'User not found',
+      status: StatusCodes.NOT_FOUND
+    });
   }
 
   // Find businesses that the user has access to
@@ -30,8 +33,11 @@ export async function GET(request: NextRequest) {
     }
   });
 
-  if(!businesses) {
-    return Response.json({ error: 'Business not found', status: StatusCodes.NOT_FOUND });
+  if (!businesses) {
+    return Response.json({
+      error: 'Business not found',
+      status: StatusCodes.NOT_FOUND
+    });
   }
 
   const places = await prisma.places.findMany({
@@ -44,7 +50,9 @@ export async function GET(request: NextRequest) {
   const placesIds: any[] = [];
 
   // @ts-ignore
-  places.map(place => place?.accounts?.map(account => placesIds.push(account)));
+  places.map(
+    (place) => place?.accounts?.map((account) => placesIds.push(account))
+  );
 
   const data = await prisma.a_transactions.findMany({
     where: {
@@ -54,8 +62,8 @@ export async function GET(request: NextRequest) {
     }
   });
 
-  const accountsIdsTo = data.map(transaction => transaction.to);
-  const accountsIdsFrom = data.map(transaction => transaction.from);
+  const accountsIdsTo = data.map((transaction) => transaction.to);
+  const accountsIdsFrom = data.map((transaction) => transaction.from);
   const accountsIds = [...accountsIdsTo, ...accountsIdsFrom];
 
   const accounts = await prisma.a_profiles.findMany({
@@ -66,9 +74,11 @@ export async function GET(request: NextRequest) {
     }
   });
 
-  const dataComputed = data.map(transaction => {
-    const from = accounts.find(account => account.account === transaction.from);
-    const to = accounts.find(account => account.account === transaction.to);
+  const dataComputed = data.map((transaction) => {
+    const from = accounts.find(
+      (account) => account.account === transaction.from
+    );
+    const to = accounts.find((account) => account.account === transaction.to);
 
     return {
       ...transaction,
@@ -77,13 +87,15 @@ export async function GET(request: NextRequest) {
     };
   });
 
-  if(query.has('export')) {
+  if (query.has('export')) {
     console.log('Exporting transactions');
     // @ts-ignore
-    const csv = data.map((transaction: Transaction) => {
-      // @ts-ignore
-      return `${transaction.id},${transaction.from?.account},${transaction.to?.account},${transaction.amount},${transaction.description},${transaction.created_at}\n`;
-    }).join('');
+    const csv = data
+      .map((transaction: Transaction) => {
+        // @ts-ignore
+        return `${transaction.id},${transaction.from?.account},${transaction.to?.account},${transaction.amount},${transaction.description},${transaction.created_at}\n`;
+      })
+      .join('');
 
     return new Response(csv, {
       headers: {
@@ -93,5 +105,5 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  return Response.json({data: dataComputed});
+  return Response.json({ data: dataComputed });
 }
