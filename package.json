@@ -8,8 +8,7 @@
   },
   "scripts": {
     "dev": "next dev --turbo -p 3006",
-    "prebuild": "prisma generate",
-    "build": "prisma generate && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "format": "prettier . --write",
