@@ -51,6 +51,7 @@ export async function GET(request: NextRequest) {
 
   // @ts-ignore
   places.map(
+    // @ts-ignore
     (place) => place?.accounts?.map((account) => placesIds.push(account))
   );
 
@@ -91,7 +92,7 @@ export async function GET(request: NextRequest) {
     console.log('Exporting transactions');
     // @ts-ignore
     const csv = data
-      .map((transaction: Transaction) => {
+      .map((transaction: any) => {
         // @ts-ignore
         return `${transaction.id},${transaction.from?.account},${transaction.to?.account},${transaction.amount},${transaction.description},${transaction.created_at}\n`;
       })
