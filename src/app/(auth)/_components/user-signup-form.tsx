@@ -10,14 +10,12 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signIn } from 'next-auth/react';
-import { useSearchParams } from 'next/navigation';
 import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
-import GoogleSignInButton from '@/app/(auth)/_components/google-auth-button';
 import { createClient } from '@/lib/supabase/client';
+import GoogleSignInButton from '@/app/(auth)/_components/google-auth-button';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
@@ -26,9 +24,7 @@ const formSchema = z.object({
 
 type UserFormValue = z.infer<typeof formSchema>;
 
-export default function UserAuthForm() {
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl');
+export default function UserSignupForm() {
   const [loading, startTransition] = useTransition();
   const defaultValues = {};
   const form = useForm<UserFormValue>({
@@ -36,26 +32,23 @@ export default function UserAuthForm() {
     defaultValues
   });
 
-  const onSubmit = async (data: UserFormValue) => {
+  const onSubmit = async (credentials: UserFormValue) => {
     startTransition(async () => {
-      const supabase = createClient();
-      const { error } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password
+      const supabase = await createClient();
+      const { data, error } = await supabase.auth.signUp({
+        email: credentials.email,
+        password: credentials.password,
+        options: {
+          emailRedirectTo: process.env.NEXTAUTH_URL + '/dashboard'
+        }
       });
 
       if (error) {
-        console.error(error);
-        toast.error('Invalid email or password');
-      } else {
-        await signIn('credentials', {
-          email: data.email,
-          password: data.password,
-          redirectTo: callbackUrl ?? '/dashboard'
-        });
-
-        toast.success('Signed In Successfully!');
+        toast.error('An error occurred while signing up');
+        return;
       }
+
+      toast.success('Signed In Successfully!');
     });
   };
 
@@ -104,7 +97,7 @@ export default function UserAuthForm() {
           />
 
           <Button disabled={loading} className="ml-auto w-full" type="submit">
-            Sign in
+            Sign Up
           </Button>
         </form>
       </Form>

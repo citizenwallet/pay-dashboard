@@ -30,11 +30,9 @@ const authConfig = {
       //@ts-ignore
       async authorize(credentials, req) {
         const service = new UserService();
-
-        const user = await service.getUserByEmail(credentials?.email as string);
-
-        // If the user exists and the password is correct
-        //const user:any = await service.login(credentials.email as string, credentials.password as string);
+        const user: any = await service.getUserByEmail(
+          credentials.email as string
+        );
 
         if (user) {
           return user;

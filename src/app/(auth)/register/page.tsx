@@ -1,13 +1,11 @@
 import { Metadata } from 'next';
-import SignInViewPage from '../_components/sigin-view';
+import RegisterView from '@/app/(auth)/_components/register-view';
 
 export const metadata: Metadata = {
-  title: 'Authentication | Sign In',
-  description: 'Sign In page for authentication.'
+  title: 'Authentication | Sign Up',
+  description: 'Sign Up page for authentication.'
 };
 
 export default function Page() {
-  return <>
-
-  </>;
+  return <RegisterView />;
 }
