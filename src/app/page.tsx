@@ -1,5 +1,3 @@
-import React from 'react';
-import SignInViewPage from '@/app/(auth)/_components/sigin-view';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 
@@ -9,6 +7,6 @@ export default async function Page() {
   if (!session?.user) {
     return redirect('/login');
   } else {
-    return  redirect('/dashboard');
+    return redirect('/dashboard');
   }
 }
