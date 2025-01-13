@@ -102,19 +102,19 @@ export default function ProfileForm({
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description (in English)</FormLabel>
-              <FormControl>
-                <Textarea {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {/*<FormField*/}
+        {/*  control={form.control}*/}
+        {/*  name="description"*/}
+        {/*  render={({ field }) => (*/}
+        {/*    <FormItem>*/}
+        {/*      <FormLabel>Description (in English)</FormLabel>*/}
+        {/*      <FormControl>*/}
+        {/*        <Textarea {...field} />*/}
+        {/*      </FormControl>*/}
+        {/*      <FormMessage />*/}
+        {/*    </FormItem>*/}
+        {/*  )}*/}
+        {/*/>*/}
         <Button type="submit">Save Profile</Button>
       </form>
     </Form>
