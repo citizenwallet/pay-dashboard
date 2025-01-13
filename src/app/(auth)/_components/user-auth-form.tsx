@@ -20,8 +20,7 @@ import GoogleSignInButton from '@/app/(auth)/_components/google-auth-button';
 import { createClient } from '@/lib/supabase/client';
 
 const formSchema = z.object({
-  email: z.string().email({ message: 'Enter a valid email address' }),
-  password: z.string().email({ message: 'Enter a valid password' })
+  email: z.string().email({ message: 'Enter a valid email address' })
 });
 
 type UserFormValue = z.infer<typeof formSchema>;
@@ -30,31 +29,31 @@ export default function UserAuthForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl');
   const [loading, startTransition] = useTransition();
-  const defaultValues = {};
+  const defaultValues = {
+    email: ''
+  };
   const form = useForm<UserFormValue>({
     resolver: zodResolver(formSchema),
     defaultValues
   });
 
-  const onSubmit = async (data: UserFormValue) => {
+  const onSubmit = async (userData: UserFormValue) => {
     startTransition(async () => {
       const supabase = createClient();
-      const { error } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password
+
+      const { data, error } = await supabase.auth.signInWithOtp({
+        email: userData.email,
+        options: {
+          emailRedirectTo: process.env.NEXTAUTH_URL + '/dashboard'
+        }
       });
 
       if (error) {
         console.error(error);
-        toast.error('Invalid email or password');
+        toast.error('An error occurred while signing in');
+        return;
       } else {
-        await signIn('credentials', {
-          email: data.email,
-          password: data.password,
-          redirectTo: callbackUrl ?? '/dashboard'
-        });
-
-        toast.success('Signed In Successfully!');
+        toast.success('A magic token link as been sent to you !');
       }
     });
   };
@@ -84,25 +83,6 @@ export default function UserAuthForm() {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input
-                    type="password"
-                    placeholder="Enter your password..."
-                    disabled={loading}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           <Button disabled={loading} className="ml-auto w-full" type="submit">
             Sign in
           </Button>

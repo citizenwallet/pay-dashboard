@@ -20,15 +20,15 @@ export async function GET(request: NextRequest) {
     });
     if (!error) {
       const userRes = await supabase.auth.getUser();
+      const email = userRes?.data?.user?.email;
 
-      console.log(userRes);
+      if (email) {
+        await signIn('credentials', {
+          email: userRes?.data?.user?.email,
+          callbackUrl: next
+        });
+      }
 
-      signIn('credentials', {
-        email: '',
-        callbackUrl: next
-      });
-
-      // redirect user to specified redirect URL or root of app
       redirect(next);
     }
   }

@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import * as z from 'zod';
 import { createClient } from '@/lib/supabase/client';
 import GoogleSignInButton from '@/app/(auth)/_components/google-auth-button';
+import { signIn } from '@/auth';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
@@ -48,7 +49,13 @@ export default function UserSignupForm() {
         return;
       }
 
-      toast.success('Signed In Successfully!');
+      if (data?.user?.email) {
+        await signIn('credentials', {
+          email: data.user.email,
+          callbackUrl: process.env.NEXTAUTH_URL + '/dashboard'
+        });
+        toast.success('Signed Up Successfully!');
+      }
     });
   };
 

@@ -7,7 +7,6 @@ import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-import { Loading } from '@/components/loading';
 
 const initialState: OnboardingState = {
   step: 1,
@@ -78,8 +77,7 @@ export const CompanyEdit = () => {
   };
 
   useEffect(() => {
-
-    if(vat_number){
+    if (vat_number) {
       dispatch({
         type: 'UPDATE_DATA',
         payload: {
@@ -150,10 +148,7 @@ export const CompanyEdit = () => {
         />
         {JSON.stringify(state)}
         {state.step === 1 && (
-          <CompanyVATStep
-            onNext={handleNext}
-            initialData={state.data}
-          />
+          <CompanyVATStep onNext={handleNext} initialData={state.data} />
         )}
         {state.step === 2 && (
           <CompanyInfoStep
@@ -166,4 +161,4 @@ export const CompanyEdit = () => {
       </div>
     </motion.div>
   );
-}
+};
