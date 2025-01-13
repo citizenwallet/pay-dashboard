@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
       type,
       token_hash
     });
+
     if (!error) {
       const userRes = await supabase.auth.getUser();
       const email = userRes?.data?.user?.email;
