@@ -44,7 +44,7 @@ export function CompanyOnboarding() {
   const [tokenValid, setTokenValid] = useState(true);
   const t = useTranslations('Common');
   const vat_number = searchParams.get('vat_number');
-  const token = searchParams.get('token');
+  const token = searchParams.get('invite_code');
 
   const handleNext = async (data: CompanyInfo) => {
     dispatch({ type: 'UPDATE_DATA', payload: data });
@@ -80,8 +80,7 @@ export function CompanyOnboarding() {
   };
 
   useEffect(() => {
-
-    if(vat_number){
+    if (vat_number) {
       dispatch({
         type: 'UPDATE_DATA',
         payload: {
@@ -152,10 +151,7 @@ export function CompanyOnboarding() {
           className="mx-auto mb-6 h-16 w-16"
         />
         {state.step === 1 && (
-          <CompanyVATStep
-            onNext={handleNext}
-            initialData={state.data}
-          />
+          <CompanyVATStep onNext={handleNext} initialData={state.data} />
         )}
         {state.step === 2 && (
           <CompanyInfoStep

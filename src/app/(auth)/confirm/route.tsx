@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
 
         if (type === 'signup') {
           // Add user to database
-          prisma.users.create({
+          await prisma.users.create({
             data: {
               email: email
             }
@@ -54,6 +54,18 @@ export async function GET(request: NextRequest) {
 
           redirect('/onboarding?step=1');
         } else if (email) {
+          await prisma.users.upsert({
+            where: {
+              email: email
+            },
+            create: {
+              email: email
+            },
+            update: {
+              last_sign_in_at: new Date()
+            }
+          });
+
           const error = await signIn('credentials', {
             email: userRes?.data?.user?.email,
             callbackUrl: next

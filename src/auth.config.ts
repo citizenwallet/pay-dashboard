@@ -30,6 +30,7 @@ const authConfig = {
       //@ts-ignore
       async authorize(credentials, req) {
         const service = new UserService();
+
         const user: any = await service.getUserByEmail(
           credentials.email as string
         );

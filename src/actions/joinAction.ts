@@ -36,8 +36,6 @@ export async function joinAction(
   data: z.infer<typeof joinFormSchema>
   //   image?: File
 ) {
-  console.log('Join Action', inviteCode, data);
-
   const client = getServiceRoleClient();
 
   //   let imageUrl = null;

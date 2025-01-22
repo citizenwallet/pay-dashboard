@@ -21,6 +21,7 @@ import { PhoneInput } from '@/components/ui/phone-input';
 import { joinAction } from '@/actions/joinAction';
 import { randomUUID } from 'node:crypto';
 import { generateRandomString } from '@/lib/utils';
+import { prisma } from '@/lib/prisma';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
@@ -66,6 +67,16 @@ export default function UserSignupForm() {
           phone: credentials.phone,
           description: '',
           image: ''
+        });
+
+        // Create user in database prisma user
+        const user = await prisma.users.create({
+          data: {
+            email: credentials.email,
+            name: credentials.name,
+            phone: credentials.phone,
+            description: ''
+          }
         });
 
         if (success && data?.user?.email) {
