@@ -90,5 +90,15 @@ export async function joinAction(
     return { error: placeError.message };
   }
 
+  // Create a new user
+  await createUser(client, {
+    email: data.email,
+    linked_business_id: business.id,
+    name: data.name,
+    phone: data.phone,
+    description: data.description,
+    image: data.image
+  });
+
   return { success: true };
 }

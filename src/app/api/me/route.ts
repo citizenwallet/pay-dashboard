@@ -1,14 +1,16 @@
 // Generate transactions for a user
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
-import {StatusCodes} from 'http-status-codes';
+import { StatusCodes } from 'http-status-codes';
 import { NextRequest } from 'next/server';
+import { v4 as uuidv4 } from 'uuid';
+import { joinAction } from '@/actions/joinAction';
 
 export async function PUT(request: NextRequest) {
   const session = await auth();
-  const body:any = await request.json();
+  const body: any = await request.json();
 
-  if(!session?.user) {
+  if (!session?.user) {
     return Response.redirect('/');
   }
 
@@ -18,37 +20,40 @@ export async function PUT(request: NextRequest) {
     }
   });
 
-  if(!user) {
-    return Response.json({ error: 'User not found', status: StatusCodes.NOT_FOUND });
+  if (!user) {
+    return Response.json({
+      error: 'User not found',
+      status: StatusCodes.NOT_FOUND
+    });
   }
 
-  const res = await prisma.users.update(
-    {
-      where: {
-        id: user.id as any
-      },
-      data: {
-        ...body as any
-      }
+  const res = await prisma.users.update({
+    where: {
+      id: user.id as any
+    },
+    data: {
+      ...(body as any)
     }
-  );
-
-  console.log(res, {
-    ...body as any
   });
 
-  if(!user) {
-    return Response.json({ error: 'User not found', status: StatusCodes.NOT_FOUND });
+  console.log(res, {
+    ...(body as any)
+  });
+
+  if (!user) {
+    return Response.json({
+      error: 'User not found',
+      status: StatusCodes.NOT_FOUND
+    });
   } else {
     return Response.json({ user });
   }
 }
 
 export async function GET() {
-
   const session = await auth();
 
-  if(!session?.user) {
+  if (!session?.user) {
     return Response.redirect('/');
   }
 
@@ -58,8 +63,11 @@ export async function GET() {
     }
   });
 
-  if(!user) {
-    return Response.json({ error: 'User not found', status: StatusCodes.NOT_FOUND });
+  if (!user) {
+    return Response.json({
+      error: 'User not found',
+      status: StatusCodes.NOT_FOUND
+    });
   }
 
   // Find businesses that the user has access to
@@ -69,8 +77,21 @@ export async function GET() {
     }
   });
 
-  if(!businesses) {
-    return Response.json({ error: 'Business not found', status: StatusCodes.NOT_FOUND });
+  if (!businesses) {
+    const inviteCode = uuidv4();
+
+    await joinAction(inviteCode, {
+      email: session.user.email as string,
+      name: session.user.name || '',
+      phone: '',
+      description: '',
+      image: ''
+    });
+
+    return Response.json({
+      error: 'Business not found',
+      status: StatusCodes.NOT_FOUND
+    });
   }
 
   const places = await prisma.places.findMany({
@@ -89,5 +110,10 @@ export async function GET() {
     }
   }
 
-  return Response.json({places, user, business: businesses, accounts: placesIds});
+  return Response.json({
+    places,
+    user,
+    business: businesses,
+    accounts: placesIds
+  });
 }
