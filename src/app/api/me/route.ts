@@ -70,16 +70,8 @@ export async function GET() {
     });
   }
 
-  // Find businesses that the user has access to
-  const businesses = await prisma.businesses.findFirst({
-    where: {
-      id: user.linked_business_id as any
-    }
-  });
-
-  if (!businesses) {
+  if (!user.linked_business_id) {
     const inviteCode = uuidv4();
-
     await joinAction(inviteCode, {
       email: session.user.email as string,
       name: session.user.name || '',
@@ -87,12 +79,14 @@ export async function GET() {
       description: '',
       image: ''
     });
-
-    return Response.json({
-      error: 'Business not found',
-      status: StatusCodes.NOT_FOUND
-    });
   }
+
+  // Find businesses that the user has access to
+  const businesses = await prisma.businesses.findFirst({
+    where: {
+      id: user.linked_business_id as any
+    }
+  });
 
   const places = await prisma.places.findMany({
     where: {
