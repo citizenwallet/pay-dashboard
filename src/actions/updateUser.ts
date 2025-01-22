@@ -1,0 +1,9 @@
+'use server';
+
+import { getServiceRoleClient } from '@/db';
+j;
+
+export async function updateUser(data: any) {
+  const client = getServiceRoleClient();
+  return client.from('users').upsert(data, { onConflict: 'email' });
+}

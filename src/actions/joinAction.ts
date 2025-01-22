@@ -9,6 +9,7 @@ import { Wallet } from 'ethers';
 import { getAccountAddress, CommunityConfig } from '@citizenwallet/sdk';
 import Config from '@/cw/community.json';
 import { createSlug, generateRandomString } from '@/lib/utils';
+import { createUser } from './createUser';
 
 const joinFormSchema = z.object({
   name: z.string().min(1, {
@@ -91,7 +92,7 @@ export async function joinAction(
   }
 
   // Create a new user
-  await createUser(client, {
+  await createUser({
     email: data.email,
     linked_business_id: business.id,
     name: data.name,

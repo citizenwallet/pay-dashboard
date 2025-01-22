@@ -44,11 +44,16 @@ export default function UserSignupForm() {
     try {
       startTransition(async () => {
         const supabase = await createClient();
+
+        // Generate an invitation code
+        const invitationCode = generateRandomString(16);
+
         const { data, error } = await supabase.auth.signUp({
           email: credentials.email,
           password: credentials.password,
           options: {
-            emailRedirectTo: process.env.NEXTAUTH_URL + '/dashboard'
+            emailRedirectTo:
+              process.env.NEXTAUTH_URL + '/onboarding?token=' + invitationCode
           }
         });
 
@@ -56,9 +61,6 @@ export default function UserSignupForm() {
           toast.error('An error occurred while signing up');
           return;
         }
-
-        // Generate an invitation code
-        const invitationCode = generateRandomString(16);
 
         let userDb = await new UserService().getUserByEmail(credentials.email);
 
@@ -82,16 +84,6 @@ export default function UserSignupForm() {
           phone: credentials.phone,
           description: '',
           image: ''
-        });
-
-        // Create user in database prisma user
-        const user = await prisma.users.create({
-          data: {
-            email: credentials.email,
-            name: credentials.name,
-            phone: credentials.phone,
-            description: ''
-          }
         });
 
         if (success && data?.user?.email) {
