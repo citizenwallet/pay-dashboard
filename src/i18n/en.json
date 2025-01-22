@@ -1,5 +1,6 @@
 {
-  "Common" : {
+  "Common": {
+    "Brussels Pay": "Brussels Pay",
     "Invalid VAT number": "Invalid VAT number",
     "Your business has been successfully validated !": "Your business has been successfully validated !",
     "Oops, there is an error during the validation of your company": "Oops, there is an error during the validation of your company",
@@ -96,7 +97,7 @@
     "ViewMoreProducts": "View more products",
     "ViewLessProducts": "View less products",
     "Vat": "Numéro de TVA",
-    "Next" : "Suivant"
+    "Next": "Suivant"
   },
 
   "Dashboard": {
@@ -106,11 +107,11 @@
     }
   },
   "Validation": {
-    "Token must be at least 8 characters" :  "Token must be at least 8 characters",
-    "VAT is required" :  "VAT is required",
-    "IBAN is required" :  "IBAN is required",
-    "Legal name is required" :  "Legal name is required",
-    "Address is required" :  "Address is required",
-    "Must be a valid URL" :  "Must be a valid URL"
+    "Token must be at least 8 characters": "Token must be at least 8 characters",
+    "VAT is required": "VAT is required",
+    "IBAN is required": "IBAN is required",
+    "Legal name is required": "Legal name is required",
+    "Address is required": "Address is required",
+    "Must be a valid URL": "Must be a valid URL"
   }
 }

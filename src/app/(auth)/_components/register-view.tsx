@@ -26,7 +26,7 @@ export default function RegisterView() {
             width={40}
             height={40}
           />{' '}
-          Brussels Pay
+          {t('Common.Brussels Pay')}
         </div>
         <div className="relative z-20 mt-auto">
           <blockquote className="space-y-2">

@@ -29,5 +29,31 @@ export function formatBytes(
 }
 
 export function humanizeDate(date: string) {
-  return new Date(date).toLocaleDateString()+ ' ' + new Date(date).toLocaleTimeString();
+  return (
+    new Date(date).toLocaleDateString() +
+    ' ' +
+    new Date(date).toLocaleTimeString()
+  );
+}
+
+export function createSlug(input: string): string {
+  return input
+    .trim()
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with dashes
+    .replace(/-+/g, '-'); // Replace multiple dashes with single dash
+}
+
+export function generateRandomString(length: number): string {
+  const characters =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters.charAt(randomIndex);
+  }
+
+  return result;
 }

@@ -12,12 +12,13 @@ import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
-import { useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
 import GoogleSignInButton from '@/app/(auth)/_components/google-auth-button';
 import { createClient } from '@/lib/supabase/client';
+import MailLinkSent from '@/app/(auth)/_components/magic-link-sent';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' })
@@ -27,6 +28,7 @@ type UserFormValue = z.infer<typeof formSchema>;
 
 export default function UserAuthForm() {
   const searchParams = useSearchParams();
+  const [mailSent, setMailSent] = useState(false);
   const callbackUrl = searchParams.get('callbackUrl');
   const [loading, startTransition] = useTransition();
   const defaultValues = {
@@ -51,9 +53,10 @@ export default function UserAuthForm() {
       if (error) {
         console.error(error);
         toast.error('An error occurred while signing in');
+        setMailSent(false);
         return;
       } else {
-        toast.success('A magic token link as been sent to you !');
+        window.location.href = '/sent';
       }
     });
   };
@@ -86,6 +89,12 @@ export default function UserAuthForm() {
           <Button disabled={loading} className="ml-auto w-full" type="submit">
             Sign in
           </Button>
+
+          <div className="flex justify-center">
+            <a href="/register" className="text-sm text-primary">
+              Don&nbsp;t have an account? Sign up here
+            </a>
+          </div>
         </form>
       </Form>
       <div className="relative">

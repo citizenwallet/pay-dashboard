@@ -4,6 +4,9 @@ import { type NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
+import { prisma } from '@/lib/prisma';
+import { joinAction } from '@/actions/joinAction';
+import { randomUUID } from 'node:crypto';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -11,29 +14,63 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get('type') as EmailOtpType | null;
   const next = searchParams.get('next') ?? '/';
 
-  if (token_hash && type) {
-    const supabase = await createClient();
+  try {
+    if (token_hash && type) {
+      const supabase = await createClient();
 
-    const { error } = await supabase.auth.verifyOtp({
-      type,
-      token_hash
-    });
+      const { error } = await supabase.auth.verifyOtp({
+        type,
+        token_hash
+      });
 
-    if (!error) {
-      const userRes = await supabase.auth.getUser();
-      const email = userRes?.data?.user?.email;
+      if (!error) {
+        const userRes = await supabase.auth.getUser();
+        const email = userRes?.data?.user?.email;
 
-      if (email) {
-        await signIn('credentials', {
-          email: userRes?.data?.user?.email,
-          callbackUrl: next
-        });
+        if (type === 'signup') {
+          // Add user to database
+          prisma.users.create({
+            data: {
+              email: email
+            }
+          });
+
+          const error = await signIn('credentials', {
+            email: userRes?.data?.user?.email,
+            callbackUrl: next
+          });
+
+          // Generate an invitation code
+
+          const invitationCode = randomUUID();
+
+          joinAction(invitationCode, {
+            email: userRes?.data?.user?.email as string,
+            name: '',
+            description: '',
+            image: ``,
+            phone: ''
+          });
+
+          redirect('/onboarding?step=1');
+        } else if (email) {
+          const error = await signIn('credentials', {
+            email: userRes?.data?.user?.email,
+            callbackUrl: next
+          });
+        }
+
+        redirect(next);
       }
-
-      redirect(next);
+    } else {
+      throw new Error('Invalid token');
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      redirect('/error?message=' + encodeURI(error.message));
+    } else {
+      console.log(error);
+      redirect('/error?message=' + encodeURI('An error occurred'));
     }
   }
-
-  // redirect the user to an error page with some instructions
-  redirect('/error');
 }

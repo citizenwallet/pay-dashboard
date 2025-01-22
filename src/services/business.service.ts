@@ -3,18 +3,16 @@ import { prisma } from '@/lib/prisma';
 export class BusinessService {
   private db: typeof prisma;
 
-  constructor(
-    db? : typeof prisma,
-  ) {
-    if(!db) {
+  constructor(db?: typeof prisma) {
+    if (!db) {
       db = prisma;
     }
     this.db = db;
   }
 
-  async getTransactions(teamId: string) {
-    return this.db.a_transactions.findMany({
-
+  async create(data: any) {
+    return this.db.businesses.create({
+      data
     });
   }
 
@@ -27,7 +25,7 @@ export class BusinessService {
   }
 
   async updateBusiness(id: any, data: any) {
-    data.status = "Registered";
+    data.status = 'Registered';
     console.log(data, id);
     return this.db.businesses.update({
       where: {
