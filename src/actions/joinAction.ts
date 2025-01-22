@@ -5,12 +5,31 @@ import * as z from 'zod';
 import { createBusiness } from '@/db/business';
 import { createPlace } from '@/db/places';
 import { getServiceRoleClient } from '@/db';
-import { joinFormSchema } from '@/app/[accountOrUsername]/join/Join';
 import { Wallet } from 'ethers';
 import { getAccountAddress, CommunityConfig } from '@citizenwallet/sdk';
 import Config from '@/cw/community.json';
 import { createSlug, generateRandomString } from '@/lib/utils';
-// import { uploadImage } from "@/storage/uploads";
+
+const joinFormSchema = z.object({
+  name: z.string().min(1, {
+    message: 'Name is required.'
+  }),
+  email: z
+    .string()
+    .min(1, {
+      message: 'Email is required.'
+    })
+    .email({
+      message: 'Please enter a valid email address.'
+    }),
+  phone: z.string().min(1, {
+    message: 'Phone number is required.'
+  }),
+  description: z.string().min(1, {
+    message: 'Description is required.'
+  }),
+  image: z.string().optional()
+});
 
 export async function joinAction(
   inviteCode: string,
