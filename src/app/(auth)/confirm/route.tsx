@@ -29,12 +29,15 @@ export async function GET(request: NextRequest) {
         const userRes = await supabase.auth.getUser();
         const email = userRes?.data?.user?.email;
 
-        if (type === 'signup') {
-          // Add user to database
-          await createUser({
-            email: email,
-            auth_id: userRes?.data?.user?.id
-          });
+        if (type === 'signup' && email) {
+          const userDb = await new UserService().getUserByEmail(email);
+
+          if (!userDb) {
+            await createUser({
+              email: email,
+              auth_id: userRes?.data?.user?.id
+            });
+          }
 
           await signIn('credentials', {
             email: userRes?.data?.user?.email,
@@ -67,6 +70,8 @@ export async function GET(request: NextRequest) {
             email: userRes?.data?.user?.email,
             callbackUrl: next
           });
+        } else {
+          throw new Error('Invalid email');
         }
 
         return redirect('/dashboard');
