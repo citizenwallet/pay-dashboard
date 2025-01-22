@@ -37,14 +37,18 @@ export async function GET(request: NextRequest) {
           email: email
         });
 
-        return NextResponse.redirect(process.env.NEXTAUTH_URL + '/dashboard');
+        return redirect(process.env.NEXTAUTH_URL + '/dashboard');
       } else {
-        return NextResponse.redirect(process.env.NEXTAUTH_URL + '/dashboard');
+        return redirect(
+          process.env.NEXTAUTH_URL + '/error?error=invalid_email'
+        );
       }
     } else {
-      return NextResponse.redirect(process.env.NEXTAUTH_URL + '/dashboard');
+      return redirect(
+        process.env.NEXTAUTH_URL + '/login?error=verify_otp_failed'
+      );
     }
   } else {
-    return NextResponse.redirect(process.env.NEXTAUTH_URL + '/dashboard');
+    return redirect(process.env.NEXTAUTH_URL + '/login?error=invalid_token');
   }
 }
