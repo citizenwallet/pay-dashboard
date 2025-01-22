@@ -7,6 +7,7 @@ import { signIn } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { joinAction } from '@/actions/joinAction';
 import { randomUUID } from 'node:crypto';
+import { UserService } from '@/services/user.service';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -54,19 +55,15 @@ export async function GET(request: NextRequest) {
 
           redirect('/onboarding?step=1');
         } else if (email) {
-          await prisma.users.upsert({
-            where: {
-              email: email
-            },
-            create: {
-              email: email
-            },
-            update: {
-              last_sign_in_at: new Date()
-            }
-          });
+          const userDb = await new UserService().getUserByEmail(email);
 
-          const error = await signIn('credentials', {
+          if (!userDb) {
+            await new UserService().create({
+              email: email
+            });
+          }
+
+          await signIn('credentials', {
             email: userRes?.data?.user?.email,
             callbackUrl: next
           });

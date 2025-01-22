@@ -16,12 +16,11 @@ import { toast } from 'sonner';
 import * as z from 'zod';
 import { createClient } from '@/lib/supabase/client';
 import GoogleSignInButton from '@/app/(auth)/_components/google-auth-button';
-import { signIn } from '@/auth';
-import { PhoneInput } from '@/components/ui/phone-input';
 import { joinAction } from '@/actions/joinAction';
-import { randomUUID } from 'node:crypto';
 import { generateRandomString } from '@/lib/utils';
 import { prisma } from '@/lib/prisma';
+import { UserService } from '@/services/user.service';
+import { PhoneInput } from '@/components/ui/phone-input';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
@@ -59,6 +58,21 @@ export default function UserSignupForm() {
 
         // Generate an invitation code
         const invitationCode = generateRandomString(16);
+
+        let userDb = await new UserService().getUserByEmail(credentials.email);
+
+        if (userDb) {
+          toast.error('User already exists');
+          return;
+        } else {
+          userDb = await new UserService().create({
+            uuid: data.session?.user.id,
+            email: credentials.email,
+            name: credentials.name,
+            phone: credentials.phone,
+            description: ''
+          });
+        }
 
         // Create user in database
         const { success } = await joinAction(invitationCode, {
@@ -125,7 +139,9 @@ export default function UserSignupForm() {
               <FormItem>
                 <FormLabel>Phone</FormLabel>
                 <FormControl>
-                  <PhoneInput defaultCountry="BE" {...field} />
+                  <div className="relative">
+                    <PhoneInput defaultCountry="BE" {...field} />
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>

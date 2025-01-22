@@ -43,6 +43,12 @@ export class UserService {
 
   async getTeams(userId: string) {}
 
+  async create(data: any) {
+    return prisma.users.create({
+      data
+    });
+  }
+
   async getCurrentTeam(userId: string) {
     return { name: 'Team A' };
   }
