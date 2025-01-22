@@ -8,6 +8,7 @@ import { prisma } from '@/lib/prisma';
 import { joinAction } from '@/actions/joinAction';
 import { randomUUID } from 'node:crypto';
 import { UserService } from '@/services/user.service';
+import { createUser } from '@/actions/createUser';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -30,19 +31,17 @@ export async function GET(request: NextRequest) {
 
         if (type === 'signup') {
           // Add user to database
-          await prisma.users.create({
-            data: {
-              email: email
-            }
+          await createUser({
+            email: email,
+            auth_id: userRes?.data?.user?.id
           });
 
-          const error = await signIn('credentials', {
+          await signIn('credentials', {
             email: userRes?.data?.user?.email,
             callbackUrl: next
           });
 
           // Generate an invitation code
-
           const invitationCode = randomUUID();
 
           joinAction(invitationCode, {
@@ -53,13 +52,14 @@ export async function GET(request: NextRequest) {
             phone: ''
           });
 
-          redirect('/onboarding?step=1');
+          redirect('/dashboard');
         } else if (email) {
           const userDb = await new UserService().getUserByEmail(email);
 
           if (!userDb) {
-            await new UserService().create({
-              email: email
+            await createUser({
+              email: email,
+              auth_id: userRes?.data?.user?.id
             });
           }
 
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
           });
         }
 
-        redirect(next);
+        redirect('/dashboard');
       }
     } else {
       throw new Error('Invalid token');
