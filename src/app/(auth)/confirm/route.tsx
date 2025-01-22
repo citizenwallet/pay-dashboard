@@ -4,7 +4,6 @@ import { type NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
-import { prisma } from '@/lib/prisma';
 import { joinAction } from '@/actions/joinAction';
 import { randomUUID } from 'node:crypto';
 import { UserService } from '@/services/user.service';
