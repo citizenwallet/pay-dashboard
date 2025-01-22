@@ -21,6 +21,7 @@ import { generateRandomString } from '@/lib/utils';
 import { prisma } from '@/lib/prisma';
 import { UserService } from '@/services/user.service';
 import { PhoneInput } from '@/components/ui/phone-input';
+import Link from 'next/link';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
@@ -187,6 +188,10 @@ export default function UserSignupForm() {
           <Button disabled={loading} className="ml-auto w-full" type="submit">
             Sign Up
           </Button>
+
+          <div className="flex justify-center">
+            <Link href="/login">Already have an account? Login</Link>
+          </div>
         </form>
       </Form>
       <div className="relative">
