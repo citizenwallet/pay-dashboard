@@ -4,8 +4,6 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
-import { joinAction } from '@/actions/joinAction';
-import { randomUUID } from 'node:crypto';
 import { UserService } from '@/services/user.service';
 import { createUser } from '@/actions/createUser';
 
