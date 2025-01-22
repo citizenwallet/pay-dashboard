@@ -13,50 +13,40 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get('type') as EmailOtpType | null;
   const next = searchParams.get('next') ?? '/';
 
-  try {
-    if (token_hash && type) {
-      const supabase = await createClient();
+  if (token_hash && type) {
+    const supabase = await createClient();
 
-      const { error } = await supabase.auth.verifyOtp({
-        type,
-        token_hash
-      });
+    const { error } = await supabase.auth.verifyOtp({
+      type,
+      token_hash
+    });
 
-      if (!error) {
-        const userRes = await supabase.auth.getUser();
-        const email = userRes?.data?.user?.email;
+    if (!error) {
+      const userRes = await supabase.auth.getUser();
+      const email = userRes?.data?.user?.email;
 
-        if (email) {
-          const userDb = await new UserService().getUserByEmail(email);
+      if (email) {
+        const userDb = await new UserService().getUserByEmail(email);
 
-          if (!userDb) {
-            await createUser({
-              email: email,
-              auth_id: userRes?.data?.user?.id
-            });
-          }
-
-          await signIn('credentials', {
+        if (!userDb) {
+          await createUser({
             email: email,
-            callbackUrl: '/dashboard'
+            auth_id: userRes?.data?.user?.id
           });
-
-          return NextResponse.redirect('/dashboard');
-        } else {
-          throw new Error('Failed to get user email');
         }
+
+        await signIn('credentials', {
+          email: email
+        });
+
+        return NextResponse.redirect('/dashboard');
       } else {
-        throw new Error(error.message);
+        return NextResponse.redirect('/dashboard');
       }
     } else {
-      throw new Error('Invalid token');
+      return NextResponse.redirect('/dashboard');
     }
-  } catch (error) {
-    if (error instanceof Error) {
-      return redirect('/error?message=' + encodeURI(error.message));
-    } else {
-      console.log(error);
-      return redirect('/error?message=' + encodeURI('An error occurred'));
-    }
+  } else {
+    return NextResponse.redirect('/dashboard');
   }
 }
