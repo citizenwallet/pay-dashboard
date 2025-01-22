@@ -69,17 +69,19 @@ export async function GET(request: NextRequest) {
           });
         }
 
-        redirect('/dashboard');
+        return redirect('/dashboard');
+      } else {
+        throw new Error(error.message);
       }
     } else {
       throw new Error('Invalid token');
     }
   } catch (error) {
     if (error instanceof Error) {
-      redirect('/error?message=' + encodeURI(error.message));
+      return redirect('/error?message=' + encodeURI(error.message));
     } else {
       console.log(error);
-      redirect('/error?message=' + encodeURI('An error occurred'));
+      return redirect('/error?message=' + encodeURI('An error occurred'));
     }
   }
 }
