@@ -1,6 +1,6 @@
 import { type EmailOtpType } from '@supabase/supabase-js';
 import { type NextRequest } from 'next/server';
-
+import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
         const userRes = await supabase.auth.getUser();
         const email = userRes?.data?.user?.email;
 
-        if (type === 'signup' && email) {
+        if (email) {
           const userDb = await new UserService().getUserByEmail(email);
 
           if (!userDb) {
@@ -39,41 +39,14 @@ export async function GET(request: NextRequest) {
           }
 
           await signIn('credentials', {
-            email: userRes?.data?.user?.email,
+            email: email,
             callbackUrl: next
           });
 
-          // Generate an invitation code
-          const invitationCode = randomUUID();
-
-          joinAction(invitationCode, {
-            email: userRes?.data?.user?.email as string,
-            name: '',
-            description: '',
-            image: ``,
-            phone: ''
-          });
-
-          redirect('/dashboard');
-        } else if (email) {
-          const userDb = await new UserService().getUserByEmail(email);
-
-          if (!userDb) {
-            await createUser({
-              email: email,
-              auth_id: userRes?.data?.user?.id
-            });
-          }
-
-          await signIn('credentials', {
-            email: userRes?.data?.user?.email,
-            callbackUrl: next
-          });
+          return NextResponse.redirect('/dashboard');
         } else {
-          throw new Error('Invalid email');
+          throw new Error('Failed to get user email');
         }
-
-        return redirect('/dashboard');
       } else {
         throw new Error(error.message);
       }
