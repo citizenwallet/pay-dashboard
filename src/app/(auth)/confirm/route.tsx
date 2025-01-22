@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
 
           await signIn('credentials', {
             email: email,
-            callbackUrl: next
+            callbackUrl: '/dashboard'
           });
 
           return NextResponse.redirect('/dashboard');
