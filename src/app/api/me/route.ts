@@ -88,6 +88,13 @@ export async function GET() {
     }
   });
 
+  if (!businesses) {
+    return Response.json({
+      error: 'Business not found',
+      status: StatusCodes.NOT_FOUND
+    });
+  }
+
   const places = await prisma.places.findMany({
     where: {
       business_id: businesses.id as any
