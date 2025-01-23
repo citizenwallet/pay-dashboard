@@ -25,7 +25,6 @@ import Link from 'next/link';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
-  password: z.string().email({ message: 'Enter a valid password' }),
   name: z.string(),
   phone: z.string()
 });
