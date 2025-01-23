@@ -77,7 +77,7 @@ export default function UserSignupForm() {
 
           setTimeout(() => {
             window.location.href = '/onboarding?invite_code=' + invitationCode;
-          }, 5000);
+          }, 1000);
         }
       });
     } catch (e) {
