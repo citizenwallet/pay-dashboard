@@ -73,11 +73,7 @@ export default function UserSignupForm() {
         });
 
         if (success) {
-          toast.success('Signed Up Successfully, please check your email !');
-
-          setTimeout(() => {
-            window.location.href = '/onboarding?invite_code=' + invitationCode;
-          }, 1000);
+          window.location.href = '/onboarding?invite_code=' + invitationCode;
         }
       });
     } catch (e) {
