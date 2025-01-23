@@ -58,7 +58,7 @@ export default function UserSignupForm() {
           }
         });
 
-        if (error || !data.user) {
+        if (error) {
           toast.error('An error occurred while signing up');
           return;
         }
