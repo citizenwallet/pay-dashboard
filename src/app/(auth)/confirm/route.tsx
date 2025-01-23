@@ -5,6 +5,9 @@ import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { UserService } from '@/services/user.service';
 import { createUser } from '@/actions/createUser';
+import { BusinessService } from '@/services/business.service';
+import { joinAction } from '@/actions/joinAction';
+import { generateRandomString } from '@/lib/utils';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -28,9 +31,38 @@ export async function GET(request: NextRequest) {
         const userDb = await new UserService().getUserByEmail(email);
 
         if (!userDb) {
-          await createUser({
+          // Find business related to this user if no businss we link to a new ones
+          const business = await supabase
+            .from('businesses')
+            .select()
+            .eq('email', email)
+            .single();
+
+          if (business.error) {
+            const randomString = generateRandomString(16);
+            await joinAction(randomString, {
+              email: email,
+              name: '',
+              phone: '',
+              description: '',
+              image: ''
+            });
+          } else {
+            await createUser({
+              email: email,
+              auth_id: userRes?.data?.user?.id,
+              business_id: business.data.id
+            });
+          }
+        } else {
+          // Prevent user already registered but not having business ID linked
+          const randomString = generateRandomString(16);
+          await joinAction(randomString, {
             email: email,
-            auth_id: userRes?.data?.user?.id
+            name: '',
+            phone: '',
+            description: '',
+            image: ''
           });
         }
 
