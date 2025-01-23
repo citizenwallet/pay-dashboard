@@ -1,11 +1,10 @@
 import { type EmailOtpType } from '@supabase/supabase-js';
-import { NextResponse, type NextRequest } from 'next/server';
+import { type NextRequest } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { UserService } from '@/services/user.service';
 import { createUser } from '@/actions/createUser';
-import { BusinessService } from '@/services/business.service';
 import { joinAction } from '@/actions/joinAction';
 import { generateRandomString } from '@/lib/utils';
 
@@ -51,7 +50,7 @@ export async function GET(request: NextRequest) {
             await createUser({
               email: email,
               auth_id: userRes?.data?.user?.id,
-              business_id: business.data.id
+              linked_business_id: business.data.id
             });
           }
         } else {
