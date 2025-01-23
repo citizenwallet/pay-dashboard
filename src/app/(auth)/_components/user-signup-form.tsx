@@ -25,13 +25,6 @@ import Link from 'next/link';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
-  password: z
-    .string()
-    .min(8)
-    .regex(new RegExp('^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$'), {
-      message:
-        'Password must be at least 8 characters and contain an uppercase letter, lowercase letter, and number'
-    }),
   name: z.string(),
   phone: z.string()
 });
@@ -54,16 +47,18 @@ export default function UserSignupForm() {
         // Generate an invitation code
         const invitationCode = generateRandomString(16);
 
-        const { data, error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signInWithOtp({
           email: credentials.email,
-          password: credentials.password,
           options: {
+            shouldCreateUser: true,
             emailRedirectTo:
-              process.env.NEXTAUTH_URL + '/onboarding?token=' + invitationCode
+              process.env.NEXTAUTH_URL +
+              '/onboarding?invite_code=' +
+              invitationCode
           }
         });
 
-        if (error) {
+        if (error || !data.user) {
           toast.error('An error occurred while signing up');
           return;
         }
@@ -73,14 +68,6 @@ export default function UserSignupForm() {
         if (userDb) {
           toast.error('User already exists');
           return;
-        } else {
-          userDb = await new UserService().create({
-            uuid: data.session?.user.id,
-            email: credentials.email,
-            name: credentials.name,
-            phone: credentials.phone,
-            description: ''
-          });
         }
 
         // Create user in database
@@ -92,7 +79,7 @@ export default function UserSignupForm() {
           image: ''
         });
 
-        if (success && data?.user?.email) {
+        if (success) {
           toast.success('Signed Up Successfully, please check your email !');
 
           setTimeout(() => {
@@ -156,24 +143,6 @@ export default function UserSignupForm() {
                   <Input
                     type="email"
                     placeholder="Enter your email..."
-                    disabled={loading}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input
-                    type="password"
-                    placeholder="Enter your password..."
                     disabled={loading}
                     {...field}
                   />
