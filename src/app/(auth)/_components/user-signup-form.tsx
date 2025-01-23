@@ -90,7 +90,7 @@ export default function UserSignupForm() {
           toast.success('Signed Up Successfully, please check your email !');
 
           setTimeout(() => {
-            window.location.href = '/onboarding?token=' + invitationCode;
+            window.location.href = '/onboarding?invite_code=' + invitationCode;
           }, 5000);
         }
       });
