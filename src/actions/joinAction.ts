@@ -76,7 +76,32 @@ export async function joinAction(
     return { error: businessError.message };
   }
 
-  const slug = `${createSlug(data.name)}-${generateRandomString(4)}`;
+  // Try to create a unique slug
+  const baseSlug = createSlug(data.name);
+  let slug = baseSlug;
+  let attempts = 0;
+  const maxAttempts = 5;
+
+  // Keep trying until we find a unique slug or hit max attempts
+  while (attempts < maxAttempts) {
+    const { data: existingPlace } = await client
+      .from('places')
+      .select('id')
+      .eq('slug', slug)
+      .single();
+
+    if (!existingPlace) {
+      break;
+    }
+
+    // If place exists, try a new random string
+    slug = `${baseSlug}-${generateRandomString(4)}`;
+    attempts++;
+  }
+
+  if (attempts >= maxAttempts) {
+    return { error: 'Unable to generate unique slug for place' };
+  }
 
   const { error: placeError } = await createPlace(client, {
     name: data.name,
