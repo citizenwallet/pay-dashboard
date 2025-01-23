@@ -63,13 +63,6 @@ export default function UserSignupForm() {
           return;
         }
 
-        let userDb = await new UserService().getUserByEmail(credentials.email);
-
-        if (userDb) {
-          toast.error('User already exists');
-          return;
-        }
-
         // Create user in database
         const { success } = await joinAction(invitationCode, {
           email: credentials.email,
