@@ -40,7 +40,7 @@ export async function checkUserData(data: any) {
 
       await createUser({
         email: data.email,
-        auth_id: user.data?.user?.id,
+        user_id: user.data?.user?.id,
         linked_business_id: business.data.id
       });
     }

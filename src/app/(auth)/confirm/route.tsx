@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
           } else {
             await createUser({
               email: email,
-              auth_id: userRes?.data?.user?.id,
+              user_id: userRes?.data?.user?.id,
               linked_business_id: business.data.id
             });
           }
