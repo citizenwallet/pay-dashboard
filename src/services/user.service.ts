@@ -1,5 +1,12 @@
 import { prisma } from '@/lib/prisma';
 import { createClient } from '@/lib/supabase/server';
+import { z } from 'zod';
+
+const UserUpdateDTO = z.object({
+  name: z.string(),
+  email: z.string().email(),
+  phone: z.string()
+});
 
 export class UserService {
   private db: typeof prisma;
