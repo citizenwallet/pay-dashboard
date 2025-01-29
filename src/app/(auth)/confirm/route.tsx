@@ -14,6 +14,8 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get('type') as EmailOtpType | null;
   const next = searchParams.get('next') ?? '/';
 
+  let redirectUrl = next;
+
   if (token_hash && type) {
     const supabase = await createClient();
 
@@ -65,22 +67,27 @@ export async function GET(request: NextRequest) {
           });
         }
 
-        await signIn('credentials', {
-          email: email
-        });
-
-        return redirect(process.env.NEXTAUTH_URL + '/dashboard');
+        try {
+          await signIn('credentials', {
+            email: email
+          });
+        } catch (error) {
+          return (redirectUrl = redirectUrl =
+            process.env.NEXTAUTH_URL + '/login?error=sign_in_failed');
+        } finally {
+        }
       } else {
-        return redirect(
-          process.env.NEXTAUTH_URL + '/error?error=invalid_email'
-        );
+        return (redirectUrl =
+          process.env.NEXTAUTH_URL + '/error?error=invalid_email');
       }
     } else {
-      return redirect(
-        process.env.NEXTAUTH_URL + '/login?error=verify_otp_failed'
-      );
+      return (redirectUrl =
+        process.env.NEXTAUTH_URL + '/login?error=verify_otp_failed');
     }
   } else {
-    return redirect(process.env.NEXTAUTH_URL + '/login?error=invalid_token');
+    return (redirectUrl =
+      process.env.NEXTAUTH_URL + '/login?error=invalid_token');
   }
+
+  return redirect(redirectUrl);
 }
