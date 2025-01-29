@@ -7,6 +7,7 @@ import { UserService } from '@/services/user.service';
 import { createUser } from '@/actions/createUser';
 import { joinAction } from '@/actions/joinAction';
 import { generateRandomString } from '@/lib/utils';
+import { checkUserData } from '@/actions/checkUserData';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -66,6 +67,8 @@ export async function GET(request: NextRequest) {
             image: ''
           });
         }
+
+        await checkUserData(email);
 
         try {
           await signIn('credentials', {
