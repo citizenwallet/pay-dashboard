@@ -4,6 +4,7 @@ import { BusinessService } from '@/services/business.service';
 import { NextResponse } from 'next/server';
 import { StatusCodes, ReasonPhrases } from 'http-status-codes';
 import '@/lib/utils';
+import { convertBigIntToString } from '@/lib/utils';
 
 export async function POST(req: NextRequest) {
   const formData = await req.json();
@@ -42,8 +43,10 @@ export async function POST(req: NextRequest) {
 
   const response = await businessService.updateBusiness(business.id, formData);
 
-  return NextResponse.json({
-    data: response,
-    status: StatusCodes.OK
-  });
+  return NextResponse.json(
+    convertBigIntToString({
+      data: response,
+      status: StatusCodes.OK
+    })
+  );
 }

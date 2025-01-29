@@ -6,6 +6,7 @@ import { getTranslations } from 'next-intl/server';
 import { BusinessService } from '@/services/business.service';
 import { NextResponse } from 'next/server';
 import { StatusCodes, ReasonPhrases } from 'http-status-codes';
+import { convertBigIntToString } from '@/lib/utils';
 
 const vatCheckSchema = z.object({
   token: z.string().min(8, 'Token must be at least 8 characters')
@@ -57,9 +58,11 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  return Response.json({
-    data: business,
-    status: StatusCodes.OK,
-    message: 'Ok'
-  });
+  return Response.json(
+    convertBigIntToString({
+      data: business,
+      status: StatusCodes.OK,
+      message: 'Ok'
+    })
+  );
 }
