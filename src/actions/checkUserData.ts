@@ -4,13 +4,15 @@ import { getServiceRoleClient } from '@/db';
 import { joinAction } from '@/actions/joinAction';
 import { generateRandomString } from '@/lib/utils';
 import { createUser } from '@/actions/createUser';
+import { User } from '@supabase/auth-js';
+import { upsertUser } from './upsertUser';
 
 /**
  * Check user data and consolidate it
- * s
+ *
  * @param data
  */
-export async function checkUserData(data: any) {
+export async function checkUserData(data: Partial<User>, authRes: any) {
   const supabase = await getServiceRoleClient();
   const userDb = await supabase
     .from('users')
@@ -18,8 +20,8 @@ export async function checkUserData(data: any) {
     .eq('email', data.email)
     .single();
 
-  if (!userDb) {
-    // Find business related to this user if no business we link to a new one
+  if (!userDb && data.email) {
+    // Find business related to this user if there is no business we link to a new one
     const business = await supabase
       .from('businesses')
       .select()
@@ -35,6 +37,12 @@ export async function checkUserData(data: any) {
         description: '',
         image: ''
       });
+
+      // We need to link the user_id as well
+      await upsertUser({
+        email: data.email,
+        user_id: authRes.user.id
+      });
     } else {
       const user = await supabase.auth.getUser();
 
@@ -44,15 +52,5 @@ export async function checkUserData(data: any) {
         linked_business_id: business.data.id
       });
     }
-  } else {
-    // Prevent user already registered but not having business ID linked
-    const randomString = generateRandomString(16);
-    await joinAction(randomString, {
-      email: data.email,
-      name: '',
-      phone: '',
-      description: '',
-      image: ''
-    });
   }
 }

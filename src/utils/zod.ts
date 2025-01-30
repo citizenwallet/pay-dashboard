@@ -1,5 +1,12 @@
 import { z } from 'zod';
 
+/**
+ * Validate data against a schema
+ *
+ * @param schema
+ * @param data
+ * @param t
+ */
 export const validate = async (
   schema: z.ZodTypeAny,
   data: object,

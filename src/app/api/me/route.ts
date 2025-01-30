@@ -5,7 +5,6 @@ import { StatusCodes } from 'http-status-codes';
 import { NextRequest } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import { joinAction } from '@/actions/joinAction';
-import { checkUserData } from '@/actions/checkUserData';
 import { convertBigIntToString } from '@/lib/utils';
 
 export async function PUT(request: NextRequest) {
@@ -81,8 +80,6 @@ export async function GET() {
       description: '',
       image: ''
     });
-
-    await checkUserData(session.user);
   }
 
   // Find businesses that the user has access to

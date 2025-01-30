@@ -3,6 +3,7 @@ import CredentialProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import { UserService } from '@/services/user.service';
 import { createClient } from '@/lib/supabase/server';
+import { checkUserData } from '@/actions/checkUserData';
 
 // @ts-ignore
 const authConfig = {
@@ -31,9 +32,25 @@ const authConfig = {
       async authorize(credentials, req) {
         const service = new UserService();
 
-        const user: any = await service.getUserByEmail(
+        let user: any = await service.getUserByEmail(
           credentials.email as string
         );
+
+        // Check if the user is authenticated using Supabase
+        const supabase = await createClient();
+        const supabaseUser = await supabase.auth.getUser();
+
+        // If the user is authenticated using Supabase, then we return the user
+        if (!user && supabaseUser && credentials.email) {
+          await checkUserData(
+            {
+              email: credentials.email as string
+            },
+            supabaseUser.data.user
+          );
+
+          user = await service.getUserByEmail(credentials.email as string);
+        }
 
         if (user) {
           return user;
