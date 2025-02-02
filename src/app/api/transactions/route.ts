@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
   const accounts = await prisma.a_profiles.findMany({
     where: {
       account: {
-        in: accountsIds
+        in: accountsIds as string[]
       }
     }
   });
