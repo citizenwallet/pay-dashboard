@@ -41,11 +41,23 @@ export class UserService {
     });
   }
 
-  async getTeams(userId: string) {}
-
   async create(data: any) {
     return prisma.users.create({
       data
+    });
+  }
+
+  async upsert(data: any) {
+    const user = await prisma.users.findFirst({
+      where: {
+        email: data.email
+      }
+    });
+
+    return prisma.users.upsert({
+      where: { id: user?.id },
+      update: data,
+      create: data
     });
   }
 

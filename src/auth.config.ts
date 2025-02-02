@@ -5,7 +5,6 @@ import { UserService } from '@/services/user.service';
 import { createClient } from '@/lib/supabase/server';
 import { checkUserData } from '@/actions/checkUserData';
 
-// @ts-ignore
 const authConfig = {
   providers: [
     GoogleProvider({
@@ -40,6 +39,8 @@ const authConfig = {
         const supabase = await createClient();
         const supabaseUser = await supabase.auth.getUser();
 
+        //console.log(credentials, user, supabaseUser);
+
         // If the user is authenticated using Supabase, then we return the user
         if (!user && supabaseUser && credentials.email) {
           await checkUserData(
@@ -51,6 +52,8 @@ const authConfig = {
 
           user = await service.getUserByEmail(credentials.email as string);
         }
+
+        console.log('Logged', user);
 
         if (user) {
           return user;

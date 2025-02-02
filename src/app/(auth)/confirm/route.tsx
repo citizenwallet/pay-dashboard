@@ -32,14 +32,9 @@ export async function GET(request: NextRequest) {
           userRes?.data?.user
         );
 
-        try {
-          await signIn('credentials', {
-            email: email
-          });
-        } catch (error) {
-          redirectUrl =
-            process.env.NEXT_PUBLIC_URL + '/login?error=sign_in_failed';
-        }
+        await signIn('credentials', {
+          email: email
+        });
       } else {
         redirectUrl =
           process.env.NEXT_PUBLIC_URL + '/error?error=invalid_email';
@@ -58,8 +53,5 @@ export async function GET(request: NextRequest) {
    * @comment This should always be sent outside of try-catch-finally block
    * @see https://nextjs.org/docs/app/building-your-application/routing/redirecting#redirect-function
    */
-
-  return redirectUrl;
-
-  //return redirect(redirectUrl);
+  return redirect(redirectUrl);
 }

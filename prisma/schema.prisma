@@ -9,35 +9,39 @@ datasource db {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model a_profiles {
-  created_at                                     DateTime         @default(now()) @db.Timestamptz(6)
-  account                                        String           @id(map: "Profiles_pkey")
-  username                                       String
-  name                                           String           @default("")
-  description                                    String           @default("")
-  image                                          String           @default("")
-  image_medium                                   String           @default("")
-  image_small                                    String           @default("")
-  token_id                                       String           @default("")
-  updated_at                                     DateTime         @default(now()) @db.Timestamp(6)
-  place_id                                       BigInt?
-  places                                         places?          @relation(fields: [place_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  a_transactions_a_transactions_fromToa_profiles a_transactions[] @relation("a_transactions_fromToa_profiles")
-  a_transactions_a_transactions_toToa_profiles   a_transactions[] @relation("a_transactions_toToa_profiles")
+  created_at                                        DateTime         @default(now()) @db.Timestamptz(6)
+  account                                           String           @id(map: "Profiles_pkey")
+  username                                          String
+  name                                              String           @default("")
+  description                                       String           @default("")
+  image                                             String           @default("")
+  image_medium                                      String           @default("")
+  image_small                                       String           @default("")
+  token_id                                          String           @default("")
+  updated_at                                        DateTime         @default(now()) @db.Timestamp(6)
+  place_id                                          BigInt?
+  a_interactions_a_interactions_accountToa_profiles a_interactions[] @relation("a_interactions_accountToa_profiles")
+  a_interactions_a_interactions_withToa_profiles    a_interactions[] @relation("a_interactions_withToa_profiles")
+  places                                            places?          @relation(fields: [place_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  a_transactions_a_transactions_fromToa_profiles    a_transactions[] @relation("a_transactions_fromToa_profiles")
+  a_transactions_a_transactions_toToa_profiles      a_transactions[] @relation("a_transactions_toToa_profiles")
+  orders                                            orders[]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model a_transactions {
-  id                                         String     @id(map: "Transactions_pkey")
+  id                                         String           @id(map: "Transactions_pkey")
   hash                                       String
-  created_at                                 DateTime   @default(now()) @db.Timestamptz(6)
-  updated_at                                 DateTime   @default(now()) @db.Timestamptz(6)
-  from                                       String
-  to                                         String
-  value                                      String     @default("0")
-  description                                String     @default("")
-  status                                     String     @default("pending")
-  a_profiles_a_transactions_fromToa_profiles a_profiles @relation("a_transactions_fromToa_profiles", fields: [from], references: [account], onDelete: NoAction, onUpdate: NoAction, map: "Transactions_from_fkey")
-  a_profiles_a_transactions_toToa_profiles   a_profiles @relation("a_transactions_toToa_profiles", fields: [to], references: [account], onDelete: NoAction, onUpdate: NoAction, map: "Transactions_to_fkey")
+  created_at                                 DateTime         @default(now()) @db.Timestamptz(6)
+  updated_at                                 DateTime         @default(now()) @db.Timestamptz(6)
+  from                                       String?
+  to                                         String?
+  value                                      String           @default("0")
+  description                                String           @default("")
+  status                                     String           @default("pending")
+  a_interactions                             a_interactions[]
+  a_profiles_a_transactions_fromToa_profiles a_profiles?      @relation("a_transactions_fromToa_profiles", fields: [from], references: [account], onDelete: NoAction, onUpdate: NoAction, map: "Transactions_from_fkey")
+  a_profiles_a_transactions_toToa_profiles   a_profiles?      @relation("a_transactions_toToa_profiles", fields: [to], references: [account], onDelete: NoAction, onUpdate: NoAction, map: "Transactions_to_fkey")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -50,13 +54,14 @@ model businesses {
   uuid            String?          @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   business_status business_status? @default(created)
   account         String?
-  invite_code     String?
+  invite_code     String?          @unique
   email           String?
   phone           String?
   iban_number     String?
   website         String?
   address_legal   String?
   legal_name      String?
+  invitations     invitations[]
   places          places[]
   users           users[]
 }
@@ -71,8 +76,6 @@ model old_Accounts {
   wallet_type                              String?
   linked_user_id                           BigInt?
   users                                    users?       @relation(fields: [linked_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Accounts_linked_user_id_fkey")
-  old_ledger_old_ledger_FromToold_Accounts old_ledger[] @relation("old_ledger_FromToold_Accounts") @ignore
-  old_ledger_old_ledger_ToToold_Accounts   old_ledger[] @relation("old_ledger_ToToold_Accounts") @ignore
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
@@ -98,8 +101,6 @@ model old_ledger {
   Source                                     String?
   From___file_import                         String?       @map("From - file import")
   To___file_import                           String?       @map("To - file import")
-  old_Accounts_old_ledger_FromToold_Accounts old_Accounts? @relation("old_ledger_FromToold_Accounts", fields: [From], references: [address], onDelete: NoAction, onUpdate: NoAction, map: "ledger_From_fkey")
-  old_Accounts_old_ledger_ToToold_Accounts   old_Accounts? @relation("old_ledger_ToToold_Accounts", fields: [To], references: [address], onDelete: NoAction, onUpdate: NoAction, map: "ledger_To_fkey")
 
   @@ignore
 }
@@ -107,8 +108,8 @@ model old_ledger {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model orders {
-  id           BigInt   @id @default(autoincrement())
-  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  id           BigInt      @id @default(autoincrement())
+  created_at   DateTime    @default(now()) @db.Timestamptz(6)
   total        BigInt?
   due          BigInt?
   items        Json?
@@ -117,7 +118,10 @@ model orders {
   completed_at String?
   description  String?
   tx_hash      String?
-  places       places?  @relation(fields: [place_id], references: [id], onDelete: Cascade)
+  type         String?
+  account      String?
+  a_profiles   a_profiles? @relation(fields: [account], references: [account])
+  places       places?     @relation(fields: [place_id], references: [id], onDelete: Cascade)
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -130,6 +134,10 @@ model places {
   slug        String?      @unique
   accounts    Json?        @default("[]")
   invite_code String?
+  terminal_id Int?
+  image       String?
+  description String?
+  display     display_type @default(amount)
   a_profiles  a_profiles[]
   orders      orders[]
   businesses  businesses?  @relation(fields: [business_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
@@ -230,17 +238,50 @@ model t_sponsors_100 {
 model users {
   id                 BigInt         @id(map: "Users_pkey") @default(autoincrement())
   created_at         DateTime       @default(now()) @db.Timestamptz(6)
-  email              String?
+  email              String?        @unique
   name               String?
   avatar             String?
   magic_link         String?
   usergroup          String?
   linked_business_id BigInt?
-  uuid               String?        @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  uuid               String?        @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   phone              String?
   description        String?
+  invitation_token   String?
+  password           String?
+  account            String?
+  user_id            String?        @unique @db.Uuid
   old_Accounts       old_Accounts[]
   businesses         businesses?    @relation(fields: [linked_business_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Users_linked_business_id_fkey")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model a_interactions {
+  id                                            String          @id(map: "interactions_pkey") @unique(map: "interactions_id_key") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  transaction_id                                String?
+  account                                       String?
+  created_at                                    DateTime?       @default(now()) @db.Timestamptz(6)
+  updated_at                                    DateTime?       @db.Timestamptz(6)
+  with                                          String?
+  new_interaction                               Boolean?        @default(false)
+  a_profiles_a_interactions_accountToa_profiles a_profiles?     @relation("a_interactions_accountToa_profiles", fields: [account], references: [account], onUpdate: NoAction, map: "interactions_account_fkey")
+  a_transactions                                a_transactions? @relation(fields: [transaction_id], references: [id], onUpdate: NoAction, map: "interactions_transaction_id_fkey")
+  a_profiles_a_interactions_withToa_profiles    a_profiles?     @relation("a_interactions_withToa_profiles", fields: [with], references: [account], onUpdate: NoAction, map: "interactions_with_fkey")
+
+  @@unique([account, with], map: "unique_account_with")
+}
+
+model invitations {
+  id          Int         @id @default(autoincrement())
+  business_id BigInt?
+  email       String      @db.VarChar(255)
+  token       String      @unique @db.Uuid
+  status      String?     @default("pending") @db.VarChar(50)
+  created_at  DateTime?   @default(now()) @db.Timestamp(6)
+  used_at     DateTime?   @db.Timestamp(6)
+  expires_at  DateTime?   @db.Timestamp(6)
+  businesses  businesses? @relation(fields: [business_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 enum business_status {
@@ -257,4 +298,11 @@ enum wallet_type {
   kiosk
   app
   pos_app @map("pos app")
+}
+
+/// This enum is commented in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+enum display_type {
+  amount
+  menu
+  amountAndMenu
 }
