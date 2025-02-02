@@ -39,6 +39,8 @@ export async function joinAction(
 ) {
   const client = getServiceRoleClient();
 
+  console.log('data', data);
+
   //   let imageUrl = null;
   //   if (image) {
   //     const { url, error: uploadError } = await uploadImage(image, "businesses");

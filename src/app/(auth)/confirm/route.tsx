@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const token_hash = searchParams.get('token_hash');
   const type = searchParams.get('type') as EmailOtpType | null;
-  let redirectUrl = searchParams.get('next') ?? '/';
+  let redirectUrl = searchParams.get('next') ?? '/dashboard';
 
   if (token_hash && type) {
     const supabase = await createClient();
@@ -38,16 +38,18 @@ export async function GET(request: NextRequest) {
           });
         } catch (error) {
           redirectUrl =
-            process.env.NEXTAUTH_URL + '/login?error=sign_in_failed';
+            process.env.NEXT_PUBLIC_URL + '/login?error=sign_in_failed';
         }
       } else {
-        redirectUrl = process.env.NEXTAUTH_URL + '/error?error=invalid_email';
+        redirectUrl =
+          process.env.NEXT_PUBLIC_URL + '/error?error=invalid_email';
       }
     } else {
-      redirectUrl = process.env.NEXTAUTH_URL + '/login?error=verify_otp_failed';
+      redirectUrl =
+        process.env.NEXT_PUBLIC_URL + '/login?error=verify_otp_failed';
     }
   } else {
-    redirectUrl = process.env.NEXTAUTH_URL + '/login?error=invalid_token';
+    redirectUrl = process.env.NEXT_PUBLIC_URL + '/login?error=invalid_token';
   }
 
   /**
@@ -56,5 +58,8 @@ export async function GET(request: NextRequest) {
    * @comment This should always be sent outside of try-catch-finally block
    * @see https://nextjs.org/docs/app/building-your-application/routing/redirecting#redirect-function
    */
-  return redirect(redirectUrl);
+
+  return redirectUrl;
+
+  //return redirect(redirectUrl);
 }

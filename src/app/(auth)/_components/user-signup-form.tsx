@@ -15,11 +15,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
 import { createClient } from '@/lib/supabase/client';
-import GoogleSignInButton from '@/app/(auth)/_components/google-auth-button';
-import { joinAction } from '@/actions/joinAction';
 import { generateRandomString } from '@/lib/utils';
-import { prisma } from '@/lib/prisma';
-import { UserService } from '@/services/user.service';
 import { PhoneInput } from '@/components/ui/phone-input';
 import Link from 'next/link';
 
@@ -52,7 +48,7 @@ export default function UserSignupForm() {
           options: {
             shouldCreateUser: true,
             emailRedirectTo:
-              process.env.NEXTAUTH_URL +
+              process.env.NEXT_PUBLIC_URL +
               '/onboarding?invite_code=' +
               invitationCode
           }
@@ -64,15 +60,18 @@ export default function UserSignupForm() {
         }
 
         // Create user in database
-        const { success } = await joinAction(invitationCode, {
-          email: credentials.email,
-          name: credentials.name,
-          phone: credentials.phone,
-          description: '',
-          image: ''
+        const res = await fetch('/api/auth/join', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            ...credentials,
+            invite_code: invitationCode
+          })
         });
 
-        if (success) {
+        if (res.ok) {
           window.location.href = '/onboarding?invite_code=' + invitationCode;
         }
       });
@@ -145,22 +144,11 @@ export default function UserSignupForm() {
             Sign Up
           </Button>
 
-          <div className="flex justify-center">
+          <div className="mt-2 flex justify-center">
             <Link href="/login">Already have an account? Login</Link>
           </div>
         </form>
       </Form>
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with
-          </span>
-        </div>
-      </div>
-      <GoogleSignInButton />
     </>
   );
 }

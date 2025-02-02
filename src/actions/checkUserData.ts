@@ -1,7 +1,6 @@
 'use server';
 
 import { getServiceRoleClient } from '@/db';
-import { joinAction } from '@/actions/joinAction';
 import { generateRandomString } from '@/lib/utils';
 import { createUser } from '@/actions/createUser';
 import { User } from '@supabase/auth-js';
@@ -11,6 +10,7 @@ import { upsertUser } from './upsertUser';
  * Check user data and consolidate it
  *
  * @param data
+ * @param authRes
  */
 export async function checkUserData(data: Partial<User>, authRes: any) {
   const supabase = await getServiceRoleClient();
@@ -29,13 +29,18 @@ export async function checkUserData(data: Partial<User>, authRes: any) {
       .single();
 
     if (business.error) {
-      const randomString = generateRandomString(16);
-      await joinAction(randomString, {
-        email: data.email,
-        name: '',
-        phone: '',
-        description: '',
-        image: ''
+      await fetch('/api/auth/join', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: data.email,
+          name: '',
+          phone: '',
+          description: '',
+          image: ''
+        })
       });
 
       // We need to link the user_id as well

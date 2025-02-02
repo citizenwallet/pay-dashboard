@@ -15,9 +15,7 @@ import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
-import GoogleSignInButton from '@/app/(auth)/_components/google-auth-button';
 import { createClient } from '@/lib/supabase/client';
-import MailLinkSent from '@/app/(auth)/_components/magic-link-sent';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' })
@@ -42,10 +40,10 @@ export default function UserAuthForm() {
     startTransition(async () => {
       const supabase = createClient();
 
-      const { data, error } = await supabase.auth.signInWithOtp({
+      const { error } = await supabase.auth.signInWithOtp({
         email: userData.email,
         options: {
-          emailRedirectTo: process.env.NEXTAUTH_URL + '/dashboard'
+          emailRedirectTo: process.env.NEXT_PUBLIC_URL
         }
       });
 
@@ -96,17 +94,6 @@ export default function UserAuthForm() {
           </div>
         </form>
       </Form>
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with
-          </span>
-        </div>
-      </div>
-      <GoogleSignInButton />
     </>
   );
 }
