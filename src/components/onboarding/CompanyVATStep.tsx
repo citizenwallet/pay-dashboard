@@ -54,6 +54,8 @@ export function CompanyVATStep({ onNext, initialData }: VATStepProps) {
         data.address_legal = result.address.replace(/\n/g, ', ');
         data.legal_name = result.name;
         onNext(data);
+      } else if (result.userError === 'MS_UNAVAILABLE') {
+        onNext(data);
       } else {
         setError('vat_number', {
           type: 'manual',
