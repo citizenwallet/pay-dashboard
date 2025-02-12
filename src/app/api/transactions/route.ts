@@ -107,5 +107,5 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  return Response.json(convertBigIntToString({ data: dataComputed }));
+  return Response.json({ data: dataComputed });
 }
