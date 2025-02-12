@@ -32,22 +32,9 @@ export async function GET(request: NextRequest) {
           userRes?.data?.user
         );
 
-        await signIn(
-          'credentials',
-          {
-            email: email
-          },
-          {
-            callbackUrl: redirectUrl
-          }
-        )
-          .then(() => {
-            redirectUrl = '/dashboard';
-          })
-          .catch(() => {
-            // silently catch the error
-          })
-          .finally(() => {});
+        await signIn('credentials', {
+          email: email
+        });
       } else {
         redirectUrl =
           process.env.NEXT_PUBLIC_URL + '/error?error=invalid_email';
