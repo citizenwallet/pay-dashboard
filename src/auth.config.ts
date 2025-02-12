@@ -53,8 +53,6 @@ const authConfig = {
           user = await service.getUserByEmail(credentials.email as string);
         }
 
-        console.log('Logged', user);
-
         if (user) {
           return user;
         } else {
