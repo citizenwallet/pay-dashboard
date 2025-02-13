@@ -25,8 +25,9 @@ export default function ConfirmSignup() {
         </CardHeader>
         <CardContent className="flex flex-col items-center space-y-4">
           <a
+            rel="noreferrer"
             className="text-center text-gray-600"
-            href={'/confirm?type=email&token_hash=' + tokenHash}
+            href={`/confirm?token_hash=${tokenHash}&type=magiclink`}
           >
             You will be redirected in 3 seconds. Click here if you are not
             redirected.
