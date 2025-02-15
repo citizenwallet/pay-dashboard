@@ -64,6 +64,23 @@ const authConfig = {
   ],
   pages: {
     signIn: '/login'
+  },
+  callbacks: {
+    jwt: async ({ token, user }) => {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    session: async ({ session, token }) => {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: `${token.id}`
+        }
+      };
+    }
   }
 } satisfies NextAuthConfig;
 

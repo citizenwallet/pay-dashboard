@@ -2,24 +2,37 @@ import 'server-only';
 
 import { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
 
-export interface Business {
+export interface User {
   id: number;
-  created_at: string;
-  name: string | null;
-  status: string | null;
-  vat_number: string | null;
-  business_status: string | null;
-  invite_code: string | null;
-  account: string | null;
-  email: string | null;
-  phone: string | null;
+  created_at: string; // ISO timestamp
+  email: string;
+  name: string;
+  avatar: string;
+  magic_link: string;
+  usergroup: string;
+  linked_business_id: number;
+  uuid: string;
+  phone: string;
+  description: string;
+  invitation_token: string;
+  password: string;
+  account: string;
+  user_id: string;
 }
 
-export type NewBusiness = Omit<Business, 'id' | 'created_at'>;
-
-export const createBusiness = async (
+export const getUserBusinessId = async (
   client: SupabaseClient,
-  business: NewBusiness
-): Promise<PostgrestSingleResponse<Business>> => {
-  return client.from('businesses').insert(business).select().single();
+  userId: number
+) => {
+  const { data, error } = await client
+    .from('users')
+    .select('linked_business_id')
+    .eq('id', userId)
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data?.linked_business_id as number;
 };
