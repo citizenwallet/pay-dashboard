@@ -32,7 +32,7 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel()
   });
 
-  const tMissing = useTranslations('missing');
+  const tMissing = useTranslations('Missing');
 
   return (
     <div className="flex-1 overflow-auto whitespace-nowrap rounded-md border">

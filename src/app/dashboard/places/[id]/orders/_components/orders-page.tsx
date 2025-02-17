@@ -2,7 +2,7 @@
 
 import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
-import { cn } from '@/lib/utils';
+import { cn, humanizeDate } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
@@ -31,19 +31,10 @@ const createColumns = (currencyLogo: string): ColumnDef<Order>[] => [
     }
   },
   {
-    accessorKey: 'created_at',
+    accessorKey: 'date',
     header: 'Date',
     cell: ({ row }) => {
-      const date = new Date(row.original.created_at);
-      return date.toLocaleDateString();
-    }
-  },
-  {
-    accessorKey: 'created_at',
-    header: 'Time',
-    cell: ({ row }) => {
-      const date = new Date(row.original.created_at);
-      return date.toLocaleTimeString();
+      return humanizeDate(row.original.created_at);
     }
   },
   {
