@@ -3,7 +3,8 @@ import { validate } from '@/utils/zod';
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { getTranslations } from 'next-intl/server';
-import { convertBigIntToString } from '@/lib/utils';
+import { StatusCodes } from 'http-status-codes';
+import { fetchCompanyForVatNumber } from '@/services/vat';
 
 const vatCheckSchema = z.object({
   vat: z
@@ -21,26 +22,16 @@ export async function GET(req: NextRequest) {
     {
       vat: searchParams.get('vat') || ''
     },
-    t as any
+    t as (key: string, values?: Record<string, string | number>) => string
   );
 
   if (!result.success) {
-    return Response.json({ errors: result });
+    return Response.json({ errors: result, status: StatusCodes.BAD_REQUEST });
   }
 
   const vat = searchParams.get('vat') || '';
-  const vatNumber = vat.replace(/[^0-9]/g, '');
-  const countryCode = vat.slice(0, 2);
 
-  const url = `https://ec.europa.eu/taxation_customs/vies/rest-api/ms/${countryCode}/vat/${vatNumber}`;
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
+  const data = await fetchCompanyForVatNumber(vat);
 
-  const data: any = await response.json();
-
-  return Response.json(convertBigIntToString(data));
+  return Response.json(data);
 }

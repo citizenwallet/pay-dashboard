@@ -125,7 +125,7 @@ export function CompanyOnboarding() {
           setTokenValid(false);
         });
     }
-  }, [token]);
+  }, [token, vat_number]);
 
   if (!tokenValid) {
     return (

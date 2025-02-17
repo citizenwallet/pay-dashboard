@@ -1,15 +1,14 @@
 'use client';
-import { DataTable as TransactionTable } from '@/components/ui/table/data-table';
+import { DataTable as TransactionTable } from '@/components/ui/data-table';
 import { columns } from './transaction-tables/columns';
 import useSWR from 'swr';
 import { Transaction } from '@/types/transaction';
 
-type TransactionListingPage = {};
+interface TransactionListingPage {}
 
 export default function TransactionListingPage({}: TransactionListingPage) {
-
-  const {data: res} = useSWR('/api/transactions', async () => {
-    return fetch('/api/transactions').then(res => res.json());
+  const { data: res } = useSWR('/api/transactions', async () => {
+    return fetch('/api/transactions').then((res) => res.json());
   });
 
   const totalTransactions = res?.data?.length || 0;
@@ -17,11 +16,7 @@ export default function TransactionListingPage({}: TransactionListingPage) {
 
   return (
     <>
-      <TransactionTable
-        columns={columns}
-        data={transactions}
-        totalItems={totalTransactions}
-      />
+      <TransactionTable columns={columns} data={[]} />
     </>
   );
 }

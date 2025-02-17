@@ -1,9 +1,9 @@
-import { NextAuthConfig } from 'next-auth';
+import { NextAuthConfig, User } from 'next-auth';
 import CredentialProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
-import { UserService } from '@/services/user.service';
-import { createClient } from '@/lib/supabase/server';
 import { checkUserData } from '@/actions/checkUserData';
+import { getServiceRoleClient } from './db';
+import { getUserByEmail } from './db/users';
 
 const authConfig = {
   providers: [
@@ -27,19 +27,20 @@ const authConfig = {
           type: 'password'
         }
       },
-      //@ts-ignore
-      async authorize(credentials, req) {
-        const service = new UserService();
+      async authorize(credentials) {
+        const client = getServiceRoleClient();
 
-        let user: any = await service.getUserByEmail(
+        const { data: user, error } = await getUserByEmail(
+          client,
           credentials.email as string
         );
 
-        // Check if the user is authenticated using Supabase
-        const supabase = await createClient();
-        const supabaseUser = await supabase.auth.getUser();
+        if (error || !user) {
+          return null;
+        }
 
-        //console.log(credentials, user, supabaseUser);
+        // Check if the user is authenticated using Supabase
+        const supabaseUser = await client.auth.getUser();
 
         // If the user is authenticated using Supabase, then we return the user
         if (!user && supabaseUser && credentials.email) {
@@ -50,20 +51,58 @@ const authConfig = {
             supabaseUser.data.user
           );
 
-          user = await service.getUserByEmail(credentials.email as string);
+          const { data: userData, error } = await getUserByEmail(
+            client,
+            credentials.email as string
+          );
+
+          if (error || !userData) {
+            return null;
+          }
+
+          const authUser: User = {
+            id: userData.id.toString(),
+            email: userData.email,
+            name: userData.name
+          };
+
+          return authUser;
         }
 
         if (user) {
-          return user;
-        } else {
-          // If you return null then an error will be displayed advising the user to check their details.
-          return null;
+          const authUser: User = {
+            id: user.id.toString(),
+            email: user.email,
+            name: user.name
+          };
+
+          return authUser;
         }
+
+        // If you return null then an error will be displayed advising the user to check their details.
+        return null;
       }
     })
   ],
   pages: {
     signIn: '/login'
+  },
+  callbacks: {
+    jwt: async ({ token, user }) => {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    session: async ({ session, token }) => {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: `${token.id}`
+        }
+      };
+    }
   }
 } satisfies NextAuthConfig;
 

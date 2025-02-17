@@ -41,7 +41,7 @@ export const getPlaceByUsername = async (
 export const getPlacesByBusinessId = async (
   client: SupabaseClient,
   businessId: number
-): Promise<PostgrestResponse<Place | null>> => {
+): Promise<PostgrestResponse<Place>> => {
   return client.from('places').select('*').eq('business_id', businessId);
 };
 
@@ -119,4 +119,36 @@ export const getAllPlaces = async (
   }
 
   return data;
+};
+
+export const checkUserPlaceAccess = async (
+  client: SupabaseClient,
+  userId: number,
+  placeId: number
+): Promise<boolean> => {
+  const { data, error } = await client
+    .from('places')
+    .select(
+      `
+      id,
+      business_id,
+      businesses!inner (
+        users!inner (
+          id
+        )
+      )
+    `
+    )
+    .eq('id', placeId)
+    .eq('businesses.users.id', userId)
+    .maybeSingle();
+
+  console.log('data', data);
+  console.log('error', error);
+
+  if (error) {
+    throw error;
+  }
+
+  return data !== null;
 };

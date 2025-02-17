@@ -1,31 +1,5 @@
-import { type ClassValue, clsx } from 'clsx';
+import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-
-// @ts-ignore
-BigInt.prototype.toJSON = function () {
-  return Number(this);
-};
-
-export function convertBigIntToString(obj: any): any {
-  if (typeof obj === 'bigint') {
-    return obj.toString();
-  }
-
-  if (Array.isArray(obj)) {
-    return obj.map(convertBigIntToString);
-  }
-
-  if (typeof obj === 'object' && obj !== null) {
-    return Object.fromEntries(
-      Object.entries(obj).map(([key, value]) => [
-        key,
-        convertBigIntToString(value)
-      ])
-    );
-  }
-
-  return obj;
-}
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -50,11 +24,18 @@ export function formatBytes(
 }
 
 export function humanizeDate(date: string) {
-  return (
-    new Date(date).toLocaleDateString() +
-    ' ' +
-    new Date(date).toLocaleTimeString()
-  );
+  const dateString = new Date(date).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+
+  const timeString = new Date(date).toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: 'numeric'
+  });
+
+  return `${dateString} ${timeString}`;
 }
 
 export function createSlug(input: string): string {

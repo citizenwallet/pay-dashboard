@@ -99,7 +99,9 @@
     "Vat": "Numéro de TVA",
     "Next": "Suivant"
   },
-
+  "Missing": {
+    "noResults": "No results found"
+  },
   "Dashboard": {
     "Overview": {
       "Title": "Overview",
