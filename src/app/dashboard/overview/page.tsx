@@ -1,11 +1,12 @@
 import { searchParamsCache, serialize } from '@/lib/searchparams';
 import { SearchParams } from 'nuqs';
 import { OverviewPage } from '@/app/dashboard/overview/_components/overview-page';
-import { getPlacesByBusinessId } from '@/db/places';
+import { getPlacesByBusinessId, getAllPlaces } from '@/db/places';
 import { getServiceRoleClient } from '@/db';
 import { Suspense } from 'react';
 import { getUserIdFromSession } from '@/actions/session';
 import { getUserBusinessId } from '@/db/users';
+import { isAdmin } from '@/db/users';
 
 export const metadata = {
   title: 'Dashboard: Places'
@@ -33,7 +34,11 @@ async function AsyncPage(props: pageProps) {
   const userId = await getUserIdFromSession();
   const businessId = await getUserBusinessId(client, userId);
 
-  const { data: places } = await getPlacesByBusinessId(client, businessId);
+  const admin = await isAdmin(client, userId);
+
+  const { data: places } = admin
+    ? await getAllPlaces(client)
+    : await getPlacesByBusinessId(client, businessId);
 
   return <OverviewPage key={key} places={places ?? []} />;
 }

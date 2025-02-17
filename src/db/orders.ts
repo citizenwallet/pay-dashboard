@@ -14,6 +14,7 @@ export interface Order {
   completed_at: string | null;
   total: number;
   due: number;
+  fees: number;
   place_id: number;
   items: {
     id: number;
@@ -145,4 +146,19 @@ export const getOrdersByPlace = async (
     )
     .order('created_at', { ascending: false })
     .range(offset, offset + limit);
+};
+
+export const getOrdersByPlaceCount = async (
+  client: SupabaseClient,
+  placeId: number
+): Promise<PostgrestResponse<Order>> => {
+  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+
+  return client
+    .from('orders')
+    .select('*', { count: 'estimated', head: true })
+    .eq('place_id', placeId)
+    .or(
+      `status.eq.paid,and(status.eq.pending,created_at.gte.${fiveMinutesAgo})`
+    );
 };

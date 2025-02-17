@@ -1,6 +1,6 @@
-export function formatCurrencyNumber(amount: number): string {
+export function formatCurrencyNumber(amount: number, decimals = 2): string {
   // Convert from cents to decimal amount
-  const decimalAmount = amount / 100;
+  const decimalAmount = amount / 10 ** decimals;
 
   // Try to get browser locale, fallback to env variable or 'en-US' as last resort
   const locale =

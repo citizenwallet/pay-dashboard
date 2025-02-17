@@ -9,7 +9,7 @@ export interface User {
   name: string;
   avatar: string;
   magic_link: string;
-  usergroup: string;
+  usergroup: 'business' | 'admin';
   linked_business_id: number;
   uuid: string;
   phone: string;
@@ -42,4 +42,18 @@ export const getUserByEmail = async (
   email: string
 ): Promise<PostgrestSingleResponse<User>> => {
   return client.from('users').select('*').eq('email', email).single();
+};
+
+export const isAdmin = async (client: SupabaseClient, userId: number) => {
+  const { data, error } = await client
+    .from('users')
+    .select('usergroup')
+    .eq('id', userId)
+    .single();
+
+  if (error) {
+    return false;
+  }
+
+  return data?.usergroup === 'admin';
 };
