@@ -3,7 +3,6 @@ import { validate } from '@/utils/zod';
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { getTranslations } from 'next-intl/server';
-import { convertBigIntToString } from '@/lib/utils';
 
 const vatCheckSchema = z.object({
   vat: z
@@ -42,5 +41,5 @@ export async function GET(req: NextRequest) {
 
   const data: any = await response.json();
 
-  return Response.json(convertBigIntToString(data));
+  return Response.json(data);
 }

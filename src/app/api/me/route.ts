@@ -5,7 +5,6 @@ import { StatusCodes } from 'http-status-codes';
 import { NextRequest } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import { joinAction } from '@/actions/joinAction';
-import { convertBigIntToString } from '@/lib/utils';
 
 export async function PUT(request: NextRequest) {
   const session = await auth();
@@ -112,12 +111,10 @@ export async function GET() {
     }
   }
 
-  return Response.json(
-    convertBigIntToString({
-      places,
-      user,
-      business: businesses,
-      accounts: placesIds
-    })
-  );
+  return Response.json({
+    places,
+    user,
+    business: businesses,
+    accounts: placesIds
+  });
 }

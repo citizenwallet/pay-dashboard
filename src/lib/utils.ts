@@ -6,11 +6,18 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function humanizeDate(date: string) {
-  return new Date(date).toLocaleDateString('en-US', {
+  const dateString = new Date(date).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric'
   });
+
+  const timeString = new Date(date).toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: 'numeric'
+  });
+
+  return `${dateString} ${timeString}`;
 }
 
 export function createSlug(input: string): string {

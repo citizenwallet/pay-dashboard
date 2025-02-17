@@ -4,7 +4,6 @@ import { auth } from '@/auth';
 import { StatusCodes } from 'http-status-codes';
 import { Transaction } from '@/types/transaction';
 import { NextRequest } from 'next/server';
-import { convertBigIntToString } from '@/lib/utils';
 
 export async function GET(request: NextRequest) {
   const query = request.nextUrl.searchParams;
