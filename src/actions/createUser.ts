@@ -5,7 +5,7 @@ import { UserService } from '@/services/user.service';
 export async function createUser(data: {
   email: string;
   user_id?: string | undefined;
-  linked_business_id?: any;
+  linked_business_id?: number;
   name?: string;
   phone?: string;
   description?: string;

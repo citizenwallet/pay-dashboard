@@ -1,10 +1,7 @@
-import { SearchParams } from 'nuqs/parsers';
 import ProfileViewPage from './_components/profile-view-page';
-import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
 
 type pageProps = {
-  searchParams: SearchParams;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export const metadata = {

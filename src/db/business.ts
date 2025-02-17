@@ -23,3 +23,14 @@ export const createBusiness = async (
 ): Promise<PostgrestSingleResponse<Business>> => {
   return client.from('businesses').insert(business).select().single();
 };
+
+export const getBusinessByToken = async (
+  client: SupabaseClient,
+  token: string
+): Promise<PostgrestSingleResponse<Business>> => {
+  return client
+    .from('businesses')
+    .select('*')
+    .eq('invite_code', token)
+    .single();
+};

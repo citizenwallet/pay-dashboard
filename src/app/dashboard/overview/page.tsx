@@ -35,10 +35,5 @@ async function AsyncPage(props: pageProps) {
 
   const { data: places } = await getPlacesByBusinessId(client, businessId);
 
-  return (
-    <OverviewPage
-      key={key}
-      places={places?.filter((place) => place !== null) ?? []}
-    />
-  );
+  return <OverviewPage key={key} places={places ?? []} />;
 }

@@ -1,3 +1,4 @@
+import { User } from '@/db/users';
 import { prisma } from '@/lib/prisma';
 import { createClient } from '@/lib/supabase/server';
 
@@ -41,13 +42,22 @@ export class UserService {
     });
   }
 
-  async create(data: any) {
+  async create(data: {
+    email: string;
+    user_id?: string | undefined;
+    linked_business_id?: number;
+    name?: string;
+    phone?: string;
+    description?: string;
+    image?: string | undefined;
+    businessId?: bigint;
+  }) {
     return prisma.users.create({
       data
     });
   }
 
-  async upsert(data: any) {
+  async upsert(data: User) {
     const user = await prisma.users.findFirst({
       where: {
         email: data.email

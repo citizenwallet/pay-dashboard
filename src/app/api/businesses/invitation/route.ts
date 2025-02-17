@@ -3,24 +3,27 @@ import { validate } from '@/utils/zod';
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { getTranslations } from 'next-intl/server';
-import { BusinessService } from '@/services/business.service';
 import { NextResponse } from 'next/server';
 import { StatusCodes, ReasonPhrases } from 'http-status-codes';
 import { createUser } from '@/actions/createUser';
 import { UserService } from '@/services/user.service';
-import { createClient } from '@/lib/supabase/server';
+import { getServiceRoleClient } from '@/db';
+import { getBusinessByToken } from '@/db/business';
+import { getUserByEmail } from '@/db/users';
 
 const vatCheckSchema = z.object({
   token: z.string().min(8, 'Token must be at least 8 characters')
 });
 
 export async function GET(req: NextRequest) {
-  const t = await getTranslations();
+  const t = (await getTranslations()) as (
+    key: string,
+    values?: Record<string, string | number>
+  ) => string;
   const searchParams = req.nextUrl.searchParams;
-  const service = new BusinessService();
   const userService = new UserService();
+
   const token = searchParams.get('token');
-  const supabase = await createClient();
 
   if (!token) {
     return NextResponse.json(
@@ -39,18 +42,18 @@ export async function GET(req: NextRequest) {
     {
       token: token || ''
     },
-    t as any
+    t
   );
 
   if (!result.success) {
     return Response.json({ errors: result });
   }
 
-  const business = await service.getBusinessByToken(
-    searchParams.get('token') || ''
-  );
+  const client = getServiceRoleClient();
 
-  if (!business) {
+  const { data: business, error } = await getBusinessByToken(client, token);
+
+  if (error || !business) {
     return NextResponse.json(
       {
         status: StatusCodes.NOT_FOUND, // 404
@@ -65,12 +68,16 @@ export async function GET(req: NextRequest) {
   // Check if a user has been created or not
 
   if (business.email) {
-    const userResponse = await supabase.auth.getUser();
-    const user = await userService.getUserByEmail(business.email);
+    const { data: user, error: userError } = await getUserByEmail(
+      client,
+      business.email
+    );
 
     console.log('user', user);
 
-    if (!user) {
+    if (userError || !user) {
+      const userResponse = await client.auth.getUser();
+
       await createUser({
         email: business.email,
         linked_business_id: business.id,

@@ -41,7 +41,7 @@ export const getPlaceByUsername = async (
 export const getPlacesByBusinessId = async (
   client: SupabaseClient,
   businessId: number
-): Promise<PostgrestResponse<Place | null>> => {
+): Promise<PostgrestResponse<Place>> => {
   return client.from('places').select('*').eq('business_id', businessId);
 };
 

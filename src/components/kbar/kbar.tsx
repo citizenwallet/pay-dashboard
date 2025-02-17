@@ -10,7 +10,7 @@ import {
 } from 'kbar';
 import useSWR from 'swr';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import RenderResults from './render-result';
 import useThemeSwitching from './use-theme-switching';
 
@@ -29,12 +29,8 @@ export default function KBar({ children }: { children: React.ReactNode }) {
     fetch(url).then((res) => res.json())
   );
 
-  const navigateTo = (url: string) => {
-    router.push(url);
-  };
-
   // These action are for the navigation
-  const loadActions = async () => {
+  const loadActions = useCallback(async () => {
     let searchData: Action[] = [];
 
     if (data?.results) {
@@ -46,7 +42,7 @@ export default function KBar({ children }: { children: React.ReactNode }) {
         keywords: [result.title.toLowerCase()],
         section: 'Search',
         subtitle: `Go to ${result.title}`,
-        perform: () => navigateTo(`/dashboard/guides/${result.guideid}`)
+        perform: () => router.push(`/dashboard/guides/${result.guideid}`)
       }));
     }
 
@@ -62,7 +58,7 @@ export default function KBar({ children }: { children: React.ReactNode }) {
                 keywords: navItem.title.toLowerCase(),
                 section: 'Navigation',
                 subtitle: `Go to ${navItem.title}`,
-                perform: () => navigateTo(navItem.url)
+                perform: () => router.push(navItem.url)
               }
             : null;
 
@@ -74,7 +70,7 @@ export default function KBar({ children }: { children: React.ReactNode }) {
             keywords: childItem.title.toLowerCase(),
             section: navItem.title,
             subtitle: `Go to ${childItem.title}`,
-            perform: () => navigateTo(childItem.url)
+            perform: () => router.push(childItem.url)
           })) ?? [];
 
         // Return only valid actions (ignoring null base actions for containers)
@@ -83,11 +79,11 @@ export default function KBar({ children }: { children: React.ReactNode }) {
     ];
 
     setActions(items);
-  };
+  }, [data, router]);
 
   useEffect(() => {
     loadActions();
-  }, [search]);
+  }, [search, loadActions]);
 
   return (
     <KBarProvider

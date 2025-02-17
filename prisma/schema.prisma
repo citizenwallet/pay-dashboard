@@ -19,7 +19,7 @@ model a_profiles {
   image_small                                       String           @default("")
   token_id                                          String           @default("")
   updated_at                                        DateTime         @default(now()) @db.Timestamp(6)
-  place_id                                          BigInt?
+  place_id                                          Int?
   a_interactions_a_interactions_accountToa_profiles a_interactions[] @relation("a_interactions_accountToa_profiles")
   a_interactions_a_interactions_withToa_profiles    a_interactions[] @relation("a_interactions_withToa_profiles")
   places                                            places?          @relation(fields: [place_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -46,7 +46,7 @@ model a_transactions {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model businesses {
-  id              BigInt           @id(map: "Businesses_pkey") @default(autoincrement())
+  id              Int              @id(map: "Businesses_pkey") @default(autoincrement())
   created_at      DateTime         @default(now()) @db.Timestamptz(6)
   name            String?
   status          String?
@@ -68,39 +68,39 @@ model businesses {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model old_Accounts {
-  address                                  String       @id(map: "Accounts_pkey")
-  account_name                             String?
-  status                                   String?
-  TransactionsFrom                         String?
-  TransactionsTo                           String?
-  wallet_type                              String?
-  linked_user_id                           BigInt?
-  users                                    users?       @relation(fields: [linked_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Accounts_linked_user_id_fkey")
+  address          String  @id(map: "Accounts_pkey")
+  account_name     String?
+  status           String?
+  TransactionsFrom String?
+  TransactionsTo   String?
+  wallet_type      String?
+  linked_user_id   Int?
+  users            users?  @relation(fields: [linked_user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Accounts_linked_user_id_fkey")
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model old_ledger {
-  TransactionHash                            String
-  DateTime                                   DateTime?     @db.Timestamp(6)
-  From                                       String?
-  To                                         String?
-  Amount                                     Float?
-  Status                                     String?
-  Description                                String?
-  blockexplorer_URL                          String?       @map("blockexplorer URL")
-  Method                                     String?
-  Blocknumber                                BigInt?
-  UnixTimestamp                              BigInt?
-  Error                                      String?
-  To_account_name                            String?       @map("To account name")
-  From_account_name                          String?       @map("From account name")
-  Amount_with_symbol                         String?       @map("Amount with symbol")
-  ChainID                                    String?
-  Source                                     String?
-  From___file_import                         String?       @map("From - file import")
-  To___file_import                           String?       @map("To - file import")
+  TransactionHash    String
+  DateTime           DateTime? @db.Timestamp(6)
+  From               String?
+  To                 String?
+  Amount             Float?
+  Status             String?
+  Description        String?
+  blockexplorer_URL  String?   @map("blockexplorer URL")
+  Method             String?
+  Blocknumber        Int?
+  UnixTimestamp      Int?
+  Error              String?
+  To_account_name    String?   @map("To account name")
+  From_account_name  String?   @map("From account name")
+  Amount_with_symbol String?   @map("Amount with symbol")
+  ChainID            String?
+  Source             String?
+  From___file_import String?   @map("From - file import")
+  To___file_import   String?   @map("To - file import")
 
   @@ignore
 }
@@ -108,13 +108,13 @@ model old_ledger {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model orders {
-  id           BigInt      @id @default(autoincrement())
+  id           Int         @id @default(autoincrement())
   created_at   DateTime    @default(now()) @db.Timestamptz(6)
-  total        BigInt?
-  due          BigInt?
+  total        Int?
+  due          Int?
   items        Json?
   status       String?
-  place_id     BigInt?
+  place_id     Int?
   completed_at String?
   description  String?
   tx_hash      String?
@@ -127,10 +127,10 @@ model orders {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model places {
-  id          BigInt       @id(map: "establishments_pkey") @default(autoincrement())
+  id          Int          @id(map: "establishments_pkey") @default(autoincrement())
   created_at  DateTime     @default(now()) @db.Timestamptz(6)
   name        String?
-  business_id BigInt?
+  business_id Int?
   slug        String?      @unique
   accounts    Json?        @default("[]")
   invite_code String?
@@ -147,11 +147,11 @@ model places {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model pos_items {
-  id          BigInt   @id @unique @default(autoincrement())
+  id          Int      @id @unique @default(autoincrement())
   created_at  DateTime @default(now()) @db.Timestamptz(6)
-  place_id    BigInt?
+  place_id    Int?
   image       String?
-  price       BigInt?
+  price       Int?
   name        String?
   category    String?
   vat         Int?
@@ -236,14 +236,14 @@ model t_sponsors_100 {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model users {
-  id                 BigInt         @id(map: "Users_pkey") @default(autoincrement())
+  id                 Int            @id(map: "Users_pkey") @default(autoincrement())
   created_at         DateTime       @default(now()) @db.Timestamptz(6)
   email              String?        @unique
   name               String?
   avatar             String?
   magic_link         String?
   usergroup          String?
-  linked_business_id BigInt?
+  linked_business_id Int?
   uuid               String?        @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   phone              String?
   description        String?
@@ -274,7 +274,7 @@ model a_interactions {
 
 model invitations {
   id          Int         @id @default(autoincrement())
-  business_id BigInt?
+  business_id Int?
   email       String      @db.VarChar(255)
   token       String      @unique @db.Uuid
   status      String?     @default("pending") @db.VarChar(50)

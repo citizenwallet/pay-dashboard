@@ -8,7 +8,6 @@ import { ArrowLeft } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import React from 'react';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
 import { DataTable } from '@/components/ui/data-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { Place } from '@/db/places';
@@ -77,8 +76,6 @@ export const OrdersPage: React.FC<Props> = ({
   orders,
   currencyLogo
 }) => {
-  const t = useTranslations();
-
   return (
     <PageContainer>
       <div className="space-y-4">

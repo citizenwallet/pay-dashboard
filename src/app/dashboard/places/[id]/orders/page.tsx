@@ -11,9 +11,9 @@ export const metadata = {
 };
 
 interface Props {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function Page(props: Props) {
@@ -26,7 +26,8 @@ export default async function Page(props: Props) {
 
 async function AsyncPage({ params }: Props) {
   const client = getServiceRoleClient();
-  const placeId = parseInt(params.id);
+  const { id } = await params;
+  const placeId = parseInt(id);
 
   const [place, ordersResponse] = await Promise.all([
     getPlaceById(client, placeId),

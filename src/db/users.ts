@@ -36,3 +36,10 @@ export const getUserBusinessId = async (
 
   return data?.linked_business_id as number;
 };
+
+export const getUserByEmail = async (
+  client: SupabaseClient,
+  email: string
+): Promise<PostgrestSingleResponse<User>> => {
+  return client.from('users').select('*').eq('email', email).single();
+};
