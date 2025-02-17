@@ -42,7 +42,11 @@ export const getPlacesByBusinessId = async (
   client: SupabaseClient,
   businessId: number
 ): Promise<PostgrestResponse<Place>> => {
-  return client.from('places').select('*').eq('business_id', businessId);
+  return client
+    .from('places')
+    .select('*')
+    .eq('business_id', businessId)
+    .order('id', { ascending: true });
 };
 
 export const getPlaceByTerminalId = async (
@@ -104,21 +108,13 @@ export const createPlace = async (
 // TODO: add pagination
 export const getAllPlaces = async (
   client: SupabaseClient
-): Promise<
-  Pick<Place, 'id' | 'name' | 'slug' | 'image' | 'accounts' | 'description'>[]
-> => {
+): Promise<PostgrestResponse<Place>> => {
   const placesQuery = client
     .from('places')
-    .select('id, name, slug, image, accounts ,description')
+    .select('*')
     .order('id', { ascending: true });
 
-  const { data, error } = await placesQuery;
-
-  if (error) {
-    throw error;
-  }
-
-  return data;
+  return placesQuery;
 };
 
 export const checkUserPlaceAccess = async (
@@ -147,7 +143,7 @@ export const checkUserPlaceAccess = async (
   console.log('error', error);
 
   if (error) {
-    throw error;
+    return false;
   }
 
   return data !== null;

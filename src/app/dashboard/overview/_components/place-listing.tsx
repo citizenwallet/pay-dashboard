@@ -3,9 +3,9 @@
 import { DataTable } from '@/components/ui/data-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { Place } from '@/db/places';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 type PlaceRow = Pick<
   Place,
@@ -15,7 +15,17 @@ type PlaceRow = Pick<
 const columns: ColumnDef<PlaceRow>[] = [
   {
     accessorKey: 'name',
-    header: 'Name'
+    header: 'Name',
+    cell: ({ row }) => {
+      return (
+        <Link
+          href={`/dashboard/places/${row.original.id}/orders`}
+          className="hover:underline"
+        >
+          {row.original.name}
+        </Link>
+      );
+    }
   },
   {
     accessorKey: 'description',
