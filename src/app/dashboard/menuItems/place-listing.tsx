@@ -12,7 +12,7 @@ export default  function PlaceListing({ places }: { places: Place[] }) {
                     accessorKey: "name",
                     header: "Name",
                     cell: ({ row }) => (
-                        <Link href={`/dashboard/places/${row.original.id}/orders`} className="hover:underline">
+                        <Link href={`/dashboard/menuItems/${row.original.id}/item`} className="hover:underline">
                             {row.original.name}
                         </Link>
                     )
