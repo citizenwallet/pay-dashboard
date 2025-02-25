@@ -8,6 +8,8 @@ import {
 
 
 export interface Item {
+  order: number;
+  position: any;
   id: number;
   created_at: string;
   place_id: number;
@@ -94,3 +96,16 @@ export const UpdateItem = async (
     .single();
 };
 
+export const UpdateItemOrder = async (
+  client: SupabaseClient,
+  place_id: number,
+  items: { id: number, order: number }
+): Promise<PostgrestSingleResponse<Item>> => {
+  return client
+      .from('pos_items')
+      .update({ order: items.order })
+      .eq('place_id', place_id)
+      .eq('id', items.id)
+      .select()
+      .single();
+};
