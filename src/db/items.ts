@@ -1,6 +1,11 @@
 import 'server-only';
 
-import { PostgrestResponse, SupabaseClient } from '@supabase/supabase-js';
+import {
+  PostgrestResponse,
+  PostgrestSingleResponse,
+  SupabaseClient
+} from '@supabase/supabase-js';
+
 
 export interface Item {
   id: number;
@@ -23,4 +28,29 @@ export const getItemsForPlace = async (
     .select('*')
     .eq('place_id', placeId)
     .order('order', { ascending: true });
+};
+
+export const InsertItem = async (
+  client: SupabaseClient,
+  name: string,
+  description: string,
+  image: string,
+  price: number,
+  vat: number,
+  category: string,
+  place_id: number,
+): Promise<PostgrestSingleResponse<Item>> => {
+  return client
+    .from('pos_items')
+    .insert({
+      name,
+      description,
+      image,
+      price,
+      vat,
+      category,
+      place_id,
+    })
+    .select()
+    .single();
 };
