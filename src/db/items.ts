@@ -54,3 +54,16 @@ export const InsertItem = async (
     .select()
     .single();
 };
+
+
+export const DeleteItem = async (
+  client: SupabaseClient,
+  id: number
+): Promise<PostgrestSingleResponse<Item>> => {
+  return client
+    .from('pos_items')
+    .delete()
+    .eq('id', id)
+    .select()
+    .single();
+};
