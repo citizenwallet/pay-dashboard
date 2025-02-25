@@ -77,10 +77,10 @@ export default function ItemListing({ Items }: { Items: Item[] }) {
                     header: "Action",
                     cell: ({ row }) => (
                         <div className="flex items-center gap-2">
-                            <Link href={`/dashboard/menuItems/${row.original.id}/item`} className="hover:text-blue-600">
+                            <Link href={`/dashboard/menuItems/${row.original.place_id}/item/${row.original.id}`} className="hover:text-blue-600">
                                 <icons.Eye size={20} />
                             </Link>
-                            <Link href={`/dashboard/menuItems/${row.original.id}/edit`} className="hover:text-yellow-600">
+                            <Link href={`/dashboard/menuItems/${row.original.place_id}/edit/${row.original.id}`} className="hover:text-yellow-600">
                                 <icons.Pen size={20} />
                             </Link>
                             <button

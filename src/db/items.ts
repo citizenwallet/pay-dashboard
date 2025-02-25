@@ -67,3 +67,17 @@ export const DeleteItem = async (
     .select()
     .single();
 };
+
+export const getItemById = async (
+  client: SupabaseClient,
+  place_id: number,
+  item_id: number
+): Promise<PostgrestSingleResponse<Item>> => {
+  return client
+    .from('pos_items')
+    .select('*')
+    .eq('place_id', place_id)
+    .eq('id', item_id)
+    .single();
+};
+

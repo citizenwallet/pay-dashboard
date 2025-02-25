@@ -1,6 +1,6 @@
 "use server"
 import { getServiceRoleClient } from '@/db';
-import { DeleteItem, getItemsForPlace } from '@/db/items';
+import { DeleteItem, getItemById, getItemsForPlace } from '@/db/items';
 
 
 export async function getItems(place_id: string) {
@@ -14,3 +14,6 @@ export async function deleteItem(id: number) {
     const item = await DeleteItem(client, id);
     return item;
 }
+
+
+
