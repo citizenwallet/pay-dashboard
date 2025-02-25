@@ -81,3 +81,16 @@ export const getItemById = async (
     .single();
 };
 
+export const UpdateItem = async (
+  client: SupabaseClient,
+  id: number,
+  data: Partial<Item>
+): Promise<PostgrestSingleResponse<Item>> => {
+  return client
+    .from('pos_items')
+    .update(data)
+    .eq('id', id)
+    .select()
+    .single();
+};
+
