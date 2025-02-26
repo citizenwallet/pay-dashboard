@@ -98,9 +98,29 @@ export const getItemById = async (
 export const UpdateItem = async (
   client: SupabaseClient,
   id: number,
-  data: Partial<Item>
-): Promise<PostgrestSingleResponse<Item>> => {
-  return client.from('pos_items').update(data).eq('id', id).select().single();
+  item: Partial<Item>,
+  image: File | null,
+  user_id: number
+) => {
+
+  const business_id = await getUserBusinessId(client, user_id);
+  let url = item.image;
+  if (image) {
+    const fileName = `${Date.now()}-${image.name}`;
+    const { data, error } = await client.storage
+      .from(`uploads/${business_id}/${item.place_id}`)
+      .upload(fileName, image);
+
+    if (error) {
+      throw error;
+    }
+    url = await client.storage
+      .from(`uploads/${business_id}/${item.place_id}`)
+      .getPublicUrl(fileName).data.publicUrl;
+  }
+  item.image = url;
+
+  return client.from('pos_items').update(item).eq('id', id).select().single();
 };
 
 export const UpdateItemOrder = async (
