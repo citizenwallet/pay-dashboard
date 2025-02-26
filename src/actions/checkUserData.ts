@@ -13,7 +13,7 @@ import { upsertUser } from './upsertUser';
  * @param authRes
  */
 export async function checkUserData(data: Partial<User>, authRes: any) {
-  const supabase = await getServiceRoleClient();
+  const supabase = getServiceRoleClient();
   const userDb = await supabase
     .from('users')
     .select()

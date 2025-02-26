@@ -6,7 +6,7 @@ import { getServiceRoleClient } from '@/db';
 import Config from '@/cw/community.json';
 import { CommunityConfig, getAccountBalance } from '@citizenwallet/sdk';
 import { isAdmin } from '@/db/users';
-import { getUserIdFromSession } from '@/actions/session';
+import { getUserIdFromSessionAction } from '@/actions/session';
 
 export const metadata = {
   title: 'Place Orders'
@@ -35,7 +35,7 @@ async function AsyncPage({ params, searchParams }: Props) {
   const { id } = await params;
   const placeId = parseInt(id);
 
-  const userId = await getUserIdFromSession();
+  const userId = await getUserIdFromSessionAction();
 
   const admin = await isAdmin(client, userId);
   if (!admin) {

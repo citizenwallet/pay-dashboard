@@ -57,8 +57,10 @@ export const company = {
 };
 
 export default function AppSidebar({
+  isAdmin,
   children
 }: {
+  isAdmin: boolean;
   children: React.ReactNode;
 }) {
   const [mounted, setMounted] = React.useState(false);
@@ -76,6 +78,11 @@ export default function AppSidebar({
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon">
+        {isAdmin && (
+          <div className="align-center flex w-full justify-center bg-orange-500 text-sm font-normal">
+            SYSTEM ADMIN
+          </div>
+        )}
         <SidebarHeader>
           <div className="flex gap-2 py-2 text-sidebar-accent-foreground ">
             <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
