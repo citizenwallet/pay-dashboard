@@ -148,3 +148,14 @@ export const checkUserPlaceAccess = async (
 
   return data !== null;
 };
+
+export const getAllPlacesByUserId = async (
+  client: SupabaseClient,
+  userId: number
+): Promise<PostgrestResponse<Place>> => {
+  const data = await client.from('users').select('linked_business_id').eq('id', userId);
+  const business_id = data.data?.[0]?.linked_business_id;
+  const placesQuery = client.from('places').select('*').eq('business_id', business_id);
+  return placesQuery;
+};
+
