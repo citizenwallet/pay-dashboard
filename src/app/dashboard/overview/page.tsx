@@ -4,7 +4,7 @@ import { OverviewPage } from '@/app/dashboard/overview/_components/overview-page
 import { getPlacesByBusinessId, getAllPlaces } from '@/db/places';
 import { getServiceRoleClient } from '@/db';
 import { Suspense } from 'react';
-import { getUserIdFromSession } from '@/actions/session';
+import { getUserIdFromSessionAction } from '@/actions/session';
 import { getUserBusinessId } from '@/db/users';
 import { isAdmin } from '@/db/users';
 
@@ -31,7 +31,7 @@ async function AsyncPage(props: pageProps) {
 
   const client = getServiceRoleClient();
 
-  const userId = await getUserIdFromSession();
+  const userId = await getUserIdFromSessionAction();
   const businessId = await getUserBusinessId(client, userId);
 
   const admin = await isAdmin(client, userId);
