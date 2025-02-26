@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { deleteItem, updateItemOrder } from "./action";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function ItemListing({ Items: initialItems }: { Items: Item[] }) {
   const [items, setItems] = useState<Item[]>(initialItems);
@@ -19,19 +20,24 @@ export default function ItemListing({ Items: initialItems }: { Items: Item[] }) 
   const originalOrder = initialItems.map((item, index) => ({ id: item.id, position: item.order }));
 
   useEffect(() => {
-    // Compare current order with original order after items change
+    // Prevent unnecessary updates by checking if there are actual changes
     const newPositions = items.map((item) => ({ id: item.id, position: item.order }));
     const changes: Record<number, { from: number; to: number }> = {};
+    let hasChanges = false;
 
     newPositions.forEach((newPos) => {
       const originalPos = originalOrder.find((o) => o.id === newPos.id)?.position;
       if (originalPos !== undefined && originalPos !== newPos.position) {
         changes[newPos.id] = { from: originalPos, to: newPos.position };
+        hasChanges = true;
       }
     });
 
-    setChangedPositions(changes);
-  }, [items]);
+    // Only update state if there are actual changes
+    if (hasChanges) {
+      setChangedPositions(changes);
+    }
+  }, [items, originalOrder]);
 
   const handleDragStart = (id: number) => {
     setDraggingItem(id);
@@ -146,7 +152,9 @@ export default function ItemListing({ Items: initialItems }: { Items: Item[] }) 
               </td>
 
               <td className="border p-2">
-                <img src={item.image} alt={item.name} width={50} height={50} />
+                {item.image && (
+                  <Image src={item.image} alt={item.name} width={50} height={50} />
+                )}
               </td>
               <td className="border p-2">{item.name}</td>
               <td className="border p-2">{item.description}</td>

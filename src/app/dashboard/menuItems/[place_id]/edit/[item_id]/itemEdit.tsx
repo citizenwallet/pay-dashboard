@@ -21,6 +21,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { updateItem } from "./action";
+import Image from "next/image";
 
 // Define Item Type
 interface Item {
@@ -156,7 +157,7 @@ export default function ItemEdit({ item }: { item: Item }) {
             </FormControl>
             {previewUrl && (
               <div className="mt-2 relative">
-                <img src={previewUrl} alt="Preview" className="max-w-xs h-auto" />
+                <Image src={previewUrl} width={200} height={200} alt="Preview" className="max-w-xs h-auto" />
                 <Button
                   variant="destructive"
                   size="sm"

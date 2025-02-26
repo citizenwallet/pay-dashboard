@@ -41,5 +41,5 @@ export default async function page() {
 
 async function placeListloader() {
     const places = await getAllPlacesData();
-    return <PlaceListing places={places.data} />;
+    return <PlaceListing places={places.data ?? []} />;
 }

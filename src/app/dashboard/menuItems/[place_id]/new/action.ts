@@ -10,7 +10,7 @@ const { auth } = NextAuth(authConfig);
 export default interface createItemschema {
   name: string;
   description: string;
-  image: File | null;
+  image: File;
   price: number;
   vat: number;
   category: string;

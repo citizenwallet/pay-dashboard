@@ -6,10 +6,10 @@ import {
   SupabaseClient
 } from '@supabase/supabase-js';
 import { getUserBusinessId } from './users';
+import { Place } from './places';
 
 export interface Item {
   order: number;
-  position: any;
   id: number;
   created_at: string;
   place_id: number;
@@ -26,7 +26,7 @@ export const getItemsForPlace = async (
   placeId: number,
   userId: number
 ): Promise<PostgrestResponse<Item>> => {
-  const hasAccess = await checkItemAccess(client, placeId, userId);
+  const hasAccess:boolean = await checkItemAccess(client, placeId, userId);
   if (!hasAccess) {
     throw new Error('User does not have access to this place');
   }
@@ -41,7 +41,7 @@ export const InsertItem = async (
   client: SupabaseClient,
   name: string,
   description: string,
-  image: File | null,
+  image: File,
   price: number,
   vat: number,
   category: string,
@@ -170,6 +170,6 @@ export const checkItemAccess = async (
   const data = await client.from('users').select('linked_business_id').eq('id', userId);
   const business_id = data.data?.[0]?.linked_business_id;
   const placesQuery = client.from('places').select('*').eq('business_id', business_id);
-  const place_ids = (await placesQuery).data?.map((place: any) => place.id) || [];
+  const place_ids = (await placesQuery).data?.map((place: Place) => place.id) || [];
   return place_ids.includes(placeId);
 };

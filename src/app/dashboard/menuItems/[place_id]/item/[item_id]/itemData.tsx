@@ -2,6 +2,7 @@
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Item } from '@/db/items'
+import Image from 'next/image'
 import React from 'react'
 
 
@@ -31,7 +32,9 @@ export default function ItemListing({ item }: { item: Item }) {
 
             <div>
                 <label className="text-sm font-medium">Image</label>
-                <img src={item.image} alt="Item Image" width={100} height={100} />
+                {item.image && (
+                    <Image src={item.image} alt="Item Image" width={200} height={200} />
+                )}
             </div>
             <div>
                 <label className="text-sm font-medium">Description</label>

@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { use } from "react";
 import { creatItem } from "./action";
+import Image from "next/image";
 
 // Updated schema without the image field
 const formSchema = z.object({
@@ -55,7 +56,13 @@ export default function NewItemPage({ params }: { params: Promise<{ place_id: st
   const onSubmit = async (data: FormValues) => {
     try {
       setLoading(true);
-      
+
+      if (!imageFile) {
+        toast.error("Please upload an image");
+        setLoading(false);
+        return;
+      }
+
       const response = await creatItem({
         ...data,
         place_id: place_id,
@@ -178,7 +185,7 @@ export default function NewItemPage({ params }: { params: Promise<{ place_id: st
                   </FormControl>
                   {previewUrl && (
                     <div className="mt-2 relative">
-                      <img src={previewUrl} alt="Preview" className="max-w-xs h-auto" />
+                      <Image src={previewUrl} alt="Preview" width={200} height={200} className="max-w-xs h-auto" />
                       <Button
                         variant="destructive"
                         size="sm"
