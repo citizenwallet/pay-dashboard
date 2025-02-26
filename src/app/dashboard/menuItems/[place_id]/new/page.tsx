@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import PageContainer from "@/components/layout/page-container";
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
@@ -19,16 +19,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-
 import { use } from "react";
 import { creatItem } from "./action";
 
-
-
+// Updated schema without the image field
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
-  image: z.string(),
   price: z.coerce.number().min(0, "Price must be a positive number"),
   vat: z.coerce.number().min(0, "VAT must be a positive number"),
   category: z.string().min(1, "Category is required"),
@@ -38,6 +35,8 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function NewItemPage({ params }: { params: Promise<{ place_id: string }> }) {
   const [loading, setLoading] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const resolvedParams = use(params);
   const place_id = parseInt(resolvedParams.place_id);
   const router = useRouter();
@@ -47,7 +46,6 @@ export default function NewItemPage({ params }: { params: Promise<{ place_id: st
     defaultValues: {
       name: "",
       description: "",
-      image: "https://ounjigiydhimruivuxjv.supabase.co/storage/v1/object/public/uploads/fridge/zinnebir.png",
       price: 0,
       vat: 0,
       category: "",
@@ -57,23 +55,24 @@ export default function NewItemPage({ params }: { params: Promise<{ place_id: st
   const onSubmit = async (data: FormValues) => {
     try {
       setLoading(true);
-      const respose = await creatItem({
+      
+      const response = await creatItem({
         ...data,
-        place_id: place_id
+        place_id: place_id,
+        image: imageFile,  
       });
-      if (respose.error) {
-        toast.error(respose.error.message);
+
+      if (response.error) {
+        toast.error(response.error.message);
       } else {
-        toast.success('Item created successfully');
-        // form.reset();
+        toast.success("Item created successfully");
         router.push(`/dashboard/menuItems/${place_id}/item`);
       }
-
     } catch (error: unknown) {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error('An unexpected error occurred');
+        toast.error("An unexpected error occurred");
       }
     } finally {
       setLoading(false);
@@ -161,19 +160,41 @@ export default function NewItemPage({ params }: { params: Promise<{ place_id: st
                   )}
                 />
 
-                {/* <FormField
-                  control={form.control}
-                  name="image"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Image URL</FormLabel>
-                      <FormControl>
-                        <Input disabled={loading} placeholder="Image URL" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+                <FormItem>
+                  <FormLabel>Upload Image</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      disabled={loading}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setImageFile(file);
+                          setPreviewUrl(URL.createObjectURL(file));
+                        }
+                      }}
+                    />
+                  </FormControl>
+                  {previewUrl && (
+                    <div className="mt-2 relative">
+                      <img src={previewUrl} alt="Preview" className="max-w-xs h-auto" />
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="absolute top-0 left-0"
+                        onClick={() => {
+                          if (previewUrl) URL.revokeObjectURL(previewUrl);
+                          setImageFile(null);
+                          setPreviewUrl(null);
+                        }}
+                      >
+                        X
+                      </Button>
+                    </div>
                   )}
-                /> */}
+                  <FormMessage />
+                </FormItem>
 
                 <FormField
                   control={form.control}
