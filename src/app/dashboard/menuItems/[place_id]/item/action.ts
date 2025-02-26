@@ -1,19 +1,25 @@
 "use server"
-import { OrdersPage } from '@/app/dashboard/places/[id]/orders/_components/orders-page';
+
 import { getServiceRoleClient } from '@/db';
 import { DeleteItem, getItemById, getItemsForPlace, UpdateItemOrder } from '@/db/items';
-import { Apple } from 'lucide-react';
 
+
+import NextAuth from 'next-auth';
+import authConfig from '@/auth.config';
+
+const { auth } = NextAuth(authConfig);
 
 export async function getItems(place_id: string) {
     const client = getServiceRoleClient();
-    const items = await getItemsForPlace(client, Number(place_id));
+    const user = await auth();
+    const items = await getItemsForPlace(client, Number(place_id), Number(user?.user?.id));
     return items;
 }
 
-export async function deleteItem(id: number) {
+export async function deleteItem(id: number, place_id: number) {
+    const user = await auth();
     const client = getServiceRoleClient();
-    const item = await DeleteItem(client, id);
+    const item = await DeleteItem(client, id, place_id, Number(user?.user?.id));
     return item;
 }
 

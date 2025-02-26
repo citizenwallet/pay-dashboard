@@ -81,7 +81,7 @@ export default function ItemListing({ Items: initialItems }: { Items: Item[] }) 
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: number, place_id: number) => {
     try {
       const item = items.find((item) => item.id === id);
       if (!item) return;
@@ -96,7 +96,7 @@ export default function ItemListing({ Items: initialItems }: { Items: Item[] }) 
               className="bg-red-600 hover:bg-red-700 text-white ml-4"
               onClick={async () => {
                 toast.dismiss(t);
-                const response = await deleteItem(id);
+                const response = await deleteItem(id, place_id);
                 if (response.error) {
                   toast.error("Failed to delete item");
                 } else {
@@ -166,7 +166,7 @@ export default function ItemListing({ Items: initialItems }: { Items: Item[] }) 
                     <icons.Pen size={20} />
                   </Link>
                   <button
-                    onClick={() => handleDelete(item.id)}
+                    onClick={() => handleDelete(item.id, item.place_id)}
                     className="hover:text-red-600"
                     disabled={loading === item.id}
                   >
