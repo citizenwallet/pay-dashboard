@@ -20,7 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { updateItem } from "./action";
+import { updateItems } from "./action";
 import Image from "next/image";
 
 // Define Item Type
@@ -84,7 +84,7 @@ export default function ItemEdit({ item }: { item: Item }) {
   const onSubmit = async (data: FormValues) => {
     try {
       setLoading(true);
-      const updatedItem = await updateItem(item.id, { ...item, ...data }, imageFile);
+      const updatedItem = await updateItems(item.id, { ...item, ...data }, imageFile);
 
       if (updatedItem.error) {
         toast.error(updatedItem.error.message);

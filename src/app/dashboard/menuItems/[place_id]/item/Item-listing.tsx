@@ -5,7 +5,7 @@ import { icons } from "lucide-react";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { deleteItem, updateItemOrder } from "./action";
+import { deletePlaceItem, updateItemOrderInPlace } from "./action";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
@@ -65,9 +65,7 @@ export default function ItemListing({ Items: initialItems }: { Items: Item[] }) 
 
     const draggedItem = newItems[targetIndex];
     const targetItem = newItems[draggingIndex];
-    // console.log(
-    //   `Moved "${draggedItem.name}" from position ${draggingIndex + 1} to ${targetIndex + 1}`
-    // );
+
 
 
 
@@ -79,7 +77,7 @@ export default function ItemListing({ Items: initialItems }: { Items: Item[] }) 
         item.order = index + 1; // Update the item's position
       }
     });
-    const response = await updateItemOrder(items[0].place_id, positions);
+    const response = await updateItemOrderInPlace(items[0].place_id, positions);
     if (response.success) {
       toast.success("Item order updated successfully");
     } else {
@@ -102,7 +100,7 @@ export default function ItemListing({ Items: initialItems }: { Items: Item[] }) 
               className="bg-red-600 hover:bg-red-700 text-white ml-4"
               onClick={async () => {
                 toast.dismiss(t);
-                const response = await deleteItem(id, place_id);
+                const response = await deletePlaceItem(id, place_id);
                 if (response.error) {
                   toast.error("Failed to delete item");
                 } else {
