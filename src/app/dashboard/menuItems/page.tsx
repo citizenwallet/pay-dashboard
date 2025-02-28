@@ -5,7 +5,7 @@ import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
 import React, { Suspense } from 'react';
 import { DataTable } from '@/components/ui/data-table';
-import { getAllPlacesData } from './action';
+import { getAllPlacesDataAction } from './action';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
 import { Place } from '@/db/places';
 import Link from 'next/link';
@@ -40,6 +40,6 @@ export default async function page() {
 
 
 async function placeListloader() {
-    const places = await getAllPlacesData();
+    const places = await getAllPlacesDataAction();
     return <PlaceListing places={places.data ?? []} />;
 }

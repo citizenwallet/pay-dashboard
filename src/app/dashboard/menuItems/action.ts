@@ -7,7 +7,7 @@ import authConfig from '@/auth.config';
 
 const { auth } = NextAuth(authConfig);
 
-export async function getAllPlacesData(){
+export async function getAllPlacesDataAction(){
     const client = getServiceRoleClient();
     const user = await auth();
     const places = await getAllPlacesByUserId(client, Number(user?.user?.id));

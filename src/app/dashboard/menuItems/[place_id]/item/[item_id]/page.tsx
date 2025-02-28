@@ -3,7 +3,7 @@ import PageContainer from "@/components/layout/page-container";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@radix-ui/react-separator";
 import { Suspense } from "react";
-import { getItem } from "./action";
+import { getItemAction } from "./action";
 import ItemListing from "./itemData";
 
 export default async function ViewItem({ params }: { params: { place_id: string, item_id: string } }) {
@@ -29,7 +29,7 @@ export default async function ViewItem({ params }: { params: { place_id: string,
 }
 
 async function ItemDetailsLoader({ resolvedParams }: { resolvedParams: { place_id: string, item_id: string } }) {
-    const item = await getItem(resolvedParams.place_id, resolvedParams.item_id);
+    const item = await getItemAction(resolvedParams.place_id, resolvedParams.item_id);
 
     if (!item.data) {
         return <div>Item not found</div>;

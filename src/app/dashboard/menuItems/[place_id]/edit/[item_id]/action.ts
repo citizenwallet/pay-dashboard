@@ -9,7 +9,7 @@ import { uploadImage } from '@/db/image';
 
 const { auth } = NextAuth(authConfig);
 
-export async function getItem(place_id: string, item_id: string) {
+export async function getItemAction(place_id: string, item_id: string) {
   const client = getServiceRoleClient();
   const user = await auth();
   const res = await checkUserPlaceAccess(
@@ -24,7 +24,7 @@ export async function getItem(place_id: string, item_id: string) {
   return item;
 }
 
-export async function updateItems(
+export async function updateItemsAction(
   item_id: number,
   data: Partial<Item>,
   image: File | null

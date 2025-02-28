@@ -20,7 +20,7 @@ export default interface createItemschema {
   place_id: number;
 }
 
-export const creatItem = async (item: createItemschema) => {
+export const creatItemAction = async (item: createItemschema) => {
   const client = getServiceRoleClient();
   const user = await auth();
 

@@ -6,7 +6,7 @@ import NextAuth from 'next-auth';
 import authConfig from '@/auth.config';
 const { auth } = NextAuth(authConfig);
 
-export async function getItem(place_id: string, item_id: string) {
+export async function getItemAction(place_id: string, item_id: string) {
   const client = getServiceRoleClient();
   const user = await auth();
   const res = await checkUserPlaceAccess(

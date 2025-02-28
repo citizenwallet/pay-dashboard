@@ -9,7 +9,7 @@ import { checkUserPlaceAccess } from '@/db/places';
 
 const { auth } = NextAuth(authConfig);
 
-export async function getItems(place_id: string) {
+export async function getItemsAction(place_id: string) {
   const client = getServiceRoleClient();
   const user = await auth();
   const res = await checkUserPlaceAccess(
@@ -24,7 +24,7 @@ export async function getItems(place_id: string) {
   return items;
 }
 
-export async function deletePlaceItem(id: number, place_id: number) {
+export async function deletePlaceItemAction(id: number, place_id: number) {
   const user = await auth();
   const client = getServiceRoleClient();
   const res = await checkUserPlaceAccess(
@@ -39,7 +39,7 @@ export async function deletePlaceItem(id: number, place_id: number) {
   return item;
 }
 
-export async function updateItemOrderInPlace(
+export async function updateItemOrderInPlaceAction(
   place_id: number,
   positions: Record<number, { from: number; to: number }>
 ) {

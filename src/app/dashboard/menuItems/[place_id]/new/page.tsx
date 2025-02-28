@@ -20,7 +20,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { use } from "react";
-import { creatItem } from "./action";
+import { creatItemAction } from "./action";
 import Image from "next/image";
 
 // Updated schema without the image field
@@ -63,10 +63,10 @@ export default function NewItemPage({ params }: { params: Promise<{ place_id: st
         return;
       }
 
-      const response = await creatItem({
+      const response = await creatItemAction({
         ...data,
         place_id: place_id,
-        image: imageFile,  
+        image: imageFile,
       });
 
       if (response.error) {

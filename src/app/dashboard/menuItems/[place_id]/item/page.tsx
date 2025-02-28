@@ -7,7 +7,7 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Plus } from "lucide-react";
-import { getItems } from "./action";
+import { getItemsAction } from "./action";
 import ItemListing from "./Item-listing";
 
 
@@ -43,6 +43,6 @@ export default async function itempage({ params }: { params: { place_id: string 
 }
 
 async function ListItemLoader(place_id: string) {
-    const items = await getItems(place_id);
+    const items = await getItemsAction(place_id);
     return <ItemListing Items={items.data ?? []} />;
 }
