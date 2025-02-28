@@ -113,6 +113,15 @@ export const OrdersPage: React.FC<Props> = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  // Initialize state from searchParams
+  const initialDateRange = searchParams.get('dateRange') || 'today';
+  const initialStartDate = searchParams.get('startDate') || '';
+  const initialEndDate = searchParams.get('endDate') || '';
+
+  const [dateRange, setDateRange] = React.useState(initialDateRange);
+  const [customStartDate, setCustomStartDate] = React.useState(initialStartDate);
+  const [customEndDate, setCustomEndDate] = React.useState(initialEndDate);
+
   const onPaginationChange = React.useCallback(
     (
       updaterOrValue:
@@ -122,18 +131,76 @@ export const OrdersPage: React.FC<Props> = ({
       const newState =
         typeof updaterOrValue === 'function'
           ? updaterOrValue({
-              pageIndex: pagination.offset / pagination.limit,
-              pageSize: pagination.limit
-            })
+            pageIndex: pagination.offset / pagination.limit,
+            pageSize: pagination.limit
+          })
           : updaterOrValue;
 
       const params = new URLSearchParams(searchParams);
       params.set('offset', (newState.pageIndex * newState.pageSize).toString());
       params.set('limit', newState.pageSize.toString());
+      params.set('dateRange', dateRange);
+      if (dateRange === 'custom') {
+        params.set('startDate', customStartDate);
+        params.set('endDate', customEndDate);
+      }
       router.push(`${pathname}?${params.toString()}`);
     },
-    [pathname, router, searchParams, pagination]
+    [pathname, router, searchParams, pagination, dateRange, customStartDate, customEndDate]
   );
+
+  // Handle date range change
+  const handleDateRangeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newRange = event.target.value;
+    setDateRange(newRange);
+    const params = new URLSearchParams(searchParams);
+    params.set('dateRange', newRange);
+    params.set('offset', '0');
+    if (newRange !== 'custom') {
+      params.delete('startDate');
+      params.delete('endDate');
+    }
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  // Handle custom date changes
+  const handleCustomDateChange = () => {
+    if (dateRange === 'custom' && customStartDate && customEndDate) {
+      const params = new URLSearchParams(searchParams);
+      params.set('dateRange', 'custom');
+      params.set('startDate', customStartDate);
+      params.set('endDate', customEndDate);
+      params.set('offset', '0');
+      router.push(`${pathname}?${params.toString()}`);
+    }
+  };
+
+  // Export to CSV function
+  const exportToCSV = () => {
+    const headers = ['ID,Date,Total,Fees,Net,Status,Description'];
+    const rows = orders.map(order =>
+      `${order.id},${humanizeDate(order.created_at)},${formatCurrencyNumber(order.total)},${formatCurrencyNumber(order.fees)},${formatCurrencyNumber(order.total - order.fees)},${order.status},${order.description || ''}`
+    );
+    const csvContent = headers.concat(rows).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${place.name}_orders_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Date range options
+  const dateRangeOptions = [
+    { value: 'today', label: 'Today' },
+    { value: 'yesterday', label: 'Yesterday' },
+    { value: 'last7days', label: 'Last 7 Days' },
+    { value: 'thisMonth', label: 'This Month' },
+    { value: 'lastMonth', label: 'Last Month' },
+    { value: 'custom', label: 'Custom Range' },
+  ];
 
   return (
     <PageContainer>
@@ -155,8 +222,67 @@ export const OrdersPage: React.FC<Props> = ({
               {formatCurrencyNumber(balance, 0)}
             </p>
           </div>
+          {/* Export CSV Button  */}
+          <button
+            onClick={exportToCSV}
+            className={cn(buttonVariants({ variant: 'outline' }), 'self-start')}
+          >
+            Export as CSV
+          </button>
         </div>
         <Separator />
+        {/* Date Range Selection */}
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-4">
+            <label htmlFor="dateRange" className="text-sm font-medium">
+              Date Range:
+            </label>
+            <select
+              id="dateRange"
+              value={dateRange}
+              onChange={handleDateRangeChange}
+              className="rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {dateRangeOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Custom Date Range Inputs */}
+          {dateRange === 'custom' && (
+            <div className="flex items-center gap-4">
+              <div className="flex flex-col gap-1">
+                <label htmlFor="startDate" className="text-sm font-medium">
+                  Start Date:
+                </label>
+                <input
+                  type="date"
+                  id="startDate"
+                  value={customStartDate}
+                  onChange={(e) => setCustomStartDate(e.target.value)}
+                  onBlur={handleCustomDateChange}
+                  className="rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label htmlFor="endDate" className="text-sm font-medium">
+                  End Date:
+                </label>
+                <input
+                  type="date"
+                  id="endDate"
+                  value={customEndDate}
+                  onChange={(e) => setCustomEndDate(e.target.value)}
+                  onBlur={handleCustomDateChange}
+                  className="rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+          )}
+        </div>
         <DataTable
           columns={createColumns(currencyLogo)}
           data={orders}

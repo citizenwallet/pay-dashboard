@@ -19,6 +19,9 @@ interface Props {
   searchParams: Promise<{
     offset?: string;
     limit?: string;
+    dateRange?: string;
+    startDate?: string;
+    endDate?: string;
   }>;
 }
 
@@ -46,16 +49,21 @@ async function AsyncPage({ params, searchParams }: Props) {
   }
 
   // Get pagination params from search params
-  const { limit: rawLimit = '20', offset: rawOffset = '0' } =
-    await searchParams;
+  const {
+    limit: rawLimit = '20',
+    offset: rawOffset = '0',
+    dateRange = 'today',
+    startDate,
+    endDate,
+  } = await searchParams;
 
   const limit = parseInt(rawLimit);
   const offset = parseInt(rawOffset);
 
   const [place, ordersResponse, ordersCount] = await Promise.all([
     getPlaceById(client, placeId),
-    getOrdersByPlace(client, placeId, limit, offset),
-    getOrdersByPlaceCount(client, placeId)
+    getOrdersByPlace(client, placeId, limit, offset, dateRange, startDate, endDate),
+    getOrdersByPlaceCount(client, placeId, dateRange, startDate, endDate),
   ]);
 
   if (!place.data) {
