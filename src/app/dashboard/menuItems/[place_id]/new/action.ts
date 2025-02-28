@@ -1,7 +1,7 @@
 'use server';
 
 import { getServiceRoleClient } from '@/db';
-import { InsertItem } from '@/db/items';
+import { insertItem } from '@/db/items';
 import NextAuth from 'next-auth';
 import authConfig from '@/auth.config';
 import { uploadImage } from '@/db/image';
@@ -40,7 +40,7 @@ export const creatItem = async (item: createItemschema) => {
     Number(business_id),
     item.place_id
   );
-  const response = await InsertItem(
+  const response = await insertItem(
     client,
     item.name,
     item.description,
