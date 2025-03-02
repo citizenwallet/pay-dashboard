@@ -119,14 +119,14 @@ export async function joinAction(
   }
 
   // Create a new user
-  await createUser({
-    email: data.email,
-    linked_business_id: business.id,
-    name: data.name,
-    phone: data.phone,
-    description: data.description,
-    image: data.image
-  });
+  // await createUser({
+  //   email: data.email,
+  //   linked_business_id: business.id,
+  //   name: data.name,
+  //   phone: data.phone,
+  //   description: data.description,
+  //   image: data.image
+  // });
 
   return { success: true };
 }
