@@ -69,9 +69,24 @@ export default function OtpEntry() {
 
         //first check the that email have account or not
         const user = await getUserByEmailAction(email);
-        console.log("user", user);
         if (!user.data) {
             const invitationCode = generateRandomString(16);
+            const credentials = {
+                email: email,
+                name: localStorage.getItem('regName') || '',
+                phone: localStorage.getItem('regPhone') || ''
+            }
+            const res = await fetch('/api/auth/join', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    ...credentials,
+                    invite_code: invitationCode
+                })
+            });
+
             redirectLocation = process.env.NEXT_PUBLIC_URL + '/onboarding?invite_code=' + invitationCode;
         } else {
             redirectLocation = process.env.NEXT_PUBLIC_URL + '/dashboard';
