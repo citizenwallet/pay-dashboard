@@ -128,8 +128,8 @@ export const checkUserPlaceAccess = async (
       `
       id,
       business_id,
-      businesses!inner (
-        users!inner (
+     businesses!inner (
+       users!business_users!inner (
           id
         )
       )

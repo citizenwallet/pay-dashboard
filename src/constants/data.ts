@@ -13,8 +13,8 @@ export type Product = {
 
 export const navItems: NavItem[] = [
   {
-    title: 'Dashboard',
-    url: '/dashboard/overview',
+    title: 'Orders',
+    url: '/business/118/places/105/orders',
     icon: 'dashboard',
     isActive: false,
     items: [] // Empty array as there are no child items for Dashboard
@@ -40,17 +40,24 @@ export const navItems: NavItem[] = [
   //   isActive: false,
   //   items: [] // Empty array as there are no child items for Dashboard
   // },
-  // {
-  //   title: 'Company profile',
-  //   url: '/dashboard/business',
-  //   icon: 'billing',
-  //   isActive: false,
-  //   items: [] // Empty array as there are no child items for Dashboard
-  // },
+  {
+    title: 'Checkout',
+    url: '/business/118/places/105/checkout',
+    icon: 'billing',
+    isActive: false,
+    items: [] // Empty array as there are no child items for Dashboard
+  },
   {
     title: 'Profile',
-    url: '/dashboard/profile',
+    url: '/business/118/places/105/profile',
     icon: 'user',
+    isActive: false,
+    items: [] // No child items
+  },
+  {
+    title: 'Manage',
+    url: '/business/118/places/105/manage',
+    icon: 'settings',
     isActive: false,
     items: [] // No child items
   }

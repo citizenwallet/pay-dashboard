@@ -36,8 +36,10 @@ import { navItems } from '@/constants/data';
 import {
   ChevronRight,
   ChevronsUpDown,
+  Eye,
   GalleryVerticalEnd,
-  LogOut
+  LogOut,
+  BookCopy
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -49,6 +51,8 @@ import ThemeToggle from './ThemeToggle/theme-toggle';
 import { UserNav } from './user-nav';
 import { Logo } from '@/components/logo';
 import { signOut } from 'next-auth/react';
+import { useState } from 'react';
+import { Button } from '../ui/button';
 
 export const company = {
   name: 'Brussels Pay',
@@ -67,6 +71,25 @@ export default function AppSidebar({
   const { data: session } = useSession();
   const pathname = usePathname();
   // Only render after first client-side mount
+
+  const [places, setPlaces] = useState([
+    "Headquarters",
+    "London Office",
+    "New York Branch",
+  ]);
+  const [selectedPlace, setSelectedPlace] = useState(places[0]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const copyCheckoutLink = (placeName: string | number | boolean) => {
+    const checkoutLink = `https://example.com/checkout/${encodeURIComponent(placeName)}`;
+    navigator.clipboard.writeText(checkoutLink).then(() => {
+      alert(`Copied checkout link for ${placeName}: ${checkoutLink}`);
+    }).catch((err) => {
+      console.error('Failed to copy: ', err);
+      alert('Failed to copy the link. Please try again.');
+    });
+  };
+
   React.useEffect(() => {
     setMounted(true);
   }, []);
@@ -77,6 +100,7 @@ export default function AppSidebar({
 
   return (
     <SidebarProvider>
+
       <Sidebar collapsible="icon">
         {isAdmin && (
           <div className="align-center flex w-full justify-center bg-orange-500 text-sm font-normal">
@@ -91,9 +115,70 @@ export default function AppSidebar({
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-semibold">{company.name}</span>
               <span className="truncate text-xs">{company.plan}</span>
+
             </div>
           </div>
+
+          {/* Shadcn Dropdown Menu */}
+          <div className="relative mt-1">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="flex w-full items-center justify-between rounded-md border"
+                >
+                  <span className="truncate">{selectedPlace}</span>
+                  <span className="ml-2 text-gray-500">▼</span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                side="bottom"
+                align="end"
+              >
+                {places.map((place) => (
+                  <DropdownMenuItem
+                    key={place}
+                    onClick={() => setSelectedPlace(place)}
+                  >
+                    {place}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-2 w-full text-xs"
+          >
+            Create Place
+          </Button>
+          {/* set public button  */}
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-2 w-full text-xs"
+          >
+            <Eye className="h-3 w-3" />
+            Make public
+          </Button>
+          {/* Copy Checkout Link Button */}
+          <Button
+          variant="ghost"
+          size="sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            copyCheckoutLink("place.name");
+          }}
+          className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-200 hover:text-gray-700 transition-colors"
+          title="Copy checkout link"
+        >
+          <BookCopy className="h-3.5 w-3.5" />
+          <span>Copy checkout link</span>
+        </Button>
+
         </SidebarHeader>
+
         <SidebarContent className="overflow-x-hidden">
           <SidebarGroup>
             <SidebarGroupLabel>Overview</SidebarGroupLabel>
@@ -154,6 +239,7 @@ export default function AppSidebar({
             </SidebarMenu>
           </SidebarGroup>
         </SidebarContent>
+
         <SidebarFooter>
           <SidebarMenu>
             <SidebarMenuItem>
@@ -215,20 +301,7 @@ export default function AppSidebar({
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
 
-                  {/*<DropdownMenuGroup>*/}
-                  {/*  <DropdownMenuItem>*/}
-                  {/*    <BadgeCheck />*/}
-                  {/*    Account*/}
-                  {/*  </DropdownMenuItem>*/}
-                  {/*  <DropdownMenuItem>*/}
-                  {/*    <CreditCard />*/}
-                  {/*    */}
-                  {/*  </DropdownMenuItem>*/}
-                  {/*  <DropdownMenuItem>*/}
-                  {/*    <Bell />*/}
-                  {/*    */}
-                  {/*  </DropdownMenuItem>*/}
-                  {/*</DropdownMenuGroup>*/}
+
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => signOut()}>
                     <LogOut />
@@ -239,18 +312,18 @@ export default function AppSidebar({
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>
+
         <SidebarRail />
       </Sidebar>
+
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
+            <SidebarTrigger className="-ml-1" />  
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumbs />
           </div>
-          {/*<div className=" hidden w-1/3 items-center gap-2 px-4 md:flex ">*/}
-          {/*  <SearchInput />*/}
-          {/*</div>*/}
+
           <div className="flex items-center gap-2 px-4">
             <UserNav />
             <ThemeToggle />
@@ -259,6 +332,7 @@ export default function AppSidebar({
         {/* page main content */}
         {children}
       </SidebarInset>
+
     </SidebarProvider>
   );
 }
