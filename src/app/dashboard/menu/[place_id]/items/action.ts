@@ -6,17 +6,17 @@ import { deleteItem, getItemsForPlace, updateItemOrder } from '@/db/items';
 import NextAuth from 'next-auth';
 import authConfig from '@/auth.config';
 import { checkUserPlaceAccess } from '@/db/places';
+import { isUserLinkedToPlaceAction } from '@/actions/session';
+import { getUserIdFromSessionAction } from '@/actions/session';
 
 const { auth } = NextAuth(authConfig);
 
-export async function getItemsAction(place_id: string) {
+export async function getItemsAction(place_id: number) {
   const client = getServiceRoleClient();
-  const user = await auth();
-  const res = await checkUserPlaceAccess(
-    client,
-    Number(user?.user?.id),
-    Number(place_id)
-  );
+
+  const userId = await getUserIdFromSessionAction();
+
+  const res = await isUserLinkedToPlaceAction(client, userId, place_id);
   if (!res) {
     throw new Error('User does not have access to this place');
   }
@@ -25,13 +25,11 @@ export async function getItemsAction(place_id: string) {
 }
 
 export async function deletePlaceItemAction(id: number, place_id: number) {
-  const user = await auth();
   const client = getServiceRoleClient();
-  const res = await checkUserPlaceAccess(
-    client,
-    Number(user?.user?.id),
-    Number(place_id)
-  );
+
+  const userId = await getUserIdFromSessionAction();
+
+  const res = await isUserLinkedToPlaceAction(client, userId, place_id);
   if (!res) {
     throw new Error('User does not have access to this place');
   }

@@ -6,17 +6,17 @@ import authConfig from '@/auth.config';
 import { checkUserPlaceAccess } from '@/db/places';
 import { getUserBusinessId } from '@/db/users';
 import { uploadImage } from '@/services/storage/image';
+import { getUserIdFromSessionAction } from '@/actions/session';
+import { isUserLinkedToPlaceAction } from '@/actions/session';
 
 const { auth } = NextAuth(authConfig);
 
-export async function getItemAction(place_id: string, item_id: string) {
+export async function getItemAction(place_id: number, item_id: number) {
   const client = getServiceRoleClient();
-  const user = await auth();
-  const res = await checkUserPlaceAccess(
-    client,
-    Number(user?.user?.id),
-    Number(place_id)
-  );
+
+  const userId = await getUserIdFromSessionAction();
+
+  const res = await isUserLinkedToPlaceAction(client, userId, place_id);
   if (!res) {
     throw new Error('User does not have access to this place');
   }
@@ -30,17 +30,19 @@ export async function updateItemsAction(
   image: File | null
 ) {
   const client = getServiceRoleClient();
-  const user = await auth();
-  const res = await checkUserPlaceAccess(
+
+  const userId = await getUserIdFromSessionAction();
+
+  const res = await isUserLinkedToPlaceAction(
     client,
-    Number(user?.user?.id),
+    userId,
     Number(data.place_id)
   );
   if (!res) {
     throw new Error('User does not have access to this place');
   }
 
-  const business_id = await getUserBusinessId(client, Number(user?.user?.id));
+  const business_id = await getUserBusinessId(client, userId);
   if (image) {
     const imageUrl = await uploadImage(
       client,

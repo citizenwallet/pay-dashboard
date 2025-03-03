@@ -56,7 +56,7 @@ export const navItems: NavItem[] = [
   },
   {
     title: 'Menu Items',
-    url: '/dashboard/menuItems',
+    url: '/dashboard/menu',
     icon: 'product', // Changed from 'menu' to 'product' to match allowed icon types
     isActive: false,
     items: [] // No child items

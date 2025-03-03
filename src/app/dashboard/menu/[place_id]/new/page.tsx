@@ -1,40 +1,44 @@
-"use client";
-import PageContainer from "@/components/layout/page-container";
-import { Button } from "@/components/ui/button";
-import { Heading } from "@/components/ui/heading";
-import { Separator } from "@radix-ui/react-separator";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
+'use client';
+import PageContainer from '@/components/layout/page-container';
+import { Button } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { Separator } from '@radix-ui/react-separator';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { use } from "react";
-import { creatItemAction } from "./action";
-import Image from "next/image";
+  FormMessage
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { use } from 'react';
+import { creatItemAction } from './action';
+import Image from 'next/image';
 
 // Updated schema without the image field
 const formSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  description: z.string().min(1, "Description is required"),
-  price: z.coerce.number().min(0, "Price must be a positive number"),
-  vat: z.coerce.number().min(0, "VAT must be a positive number"),
-  category: z.string().min(1, "Category is required"),
+  name: z.string().min(1, 'Name is required'),
+  description: z.string().min(1, 'Description is required'),
+  price: z.coerce.number().min(0, 'Price must be a positive number'),
+  vat: z.coerce.number().min(0, 'VAT must be a positive number'),
+  category: z.string().min(1, 'Category is required')
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-export default function NewItemPage({ params }: { params: Promise<{ place_id: string }> }) {
+export default function NewItemPage({
+  params
+}: {
+  params: Promise<{ place_id: string }>;
+}) {
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -45,12 +49,12 @@ export default function NewItemPage({ params }: { params: Promise<{ place_id: st
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      description: "",
+      name: '',
+      description: '',
       price: 0,
       vat: 0,
-      category: "",
-    },
+      category: ''
+    }
   });
 
   const onSubmit = async (data: FormValues) => {
@@ -58,7 +62,7 @@ export default function NewItemPage({ params }: { params: Promise<{ place_id: st
       setLoading(true);
 
       if (!imageFile) {
-        toast.error("Please upload an image");
+        toast.error('Please upload an image');
         setLoading(false);
         return;
       }
@@ -66,20 +70,20 @@ export default function NewItemPage({ params }: { params: Promise<{ place_id: st
       const response = await creatItemAction({
         ...data,
         place_id: place_id,
-        image: imageFile,
+        image: imageFile
       });
 
       if (response.error) {
         toast.error(response.error.message);
       } else {
-        toast.success("Item created successfully");
-        router.push(`/dashboard/menuItems/${place_id}/item`);
+        toast.success('Item created successfully');
+        router.push(`/dashboard/menu/${place_id}/items`);
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error("An unexpected error occurred");
+        toast.error('An unexpected error occurred');
       }
     } finally {
       setLoading(false);
@@ -100,7 +104,7 @@ export default function NewItemPage({ params }: { params: Promise<{ place_id: st
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="name"
@@ -108,7 +112,11 @@ export default function NewItemPage({ params }: { params: Promise<{ place_id: st
                     <FormItem>
                       <FormLabel>Name</FormLabel>
                       <FormControl>
-                        <Input disabled={loading} placeholder="Item name" {...field} />
+                        <Input
+                          disabled={loading}
+                          placeholder="Item name"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -122,7 +130,11 @@ export default function NewItemPage({ params }: { params: Promise<{ place_id: st
                     <FormItem>
                       <FormLabel>Category</FormLabel>
                       <FormControl>
-                        <Input disabled={loading} placeholder="Item category" {...field} />
+                        <Input
+                          disabled={loading}
+                          placeholder="Item category"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -184,12 +196,18 @@ export default function NewItemPage({ params }: { params: Promise<{ place_id: st
                     />
                   </FormControl>
                   {previewUrl && (
-                    <div className="mt-2 relative">
-                      <Image src={previewUrl} alt="Preview" width={200} height={200} className="max-w-xs h-auto" />
+                    <div className="relative mt-2">
+                      <Image
+                        src={previewUrl}
+                        alt="Preview"
+                        width={200}
+                        height={200}
+                        className="h-auto max-w-xs"
+                      />
                       <Button
                         variant="destructive"
                         size="sm"
-                        className="absolute top-0 left-0"
+                        className="absolute left-0 top-0"
                         onClick={() => {
                           if (previewUrl) URL.revokeObjectURL(previewUrl);
                           setImageFile(null);

@@ -1,32 +1,45 @@
-"use client";
-import Link from "next/link";
-import { Item } from "@/db/items";
-import { icons } from "lucide-react";
-import { toast } from "sonner";
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { deletePlaceItemAction, updateItemOrderInPlaceAction } from "./action";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
+'use client';
+import Link from 'next/link';
+import { Item } from '@/db/items';
+import { icons } from 'lucide-react';
+import { toast } from 'sonner';
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { deletePlaceItemAction, updateItemOrderInPlaceAction } from './action';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
-export default function ItemListing({ Items: initialItems }: { Items: Item[] }) {
+export default function ItemListing({
+  Items: initialItems
+}: {
+  Items: Item[];
+}) {
   const [items, setItems] = useState<Item[]>(initialItems);
   const [draggingItem, setDraggingItem] = useState<number | null>(null);
   const [loading, setLoading] = useState<number | null>(null);
-  const [changedPositions, setChangedPositions] = useState<Record<number, { from: number; to: number }>>({});
+  const [changedPositions, setChangedPositions] = useState<
+    Record<number, { from: number; to: number }>
+  >({});
   const router = useRouter();
 
   // Track original positions
-  const originalOrder = initialItems.map((item, index) => ({ id: item.id, position: item.order }));
+  const originalOrder = initialItems.map((item, index) => ({
+    id: item.id,
+    position: item.order
+  }));
 
   useEffect(() => {
     // Prevent unnecessary updates by checking if there are actual changes
-    const newPositions = items.map((item) => ({ id: item.id, position: item.order }));
+    const newPositions = items.map((item) => ({
+      id: item.id,
+      position: item.order
+    }));
     const changes: Record<number, { from: number; to: number }> = {};
     let hasChanges = false;
 
     newPositions.forEach((newPos) => {
-      const originalPos = originalOrder.find((o) => o.id === newPos.id)?.position;
+      const originalPos = originalOrder.find((o) => o.id === newPos.id)
+        ?.position;
       if (originalPos !== undefined && originalPos !== newPos.position) {
         changes[newPos.id] = { from: originalPos, to: newPos.position };
         hasChanges = true;
@@ -52,12 +65,14 @@ export default function ItemListing({ Items: initialItems }: { Items: Item[] }) 
     if (draggingItem === null || draggingItem === targetId) return;
 
     const newItems = [...items];
-    const draggingIndex = newItems.findIndex((item) => item.id === draggingItem);
+    const draggingIndex = newItems.findIndex(
+      (item) => item.id === draggingItem
+    );
     const targetIndex = newItems.findIndex((item) => item.id === targetId);
 
     [newItems[draggingIndex], newItems[targetIndex]] = [
       newItems[targetIndex],
-      newItems[draggingIndex],
+      newItems[draggingIndex]
     ];
 
     setItems(newItems);
@@ -65,9 +80,6 @@ export default function ItemListing({ Items: initialItems }: { Items: Item[] }) 
 
     const draggedItem = newItems[targetIndex];
     const targetItem = newItems[draggingIndex];
-
-
-
 
     // Update positions in the list
     const positions: Record<number, { from: number; to: number }> = {};
@@ -77,11 +89,14 @@ export default function ItemListing({ Items: initialItems }: { Items: Item[] }) 
         item.order = index + 1; // Update the item's position
       }
     });
-    const response = await updateItemOrderInPlaceAction(items[0].place_id, positions);
+    const response = await updateItemOrderInPlaceAction(
+      items[0].place_id,
+      positions
+    );
     if (response.success) {
-      toast.success("Item order updated successfully");
+      toast.success('Item order updated successfully');
     } else {
-      toast.error("Failed to update item order");
+      toast.error('Failed to update item order');
     }
   };
 
@@ -94,17 +109,17 @@ export default function ItemListing({ Items: initialItems }: { Items: Item[] }) 
         <div>
           <h3>Are you sure you want to delete this item?</h3>
           <p>This action cannot be undone</p>
-          <div className="flex justify-end gap-3 mt-4">
+          <div className="mt-4 flex justify-end gap-3">
             <Button onClick={() => toast.dismiss(t)}>Cancel</Button>
             <Button
-              className="bg-red-600 hover:bg-red-700 text-white ml-4"
+              className="ml-4 bg-red-600 text-white hover:bg-red-700"
               onClick={async () => {
                 toast.dismiss(t);
                 const response = await deletePlaceItemAction(id, place_id);
                 if (response.error) {
-                  toast.error("Failed to delete item");
+                  toast.error('Failed to delete item');
                 } else {
-                  toast.success("Item deleted successfully");
+                  toast.success('Item deleted successfully');
                   setItems(items.filter((item) => item.id !== id));
                   router.refresh();
                 }
@@ -116,7 +131,7 @@ export default function ItemListing({ Items: initialItems }: { Items: Item[] }) 
         </div>
       ));
     } catch (error) {
-      toast.error("Failed to delete item");
+      toast.error('Failed to delete item');
     } finally {
       setLoading(null);
     }
@@ -143,7 +158,6 @@ export default function ItemListing({ Items: initialItems }: { Items: Item[] }) 
               onDragStart={() => handleDragStart(item.id)}
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, item.id)}
-
             >
               <td className="border p-2">
                 <icons.GripVertical size={20} className="text-gray-500" />
@@ -151,7 +165,12 @@ export default function ItemListing({ Items: initialItems }: { Items: Item[] }) 
 
               <td className="border p-2">
                 {item.image && (
-                  <Image src={item.image} alt={item.name} width={50} height={50} />
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    width={50}
+                    height={50}
+                  />
                 )}
               </td>
               <td className="border p-2">{item.name}</td>
@@ -160,13 +179,13 @@ export default function ItemListing({ Items: initialItems }: { Items: Item[] }) 
               <td className="border p-2">
                 <div className="flex items-center gap-2">
                   <Link
-                    href={`/dashboard/menuItems/${item.place_id}/item/${item.id}`}
+                    href={`/dashboard/menu/${item.place_id}/items/${item.id}`}
                     className="hover:text-blue-600"
                   >
                     <icons.Eye size={20} />
                   </Link>
                   <Link
-                    href={`/dashboard/menuItems/${item.place_id}/edit/${item.id}`}
+                    href={`/dashboard/menu/${item.place_id}/edit/${item.id}`}
                     className="hover:text-yellow-600"
                   >
                     <icons.Pen size={20} />
