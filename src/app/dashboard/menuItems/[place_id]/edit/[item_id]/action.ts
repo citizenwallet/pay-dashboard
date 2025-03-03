@@ -5,7 +5,7 @@ import NextAuth from 'next-auth';
 import authConfig from '@/auth.config';
 import { checkUserPlaceAccess } from '@/db/places';
 import { getUserBusinessId } from '@/db/users';
-import { uploadImage } from '@/db/image';
+import { uploadImage } from '@/services/storage/image';
 
 const { auth } = NextAuth(authConfig);
 

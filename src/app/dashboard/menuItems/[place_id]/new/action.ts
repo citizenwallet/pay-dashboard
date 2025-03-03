@@ -4,7 +4,7 @@ import { getServiceRoleClient } from '@/db';
 import { insertItem } from '@/db/items';
 import NextAuth from 'next-auth';
 import authConfig from '@/auth.config';
-import { uploadImage } from '@/db/image';
+import { uploadImage } from '@/services/storage/image';
 import { getUserBusinessId } from '@/db/users';
 import { checkUserPlaceAccess } from '@/db/places';
 
