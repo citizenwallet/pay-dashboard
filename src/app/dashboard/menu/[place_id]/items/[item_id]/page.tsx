@@ -8,7 +8,7 @@ import ItemListing from './itemData';
 export default async function ViewItem({
   params
 }: {
-  params: { place_id: string; item_id: string };
+  params: Promise<{ place_id: string; item_id: string }>;
 }) {
   const resolvedParams = await params;
   return (

@@ -13,7 +13,7 @@ import ItemListing from './Item-listing';
 export default async function itempage({
   params
 }: {
-  params: { place_id: string };
+  params: Promise<{ place_id: string }>;
 }) {
   const { place_id } = await params;
   return (
