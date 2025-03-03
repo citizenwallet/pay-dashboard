@@ -17,6 +17,7 @@ export interface Item {
   price: number;
   vat: number;
   category: string;
+  hidden: boolean;
 }
 
 export const getItemsForPlace = async (

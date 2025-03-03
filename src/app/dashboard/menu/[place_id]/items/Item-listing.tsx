@@ -5,6 +5,8 @@ import { icons } from 'lucide-react';
 import { toast } from 'sonner';
 import { useState, useRef, KeyboardEvent, ChangeEvent } from 'react';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import {
   deletePlaceItemAction,
   updateItemOrderInPlaceAction,
@@ -13,7 +15,8 @@ import {
   updateItemPriceAction,
   updateItemCategoryAction,
   updateItemVatAction,
-  uploadItemImageAction
+  uploadItemImageAction,
+  updateItemHiddenStatusAction
 } from './action';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -570,6 +573,35 @@ export default function ItemListing({
     }
   };
 
+  const handleHiddenToggle = async (item: Item, hidden: boolean) => {
+    try {
+      setLoading(item.id);
+      const response = await updateItemHiddenStatusAction(
+        item.id,
+        item.place_id,
+        hidden
+      );
+
+      if (response.error) {
+        toast.error(`Failed to ${hidden ? 'hide' : 'show'} item`);
+      } else {
+        toast.success(`Item ${hidden ? 'hidden' : 'shown'} successfully`);
+
+        // Update the local state
+        const updatedItems = items.map((i) =>
+          i.id === item.id ? { ...i, hidden } : i
+        );
+        setItems(updatedItems);
+        router.refresh();
+      }
+    } catch (error) {
+      console.error(`Failed to update item visibility:`, error);
+      toast.error(`Failed to ${hidden ? 'hide' : 'show'} item`);
+    } finally {
+      setLoading(null);
+    }
+  };
+
   return (
     <div>
       {/* Hidden file input for image uploads */}
@@ -598,6 +630,7 @@ export default function ItemListing({
             <th className="border p-2 text-left">Category</th>
             <th className="border p-2 text-left">Price</th>
             <th className="border p-2 text-left">VAT %</th>
+            <th className="border p-2 text-left">Visible</th>
             <th className="border p-2 text-left">Action</th>
           </tr>
         </thead>
@@ -615,6 +648,7 @@ export default function ItemListing({
                   setDraggingItem(null);
                 }
               }}
+              className={item.hidden ? 'bg-gray-50 opacity-70' : ''}
             >
               <td className="w-[50px] border p-2">
                 <div className="flex h-[50px] w-[50px] items-center justify-center">
@@ -774,6 +808,27 @@ export default function ItemListing({
               </td>
               <td className="border p-2">
                 <div className="flex items-center gap-2">
+                  <Switch
+                    checked={!item.hidden}
+                    onCheckedChange={(checked) =>
+                      handleHiddenToggle(item, !checked)
+                    }
+                    disabled={loading === item.id}
+                    aria-label={`Toggle visibility for ${item.name}`}
+                  />
+                  <Label className="text-sm text-gray-600">
+                    {item.hidden ? 'Hidden' : 'Visible'}
+                  </Label>
+                </div>
+              </td>
+              <td className="border p-2">
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/dashboard/menu/${item.place_id}/items/${item.id}/edit`}
+                    className="hover:text-yellow-600"
+                  >
+                    <icons.Pen size={20} />
+                  </Link>
                   <button
                     onClick={() => handleDelete(item.id, item.place_id)}
                     className="hover:text-red-600"

@@ -172,3 +172,19 @@ export async function uploadItemImageAction(formData: FormData) {
     throw new Error('Failed to upload image');
   }
 }
+
+export async function updateItemHiddenStatusAction(
+  itemId: number,
+  placeId: number,
+  hidden: boolean
+) {
+  const client = getServiceRoleClient();
+  const userId = await getUserIdFromSessionAction();
+
+  const res = await isUserLinkedToPlaceAction(client, userId, placeId);
+  if (!res) {
+    throw new Error('User does not have access to this place');
+  }
+
+  return updateItem(client, itemId, { hidden });
+}
