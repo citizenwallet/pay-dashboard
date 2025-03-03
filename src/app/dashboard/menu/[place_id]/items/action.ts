@@ -1,15 +1,16 @@
 'use server';
 
 import { getServiceRoleClient } from '@/db';
-import { deleteItem, getItemsForPlace, updateItemOrder } from '@/db/items';
+import {
+  deleteItem,
+  getItemsForPlace,
+  reorderItem,
+  updateItemOrder,
+  updateItem
+} from '@/db/items';
 
-import NextAuth from 'next-auth';
-import authConfig from '@/auth.config';
-import { checkUserPlaceAccess } from '@/db/places';
 import { isUserLinkedToPlaceAction } from '@/actions/session';
 import { getUserIdFromSessionAction } from '@/actions/session';
-
-const { auth } = NextAuth(authConfig);
 
 export async function getItemsAction(place_id: number) {
   const client = getServiceRoleClient();
@@ -38,25 +39,49 @@ export async function deletePlaceItemAction(id: number, place_id: number) {
 }
 
 export async function updateItemOrderInPlaceAction(
-  place_id: number,
-  positions: Record<number, { from: number; to: number }>
+  placeId: number,
+  itemId: number,
+  prevItemId: number | null,
+  nextItemId: number | null
 ) {
   const client = getServiceRoleClient();
-  const user = await auth();
-  const res = await checkUserPlaceAccess(
-    client,
-    Number(user?.user?.id),
-    Number(place_id)
-  );
+  const userId = await getUserIdFromSessionAction();
+  const res = await isUserLinkedToPlaceAction(client, userId, placeId);
   if (!res) {
     throw new Error('User does not have access to this place');
   }
 
-  for (const [id, { from, to }] of Object.entries(positions)) {
-    const item = await updateItemOrder(client, place_id, {
-      id: Number(id),
-      order: to
-    });
+  return reorderItem(client, itemId, prevItemId, nextItemId);
+}
+
+export async function updateItemNameAction(
+  itemId: number,
+  placeId: number,
+  name: string
+) {
+  const client = getServiceRoleClient();
+  const userId = await getUserIdFromSessionAction();
+
+  const res = await isUserLinkedToPlaceAction(client, userId, placeId);
+  if (!res) {
+    throw new Error('User does not have access to this place');
   }
-  return { success: true };
+
+  return updateItem(client, itemId, { name });
+}
+
+export async function updateItemDescriptionAction(
+  itemId: number,
+  placeId: number,
+  description: string
+) {
+  const client = getServiceRoleClient();
+  const userId = await getUserIdFromSessionAction();
+
+  const res = await isUserLinkedToPlaceAction(client, userId, placeId);
+  if (!res) {
+    throw new Error('User does not have access to this place');
+  }
+
+  return updateItem(client, itemId, { description });
 }

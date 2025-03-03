@@ -6,7 +6,6 @@ import {
   SupabaseClient
 } from '@supabase/supabase-js';
 
-
 export interface Item {
   order: number;
   id: number;
@@ -65,14 +64,14 @@ export const deleteItem = async (
 
 export const getItemById = async (
   client: SupabaseClient,
-  place_id: number,
-  item_id: number
+  placeId: number,
+  itemId: number
 ): Promise<PostgrestSingleResponse<Item>> => {
   return client
     .from('pos_items')
     .select('*')
-    .eq('place_id', place_id)
-    .eq('id', item_id)
+    .eq('place_id', placeId)
+    .eq('id', itemId)
     .single();
 };
 
@@ -86,14 +85,86 @@ export const updateItem = async (
 
 export const updateItemOrder = async (
   client: SupabaseClient,
-  place_id: number,
-  items: { id: number; order: number }
+  id: number,
+  order: number
 ): Promise<PostgrestSingleResponse<Item>> => {
   return client
     .from('pos_items')
-    .update({ order: items.order })
-    .eq('place_id', place_id)
-    .eq('id', items.id)
+    .update({ order: order })
+    .eq('id', id)
     .select()
     .single();
+};
+
+/**
+ * Calculates a new order value between two existing order values
+ * @param prevOrder Order value of the item before the target position
+ * @param nextOrder Order value of the item after the target position
+ * @returns A new order value that falls between prevOrder and nextOrder
+ */
+export const calculateOrderBetween = (
+  prevOrder: number | null,
+  nextOrder: number | null
+): number => {
+  // If no previous item, place at half of next item's order or 0 if no next item
+  if (prevOrder === null) {
+    return nextOrder !== null ? nextOrder / 2 : 0;
+  }
+
+  // If no next item, place after previous item
+  if (nextOrder === null) {
+    return prevOrder + 1;
+  }
+
+  // Place between the two items
+  return (nextOrder + prevOrder) / 2;
+};
+
+/**
+ * Updates an item's order by placing it between two other items
+ * @param client Supabase client
+ * @param placeId Place ID
+ * @param itemId Item ID to update
+ * @param prevItemId ID of the item before the target position (null if first)
+ * @param nextItemId ID of the item after the target position (null if last)
+ */
+export const reorderItem = async (
+  client: SupabaseClient,
+  itemId: number,
+  prevItemId: number | null,
+  nextItemId: number | null
+): Promise<PostgrestSingleResponse<Item>> => {
+  // Get the order values of the surrounding items
+  let prevOrder: number | null = null;
+  let nextOrder: number | null = null;
+
+  if (prevItemId !== null) {
+    const { data: prevItem } = await client
+      .from('pos_items')
+      .select('order')
+      .eq('id', prevItemId)
+      .single();
+
+    if (prevItem) {
+      prevOrder = prevItem.order;
+    }
+  }
+
+  if (nextItemId !== null) {
+    const { data: nextItem } = await client
+      .from('pos_items')
+      .select('order')
+      .eq('id', nextItemId)
+      .single();
+
+    if (nextItem) {
+      nextOrder = nextItem.order;
+    }
+  }
+
+  // Calculate the new order value
+  const newOrder = calculateOrderBetween(prevOrder, nextOrder);
+
+  // Update the item with the new order
+  return updateItemOrder(client, itemId, newOrder);
 };

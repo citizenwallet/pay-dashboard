@@ -39,7 +39,12 @@ interface Item {
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string().min(1, 'Description is required'),
-  price: z.coerce.number().min(0, 'Price must be a positive number'),
+  price: z.coerce
+    .number()
+    .min(0, 'Price must be a positive number')
+    .refine((val) => Number.isFinite(val) && val >= 0, {
+      message: 'Price must be a non-negative number'
+    }),
   vat: z.coerce.number().min(0, 'VAT must be a positive number'),
   category: z.string().min(1, 'Category is required')
 });
@@ -66,7 +71,7 @@ export default function ItemEdit({ item }: { item: Item }) {
   // Remove the image
   const handleRemoveImage = () => {
     if (previewUrl && imageFile) {
-      URL.revokeObjectURL(previewUrl); // Clean up if it’s a local preview
+      URL.revokeObjectURL(previewUrl); // Clean up if it's a local preview
     }
     setImageFile(null);
     setPreviewUrl(null);
@@ -77,7 +82,7 @@ export default function ItemEdit({ item }: { item: Item }) {
     defaultValues: {
       name: item?.name || '',
       description: item?.description || '',
-      price: item?.price || 0,
+      price: item?.price ? item.price / 100 : 0, // Convert cents to dollars for display
       vat: item?.vat || 0,
       category: item?.category || ''
     }
@@ -86,9 +91,15 @@ export default function ItemEdit({ item }: { item: Item }) {
   const onSubmit = async (data: FormValues) => {
     try {
       setLoading(true);
+      // Convert price to cents before submitting
+      const submissionData = {
+        ...data,
+        price: Math.round(data.price * 100) // Convert dollars to cents and round to avoid floating point issues
+      };
+
       const updatedItem = await updateItemsAction(
         item.id,
-        { ...item, ...data },
+        { ...item, ...submissionData },
         imageFile
       );
 
@@ -158,7 +169,16 @@ export default function ItemEdit({ item }: { item: Item }) {
                     type="number"
                     disabled={loading}
                     placeholder="0.00"
+                    step="0.01"
+                    min="0"
                     {...field}
+                    onChange={(e) => {
+                      // Ensure only valid decimal input
+                      const value = e.target.value;
+                      if (value === '' || /^\d+(\.\d{0,2})?$/.test(value)) {
+                        field.onChange(e);
+                      }
+                    }}
                   />
                 </FormControl>
                 <FormMessage />

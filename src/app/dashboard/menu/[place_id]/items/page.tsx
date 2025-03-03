@@ -9,6 +9,8 @@ import { cn } from '@/lib/utils';
 import { Plus } from 'lucide-react';
 import { getItemsAction } from './action';
 import ItemListing from './Item-listing';
+import Config from '@/cw/community.json';
+import { CommunityConfig } from '@citizenwallet/sdk';
 
 export default async function itempage({
   params
@@ -43,5 +45,13 @@ export default async function itempage({
 
 async function ListItemLoader(place_id: string) {
   const items = await getItemsAction(parseInt(place_id));
-  return <ItemListing Items={items.data ?? []} />;
+
+  const community = new CommunityConfig(Config);
+
+  return (
+    <ItemListing
+      currencyLogo={community.community.logo}
+      items={items.data ?? []}
+    />
+  );
 }
