@@ -58,7 +58,7 @@ export const isAdmin = async (client: SupabaseClient, userId: number) => {
   return data?.usergroup === 'admin';
 };
 
-export const isCheckUser = async (client: SupabaseClient, email: string): Promise<boolean> => {
+export const userExists = async (client: SupabaseClient, email: string): Promise<boolean> => {
   const { data, error } = await client
     .from('users')
     .select('*')
