@@ -8,18 +8,18 @@ export const uploadImage = async (
   business_id: number,
   place_id: number
 ): Promise<string> => {
-    let url = '';
-    const fileName = `${Date.now()}-${image.name}`;
-    const { data, error } = await client.storage
-      .from(`uploads/${business_id}/${place_id}`)
-      .upload(fileName, image);
+  let url = '';
+  const fileName = `${Date.now()}-${image.name}`;
+  const { data, error } = await client.storage
+    .from(`uploads/${business_id}/${place_id}`)
+    .upload(fileName, image);
 
-    if (error) {
-      throw error;
-    }
-    url = await client.storage
-      .from(`uploads/${business_id}/${place_id}`)
-      .getPublicUrl(fileName).data.publicUrl;
+  if (error) {
+    throw error;
+  }
+  url = client.storage
+    .from(`uploads/${business_id}/${place_id}`)
+    .getPublicUrl(fileName).data.publicUrl;
 
-    return url;
-}
+  return url;
+};

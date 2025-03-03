@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { Item } from '@/db/items';
 import { icons } from 'lucide-react';
 import { toast } from 'sonner';
-import { useState, useRef, KeyboardEvent } from 'react';
+import { useState, useRef, KeyboardEvent, ChangeEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   deletePlaceItemAction,
@@ -12,7 +12,8 @@ import {
   updateItemDescriptionAction,
   updateItemPriceAction,
   updateItemCategoryAction,
-  updateItemVatAction
+  updateItemVatAction,
+  uploadItemImageAction
 } from './action';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -34,13 +35,15 @@ export default function ItemListing({
   const [loading, setLoading] = useState<number | null>(null);
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
   const [editingField, setEditingField] = useState<
-    'name' | 'description' | 'price' | 'category' | 'vat' | null
+    'name' | 'description' | 'price' | 'category' | 'vat' | 'image' | null
   >(null);
   const [editingName, setEditingName] = useState<string>('');
   const [editingDescription, setEditingDescription] = useState<string>('');
   const [editingPrice, setEditingPrice] = useState<string>('');
   const [editingCategory, setEditingCategory] = useState<string>('');
   const [editingVat, setEditingVat] = useState<string>('');
+  const [uploadingImage, setUploadingImage] = useState<boolean>(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
   const handleDragStart = (id: number) => {
@@ -481,7 +484,6 @@ export default function ItemListing({
           i.id === item.id ? { ...i, vat: newVat } : i
         );
         setItems(updatedItems);
-        router.refresh();
       }
     } catch (error) {
       console.error('Failed to update item VAT:', error);
@@ -493,8 +495,99 @@ export default function ItemListing({
     }
   };
 
+  const handleImageClick = (item: Item) => {
+    setEditingItemId(item.id);
+    setEditingField('image');
+    // Trigger file input click
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleImageChange = async (
+    e: ChangeEvent<HTMLInputElement>,
+    item: Item
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      setEditingItemId(null);
+      setEditingField(null);
+      return;
+    }
+
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      setEditingItemId(null);
+      setEditingField(null);
+      return;
+    }
+
+    // Check file size (limit to 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size should be less than 5MB');
+      setEditingItemId(null);
+      setEditingField(null);
+      return;
+    }
+
+    try {
+      setUploadingImage(true);
+      setLoading(item.id);
+
+      // Create a FormData object to send the file
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('itemId', item.id.toString());
+      formData.append('placeId', item.place_id.toString());
+
+      // Upload the image using FormData
+      const response = await uploadItemImageAction(formData);
+
+      if (response.error) {
+        toast.error('Failed to update item image');
+      } else {
+        toast.success('Item image updated successfully');
+
+        // Update the local state with the new image URL
+        const updatedItems = items.map((i) =>
+          i.id === item.id ? { ...i, image: response.data.image } : i
+        );
+        setItems(updatedItems);
+      }
+    } catch (error) {
+      console.error('Failed to update item image:', error);
+      toast.error('Failed to update item image');
+    } finally {
+      setEditingItemId(null);
+      setEditingField(null);
+      setLoading(null);
+      setUploadingImage(false);
+      // Reset the file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
   return (
     <div>
+      {/* Hidden file input for image uploads */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
+        accept="image/*"
+        onChange={(e) => {
+          if (editingItemId !== null) {
+            const item = items.find((i) => i.id === editingItemId);
+            if (item) {
+              handleImageChange(e, item);
+            }
+          }
+        }}
+      />
+
       <table className="w-full border-collapse">
         <thead>
           <tr>
@@ -523,19 +616,46 @@ export default function ItemListing({
                 }
               }}
             >
-              <td className="border p-2">
-                <icons.GripVertical size={20} className="text-gray-500" />
+              <td className="w-[50px] border p-2">
+                <div className="flex h-[50px] w-[50px] items-center justify-center">
+                  <icons.GripVertical size={20} className="text-gray-500" />
+                </div>
               </td>
 
-              <td className="border p-2">
-                {item.image && (
-                  <Image
-                    src={item.image}
-                    alt={item.name}
-                    width={50}
-                    height={50}
-                    className="rounded-md"
-                  />
+              <td className="w-[50px] border p-2">
+                {loading === item.id && editingField === 'image' ? (
+                  <div className="flex h-[50px] w-[50px] items-center justify-center rounded-md bg-gray-100">
+                    <icons.Loader
+                      className="animate-spin text-gray-500"
+                      size={24}
+                    />
+                  </div>
+                ) : item.image ? (
+                  <div
+                    className="relative flex w-[50px] cursor-pointer items-center justify-center overflow-hidden rounded-md"
+                    onClick={() => handleImageClick(item)}
+                  >
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      width={50}
+                      height={50}
+                      className="rounded-md object-cover transition-opacity hover:opacity-80"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 transition-all hover:bg-opacity-30">
+                      <icons.Camera
+                        className="text-white opacity-0 transition-opacity hover:opacity-100"
+                        size={20}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    className="flex h-[50px] w-[50px] cursor-pointer items-center justify-center rounded-md bg-gray-100 transition-colors hover:bg-gray-200"
+                    onClick={() => handleImageClick(item)}
+                  >
+                    <icons.ImagePlus className="text-gray-500" size={24} />
+                  </div>
                 )}
               </td>
               <td className="border p-2">
