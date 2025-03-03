@@ -1,5 +1,4 @@
 'use client';
-import Link from 'next/link';
 import { Item } from '@/db/items';
 import { icons } from 'lucide-react';
 import { toast } from 'sonner';
@@ -23,7 +22,6 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { formatCurrencyNumber } from '@/lib/currency';
 import CurrencyLogo from '@/components/currency-logo';
-import { Input } from '@/components/ui/input';
 
 export default function ItemListing({
   items: initialItems,
@@ -33,8 +31,6 @@ export default function ItemListing({
   currencyLogo: string;
 }) {
   const [items, setItems] = useState<Item[]>(initialItems);
-  const previousItemIdRef = useRef<number | null>(null);
-  const nextItemIdRef = useRef<number | null>(null);
   const [draggingItem, setDraggingItem] = useState<number | null>(null);
   const [loading, setLoading] = useState<number | null>(null);
   const [addingItem, setAddingItem] = useState<boolean>(false);
@@ -66,9 +62,6 @@ export default function ItemListing({
     );
     if (draggedItemIndex === index) return; // No need to do anything if hovering over the same item
 
-    previousItemIdRef.current = index > 0 ? items[index - 1]?.id : null;
-    nextItemIdRef.current = index < items.length ? items[index]?.id : null;
-
     // Create a copy of the items array
     const updatedItems = [...items];
     // Remove the dragged item from its current position
@@ -94,6 +87,15 @@ export default function ItemListing({
     // Insert it at the new position
     updatedItems.splice(targetIndex, 0, draggedItem);
 
+    const previousItemId =
+      targetIndex > 0 && updatedItems[targetIndex - 1]
+        ? updatedItems[targetIndex - 1].id
+        : null;
+    const nextItemId =
+      targetIndex + 1 < updatedItems.length
+        ? updatedItems[targetIndex + 1]?.id
+        : null;
+
     // Update the state with the new order
     setItems(updatedItems);
 
@@ -102,8 +104,8 @@ export default function ItemListing({
       const item = await updateItemOrderInPlaceAction(
         items[0].place_id,
         draggedItemId,
-        previousItemIdRef.current,
-        nextItemIdRef.current
+        previousItemId,
+        nextItemId
       );
 
       if (item.error) {
@@ -894,12 +896,6 @@ export default function ItemListing({
               </td>
               <td className="border p-2">
                 <div className="flex items-center gap-2">
-                  <Link
-                    href={`/dashboard/menu/${item.place_id}/items/${item.id}/edit`}
-                    className="hover:text-yellow-600"
-                  >
-                    <icons.Pen size={20} />
-                  </Link>
                   <button
                     onClick={() => handleDelete(item.id, item.place_id)}
                     className="hover:text-red-600"

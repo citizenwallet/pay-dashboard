@@ -55,7 +55,7 @@ export async function updateItemOrderInPlaceAction(
     throw new Error('User does not have access to this place');
   }
 
-  return reorderItem(client, itemId, prevItemId, nextItemId);
+  return reorderItem(client, placeId, itemId, prevItemId, nextItemId);
 }
 
 export async function updateItemNameAction(

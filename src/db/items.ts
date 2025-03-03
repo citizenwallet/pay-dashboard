@@ -76,6 +76,18 @@ export const getItemById = async (
     .single();
 };
 
+export const getFirstTwoItems = async (
+  client: SupabaseClient,
+  placeId: number
+): Promise<PostgrestResponse<Item>> => {
+  return client
+    .from('pos_items')
+    .select('*')
+    .eq('place_id', placeId)
+    .order('order', { ascending: true })
+    .limit(2);
+};
+
 export const updateItem = async (
   client: SupabaseClient,
   id: number,
@@ -131,6 +143,7 @@ export const calculateOrderBetween = (
  */
 export const reorderItem = async (
   client: SupabaseClient,
+  placeId: number,
   itemId: number,
   prevItemId: number | null,
   nextItemId: number | null
@@ -165,6 +178,18 @@ export const reorderItem = async (
 
   // Calculate the new order value
   const newOrder = calculateOrderBetween(prevOrder, nextOrder);
+
+  if (prevItemId === null && nextItemId !== null) {
+    const { data: items } = await getFirstTwoItems(client, placeId);
+    if (items && items.length === 2) {
+      const previousItemNewOrder = calculateOrderBetween(
+        newOrder,
+        items[1].order
+      );
+
+      await updateItemOrder(client, nextItemId, previousItemNewOrder);
+    }
+  }
 
   // Update the item with the new order
   return updateItemOrder(client, itemId, newOrder);
