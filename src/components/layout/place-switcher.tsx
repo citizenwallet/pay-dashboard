@@ -41,35 +41,62 @@ export function PlaceSwitcher({
   );
   const [isAddDialogOpen, setIsAddDialogOpen] = React.useState(false);
   const [newPlaceName, setNewPlaceName] = React.useState("");
+  const [newPlaceDescription, setNewPlaceDescription] = React.useState("");
+  const [newPlaceSlug, setNewPlaceSlug] = React.useState("");
+  const [newPlaceImage, setNewPlaceImage] = React.useState<File | null>(null); // Store the File object
+  const [imagePreview, setImagePreview] = React.useState<string>(""); // Preview URL
 
-  const changePlace = (place:Place)=>{
+  const [slugTouched, setSlugTouched] = React.useState(false);
+
+  const changePlace = (place: Place) => {
     console.log("change place")
     console.log(place)
     setActiveTeam(place)
   }
-  // Function to handle adding a new place (e.g., API call)
-  const handleAddPlace = () => {
+  // Auto-generate slug from name if not touched
+  React.useEffect(() => {
+    if (!slugTouched && newPlaceName) {
+      setNewPlaceSlug(newPlaceName.toLowerCase().replace(/\s+/g, "-"));
+    }
+  }, [newPlaceName, slugTouched]);
+
+  // Clean up preview URL when component unmounts or image changes
+  React.useEffect(() => {
+    return () => {
+      if (imagePreview) URL.revokeObjectURL(imagePreview);
+    };
+  }, [imagePreview]);
+
+  // Function to handle adding a new place
+  const handleAddPlace = async () => {
     if (!newPlaceName.trim()) {
       alert("Please enter a place name.");
       return;
     }
-    const newPlace: Place = {
+    const newPlace = {
       name: newPlaceName,
-      id: 0,
-      created_at: "",
-      business_id: 0,
-      slug: "",
-      accounts: [],
-      invite_code: null,
-      terminal_id: null,
-      image: null,
-      description: null
+      description: newPlaceDescription || undefined,
+      slug: newPlaceSlug || undefined,
+      image: newPlaceImage ? await uploadImage(newPlaceImage) : undefined, // Upload logic
     };
     console.log("Adding new place:", newPlace);
-    // Here you’d typically call an API to save the new place
-    // For now, we’ll just log it and close the modal
-    setNewPlaceName(""); // Reset input
-    setIsAddDialogOpen(false); // Close modal
+    // Reset form
+    setNewPlaceName("");
+    setNewPlaceDescription("");
+    setNewPlaceSlug("");
+    setNewPlaceImage(null);
+    setImagePreview("");
+    setSlugTouched(false);
+    setIsAddDialogOpen(false);
+  };
+
+  // Dummy upload function (replace with actual API call)
+  const uploadImage = async (file: File): Promise<string> => {
+    // Simulate upload to a server (e.g., Supabase, AWS S3, etc.)
+    const formData = new FormData();
+    formData.append("image", file);
+    // Example: await fetch("/api/upload", { method: "POST", body: formData });
+    return `https://example.com/uploads/${file.name}`; // Return uploaded URL
   };
 
   return (
@@ -120,6 +147,7 @@ export function PlaceSwitcher({
 
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
 
+
               <DialogTrigger asChild>
                 <DropdownMenuItem
                   className="gap-2 p-2"
@@ -151,7 +179,55 @@ export function PlaceSwitcher({
                       placeholder="Enter place name"
                     />
                   </div>
-                  {/* Add more fields here if needed */}
+                  <div className="grid gap-2">
+                    <label htmlFor="description" className="text-sm font-medium">
+                      Description
+                    </label>
+                    <Input
+                      id="description"
+                      value={newPlaceDescription}
+                      onChange={(e) => setNewPlaceDescription(e.target.value)}
+                      placeholder="Enter description"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <label htmlFor="slug" className="text-sm font-medium">
+                      Slug
+                    </label>
+                    <Input
+                      id="slug"
+                      value={newPlaceSlug}
+                      onChange={(e) => {
+                        setNewPlaceSlug(e.target.value);
+                        setSlugTouched(true); // Mark as touched when user edits
+                      }}
+                      placeholder="Enter slug"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <label htmlFor="image" className="text-sm font-medium">
+                      Image
+                    </label>
+                    <input
+                      id="image"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setNewPlaceImage(file);
+                          setImagePreview(URL.createObjectURL(file));
+                        }
+                      }}
+                    />
+                    {imagePreview && (
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="mt-2 h-20 w-20 object-cover rounded-md"
+                      />
+                    )}
+                  </div>
                 </div>
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
