@@ -105,7 +105,6 @@ export const createPlace = async (
   return client.from('places').insert(place).select().single();
 };
 
-// TODO: add pagination
 export const getAllPlaces = async (
   client: SupabaseClient
 ): Promise<PostgrestResponse<Place>> => {
@@ -147,4 +146,11 @@ export const checkUserPlaceAccess = async (
   }
 
   return data !== null;
+};
+
+export const uniqueSlugPlace = async (
+  client: SupabaseClient,
+  slug: string
+): Promise<PostgrestSingleResponse< { data: Place | null; error: any } >> => {
+  return await client.from('places').select('id').eq('slug', slug).single();
 };

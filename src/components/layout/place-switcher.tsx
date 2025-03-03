@@ -29,6 +29,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "../ui/button"
+import { createPlaceAction, generateUniqueSlugAction, uploadImageAction } from "@/app/business/action"
+import { createSlug } from "@/lib/utils"
+import { toast } from "sonner"
 
 export function PlaceSwitcher({
   places,
@@ -41,12 +44,11 @@ export function PlaceSwitcher({
   );
   const [isAddDialogOpen, setIsAddDialogOpen] = React.useState(false);
   const [newPlaceName, setNewPlaceName] = React.useState("");
-  const [newPlaceDescription, setNewPlaceDescription] = React.useState("");
   const [newPlaceSlug, setNewPlaceSlug] = React.useState("");
-  const [newPlaceImage, setNewPlaceImage] = React.useState<File | null>(null); // Store the File object
-  const [imagePreview, setImagePreview] = React.useState<string>(""); // Preview URL
-
+  const [newPlaceImage, setNewPlaceImage] = React.useState<File | null>(null);
+  const [imagePreview, setImagePreview] = React.useState<string>("");
   const [slugTouched, setSlugTouched] = React.useState(false);
+  const [slugError, setSlugError] = React.useState<string | null>(null);
 
   const changePlace = (place: Place) => {
     console.log("change place")
@@ -56,7 +58,17 @@ export function PlaceSwitcher({
   // Auto-generate slug from name if not touched
   React.useEffect(() => {
     if (!slugTouched && newPlaceName) {
-      setNewPlaceSlug(newPlaceName.toLowerCase().replace(/\s+/g, "-"));
+      const baseSlug = createSlug(newPlaceName);
+      const updateSlug = async () => {
+        try {
+          const uniqueSlug = await generateUniqueSlugAction(baseSlug);
+          setNewPlaceSlug(uniqueSlug);
+          setSlugError(null);
+        } catch (err) {
+          setSlugError("Unable to generate a unique slug. Please edit manually.");
+        }
+      };
+      updateSlug();
     }
   }, [newPlaceName, slugTouched]);
 
@@ -70,33 +82,36 @@ export function PlaceSwitcher({
   // Function to handle adding a new place
   const handleAddPlace = async () => {
     if (!newPlaceName.trim()) {
-      alert("Please enter a place name.");
+      toast.error("Please enter a place name.");
       return;
     }
-    const newPlace = {
-      name: newPlaceName,
-      description: newPlaceDescription || undefined,
-      slug: newPlaceSlug || undefined,
-      image: newPlaceImage ? await uploadImage(newPlaceImage) : undefined, // Upload logic
-    };
-    console.log("Adding new place:", newPlace);
-    // Reset form
-    setNewPlaceName("");
-    setNewPlaceDescription("");
-    setNewPlaceSlug("");
-    setNewPlaceImage(null);
-    setImagePreview("");
-    setSlugTouched(false);
-    setIsAddDialogOpen(false);
+    if (slugError) {
+      toast.error("Please resolve the slug error before adding.");
+      return;
+    }
+
+    try {
+      const image = newPlaceImage ? await uploadImage(newPlaceImage) : "";
+      const data = await createPlaceAction(newPlaceName, newPlaceSlug, image);
+      toast.success("New Place added");
+      window.location.reload();
+    } catch (error:any) {
+      toast.error(error.toString());
+    } finally {
+      setNewPlaceName("");
+      setNewPlaceSlug("");
+      setNewPlaceImage(null);
+      setImagePreview("");
+      setSlugTouched(false);
+      setIsAddDialogOpen(false);
+      setSlugError(null);
+    }
   };
 
-  // Dummy upload function (replace with actual API call)
+  //  upload function
   const uploadImage = async (file: File): Promise<string> => {
-    // Simulate upload to a server (e.g., Supabase, AWS S3, etc.)
-    const formData = new FormData();
-    formData.append("image", file);
-    // Example: await fetch("/api/upload", { method: "POST", body: formData });
-    return `https://example.com/uploads/${file.name}`; // Return uploaded URL
+    const imageUrl = await uploadImageAction(file);
+    return imageUrl;
   };
 
   return (
@@ -179,17 +194,7 @@ export function PlaceSwitcher({
                       placeholder="Enter place name"
                     />
                   </div>
-                  <div className="grid gap-2">
-                    <label htmlFor="description" className="text-sm font-medium">
-                      Description
-                    </label>
-                    <Input
-                      id="description"
-                      value={newPlaceDescription}
-                      onChange={(e) => setNewPlaceDescription(e.target.value)}
-                      placeholder="Enter description"
-                    />
-                  </div>
+
                   <div className="grid gap-2">
                     <label htmlFor="slug" className="text-sm font-medium">
                       Slug
@@ -199,10 +204,11 @@ export function PlaceSwitcher({
                       value={newPlaceSlug}
                       onChange={(e) => {
                         setNewPlaceSlug(e.target.value);
-                        setSlugTouched(true); // Mark as touched when user edits
+                        setSlugTouched(true);
                       }}
                       placeholder="Enter slug"
                     />
+                    {slugError && <p className="text-red-500 text-sm">{slugError}</p>}
                   </div>
                   <div className="grid gap-2">
                     <label htmlFor="image" className="text-sm font-medium">
