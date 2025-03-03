@@ -40,10 +40,6 @@ export default function UserSignupForm() {
     try {
       startTransition(async () => {
 
-        console.log("this data: ", credentials);
-        // email:"rdilshan077788@gmail.com"
-        // name:"Randika Dilshan"
-        // phone:"+94777884473"
         const res = await sendOtpAction(credentials.email);
         localStorage.setItem('otpEmail', credentials.email);
         localStorage.setItem('regName', credentials.name);

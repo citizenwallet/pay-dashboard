@@ -58,8 +58,6 @@ export function CompanyOnboarding() {
   const handleSubmit = async (data: CompanyInfo) => {
     setLoading(true);
 
-    console.log("CompanyOnboarding.tsx......");
-    console.log(data);
 
     await fetch('/api/businesses/onboard', {
       method: 'POST',

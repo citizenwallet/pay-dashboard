@@ -35,8 +35,7 @@ const authConfig = {
         if (userres.error) {
           return null;
         }
-        console.log("msg by next auth..")
-        console.log("user", userres);
+
         const user = {
           id: (userres.data.id).toString(),
           email: userres.data.email,
