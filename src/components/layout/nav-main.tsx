@@ -18,35 +18,42 @@ import {
     SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link";
+import { Place } from "@/db/places";
 
 
 
 
-export function NavMain() {
+export function NavMain({
+  businessId,
+  lastid
+}: {
+  businessId:number;
+  lastid:Place;
+}) {
 
     const data = [
         {
             title: "Order",
-            url: "/business/118/places/105/orders",
+            url: `/business/${businessId}/places/${lastid.id}/orders`,
             icon: LayoutDashboard,
             isActive: true,
             items: [],
         },
         {
             title: "Checkout",
-            url: "/business/118/places/105/checkout",
+            url: `/business/${businessId}/places/${lastid.id}/checkout`,
             icon: Bot,
             items: [],
         },
         {
             title: "Profile",
-            url: "/business/118/places/105/profile",
+            url: `/business/${businessId}/places/${lastid.id}/profile`,
             icon: User,
             items: [],
         },
         {
             title: "Manage",
-            url: "/business/118/places/105/manage",
+            url: `/business/${businessId}/places/${lastid.id}/manage`,
             icon: Settings2,
             items: [],
         }

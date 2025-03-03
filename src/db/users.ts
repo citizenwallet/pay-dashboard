@@ -57,3 +57,25 @@ export const isAdmin = async (client: SupabaseClient, userId: number) => {
 
   return data?.usergroup === 'admin';
 };
+
+export const updateLastplace = async (
+  client: SupabaseClient,
+  userid: number,
+  placeid: number
+): Promise<PostgrestSingleResponse<User | null>> => {
+  return client
+    .from('users')
+    .update({ last_place: placeid })
+    .eq('id', userid);
+};
+
+export const getLastplace = async (
+  client: SupabaseClient,
+  userid: number
+)=> {
+  return client
+  .from('users')
+  .select('last_place') 
+  .eq('id', userid)
+  .single();
+};

@@ -29,14 +29,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "../ui/button"
-import { createPlaceAction, generateUniqueSlugAction, uploadImageAction } from "@/app/business/action"
+import { changeLastPlaceAction, createPlaceAction, generateUniqueSlugAction, uploadImageAction } from "@/app/business/action"
 import { createSlug } from "@/lib/utils"
 import { toast } from "sonner"
 
 export function PlaceSwitcher({
   places,
+  lastid
 }: {
-  places: Place[] | null
+  places: Place[] | null;
+  lastid:Place;
 }) {
   const { isMobile } = useSidebar()
   const [activeTeam, setActiveTeam] = React.useState<Place | null>(
@@ -50,10 +52,16 @@ export function PlaceSwitcher({
   const [slugTouched, setSlugTouched] = React.useState(false);
   const [slugError, setSlugError] = React.useState<string | null>(null);
 
-  const changePlace = (place: Place) => {
-    console.log("change place")
-    console.log(place)
-    setActiveTeam(place)
+  const changePlace = async (place: Place) => {
+    try {
+      setActiveTeam(place)
+      await changeLastPlaceAction(place.id)
+    } catch (error) {
+      toast.error("Error with switching the place");
+    }finally{
+      window.location.reload();
+    }
+
   }
   // Auto-generate slug from name if not touched
   React.useEffect(() => {
@@ -128,7 +136,7 @@ export function PlaceSwitcher({
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">
-                  {activeTeam?.name || "Select a place"}
+                  {lastid.name}
                 </span>
               </div>
               <ChevronsUpDown className="ml-auto" />

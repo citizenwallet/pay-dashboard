@@ -6,13 +6,19 @@ import {
 } from '@/actions/session';
 import { getServiceRoleClient } from '@/db';
 import { getBusinessIdByUserId } from '@/db/business';
-import { createPlace, getPlacesByBusinessId, Place, uniqueSlugPlace } from '@/db/places';
+import {
+  createPlace,
+  getPlaceById,
+  getPlacesByBusinessId,
+  Place,
+  uniqueSlugPlace
+} from '@/db/places';
 import { generateRandomString } from '@/lib/utils';
 import { uploadImage } from '@/services/storage/upload';
 import { Wallet } from 'ethers';
 import { getAccountAddress, CommunityConfig } from '@citizenwallet/sdk';
 import Config from '@/cw/community.json';
-
+import { getLastplace, updateLastplace } from '@/db/users';
 
 export async function getPlaceAction() {
   const client = getServiceRoleClient();
@@ -45,25 +51,25 @@ export const generateUniqueSlugAction = async (baseSlug: string) => {
 
     const { data, error } = await uniqueSlugPlace(client, slug);
 
-    if (error && error.code !== "PGRST116") { 
-      throw new Error("Error checking slug uniqueness");
+    if (error && error.code !== 'PGRST116') {
+      throw new Error('Error checking slug uniqueness');
     }
 
     if (!data) {
-      return slug; 
+      return slug;
     }
 
     slug = `${baseSlug}-${generateRandomString(4)}`;
     attempts++;
   }
 
-  throw new Error("Unable to generate unique slug after max attempts");
+  throw new Error('Unable to generate unique slug after max attempts');
 };
 
 export async function createPlaceAction(
-  name:string,
-  slug:string,
-  image:string
+  name: string,
+  slug: string,
+  image: string
 ) {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
@@ -81,15 +87,54 @@ export async function createPlaceAction(
     return { error: 'Failed to get account address' };
   }
 
-  const newplace = await createPlace(client,{
+  const newplace = await createPlace(client, {
     business_id: busid,
     slug: slug,
     name: name,
-    accounts:[account],
-    invite_code:invitationCode,
-    image:image
-  })
+    accounts: [account],
+    invite_code: invitationCode,
+    image: image
+  });
 
   return newplace;
 }
 
+export async function getbusinessidAction(): Promise<number> {
+  const client = getServiceRoleClient();
+  const userId = await getUserIdFromSessionAction();
+  const businessid = await getBusinessIdByUserId(client, userId);
+  const busid = businessid.data?.linked_business_id;
+  return busid;
+}
+
+
+export const changeLastPlaceAction = async (placeid: number) => {
+  const client = getServiceRoleClient();
+  const userId = await getUserIdFromSessionAction();
+  const data = await updateLastplace(client, userId, placeid);
+  return data;
+};
+
+export const getLastPlaceAction = async () => {
+  const client = getServiceRoleClient();
+  const userId = await getUserIdFromSessionAction();
+  const data = await getLastplace(client, userId);
+  let lastId = data.data?.last_place;
+  if(!lastId){
+    const places = await getPlaceAction()
+    if (places && places.length > 0) {
+      lastId = places[0].id;
+    }
+    return lastId;
+  }
+  
+  return lastId;
+};
+
+export const getPlacebyIdAction = async()=>{
+  const client = getServiceRoleClient();
+  const id = await getLastPlaceAction();
+  const res = await getPlaceById(client,Number(id))
+  return res.data
+
+}

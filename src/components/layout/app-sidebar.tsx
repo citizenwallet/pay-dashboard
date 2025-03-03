@@ -49,11 +49,13 @@ export default function AppSidebar({
   isAdmin,
   places,
   bussinessid,
+  lastid,
   children
 }: {
   isAdmin: boolean;
   places:Place[] | null;
   bussinessid:number;
+  lastid:Place;
   children: React.ReactNode;
 }) {
 
@@ -80,13 +82,13 @@ export default function AppSidebar({
             </div>
           </div>
 
-          <PlaceSwitcher places={places} />
+          <PlaceSwitcher places={places} lastid={lastid}/>
 
         </SidebarHeader>
 
         <SidebarContent>
           <NavButton />
-          <NavMain />
+          <NavMain businessId={bussinessid} lastid={lastid}/>
         </SidebarContent>
 
         <SidebarFooter>
