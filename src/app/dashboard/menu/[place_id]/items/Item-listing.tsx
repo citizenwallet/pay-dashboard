@@ -9,7 +9,8 @@ import {
   deletePlaceItemAction,
   updateItemOrderInPlaceAction,
   updateItemNameAction,
-  updateItemDescriptionAction
+  updateItemDescriptionAction,
+  updateItemPriceAction
 } from './action';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -31,10 +32,11 @@ export default function ItemListing({
   const [loading, setLoading] = useState<number | null>(null);
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
   const [editingField, setEditingField] = useState<
-    'name' | 'description' | null
+    'name' | 'description' | 'price' | null
   >(null);
   const [editingName, setEditingName] = useState<string>('');
   const [editingDescription, setEditingDescription] = useState<string>('');
+  const [editingPrice, setEditingPrice] = useState<string>('');
   const router = useRouter();
 
   const handleDragStart = (id: number) => {
@@ -216,15 +218,17 @@ export default function ItemListing({
     setEditingDescription(item.description);
   };
 
-  const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDescriptionChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     setEditingDescription(e.target.value);
   };
 
   const handleDescriptionKeyDown = (
-    e: KeyboardEvent<HTMLInputElement>,
+    e: KeyboardEvent<HTMLTextAreaElement>,
     item: Item
   ) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && e.ctrlKey) {
       handleDescriptionSave(item);
     } else if (e.key === 'Escape') {
       setEditingItemId(null);
@@ -262,6 +266,86 @@ export default function ItemListing({
     } catch (error) {
       console.error('Failed to update item description:', error);
       toast.error('Failed to update item description');
+    } finally {
+      setEditingItemId(null);
+      setEditingField(null);
+      setLoading(null);
+    }
+  };
+
+  const handlePriceClick = (item: Item) => {
+    setEditingItemId(item.id);
+    setEditingField('price');
+    setEditingPrice(formatCurrencyNumber(item.price));
+  };
+
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Only allow numbers and a single decimal point
+    const value = e.target.value;
+    if (/^(\d*\.?\d{0,2})?$/.test(value)) {
+      setEditingPrice(value);
+    }
+  };
+
+  const handlePriceKeyDown = (
+    e: KeyboardEvent<HTMLInputElement>,
+    item: Item
+  ) => {
+    if (e.key === 'Enter') {
+      handlePriceSave(item);
+    } else if (e.key === 'Escape') {
+      setEditingItemId(null);
+      setEditingField(null);
+    }
+  };
+
+  const handlePriceSave = async (item: Item) => {
+    if (editingPrice.trim() === '') {
+      toast.error('Price cannot be empty');
+      return;
+    }
+
+    const newPrice = Math.round(parseFloat(editingPrice) * 100);
+
+    if (isNaN(newPrice)) {
+      toast.error('Please enter a valid price');
+      return;
+    }
+
+    if (newPrice < 0) {
+      toast.error('Price cannot be negative');
+      return;
+    }
+
+    if (newPrice === item.price) {
+      setEditingItemId(null);
+      setEditingField(null);
+      return;
+    }
+
+    try {
+      setLoading(item.id);
+      const response = await updateItemPriceAction(
+        item.id,
+        item.place_id,
+        newPrice
+      );
+
+      if (response.error) {
+        toast.error('Failed to update item price');
+      } else {
+        toast.success('Item price updated successfully');
+
+        // Update the local state
+        const updatedItems = items.map((i) =>
+          i.id === item.id ? { ...i, price: newPrice } : i
+        );
+        setItems(updatedItems);
+        router.refresh();
+      }
+    } catch (error) {
+      console.error('Failed to update item price:', error);
+      toast.error('Failed to update item price');
     } finally {
       setEditingItemId(null);
       setEditingField(null);
@@ -335,19 +419,20 @@ export default function ItemListing({
               </td>
               <td className="border p-2">
                 {editingItemId === item.id && editingField === 'description' ? (
-                  <input
+                  <textarea
                     value={editingDescription}
                     onChange={handleDescriptionChange}
                     onKeyDown={(e) => handleDescriptionKeyDown(e, item)}
                     onBlur={() => handleDescriptionSave(item)}
                     autoFocus
                     className="w-full rounded border border-gray-300 p-1"
+                    rows={3}
                     placeholder="Enter description"
                   />
                 ) : (
                   <div
                     onClick={() => handleDescriptionClick(item)}
-                    className="cursor-pointer rounded p-1 hover:bg-gray-200"
+                    className="cursor-pointer rounded p-1 hover:bg-gray-100"
                   >
                     {item.description || (
                       <span className="italic text-gray-400">
@@ -359,10 +444,28 @@ export default function ItemListing({
               </td>
               <td className="border p-2">{item.category}</td>
               <td className="border p-2">
-                <p className="flex w-8 items-center gap-1">
-                  <CurrencyLogo logo={currencyLogo} size={18} />
-                  {formatCurrencyNumber(item.price)}
-                </p>
+                {editingItemId === item.id && editingField === 'price' ? (
+                  <div className="flex items-center gap-1">
+                    <CurrencyLogo logo={currencyLogo} size={18} />
+                    <input
+                      type="text"
+                      value={editingPrice}
+                      onChange={handlePriceChange}
+                      onKeyDown={(e) => handlePriceKeyDown(e, item)}
+                      onBlur={() => handlePriceSave(item)}
+                      autoFocus
+                      className="w-20 rounded border border-gray-300 p-1"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    onClick={() => handlePriceClick(item)}
+                    className="flex w-fit cursor-pointer items-center gap-1 rounded p-1 hover:bg-gray-100"
+                  >
+                    <CurrencyLogo logo={currencyLogo} size={18} />
+                    {formatCurrencyNumber(item.price)}
+                  </div>
+                )}
               </td>
               <td className="border p-2">
                 <div className="flex items-center gap-2">

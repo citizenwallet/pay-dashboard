@@ -85,3 +85,19 @@ export async function updateItemDescriptionAction(
 
   return updateItem(client, itemId, { description });
 }
+
+export async function updateItemPriceAction(
+  itemId: number,
+  placeId: number,
+  price: number
+) {
+  const client = getServiceRoleClient();
+  const userId = await getUserIdFromSessionAction();
+
+  const res = await isUserLinkedToPlaceAction(client, userId, placeId);
+  if (!res) {
+    throw new Error('User does not have access to this place');
+  }
+
+  return updateItem(client, itemId, { price });
+}
