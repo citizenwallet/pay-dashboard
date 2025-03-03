@@ -20,10 +20,7 @@ export default function OtpEntry() {
     const [isCounting, setIsCounting] = useState(true);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
-    const router = useRouter();
-
-
-    // http://localhost:3006/otp?email=user%40example.com
+    const router = useRouter()
 
     useEffect(() => {
         //get the local storage value
@@ -93,18 +90,12 @@ export default function OtpEntry() {
         }
         try {
             const success = await signAction(email, otpCode);
-            // console.log("msg by front end..")
-            window.location.href = redirectLocation;
+            router.push(redirectLocation)
+
         } catch (error) {
             setErrorMessage('Invalid or expired OTP. Please try again.');
         }
 
-        // if (error) {
-        //     setErrorMessage('Invalid or expired OTP. Please try again.');
-        // } else {
-        //     setSuccessMessage('OTP verified successfully!');
-        //     setTimeout(() => router.push('/dashboard/places'), 1000);
-        // }
     };
 
     return (
