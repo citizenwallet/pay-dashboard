@@ -34,3 +34,15 @@ export const getBusinessByToken = async (
     .eq('invite_code', token)
     .single();
 };
+
+
+export const getBusinessIdByUserId = async (
+  client: SupabaseClient,
+  userid: number
+)=> {
+  return client
+    .from('users')
+    .select('linked_business_id')
+    .eq('id', userid)
+    .single();
+};

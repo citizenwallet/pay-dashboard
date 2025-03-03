@@ -9,7 +9,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
@@ -18,16 +17,60 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { Place } from "@/db/places"
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "../ui/button"
 
 export function PlaceSwitcher({
-  teams,
+  places,
 }: {
-  teams: {
-    name: string
-  }[]
+  places: Place[] | null
 }) {
   const { isMobile } = useSidebar()
-  const [activeTeam, setActiveTeam] = React.useState(teams[0])
+  const [activeTeam, setActiveTeam] = React.useState<Place | null>(
+    places && places.length > 0 ? places[0] : null
+  );
+  const [isAddDialogOpen, setIsAddDialogOpen] = React.useState(false);
+  const [newPlaceName, setNewPlaceName] = React.useState("");
+
+  const changePlace = (place:Place)=>{
+    console.log("change place")
+    console.log(place)
+    setActiveTeam(place)
+  }
+  // Function to handle adding a new place (e.g., API call)
+  const handleAddPlace = () => {
+    if (!newPlaceName.trim()) {
+      alert("Please enter a place name.");
+      return;
+    }
+    const newPlace: Place = {
+      name: newPlaceName,
+      id: 0,
+      created_at: "",
+      business_id: 0,
+      slug: "",
+      accounts: [],
+      invite_code: null,
+      terminal_id: null,
+      image: null,
+      description: null
+    };
+    console.log("Adding new place:", newPlace);
+    // Here you’d typically call an API to save the new place
+    // For now, we’ll just log it and close the modal
+    setNewPlaceName(""); // Reset input
+    setIsAddDialogOpen(false); // Close modal
+  };
 
   return (
     <SidebarMenu>
@@ -43,7 +86,7 @@ export function PlaceSwitcher({
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">
-                  {activeTeam.name}
+                  {activeTeam?.name || "Select a place"}
                 </span>
               </div>
               <ChevronsUpDown className="ml-auto" />
@@ -58,10 +101,11 @@ export function PlaceSwitcher({
             <DropdownMenuLabel className="text-xs text-muted-foreground">
               Places
             </DropdownMenuLabel>
-            {teams.map((team, index) => (
+
+            {places && places.map((team) => (
               <DropdownMenuItem
                 key={team.name}
-                onClick={() => setActiveTeam(team)}
+                onClick={() => changePlace(team)}
                 className="gap-2 p-2"
               >
                 <div className="flex size-6 items-center justify-center rounded-sm border">
@@ -70,13 +114,55 @@ export function PlaceSwitcher({
                 {team.name}
               </DropdownMenuItem>
             ))}
+
+
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 p-2">
-              <div className="flex size-6 items-center justify-center rounded-md border bg-background">
-                <Plus className="size-4" />
-              </div>
-              <div className="font-medium text-muted-foreground">Add team</div>
-            </DropdownMenuItem>
+
+            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+
+              <DialogTrigger asChild>
+                <DropdownMenuItem
+                  className="gap-2 p-2"
+                  onSelect={(e) => e.preventDefault()} // Prevent dropdown from closing
+                >
+                  <div className="flex size-6 items-center justify-center rounded-md border bg-background">
+                    <Plus className="size-4" />
+                  </div>
+                  <div className="font-medium text-muted-foreground">Add place</div>
+                </DropdownMenuItem>
+              </DialogTrigger>
+
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add a New Place</DialogTitle>
+                  <DialogDescription>
+                    Enter the details for the new place below.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid gap-2">
+                    <label htmlFor="name" className="text-sm font-medium">
+                      Place Name
+                    </label>
+                    <Input
+                      id="name"
+                      value={newPlaceName}
+                      onChange={(e) => setNewPlaceName(e.target.value)}
+                      placeholder="Enter place name"
+                    />
+                  </div>
+                  {/* Add more fields here if needed */}
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleAddPlace}>Add</Button>
+                </DialogFooter>
+              </DialogContent>
+
+            </Dialog>
+
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

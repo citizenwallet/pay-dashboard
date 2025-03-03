@@ -37,6 +37,7 @@ import { Logo } from '@/components/logo';
 import { signOut } from 'next-auth/react';
 import { PlaceSwitcher } from "./place-switcher";
 import { NavButton } from './nav-button';
+import { Place } from '@/db/places';
 
 export const company = {
   name: 'Brussels Pay',
@@ -46,27 +47,17 @@ export const company = {
 
 export default function AppSidebar({
   isAdmin,
+  places,
+  bussinessid,
   children
 }: {
   isAdmin: boolean;
+  places:Place[] | null;
+  bussinessid:number;
   children: React.ReactNode;
 }) {
 
   const { data: session } = useSession();
-
-  const data = {
-    teams: [
-      {
-        name: "Acme Inc"
-      },
-      {
-        name: "Acme Corp."
-      },
-      {
-        name: "Evil Corp."
-      },
-    ]
-  }
 
   return (
     <SidebarProvider>
@@ -89,7 +80,7 @@ export default function AppSidebar({
             </div>
           </div>
 
-          <PlaceSwitcher teams={data.teams} />
+          <PlaceSwitcher places={places} />
 
         </SidebarHeader>
 
