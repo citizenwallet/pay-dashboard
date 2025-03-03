@@ -11,7 +11,8 @@ import {
   updateItemNameAction,
   updateItemDescriptionAction,
   updateItemPriceAction,
-  updateItemCategoryAction
+  updateItemCategoryAction,
+  updateItemVatAction
 } from './action';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -33,12 +34,13 @@ export default function ItemListing({
   const [loading, setLoading] = useState<number | null>(null);
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
   const [editingField, setEditingField] = useState<
-    'name' | 'description' | 'price' | 'category' | null
+    'name' | 'description' | 'price' | 'category' | 'vat' | null
   >(null);
   const [editingName, setEditingName] = useState<string>('');
   const [editingDescription, setEditingDescription] = useState<string>('');
   const [editingPrice, setEditingPrice] = useState<string>('');
   const [editingCategory, setEditingCategory] = useState<string>('');
+  const [editingVat, setEditingVat] = useState<string>('');
   const router = useRouter();
 
   const handleDragStart = (id: number) => {
@@ -414,6 +416,83 @@ export default function ItemListing({
     }
   };
 
+  const handleVatClick = (item: Item) => {
+    setEditingItemId(item.id);
+    setEditingField('vat');
+    setEditingVat(item.vat.toString());
+  };
+
+  const handleVatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Only allow numbers and a single decimal point
+    const value = e.target.value;
+    if (/^(\d*\.?\d{0,2})?$/.test(value)) {
+      setEditingVat(value);
+    }
+  };
+
+  const handleVatKeyDown = (e: KeyboardEvent<HTMLInputElement>, item: Item) => {
+    if (e.key === 'Enter') {
+      handleVatSave(item);
+    } else if (e.key === 'Escape') {
+      setEditingItemId(null);
+      setEditingField(null);
+    }
+  };
+
+  const handleVatSave = async (item: Item) => {
+    if (editingVat.trim() === '') {
+      toast.error('VAT cannot be empty');
+      return;
+    }
+
+    const newVat = parseFloat(editingVat);
+
+    if (isNaN(newVat)) {
+      toast.error('Please enter a valid VAT percentage');
+      return;
+    }
+
+    if (newVat < 0) {
+      toast.error('VAT cannot be negative');
+      return;
+    }
+
+    if (newVat === item.vat) {
+      setEditingItemId(null);
+      setEditingField(null);
+      return;
+    }
+
+    try {
+      setLoading(item.id);
+      const response = await updateItemVatAction(
+        item.id,
+        item.place_id,
+        newVat
+      );
+
+      if (response.error) {
+        toast.error('Failed to update item VAT');
+      } else {
+        toast.success('Item VAT updated successfully');
+
+        // Update the local state
+        const updatedItems = items.map((i) =>
+          i.id === item.id ? { ...i, vat: newVat } : i
+        );
+        setItems(updatedItems);
+        router.refresh();
+      }
+    } catch (error) {
+      console.error('Failed to update item VAT:', error);
+      toast.error('Failed to update item VAT');
+    } finally {
+      setEditingItemId(null);
+      setEditingField(null);
+      setLoading(null);
+    }
+  };
+
   return (
     <div>
       <table className="w-full border-collapse">
@@ -425,7 +504,7 @@ export default function ItemListing({
             <th className="border p-2 text-left">Description</th>
             <th className="border p-2 text-left">Category</th>
             <th className="border p-2 text-left">Price</th>
-            <th className="border p-2 text-left">VAT</th>
+            <th className="border p-2 text-left">VAT %</th>
             <th className="border p-2 text-left">Action</th>
           </tr>
         </thead>
@@ -550,7 +629,29 @@ export default function ItemListing({
                   </div>
                 )}
               </td>
-              <td className="border p-2">{item.vat}%</td>
+              <td className="border p-2">
+                {editingItemId === item.id && editingField === 'vat' ? (
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="text"
+                      value={editingVat}
+                      onChange={handleVatChange}
+                      onKeyDown={(e) => handleVatKeyDown(e, item)}
+                      onBlur={() => handleVatSave(item)}
+                      autoFocus
+                      className="w-16 rounded border border-gray-300 p-1"
+                    />
+                    <span>%</span>
+                  </div>
+                ) : (
+                  <div
+                    onClick={() => handleVatClick(item)}
+                    className="flex w-fit cursor-pointer items-center gap-1 rounded p-1 hover:bg-gray-100"
+                  >
+                    {item.vat}%
+                  </div>
+                )}
+              </td>
               <td className="border p-2">
                 <div className="flex items-center gap-2">
                   <Link

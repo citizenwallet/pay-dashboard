@@ -117,3 +117,19 @@ export async function updateItemCategoryAction(
 
   return updateItem(client, itemId, { category });
 }
+
+export async function updateItemVatAction(
+  itemId: number,
+  placeId: number,
+  vat: number
+) {
+  const client = getServiceRoleClient();
+  const userId = await getUserIdFromSessionAction();
+
+  const res = await isUserLinkedToPlaceAction(client, userId, placeId);
+  if (!res) {
+    throw new Error('User does not have access to this place');
+  }
+
+  return updateItem(client, itemId, { vat });
+}
