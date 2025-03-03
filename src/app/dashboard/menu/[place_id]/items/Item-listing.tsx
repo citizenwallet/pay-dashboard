@@ -774,12 +774,6 @@ export default function ItemListing({
               </td>
               <td className="border p-2">
                 <div className="flex items-center gap-2">
-                  <Link
-                    href={`/dashboard/menu/${item.place_id}/items/${item.id}/edit`}
-                    className="hover:text-yellow-600"
-                  >
-                    <icons.Pen size={20} />
-                  </Link>
                   <button
                     onClick={() => handleDelete(item.id, item.place_id)}
                     className="hover:text-red-600"
