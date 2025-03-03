@@ -16,7 +16,8 @@ import {
   updateItemCategoryAction,
   updateItemVatAction,
   uploadItemImageAction,
-  updateItemHiddenStatusAction
+  updateItemHiddenStatusAction,
+  addNewItemAction
 } from './action';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -36,6 +37,7 @@ export default function ItemListing({
   const nextItemIdRef = useRef<number | null>(null);
   const [draggingItem, setDraggingItem] = useState<number | null>(null);
   const [loading, setLoading] = useState<number | null>(null);
+  const [addingItem, setAddingItem] = useState<boolean>(false);
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
   const [editingField, setEditingField] = useState<
     'name' | 'description' | 'price' | 'category' | 'vat' | 'image' | null
@@ -142,7 +144,6 @@ export default function ItemListing({
                 } else {
                   toast.success('Item deleted successfully');
                   setItems(items.filter((item) => item.id !== id));
-                  router.refresh();
                 }
               }}
             >
@@ -210,7 +211,6 @@ export default function ItemListing({
           i.id === item.id ? { ...i, name: editingName } : i
         );
         setItems(updatedItems);
-        router.refresh();
       }
     } catch (error) {
       console.error('Failed to update item name:', error);
@@ -271,7 +271,6 @@ export default function ItemListing({
           i.id === item.id ? { ...i, description: editingDescription } : i
         );
         setItems(updatedItems);
-        router.refresh();
       }
     } catch (error) {
       console.error('Failed to update item description:', error);
@@ -351,7 +350,6 @@ export default function ItemListing({
           i.id === item.id ? { ...i, price: newPrice } : i
         );
         setItems(updatedItems);
-        router.refresh();
       }
     } catch (error) {
       console.error('Failed to update item price:', error);
@@ -410,7 +408,6 @@ export default function ItemListing({
           i.id === item.id ? { ...i, category: editingCategory } : i
         );
         setItems(updatedItems);
-        router.refresh();
       }
     } catch (error) {
       console.error('Failed to update item category:', error);
@@ -592,13 +589,66 @@ export default function ItemListing({
           i.id === item.id ? { ...i, hidden } : i
         );
         setItems(updatedItems);
-        router.refresh();
       }
     } catch (error) {
       console.error(`Failed to update item visibility:`, error);
       toast.error(`Failed to ${hidden ? 'hide' : 'show'} item`);
     } finally {
       setLoading(null);
+    }
+  };
+
+  const handleAddItem = async () => {
+    try {
+      setAddingItem(true);
+
+      // Get the place ID from the URL if there are no items
+      let placeId: number;
+      if (items.length > 0) {
+        placeId = items[0].place_id;
+      } else {
+        // Extract place_id from the URL
+        const pathParts = window.location.pathname.split('/');
+        const placeIdIndex = pathParts.findIndex((part) => part === 'menu') + 1;
+        placeId = parseInt(pathParts[placeIdIndex], 10);
+
+        if (isNaN(placeId)) {
+          toast.error('Could not determine place ID');
+          return;
+        }
+      }
+
+      const response = await addNewItemAction(placeId);
+
+      if (response.error) {
+        toast.error('Failed to add new item');
+      } else {
+        toast.success('New item added successfully');
+
+        // Add the new item to the top of the list
+        const newItem = response.data;
+        setItems([newItem, ...items]);
+
+        // Automatically start editing the name of the new item
+        setEditingItemId(newItem.id);
+        setEditingField('name');
+        setEditingName(newItem.name);
+
+        // Use setTimeout to ensure the input field is rendered before focusing
+        setTimeout(() => {
+          const inputElement = document.querySelector(
+            `input[data-item-id="${newItem.id}"]`
+          ) as HTMLInputElement;
+          if (inputElement) {
+            inputElement.focus();
+          }
+        }, 0);
+      }
+    } catch (error) {
+      console.error('Failed to add new item:', error);
+      toast.error('Failed to add new item');
+    } finally {
+      setAddingItem(false);
     }
   };
 
@@ -619,6 +669,26 @@ export default function ItemListing({
           }
         }}
       />
+
+      <div className="mb-4 flex items-center justify-end">
+        <Button
+          onClick={handleAddItem}
+          disabled={addingItem}
+          className="flex items-center gap-2"
+        >
+          {addingItem ? (
+            <>
+              <icons.Loader className="animate-spin" size={16} />
+              Adding...
+            </>
+          ) : (
+            <>
+              <icons.Plus size={16} />
+              Add Item
+            </>
+          )}
+        </Button>
+      </div>
 
       <table className="w-full border-collapse">
         <thead>
@@ -701,6 +771,7 @@ export default function ItemListing({
                     onKeyDown={(e) => handleNameKeyDown(e, item)}
                     onBlur={() => handleNameSave(item)}
                     autoFocus
+                    data-item-id={item.id}
                     className="w-full rounded border border-gray-300 p-1"
                   />
                 ) : (

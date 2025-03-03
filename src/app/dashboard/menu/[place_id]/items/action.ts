@@ -6,7 +6,9 @@ import {
   getItemsForPlace,
   reorderItem,
   updateItemOrder,
-  updateItem
+  updateItem,
+  insertItem,
+  getItemById
 } from '@/db/items';
 
 import { isUserLinkedToPlaceAction } from '@/actions/session';
@@ -187,4 +189,47 @@ export async function updateItemHiddenStatusAction(
   }
 
   return updateItem(client, itemId, { hidden });
+}
+
+export async function addNewItemAction(placeId: number) {
+  const client = getServiceRoleClient();
+  const userId = await getUserIdFromSessionAction();
+
+  const res = await isUserLinkedToPlaceAction(client, userId, placeId);
+  if (!res) {
+    throw new Error('User does not have access to this place');
+  }
+
+  // Get all items to determine the lowest order value
+  const { data: items } = await getItemsForPlace(client, placeId);
+
+  // Calculate the order value for the new item (put it at the top)
+  let newOrder = 0;
+  if (items && items.length > 0) {
+    // Find the minimum order value and subtract 1
+    const minOrder = Math.min(...items.map((item) => item.order));
+    newOrder = minOrder - 1;
+  }
+
+  // Create a new item with default values
+  const newItem = await insertItem(
+    client,
+    'New Item',
+    '',
+    '',
+    0,
+    0,
+    '',
+    placeId
+  );
+
+  // Update the order to place it at the top
+  if (newItem.data) {
+    await updateItemOrder(client, newItem.data.id, newOrder);
+
+    // Fetch the updated item
+    return getItemById(client, placeId, newItem.data.id);
+  }
+
+  return newItem;
 }
