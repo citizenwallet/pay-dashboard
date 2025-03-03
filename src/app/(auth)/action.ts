@@ -3,14 +3,14 @@
 import { signIn } from '@/auth';
 import { getServiceRoleClient } from '@/db';
 import { createOtp } from '@/db/otp';
-import { getUserByEmail, isCheckUser } from '@/db/users';
+import { getUserByEmail, userExists } from '@/db/users';
 import { sendOtpEmail } from '@/services/brevo';
 import { generateOtp } from '@/utils/generateotp';
 import { fi } from 'date-fns/locale';
 
 export async function checkIsUseraction(email: string): Promise<boolean> {
   const client = getServiceRoleClient();
-  const data = await isCheckUser(client, email);
+  const data = await userExists(client, email);
   return data;
 }
 
