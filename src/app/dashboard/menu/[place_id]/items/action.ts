@@ -15,6 +15,7 @@ import { isUserLinkedToPlaceAction } from '@/actions/session';
 import { getUserIdFromSessionAction } from '@/actions/session';
 import { uploadImage } from '@/services/storage/image';
 import { getUserBusinessId } from '@/db/users';
+import { updatePlaceDisplay } from '@/db/places';
 
 export async function getItemsAction(place_id: number) {
   const client = getServiceRoleClient();
@@ -232,4 +233,20 @@ export async function addNewItemAction(placeId: number) {
   }
 
   return newItem;
+}
+
+export async function updatePlaceDisplayAction(
+  placeId: number,
+  display: 'amount' | 'menu' | 'topup'
+) {
+  const client = getServiceRoleClient();
+
+  const userId = await getUserIdFromSessionAction();
+
+  const res = await isUserLinkedToPlaceAction(client, userId, placeId);
+  if (!res) {
+    throw new Error('User does not have access to this place');
+  }
+
+  return updatePlaceDisplay(client, placeId, display);
 }

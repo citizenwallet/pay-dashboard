@@ -18,6 +18,7 @@ export interface Place {
   terminal_id: number | null;
   image: string | null;
   description: string | null;
+  display: 'amount' | 'menu' | 'topup';
 }
 
 export type NewPlace = Omit<
@@ -168,4 +169,23 @@ export const getAllPlacesByUserId = async (
     .select('*')
     .eq('business_id', business_id);
   return placesQuery;
+};
+
+export const updatePlaceDisplay = async (
+  client: SupabaseClient,
+  placeId: number,
+  display: 'amount' | 'menu' | 'topup'
+) => {
+  return client.from('places').update({ display }).eq('id', placeId);
+};
+
+export const getPlaceDisplay = async (
+  client: SupabaseClient,
+  placeId: number
+) => {
+  return client
+    .from('places')
+    .select('display')
+    .eq('id', placeId)
+    .maybeSingle();
 };

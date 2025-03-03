@@ -3,14 +3,12 @@ import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
 import React, { Suspense } from 'react';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
-import Link from 'next/link';
-import { buttonVariants } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { Plus } from 'lucide-react';
 import { getItemsAction } from './action';
 import ItemListing from './Item-listing';
 import Config from '@/cw/community.json';
 import { CommunityConfig } from '@citizenwallet/sdk';
+import { getServiceRoleClient } from '@/db';
+import { getPlaceDisplay } from '@/db/places';
 
 export default async function itempage({
   params
@@ -38,14 +36,19 @@ export default async function itempage({
 }
 
 async function ListItemLoader(place_id: string) {
+  const client = getServiceRoleClient();
+  const placeDisplay = await getPlaceDisplay(client, parseInt(place_id));
+
   const items = await getItemsAction(parseInt(place_id));
 
   const community = new CommunityConfig(Config);
 
   return (
     <ItemListing
+      placeId={parseInt(place_id)}
       currencyLogo={community.community.logo}
       items={items.data ?? []}
+      displayMode={placeDisplay.data?.display ?? 'amount'}
     />
   );
 }
