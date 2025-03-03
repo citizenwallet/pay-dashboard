@@ -111,7 +111,8 @@ export async function joinAction(
     business_id: business.id,
     accounts: [account],
     invite_code: inviteCode,
-    image: null
+    image: null,
+    display: 'amount'
   });
 
   if (placeError) {
