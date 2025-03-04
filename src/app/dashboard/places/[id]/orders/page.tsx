@@ -34,13 +34,13 @@ export default async function Page(props: Props) {
 }
 
 async function AsyncPage({ params, searchParams }: Props) {
+
   const client = getServiceRoleClient();
   const { id } = await params;
   const placeId = parseInt(id);
-
   const userId = await getUserIdFromSession();
-
   const admin = await isAdmin(client, userId);
+
   if (!admin) {
     const hasPlaceAccess = await checkUserPlaceAccess(client, userId, placeId);
     if (!hasPlaceAccess) {
@@ -61,9 +61,11 @@ async function AsyncPage({ params, searchParams }: Props) {
   const offset = parseInt(rawOffset);
 
   const [place, ordersResponse, ordersCount] = await Promise.all([
+
     getPlaceById(client, placeId),
     getOrdersByPlace(client, placeId, limit, offset, dateRange, startDate, endDate),
     getOrdersByPlaceCount(client, placeId, dateRange, startDate, endDate),
+
   ]);
 
   if (!place.data) {
@@ -82,6 +84,7 @@ async function AsyncPage({ params, searchParams }: Props) {
     : 0;
 
   return (
+
     <OrdersPage
       place={place.data}
       orders={ordersResponse.data || []}
@@ -93,5 +96,6 @@ async function AsyncPage({ params, searchParams }: Props) {
       }}
       balance={balanceWithDecimals}
     />
+    
   );
 }

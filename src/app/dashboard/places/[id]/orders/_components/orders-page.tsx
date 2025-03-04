@@ -15,6 +15,8 @@ import { Order } from '@/db/orders';
 import { formatCurrencyNumber } from '@/lib/currency';
 import CurrencyLogo from '@/components/currency-logo';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { exportCsvAction } from '../action';
+import { toast } from 'sonner';
 
 interface Props {
   place: Place;
@@ -176,20 +178,27 @@ export const OrdersPage: React.FC<Props> = ({
   };
 
   // Export to CSV function
-  const exportToCSV = () => {
-    const headers = ['ID,Date,Total,Fees,Net,Status,Description'];
-    const rows = orders.map(order =>
-      `${order.id},${humanizeDate(order.created_at)},${formatCurrencyNumber(order.total)},${formatCurrencyNumber(order.fees)},${formatCurrencyNumber(order.total - order.fees)},${order.status},${order.description || ''}`
-    );
-    const csvContent = headers.concat(rows).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `${place.name}_orders_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const exportToCSV = async () => {
+
+    const csvData = await exportCsvAction(place.id, dateRange,customStartDate, customEndDate);
+
+    if (!csvData) {
+      toast.error('No orders found for the given place and date range.');
+      return;
+    }
+
+    const blob = new Blob([csvData], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `orders_${place.id}_${dateRange}.csv`;
+    document.body.appendChild(a);
+    a.click();
+
+    // Cleanup
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
   };
 
   // Date range options
