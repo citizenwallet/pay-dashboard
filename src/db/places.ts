@@ -22,10 +22,7 @@ export interface Place {
   archived: boolean;
 }
 
-export type NewPlace = Omit<
-  Place,
-  'id' | 'created_at' | 'terminal_id' 
->;
+export type NewPlace = Omit<Place, 'id' | 'created_at' | 'terminal_id'>;
 
 export interface PlaceSearchResult {
   id: number;
@@ -153,7 +150,7 @@ export const checkUserPlaceAccess = async (
 export const uniqueSlugPlace = async (
   client: SupabaseClient,
   slug: string
-): Promise<PostgrestSingleResponse< { data: Place | null; error: any } >> => {
+): Promise<PostgrestSingleResponse<{ data: Place | null; error: any }>> => {
   return await client.from('places').select('id').eq('slug', slug).single();
 };
 
@@ -177,6 +174,26 @@ export const handleVisibilityToggleceById = async (
   return client
     .from('places')
     .update({ hidden: newHiddenValue })
+    .eq('id', placeId)
+    .maybeSingle();
+};
+
+export const updatePlaceById = async (
+  client: SupabaseClient,
+  placeId: number,
+  name: string,
+  description: string,
+  slug: string,
+  newimage: string
+): Promise<PostgrestSingleResponse<Place | null>> => {
+  return client
+    .from('places')
+    .update({
+      name: name,
+      description: description,
+      slug: slug,
+      image: newimage
+    })
     .eq('id', placeId)
     .maybeSingle();
 };
