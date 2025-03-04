@@ -20,7 +20,7 @@ import { Wallet } from 'ethers';
 import { getAccountAddress, CommunityConfig } from '@citizenwallet/sdk';
 import Config from '@/cw/community.json';
 import { getLastplace, updateLastplace } from '@/db/users';
-import { places } from '@prisma/client';
+
 
 export async function getPlaceAction() {
   const client = getServiceRoleClient();
@@ -70,6 +70,7 @@ export const generateUniqueSlugAction = async (baseSlug: string) => {
 
 export async function createPlaceAction(
   name: string,
+  description: string,
   slug: string,
   image: string
 ) {
@@ -93,6 +94,7 @@ export async function createPlaceAction(
     business_id: busid,
     slug: slug,
     name: name,
+    description: description,
     accounts: [account],
     invite_code: invitationCode,
     image: image,

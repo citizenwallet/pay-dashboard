@@ -49,6 +49,8 @@ export function PlaceSwitcher({
   );
   const [isAddDialogOpen, setIsAddDialogOpen] = React.useState(false);
   const [newPlaceName, setNewPlaceName] = React.useState("");
+  const [newPlacedescription, setNewPlacedescription] = React.useState("");
+
   const [newPlaceSlug, setNewPlaceSlug] = React.useState("");
   const [newPlaceImage, setNewPlaceImage] = React.useState<File | null>(null);
   const [imagePreview, setImagePreview] = React.useState<string>("");
@@ -105,9 +107,9 @@ export function PlaceSwitcher({
 
     try {
       const image = newPlaceImage ? await uploadImage(newPlaceImage) : "";
-      const data = await createPlaceAction(newPlaceName, newPlaceSlug, image);
+      const data = await createPlaceAction(newPlaceName,newPlacedescription, newPlaceSlug, image);
       toast.success("New Place added");
-      window.location.reload();
+      router.refresh();
     } catch (error:any) {
       toast.error(error.toString());
     } finally {
@@ -205,6 +207,18 @@ export function PlaceSwitcher({
                       value={newPlaceName}
                       onChange={(e) => setNewPlaceName(e.target.value)}
                       placeholder="Enter place name"
+                    />
+                  </div>
+
+                  <div className="grid gap-2">
+                    <label htmlFor="name" className="text-sm font-medium">
+                      Description
+                    </label>
+                    <Input
+                      id="description"
+                      value={newPlacedescription}
+                      onChange={(e) => setNewPlacedescription(e.target.value)}
+                      placeholder="Enter place description"
                     />
                   </div>
 

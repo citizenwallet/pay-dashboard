@@ -24,7 +24,7 @@ export interface Place {
 
 export type NewPlace = Omit<
   Place,
-  'id' | 'created_at' | 'terminal_id' | 'description'
+  'id' | 'created_at' | 'terminal_id' 
 >;
 
 export interface PlaceSearchResult {
