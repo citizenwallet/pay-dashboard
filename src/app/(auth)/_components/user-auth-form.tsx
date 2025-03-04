@@ -16,6 +16,8 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
 import { createClient } from '@/lib/supabase/client';
+import { checkIsUseraction, sendOtpAction } from '../action';
+import { useRouter } from 'next/navigation'
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' })
@@ -35,26 +37,30 @@ export default function UserAuthForm() {
     resolver: zodResolver(formSchema),
     defaultValues
   });
+  const router = useRouter()
 
   const onSubmit = async (userData: UserFormValue) => {
     startTransition(async () => {
-      const supabase = createClient();
-
-      const { error } = await supabase.auth.signInWithOtp({
-        email: userData.email,
-        options: {
-          emailRedirectTo: process.env.NEXT_PUBLIC_URL
+      const data = await checkIsUseraction(userData.email);
+      if (data) {
+        //user already signing so ,otp send
+        try {
+          const res = await sendOtpAction(userData.email);
+          if (res) {
+            setMailSent(true);
+            //use local storage for store email
+            localStorage.setItem('otpEmail', userData.email);
+            //then should go to otp page
+            router.push('/otp')
+          }
+        } catch (error) {
+          toast.error("Something went wrong, please try again later.");
         }
-      });
-
-      if (error) {
-        console.error(error);
-        toast.error('An error occurred while signing in');
-        setMailSent(false);
-        return;
       } else {
-        window.location.href = '/sent';
+        toast.error('Your email is not registered, please sign up');
+
       }
+
     });
   };
 

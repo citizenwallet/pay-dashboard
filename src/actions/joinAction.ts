@@ -35,20 +35,12 @@ const joinFormSchema = z.object({
 export async function joinAction(
   inviteCode: string,
   data: z.infer<typeof joinFormSchema>
-  //   image?: File
 ) {
   const client = getServiceRoleClient();
 
   console.log('data', data);
 
-  //   let imageUrl = null;
-  //   if (image) {
-  //     const { url, error: uploadError } = await uploadImage(image, "businesses");
-  //     if (uploadError) {
-  //       return { error: `Failed to upload image: ${uploadError.message}` };
-  //     }
-  //     imageUrl = url;
-  //   }
+
 
   const newPk = Wallet.createRandom();
   const address = newPk.address;
@@ -119,15 +111,7 @@ export async function joinAction(
     return { error: placeError.message };
   }
 
-  // Create a new user
-  await createUser({
-    email: data.email,
-    linked_business_id: business.id,
-    name: data.name,
-    phone: data.phone,
-    description: data.description,
-    image: data.image
-  });
+
 
   return { success: true };
 }
