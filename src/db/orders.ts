@@ -204,6 +204,7 @@ export const getOrdersByPlace = async (
       .from('orders')
       .select()
       .eq('place_id', placeId)
+      .eq('status', 'paid')
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
   }
@@ -212,6 +213,7 @@ export const getOrdersByPlace = async (
     .from('orders')
     .select()
     .eq('place_id', placeId)
+    .eq('status', 'paid')
     .gte('created_at', range.start)
     .lte('created_at', range.end)
     .order('created_at', { ascending: false })
@@ -229,7 +231,8 @@ export const getOrdersByPlaceCount = async (
   let query = client
     .from('orders')
     .select('*', { count: 'exact', head: true })
-    .eq('place_id', placeId);
+    .eq('place_id', placeId)
+    .eq('status', 'paid');
 
   if (range) {
     query = query.gte('created_at', range.start).lte('created_at', range.end);
@@ -252,6 +255,7 @@ export const getOrdersByPlaceWithOutLimit = async (
       .from('orders')
       .select()
       .eq('place_id', placeId)
+      .eq('status', 'paid')
       .order('created_at', { ascending: false });
   }
 
@@ -259,6 +263,7 @@ export const getOrdersByPlaceWithOutLimit = async (
     .from('orders')
     .select()
     .eq('place_id', placeId)
+    .eq('status', 'paid')
     .gte('created_at', range.start)
     .lte('created_at', range.end)
     .order('created_at', { ascending: false });
