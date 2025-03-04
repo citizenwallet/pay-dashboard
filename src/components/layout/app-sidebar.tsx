@@ -38,6 +38,7 @@ import { signOut } from 'next-auth/react';
 import { PlaceSwitcher } from "./place-switcher";
 import { NavButton } from './nav-button';
 import { Place } from '@/db/places';
+import { User } from '@/db/users';
 
 export const company = {
   name: 'Brussels Pay',
@@ -50,12 +51,14 @@ export default function AppSidebar({
   places,
   bussinessid,
   lastid,
+  user,
   children
 }: {
   isAdmin: boolean;
   places:Place[] | null;
   bussinessid:number;
   lastid:Place;
+  user?: User;
   children: React.ReactNode;
 }) {
 
@@ -102,20 +105,19 @@ export default function AppSidebar({
                   >
                     <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarImage
-                        src={session?.user?.image || ''}
-                        alt={session?.user?.name || ''}
+                        src={user?.avatar || ''}
+                        alt={user?.name || ''}
                       />
                       <AvatarFallback className="rounded-lg">
-                        {session?.user?.name?.slice(0, 2)?.toUpperCase() ||
-                          'CN'}
+                        {user?.name?.slice(0, 2)?.toUpperCase() || 'CN'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-semibold">
-                        {session?.user?.name || ''}
+                        {user?.name || ''}
                       </span>
                       <span className="truncate text-xs">
-                        {session?.user?.email || ''}
+                        {user?.email || ''}
                       </span>
                     </div>
                     <ChevronsUpDown className="ml-auto size-4" />
@@ -131,21 +133,19 @@ export default function AppSidebar({
                     <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                       <Avatar className="h-8 w-8 rounded-lg">
                         <AvatarImage
-                          src={session?.user?.image || ''}
-                          alt={session?.user?.name || ''}
+                          src={user?.avatar || ''}
+                          alt={user?.name || ''}
                         />
                         <AvatarFallback className="rounded-lg">
-                          {session?.user?.name?.slice(0, 2)?.toUpperCase() ||
-                            'CN'}
+                          {user?.name?.slice(0, 2)?.toUpperCase() || 'CN'}
                         </AvatarFallback>
                       </Avatar>
                       <div className="grid flex-1 text-left text-sm leading-tight">
                         <span className="truncate font-semibold">
-                          {session?.user?.name || ''}
+                          {user?.name || ''}
                         </span>
                         <span className="truncate text-xs">
-                          {' '}
-                          {session?.user?.email || ''}
+                          {user?.email || ''}
                         </span>
                       </div>
                     </div>

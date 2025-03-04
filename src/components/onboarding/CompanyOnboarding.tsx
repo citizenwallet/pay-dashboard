@@ -57,6 +57,8 @@ export function CompanyOnboarding() {
 
   const handleSubmit = async (data: CompanyInfo) => {
     setLoading(true);
+
+
     await fetch('/api/businesses/onboard', {
       method: 'POST',
       body: JSON.stringify(data),
