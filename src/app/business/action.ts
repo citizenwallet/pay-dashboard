@@ -10,6 +10,7 @@ import {
   createPlace,
   getPlaceById,
   getPlacesByBusinessId,
+  handleVisibilityToggleceById,
   Place,
   uniqueSlugPlace
 } from '@/db/places';
@@ -19,6 +20,7 @@ import { Wallet } from 'ethers';
 import { getAccountAddress, CommunityConfig } from '@citizenwallet/sdk';
 import Config from '@/cw/community.json';
 import { getLastplace, updateLastplace } from '@/db/users';
+import { places } from '@prisma/client';
 
 export async function getPlaceAction() {
   const client = getServiceRoleClient();
@@ -93,7 +95,9 @@ export async function createPlaceAction(
     name: name,
     accounts: [account],
     invite_code: invitationCode,
-    image: image
+    image: image,
+    hidden: false,
+    archived: false
   });
 
   return newplace;
@@ -107,7 +111,6 @@ export async function getbusinessidAction(): Promise<number> {
   return busid;
 }
 
-
 export const changeLastPlaceAction = async (placeid: number) => {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
@@ -120,21 +123,34 @@ export const getLastPlaceAction = async () => {
   const userId = await getUserIdFromSessionAction();
   const data = await getLastplace(client, userId);
   let lastId = data.data?.last_place;
-  if(!lastId){
-    const places = await getPlaceAction()
+  if (!lastId) {
+    const places = await getPlaceAction();
     if (places && places.length > 0) {
       lastId = places[0].id;
     }
     return lastId;
   }
-  
+
   return lastId;
 };
 
-export const getPlacebyIdAction = async()=>{
+export const getPlacebyIdAction = async () => {
   const client = getServiceRoleClient();
   const id = await getLastPlaceAction();
-  const res = await getPlaceById(client,Number(id))
-  return res.data
+  const res = await getPlaceById(client, Number(id));
+  return res.data;
+};
 
-}
+export const handleVisibilityToggleAction = async (placeId: number)=> {
+  const client = getServiceRoleClient();
+
+  const userId = await getUserIdFromSessionAction();
+
+  const res = await isUserLinkedToPlaceAction(client, userId, placeId);
+  if (!res) {
+    throw new Error('User does not have access to this place');
+  }
+
+  return await handleVisibilityToggleceById(client, placeId);
+
+};

@@ -32,12 +32,15 @@ import { Button } from "../ui/button"
 import { changeLastPlaceAction, createPlaceAction, generateUniqueSlugAction, uploadImageAction } from "@/app/business/action"
 import { createSlug } from "@/lib/utils"
 import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 export function PlaceSwitcher({
   places,
+  bussinessid,
   lastid
 }: {
   places: Place[] | null;
+  bussinessid:number;
   lastid:Place;
 }) {
   const { isMobile } = useSidebar()
@@ -52,6 +55,8 @@ export function PlaceSwitcher({
   const [slugTouched, setSlugTouched] = React.useState(false);
   const [slugError, setSlugError] = React.useState<string | null>(null);
 
+  const router = useRouter();
+
   const changePlace = async (place: Place) => {
     try {
       setActiveTeam(place)
@@ -59,7 +64,7 @@ export function PlaceSwitcher({
     } catch (error) {
       toast.error("Error with switching the place");
     }finally{
-      window.location.reload();
+      router.push(`/business/${bussinessid}/places/${place.id}/orders`)
     }
 
   }

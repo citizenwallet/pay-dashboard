@@ -18,6 +18,8 @@ export interface Place {
   terminal_id: number | null;
   image: string | null;
   description: string | null;
+  hidden: boolean;
+  archived: boolean;
 }
 
 export type NewPlace = Omit<
@@ -153,4 +155,28 @@ export const uniqueSlugPlace = async (
   slug: string
 ): Promise<PostgrestSingleResponse< { data: Place | null; error: any } >> => {
   return await client.from('places').select('id').eq('slug', slug).single();
+};
+
+export const handleVisibilityToggleceById = async (
+  client: SupabaseClient,
+  placeId: number
+): Promise<PostgrestSingleResponse<Place | null>> => {
+  // get the current hidden status
+  const { data: currentPlace, error: fetchError } = await client
+    .from('places')
+    .select('hidden')
+    .eq('id', placeId)
+    .maybeSingle();
+
+  if (fetchError || !currentPlace) {
+    throw fetchError || new Error('Place not found');
+  }
+
+  const newHiddenValue = !currentPlace.hidden;
+
+  return client
+    .from('places')
+    .update({ hidden: newHiddenValue })
+    .eq('id', placeId)
+    .maybeSingle();
 };

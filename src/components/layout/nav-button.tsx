@@ -3,6 +3,7 @@
 import {
   Copy,
   Eye,
+  EyeOff,
   type LucideIcon,
 } from "lucide-react";
 
@@ -24,43 +25,56 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useState } from "react";
+import { Place } from "@/db/places";
+import { handleVisibilityToggleAction } from "@/app/business/action";
+import { toast } from "sonner"
+import { useRouter } from "next/navigation";
+
 
 interface ProjectItem {
   name: string;
   icon: LucideIcon;
 }
 
-export function NavButton() {
+export function NavButton({ lastplace }: { lastplace: Place }) {
   const { isMobile } = useSidebar();
-  const [isDialogOpen, setIsDialogOpen] = useState(false); // State for modal
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const router = useRouter();
 
+  // Dynamic button data based on hidden status
   const data: ProjectItem[] = [
     {
-      name: "Make public",
-      icon: Eye,
+      name: lastplace.hidden ? "Make public" : "Hide",
+      icon: lastplace.hidden ? Eye : EyeOff,
     },
-    {
+    ...(lastplace.archived === false ? [{
       name: "Copy checkout link",
       icon: Copy,
-    },
+    }] : []),
   ];
 
-  // Function to handle copying the checkout link
   const handleCopyCheckoutLink = () => {
-    const checkoutUrl = "https://example.com/checkout"; // Replace with your dynamic URL if needed
+    const checkoutUrl = "https://example.com/checkout";
     navigator.clipboard.writeText(checkoutUrl).then(() => {
-      alert(`Copied to clipboard: ${checkoutUrl}`);
+      toast.success(`Copied to clipboard: ${checkoutUrl}`);
     }).catch((err) => {
       console.error("Failed to copy: ", err);
-      alert("Failed to copy the link. Please try again.");
+      toast.error("Failed to copy the link. Please try again.");
     });
   };
 
-  // Function to handle "Yes" in the modal
-  const handleMakePublicConfirm = () => {
-    // Add your logic here for making something public (e.g., API call)
-    console.log("Confirmed: Making public");
-    setIsDialogOpen(false); // Close the modal
+  const handleVisibilityToggle = async () => {
+    try {
+      
+      setIsDialogOpen(false);
+      const data =await handleVisibilityToggleAction(lastplace.id);
+      toast.success(`Place ${lastplace.hidden ? "public" : "hidden"} successfully`);
+      router.refresh();
+
+    } catch (error) {
+      toast.error("Error with handle Visibility Toggle the place");
+    }
+
   };
 
   return (
@@ -68,37 +82,32 @@ export function NavButton() {
       <SidebarMenu>
         {data.map((item) => (
           <SidebarMenuItem key={item.name}>
-            {item.name === "Make public" ? (
+            {item.name === "Make public" || item.name === "Hide" ? (
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
                   <SidebarMenuButton>
                     <item.icon />
                     <span>{item.name}</span>
+
                   </SidebarMenuButton>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Are you sure?</DialogTitle>
                     <DialogDescription>
-                      Do you want to make this item public? This action cannot be undone.
+                      {`Do you want to ${lastplace.hidden ? "making a place public, it will be visible in all public listings" : "hiding this place, it is still active but not visible in public listings anymore"}?`}
                     </DialogDescription>
                   </DialogHeader>
                   <DialogFooter>
                     <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                       No
                     </Button>
-                    <Button onClick={handleMakePublicConfirm}>Yes</Button>
+                    <Button onClick={handleVisibilityToggle}>Yes</Button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
             ) : (
-              <SidebarMenuButton
-                onClick={() => {
-                  if (item.name === "Copy checkout link") {
-                    handleCopyCheckoutLink();
-                  }
-                }}
-              >
+              <SidebarMenuButton onClick={handleCopyCheckoutLink}>
                 <item.icon />
                 <span>{item.name}</span>
               </SidebarMenuButton>

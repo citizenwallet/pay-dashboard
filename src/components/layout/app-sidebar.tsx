@@ -82,12 +82,12 @@ export default function AppSidebar({
             </div>
           </div>
 
-          <PlaceSwitcher places={places} lastid={lastid}/>
+          <PlaceSwitcher bussinessid={bussinessid} places={places} lastid={lastid}/>
 
         </SidebarHeader>
 
         <SidebarContent>
-          <NavButton />
+          <NavButton lastplace={lastid}/>
           <NavMain businessId={bussinessid} lastid={lastid}/>
         </SidebarContent>
 
