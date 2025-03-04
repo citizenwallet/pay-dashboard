@@ -40,8 +40,6 @@ export async function joinAction(
 
   console.log('data', data);
 
-
-
   const newPk = Wallet.createRandom();
   const address = newPk.address;
 
@@ -110,8 +108,6 @@ export async function joinAction(
   if (placeError) {
     return { error: placeError.message };
   }
-
-
 
   return { success: true };
 }

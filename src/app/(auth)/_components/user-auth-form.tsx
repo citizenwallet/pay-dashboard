@@ -17,7 +17,7 @@ import { toast } from 'sonner';
 import * as z from 'zod';
 import { createClient } from '@/lib/supabase/client';
 import { checkIsUseraction, sendOtpAction } from '../action';
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' })
@@ -37,7 +37,7 @@ export default function UserAuthForm() {
     resolver: zodResolver(formSchema),
     defaultValues
   });
-  const router = useRouter()
+  const router = useRouter();
 
   const onSubmit = async (userData: UserFormValue) => {
     startTransition(async () => {
@@ -51,16 +51,14 @@ export default function UserAuthForm() {
             //use local storage for store email
             localStorage.setItem('otpEmail', userData.email);
             //then should go to otp page
-            router.push('/otp')
+            router.push('/otp');
           }
         } catch (error) {
-          toast.error("Something went wrong, please try again later.");
+          toast.error('Something went wrong, please try again later.');
         }
       } else {
         toast.error('Your email is not registered, please sign up');
-
       }
-
     });
   };
 

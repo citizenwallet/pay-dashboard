@@ -4,7 +4,6 @@ import { verifyOtp } from './db/otp';
 import { getServiceRoleClient } from './db';
 import { getUserByEmail } from './db/users';
 
-
 const authConfig = {
   providers: [
     CredentialProvider({
@@ -29,17 +28,15 @@ const authConfig = {
         if (!userres || userres.error || !userres.data) {
           return null;
           //new user sign up here
-
-          
         }
         if (userres.error) {
           return null;
         }
 
         const user = {
-          id: (userres.data.id).toString(),
+          id: userres.data.id.toString(),
           email: userres.data.email,
-          name: userres.data.name || undefined,
+          name: userres.data.name || undefined
         };
 
         return user;

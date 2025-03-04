@@ -36,7 +36,7 @@ export async function signAction(email: string, otp: string) {
   } catch (error) {
     return error;
   } finally {
-    console.log("done by action function ..")
+    console.log('done by action function ..');
     return true;
   }
 }
