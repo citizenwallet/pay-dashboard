@@ -1,8 +1,10 @@
-import { isUserAdminAction } from '@/actions/session';
+import { getUserIdFromSessionAction, isUserAdminAction } from '@/actions/session';
 import AppSidebar from '@/components/layout/app-sidebar';
 import type { Metadata } from 'next';
 import { getbusinessidAction, getLastPlaceAction, getPlaceAction, getPlacebyIdAction } from './action';
 import { Place } from '@/db/places';
+import { getServiceRoleClient } from '@/db';
+import { getUserById } from '@/db/users';
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -18,13 +20,22 @@ export default async function DashboardLayout({
   const places = await getPlaceAction()
   const businessId = await getbusinessidAction()
   const lastplace = await getPlacebyIdAction()
-
+  const userId = await getUserIdFromSessionAction();
+  const client = getServiceRoleClient();
+  const { data: user } = await getUserById(client, userId);
+  if (!user) {
+    return null;
+  }
 
   return (
     <>
-      <AppSidebar bussinessid={businessId}
+      <AppSidebar
+        bussinessid={businessId}
         lastid={lastplace ?? {} as Place}
-        places={places} isAdmin={admin}>{children}</AppSidebar>
+        places={places}
+        isAdmin={admin}
+        user={user}
+      >{children}</AppSidebar>
     </>
   );
 }
