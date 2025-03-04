@@ -37,6 +37,7 @@ interface ProjectItem {
 }
 
 export function NavButton({ lastplace }: { lastplace: Place }) {
+  
   const { isMobile } = useSidebar();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const router = useRouter();
@@ -54,7 +55,7 @@ export function NavButton({ lastplace }: { lastplace: Place }) {
   ];
 
   const handleCopyCheckoutLink = () => {
-    const checkoutUrl = "https://example.com/checkout";
+    const checkoutUrl = `https://checkout.pay.brussels/${lastplace.slug}`;
     navigator.clipboard.writeText(checkoutUrl).then(() => {
       toast.success(`Copied to clipboard: ${checkoutUrl}`);
     }).catch((err) => {
