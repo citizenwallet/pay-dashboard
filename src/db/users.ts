@@ -44,6 +44,13 @@ export const getUserByEmail = async (
   return client.from('users').select('*').eq('email', email).single();
 };
 
+export const getUserById = async (
+  client: SupabaseClient,
+  userId: number
+): Promise<PostgrestSingleResponse<User>> => {
+  return client.from('users').select('*').eq('id', userId).single();
+};
+
 export const isAdmin = async (client: SupabaseClient, userId: number) => {
   const { data, error } = await client
     .from('users')
@@ -56,4 +63,20 @@ export const isAdmin = async (client: SupabaseClient, userId: number) => {
   }
 
   return data?.usergroup === 'admin';
+};
+
+export const userExists = async (
+  client: SupabaseClient,
+  email: string
+): Promise<boolean> => {
+  const { data, error } = await client
+    .from('users')
+    .select('*')
+    .eq('email', email)
+    .single();
+
+  if (error || !data) {
+    return false;
+  }
+  return true;
 };

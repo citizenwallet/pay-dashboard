@@ -18,6 +18,7 @@ import { createClient } from '@/lib/supabase/client';
 import { generateRandomString } from '@/lib/utils';
 import { PhoneInput } from '@/components/ui/phone-input';
 import Link from 'next/link';
+import { sendOtpAction } from '../action';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
@@ -38,42 +39,12 @@ export default function UserSignupForm() {
   const onSubmit = async (credentials: UserFormValue) => {
     try {
       startTransition(async () => {
-        const supabase = await createClient();
+        const res = await sendOtpAction(credentials.email);
+        localStorage.setItem('otpEmail', credentials.email);
+        localStorage.setItem('regName', credentials.name);
+        localStorage.setItem('regPhone', credentials.phone);
 
-        // Generate an invitation code
-        const invitationCode = generateRandomString(16);
-
-        const { data, error } = await supabase.auth.signInWithOtp({
-          email: credentials.email,
-          options: {
-            shouldCreateUser: true,
-            emailRedirectTo:
-              process.env.NEXT_PUBLIC_URL +
-              '/onboarding?invite_code=' +
-              invitationCode
-          }
-        });
-
-        if (error) {
-          toast.error('An error occurred while signing up');
-          return;
-        }
-
-        // Create user in database
-        const res = await fetch('/api/auth/join', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            ...credentials,
-            invite_code: invitationCode
-          })
-        });
-
-        if (res.ok) {
-          window.location.href = '/onboarding?invite_code=' + invitationCode;
-        }
+        window.location.href = '/otp';
       });
     } catch (e) {
       console.error(e);

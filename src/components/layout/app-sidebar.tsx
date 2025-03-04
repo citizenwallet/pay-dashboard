@@ -39,7 +39,6 @@ import {
   GalleryVerticalEnd,
   LogOut
 } from 'lucide-react';
-import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
@@ -49,6 +48,7 @@ import ThemeToggle from './ThemeToggle/theme-toggle';
 import { UserNav } from './user-nav';
 import { Logo } from '@/components/logo';
 import { signOut } from 'next-auth/react';
+import { User } from '@/db/users';
 
 export const company = {
   name: 'Brussels Pay',
@@ -57,25 +57,24 @@ export const company = {
 };
 
 export default function AppSidebar({
+  isAdmin,
+  user,
   children
 }: {
+  isAdmin?: boolean;
+  user?: User;
   children: React.ReactNode;
 }) {
-  const [mounted, setMounted] = React.useState(false);
-  const { data: session } = useSession();
   const pathname = usePathname();
-  // Only render after first client-side mount
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null; // or a loading skeleton
-  }
 
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon">
+        {isAdmin && (
+          <div className="align-center flex w-full justify-center bg-orange-500 text-sm font-normal">
+            SYSTEM ADMIN
+          </div>
+        )}
         <SidebarHeader>
           <div className="flex gap-2 py-2 text-sidebar-accent-foreground ">
             <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
@@ -158,20 +157,19 @@ export default function AppSidebar({
                   >
                     <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarImage
-                        src={session?.user?.image || ''}
-                        alt={session?.user?.name || ''}
+                        src={user?.avatar || ''}
+                        alt={user?.name || ''}
                       />
                       <AvatarFallback className="rounded-lg">
-                        {session?.user?.name?.slice(0, 2)?.toUpperCase() ||
-                          'CN'}
+                        {user?.name?.slice(0, 2)?.toUpperCase() || 'CN'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-semibold">
-                        {session?.user?.name || ''}
+                        {user?.name || ''}
                       </span>
                       <span className="truncate text-xs">
-                        {session?.user?.email || ''}
+                        {user?.email || ''}
                       </span>
                     </div>
                     <ChevronsUpDown className="ml-auto size-4" />
@@ -187,41 +185,25 @@ export default function AppSidebar({
                     <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                       <Avatar className="h-8 w-8 rounded-lg">
                         <AvatarImage
-                          src={session?.user?.image || ''}
-                          alt={session?.user?.name || ''}
+                          src={user?.avatar || ''}
+                          alt={user?.name || ''}
                         />
                         <AvatarFallback className="rounded-lg">
-                          {session?.user?.name?.slice(0, 2)?.toUpperCase() ||
-                            'CN'}
+                          {user?.name?.slice(0, 2)?.toUpperCase() || 'CN'}
                         </AvatarFallback>
                       </Avatar>
                       <div className="grid flex-1 text-left text-sm leading-tight">
                         <span className="truncate font-semibold">
-                          {session?.user?.name || ''}
+                          {user?.name || ''}
                         </span>
                         <span className="truncate text-xs">
-                          {' '}
-                          {session?.user?.email || ''}
+                          {user?.email || ''}
                         </span>
                       </div>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
 
-                  {/*<DropdownMenuGroup>*/}
-                  {/*  <DropdownMenuItem>*/}
-                  {/*    <BadgeCheck />*/}
-                  {/*    Account*/}
-                  {/*  </DropdownMenuItem>*/}
-                  {/*  <DropdownMenuItem>*/}
-                  {/*    <CreditCard />*/}
-                  {/*    */}
-                  {/*  </DropdownMenuItem>*/}
-                  {/*  <DropdownMenuItem>*/}
-                  {/*    <Bell />*/}
-                  {/*    */}
-                  {/*  </DropdownMenuItem>*/}
-                  {/*</DropdownMenuGroup>*/}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => signOut()}>
                     <LogOut />
@@ -241,9 +223,7 @@ export default function AppSidebar({
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumbs />
           </div>
-          {/*<div className=" hidden w-1/3 items-center gap-2 px-4 md:flex ">*/}
-          {/*  <SearchInput />*/}
-          {/*</div>*/}
+
           <div className="flex items-center gap-2 px-4">
             <UserNav />
             <ThemeToggle />

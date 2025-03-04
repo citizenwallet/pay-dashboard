@@ -1,6 +1,9 @@
 'use server';
 
-import { getUserIdFromSession, isUserLinkedToPlace } from '@/actions/session';
+import {
+  getUserIdFromSessionAction,
+  isUserLinkedToPlaceAction
+} from '@/actions/session';
 import { getServiceRoleClient } from '@/db';
 import { getOrdersByPlace } from '@/db/orders';
 
@@ -9,11 +12,11 @@ export async function fetchOrdersAction(
   limit?: number,
   offset?: number
 ) {
-  const userId = await getUserIdFromSession();
+  const userId = await getUserIdFromSessionAction();
 
   const client = getServiceRoleClient();
 
-  const isLinked = await isUserLinkedToPlace(client, userId, placeId);
+  const isLinked = await isUserLinkedToPlaceAction(client, userId, placeId);
   if (!isLinked) {
     throw new Error('User is not linked to this place');
   }

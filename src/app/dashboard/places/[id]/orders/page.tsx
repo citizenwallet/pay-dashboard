@@ -6,7 +6,7 @@ import { getServiceRoleClient } from '@/db';
 import Config from '@/cw/community.json';
 import { CommunityConfig, getAccountBalance } from '@citizenwallet/sdk';
 import { isAdmin } from '@/db/users';
-import { getUserIdFromSession } from '@/actions/session';
+import { getUserIdFromSessionAction } from '@/actions/session';
 
 export const metadata = {
   title: 'Place Orders'
@@ -34,11 +34,12 @@ export default async function Page(props: Props) {
 }
 
 async function AsyncPage({ params, searchParams }: Props) {
-
   const client = getServiceRoleClient();
   const { id } = await params;
   const placeId = parseInt(id);
-  const userId = await getUserIdFromSession();
+
+  const userId = await getUserIdFromSessionAction();
+
   const admin = await isAdmin(client, userId);
 
   if (!admin) {
@@ -54,18 +55,24 @@ async function AsyncPage({ params, searchParams }: Props) {
     offset: rawOffset = '0',
     dateRange = 'today',
     startDate,
-    endDate,
+    endDate
   } = await searchParams;
 
   const limit = parseInt(rawLimit);
   const offset = parseInt(rawOffset);
 
   const [place, ordersResponse, ordersCount] = await Promise.all([
-
     getPlaceById(client, placeId),
-    getOrdersByPlace(client, placeId, limit, offset, dateRange, startDate, endDate),
-    getOrdersByPlaceCount(client, placeId, dateRange, startDate, endDate),
-
+    getOrdersByPlace(
+      client,
+      placeId,
+      limit,
+      offset,
+      dateRange,
+      startDate,
+      endDate
+    ),
+    getOrdersByPlaceCount(client, placeId, dateRange, startDate, endDate)
   ]);
 
   if (!place.data) {
@@ -84,7 +91,6 @@ async function AsyncPage({ params, searchParams }: Props) {
     : 0;
 
   return (
-
     <OrdersPage
       place={place.data}
       orders={ordersResponse.data || []}
@@ -96,6 +102,5 @@ async function AsyncPage({ params, searchParams }: Props) {
       }}
       balance={balanceWithDecimals}
     />
-    
   );
 }

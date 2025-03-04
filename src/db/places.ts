@@ -18,6 +18,7 @@ export interface Place {
   terminal_id: number | null;
   image: string | null;
   description: string | null;
+  display: 'amount' | 'menu' | 'topup';
 }
 
 export type NewPlace = Omit<
@@ -129,7 +130,7 @@ export const checkUserPlaceAccess = async (
       id,
       business_id,
       businesses!inner (
-       users!business_users!inner (
+        users!business_users!inner (
           id
         )
       )
@@ -147,4 +148,44 @@ export const checkUserPlaceAccess = async (
   }
 
   return data !== null;
+};
+
+export const getAllPlacesByUserId = async (
+  client: SupabaseClient,
+  userId: number
+): Promise<PostgrestResponse<Place>> => {
+  const data = await client
+    .from('users')
+    .select('linked_business_id')
+    .eq('id', userId);
+  const business_id: number | null = data.data?.[0]?.linked_business_id;
+
+  if (!business_id) {
+    return { data: [], error: null, count: 0, status: 200, statusText: 'OK' };
+  }
+
+  const placesQuery = client
+    .from('places')
+    .select('*')
+    .eq('business_id', business_id);
+  return placesQuery;
+};
+
+export const updatePlaceDisplay = async (
+  client: SupabaseClient,
+  placeId: number,
+  display: 'amount' | 'menu' | 'topup'
+) => {
+  return client.from('places').update({ display }).eq('id', placeId);
+};
+
+export const getPlaceDisplay = async (
+  client: SupabaseClient,
+  placeId: number
+) => {
+  return client
+    .from('places')
+    .select('display')
+    .eq('id', placeId)
+    .maybeSingle();
 };

@@ -1,86 +1,45 @@
 import { NextAuthConfig, User } from 'next-auth';
 import CredentialProvider from 'next-auth/providers/credentials';
-import GoogleProvider from 'next-auth/providers/google';
-import { checkUserData } from '@/actions/checkUserData';
+import { verifyOtp } from './db/otp';
 import { getServiceRoleClient } from './db';
 import { getUserByEmail } from './db/users';
 
 const authConfig = {
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_ID ?? '',
-      clientSecret: process.env.GOOGLE_SECRET ?? '',
-      authorization: {
-        params: {
-          prompt: 'consent',
-          access_type: 'offline',
-          response_type: 'code'
-        }
-      }
-    }),
     CredentialProvider({
+      name: 'OTP Login',
       credentials: {
-        email: {
-          type: 'email'
-        },
-        password: {
-          type: 'password'
-        }
+        email: { label: 'Email', type: 'email' },
+        code: { label: 'Verification Code', type: 'text' }
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
+        const email = credentials?.email as string;
+        const code = credentials?.code as string;
+
+        if (!email || !code) {
+          return null;
+        }
         const client = getServiceRoleClient();
-
-        const { data: user, error } = await getUserByEmail(
-          client,
-          credentials.email as string
-        );
-
-        if (error || !user) {
+        const result = await verifyOtp(client, email, code);
+        if (!result.valid) {
+          return null;
+        }
+        const userres = await getUserByEmail(client, email);
+        if (!userres || userres.error || !userres.data) {
+          return null;
+          //new user sign up here
+        }
+        if (userres.error) {
           return null;
         }
 
-        // Check if the user is authenticated using Supabase
-        const supabaseUser = await client.auth.getUser();
+        const user = {
+          id: userres.data.id.toString(),
+          email: userres.data.email,
+          name: userres.data.name || undefined
+        };
 
-        // If the user is authenticated using Supabase, then we return the user
-        if (!user && supabaseUser && credentials.email) {
-          await checkUserData(
-            {
-              email: credentials.email as string
-            },
-            supabaseUser.data.user
-          );
-
-          const { data: userData, error } = await getUserByEmail(
-            client,
-            credentials.email as string
-          );
-
-          if (error || !userData) {
-            return null;
-          }
-
-          const authUser: User = {
-            id: userData.id.toString(),
-            email: userData.email,
-            name: userData.name
-          };
-
-          return authUser;
-        }
-
-        if (user) {
-          const authUser: User = {
-            id: user.id.toString(),
-            email: user.email,
-            name: user.name
-          };
-
-          return authUser;
-        }
-
-        // If you return null then an error will be displayed advising the user to check their details.
-        return null;
+        return user;
       }
     })
   ],
