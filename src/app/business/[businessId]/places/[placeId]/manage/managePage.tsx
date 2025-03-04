@@ -56,8 +56,7 @@ export default function ManagePage(
             const data = await deleteplaceAction(place.id);
             toast.success(`Delete that Place successfully`);
             setIsDeleteDialogOpen(false);
-            //when delete which page should go
-            router.refresh();
+            router.push("/");
         } catch (error) {
             toast.error(`Error with Delete the place`);
         }
