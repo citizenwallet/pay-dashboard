@@ -178,6 +178,37 @@ export const handleVisibilityToggleceById = async (
     .maybeSingle();
 };
 
+export const handleArchiveToggleById = async (
+  client: SupabaseClient,
+  placeId: number
+): Promise<PostgrestSingleResponse<Place | null>> => {
+  
+  // Fetch the current state of the place
+  const { data: place, error } = await client
+    .from('places')
+    .select('archived, hidden')
+    .eq('id', placeId)
+    .single();
+
+  if (error || !place) {
+    throw new Error('Place not found');
+  }
+
+  // Toggle the archived and hidden values based on current state
+  const newState = {
+    archived: place.archived ? false : true,
+    hidden: place.hidden ? false : true,
+  };
+
+  // Update the place with the toggled values
+  return client
+    .from('places')
+    .update(newState)
+    .eq('id', placeId)
+    .maybeSingle();
+};
+
+
 export const updatePlaceById = async (
   client: SupabaseClient,
   placeId: number,
@@ -194,6 +225,18 @@ export const updatePlaceById = async (
       slug: slug,
       image: newimage
     })
+    .eq('id', placeId)
+    .maybeSingle();
+};
+
+
+export const deletePlaceById = async (
+  client: SupabaseClient,
+  placeId: number
+): Promise<PostgrestSingleResponse<Place | null>> => {
+  return client
+    .from('places')
+    .delete()
     .eq('id', placeId)
     .maybeSingle();
 };
