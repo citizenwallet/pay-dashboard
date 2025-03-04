@@ -120,7 +120,7 @@ export default function OtpEntry() {
               value={otpCode}
               onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))} // Allow only digits
               maxLength={6}
-              placeholder="Enter 6-digit OTP"
+              placeholder="Enter 6-digit login code"
               className="text-center"
               required
             />
