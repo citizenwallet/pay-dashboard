@@ -2,14 +2,16 @@ import {
   getUserIdFromSessionAction,
   isUserAdminAction
 } from '@/actions/session';
-import { getUserById } from '@/db/users';
-import { getServiceRoleClient } from '@/db';
 import AppSidebar from '@/components/layout/app-sidebar';
 import type { Metadata } from 'next';
-import { Suspense } from 'react';
-import { getBusinessAction, getPlacebyIdAction } from '../business/action';
-import { getPlaceAllAction } from '../action';
+import {
+  getBusinessAction,
+  getPlaceAction,
+  getPlacebyIdAction
+} from './action';
 import { Place } from '@/db/places';
+import { getServiceRoleClient } from '@/db';
+import { getUserById } from '@/db/users';
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -21,36 +23,25 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <AsyncSidebar>{children}</AsyncSidebar>
-    </Suspense>
-  );
-}
-
-async function AsyncSidebar({ children }: { children: React.ReactNode }) {
   const admin = await isUserAdminAction();
-  console.log(admin);
-
-  const userId = await getUserIdFromSessionAction();
-
-  const client = getServiceRoleClient();
-
-  const { data: user } = await getUserById(client, userId);
-
-  const places = await getPlaceAllAction();
+  const places = await getPlaceAction();
   const business = await getBusinessAction();
-  console.log(business);
   const lastplace = await getPlacebyIdAction();
+  const userId = await getUserIdFromSessionAction();
+  const client = getServiceRoleClient();
+  const { data: user } = await getUserById(client, userId);
+  if (!user) {
+    return null;
+  }
 
   return (
     <>
       <AppSidebar
-        user={user}
-        isAdmin={admin}
-        places={places ?? []}
         business={business}
         lastid={lastplace ?? ({} as Place)}
+        places={places}
+        isAdmin={admin}
+        user={user}
       >
         {children}
       </AppSidebar>
