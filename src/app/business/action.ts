@@ -99,7 +99,8 @@ export async function createPlaceAction(
     invite_code: invitationCode,
     image: image,
     hidden: false,
-    archived: false
+    archived: false,
+    display: 'menu'
   });
 
   return newplace;

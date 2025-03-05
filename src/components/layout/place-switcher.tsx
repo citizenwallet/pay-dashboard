@@ -33,6 +33,9 @@ import { changeLastPlaceAction, createPlaceAction, generateUniqueSlugAction, upl
 import { createSlug } from "@/lib/utils"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import Image from 'next/image'
+import { Badge } from "@/components/ui/badge"
+
 
 export function PlaceSwitcher({
   places,
@@ -40,8 +43,8 @@ export function PlaceSwitcher({
   lastid
 }: {
   places: Place[] | null;
-  bussinessid:number;
-  lastid:Place;
+  bussinessid: number;
+  lastid: Place;
 }) {
   const { isMobile } = useSidebar()
   const [activeTeam, setActiveTeam] = React.useState<Place | null>(
@@ -65,7 +68,7 @@ export function PlaceSwitcher({
       await changeLastPlaceAction(place.id)
     } catch (error) {
       toast.error("Error with switching the place");
-    }finally{
+    } finally {
       router.push(`/business/${bussinessid}/places/${place.id}/orders`)
     }
 
@@ -107,10 +110,10 @@ export function PlaceSwitcher({
 
     try {
       const image = newPlaceImage ? await uploadImage(newPlaceImage) : "";
-      const data = await createPlaceAction(newPlaceName,newPlacedescription, newPlaceSlug, image);
+      const data = await createPlaceAction(newPlaceName, newPlacedescription, newPlaceSlug, image);
       toast.success("New Place added");
       router.refresh();
-    } catch (error:any) {
+    } catch (error: any) {
       toast.error(error.toString());
     } finally {
       setNewPlaceName("");
@@ -138,14 +141,18 @@ export function PlaceSwitcher({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <GalleryVerticalEnd className="size-4" />
-              </div>
+
+              {lastid.image && (
+                <Image src={lastid.image} alt="Logo" width={32} height={32} />
+              )}
+
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">
                   {lastid.name}
                 </span>
               </div>
+              {lastid.hidden == true ? <Badge variant="destructive">Private</Badge> : <Badge variant="secondary">Public</Badge>}
+
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -163,12 +170,20 @@ export function PlaceSwitcher({
               <DropdownMenuItem
                 key={team.name}
                 onClick={() => changePlace(team)}
-                className="gap-2 p-2"
+                className="flex items-center justify-between gap-2 p-2"
               >
-                <div className="flex size-6 items-center justify-center rounded-sm border">
-                  <GalleryVerticalEnd className="size-4 shrink-0" />
+                <div className="flex items-center gap-2">
+                  {team.image && (
+                    <Image src={team.image} alt="Logo" width={26} height={26} />
+                  )}
+                  {team.name}
                 </div>
-                {team.name}
+
+                {team.hidden == true ? (
+                  <Badge variant="destructive">Private</Badge>
+                ) : (
+                  <Badge variant="secondary">Public</Badge>
+                )}
               </DropdownMenuItem>
             ))}
 
