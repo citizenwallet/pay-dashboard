@@ -17,9 +17,7 @@ export async function getAllPlacesDataAction() {
     return places;
   }
 
-  console.log('userId', userId);
-
   const places = await getAllPlacesByUserId(client, userId);
-  console.log('places', places);
+
   return places;
 }

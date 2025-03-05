@@ -19,7 +19,7 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <Suspense fallback={<AppSidebar isAdmin={false}>{children}</AppSidebar>}>
+    <Suspense fallback={<div>Loading...</div>}>
       <AsyncSidebar>{children}</AsyncSidebar>
     </Suspense>
   );
@@ -33,9 +33,6 @@ async function AsyncSidebar({ children }: { children: React.ReactNode }) {
   const client = getServiceRoleClient();
 
   const { data: user } = await getUserById(client, userId);
-  if (!user) {
-    return null;
-  }
 
   return (
     <>

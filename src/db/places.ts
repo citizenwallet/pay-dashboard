@@ -140,9 +140,6 @@ export const checkUserPlaceAccess = async (
     .eq('businesses.users.id', userId)
     .maybeSingle();
 
-  console.log('data', data);
-  console.log('error', error);
-
   if (error) {
     return false;
   }

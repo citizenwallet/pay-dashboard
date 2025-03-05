@@ -104,7 +104,6 @@ export function CompanyOnboarding() {
           if (res.ok) {
             const result = await res.json();
             const data = result.data;
-            console.log(data);
             dispatch({
               type: 'UPDATE_DATA',
               payload: {

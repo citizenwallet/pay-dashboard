@@ -38,8 +38,6 @@ export async function joinAction(
 ) {
   const client = getServiceRoleClient();
 
-  console.log('data', data);
-
   const newPk = Wallet.createRandom();
   const address = newPk.address;
 

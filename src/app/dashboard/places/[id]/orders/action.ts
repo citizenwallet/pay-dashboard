@@ -3,7 +3,12 @@
 import { getServiceRoleClient } from '@/db';
 import { getOrdersByPlaceWithOutLimit } from '@/db/orders';
 
-export async function exportCsvAction(place_id: number, dateRange: string, customStartDate?: string, customEndDate?: string) {
+export async function exportCsvAction(
+  place_id: number,
+  dateRange: string,
+  customStartDate?: string,
+  customEndDate?: string
+) {
   const client = getServiceRoleClient();
   const orderResponse = await getOrdersByPlaceWithOutLimit(
     client,
@@ -14,7 +19,6 @@ export async function exportCsvAction(place_id: number, dateRange: string, custo
   );
 
   if (!orderResponse.data || orderResponse.data.length === 0) {
-    console.log('No orders found.');
     return null;
   }
 

@@ -3,7 +3,7 @@
 import { auth } from '@/auth';
 import { getServiceRoleClient } from '@/db';
 import { checkUserPlaceAccess } from '@/db/places';
-import { isAdmin } from '@/db/users';
+import { isAdmin, getUserById } from '@/db/users';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { redirect } from 'next/navigation';
 
@@ -18,6 +18,16 @@ export async function getUserIdFromSessionAction() {
   }
 
   return parseInt(session.user.id);
+}
+
+export async function getUserFromSessionAction() {
+  const userId = await getUserIdFromSessionAction();
+  const client = getServiceRoleClient();
+  const { data, error } = await getUserById(client, userId);
+  if (error) {
+    redirect('/login');
+  }
+  return data;
 }
 
 export async function isUserAdminAction() {

@@ -73,8 +73,6 @@ export async function GET(req: NextRequest) {
       business.email
     );
 
-    console.log('user', user);
-
     if (userError || !user) {
       const userResponse = await client.auth.getUser();
 

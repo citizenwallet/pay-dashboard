@@ -47,8 +47,9 @@ import { Icons } from '../icons';
 import ThemeToggle from './ThemeToggle/theme-toggle';
 import { UserNav } from './user-nav';
 import { Logo } from '@/components/logo';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { User } from '@/db/users';
+import { getUserFromSessionAction } from '@/actions/session';
 
 export const company = {
   name: 'Brussels Pay',
@@ -58,14 +59,25 @@ export const company = {
 
 export default function AppSidebar({
   isAdmin,
-  user,
+  user: initialUser,
   children
 }: {
   isAdmin?: boolean;
-  user?: User;
+  user?: User | null;
   children: React.ReactNode;
 }) {
+  const [user, setUser] = React.useState<User | null | undefined>(initialUser);
+
   const pathname = usePathname();
+  const session = useSession();
+
+  React.useEffect(() => {
+    if (session.status === 'authenticated' && !user) {
+      getUserFromSessionAction().then((user) => {
+        setUser(user);
+      });
+    }
+  }, [session, user]);
 
   return (
     <SidebarProvider>
