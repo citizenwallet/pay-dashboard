@@ -37,7 +37,7 @@ interface ProjectItem {
 }
 
 export function NavButton({ lastplace }: { lastplace: Place }) {
-  
+
   const { isMobile } = useSidebar();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const router = useRouter();
@@ -45,7 +45,7 @@ export function NavButton({ lastplace }: { lastplace: Place }) {
   // Dynamic button data based on hidden status
   const data: ProjectItem[] = [
     {
-      name: lastplace.hidden ? "Make public" : "Hide",
+      name: lastplace.hidden ? "Make public" : "Make Hide",
       icon: lastplace.hidden ? Eye : EyeOff,
     },
     ...(lastplace.archived === false ? [{
@@ -66,9 +66,9 @@ export function NavButton({ lastplace }: { lastplace: Place }) {
 
   const handleVisibilityToggle = async () => {
     try {
-      
+
       setIsDialogOpen(false);
-      const data =await handleVisibilityToggleAction(lastplace.id);
+      const data = await handleVisibilityToggleAction(lastplace.id);
       toast.success(`Place ${lastplace.hidden ? "public" : "hidden"} successfully`);
       router.refresh();
 
