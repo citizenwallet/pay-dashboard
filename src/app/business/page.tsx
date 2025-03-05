@@ -1,5 +1,6 @@
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
+import { getPlaceAction } from '../action';
 
 export default async function Dashboard() {
   const session = await auth();
@@ -7,6 +8,8 @@ export default async function Dashboard() {
   if (!session?.user) {
     return redirect('/');
   } else {
-    redirect('/business/118/places/105/orders');
+    const data = await getPlaceAction();
+    return redirect(`/business/${data.busid}/places/${data.lastId}/orders`);
+
   }
 }

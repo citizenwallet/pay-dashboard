@@ -52,7 +52,8 @@ export function NavButton({ lastplace }: { lastplace: Place }) {
   ];
 
   const handleCopyCheckoutLink = () => {
-    const checkoutUrl = `https://checkout.pay.brussels/${lastplace.slug}`;
+
+    const checkoutUrl = `${process.env.NEXT_PUBLIC_CHECKOUT_BASE_URL}/${lastplace.slug}`;
     navigator.clipboard
       .writeText(checkoutUrl)
       .then(() => {

@@ -36,9 +36,9 @@ export async function uploadImageAction(file: File): Promise<string> {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
   const businessid = await getBusinessIdByUserId(client, userId);
-  const busid = businessid.data?.linked_business_id;
+  const busId = businessid.data?.linked_business_id;
 
-  const url = await uploadImage(client, file, busid);
+  const url = await uploadImage(client, file, busId);
   return url;
 }
 
@@ -105,7 +105,7 @@ export async function createPlaceAction(
   return newplace;
 }
 
-export async function getbusinessidAction(): Promise<number> {
+export async function getBusinessIdAction(): Promise<number> {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
   const businessid = await getBusinessIdByUserId(client, userId);

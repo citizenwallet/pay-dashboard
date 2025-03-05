@@ -13,8 +13,8 @@ export type Product = {
 
 export const navItems: NavItem[] = [
   {
-    title: 'Orders',
-    url: '/business/118/places/105/orders',
+    title: 'Dashboard',
+    url: '/dashboard/overview',
     icon: 'dashboard',
     isActive: false,
     items: [] // Empty array as there are no child items for Dashboard
@@ -40,24 +40,24 @@ export const navItems: NavItem[] = [
   //   isActive: false,
   //   items: [] // Empty array as there are no child items for Dashboard
   // },
-  {
-    title: 'Checkout',
-    url: '/business/118/places/105/checkout',
-    icon: 'billing',
-    isActive: false,
-    items: [] // Empty array as there are no child items for Dashboard
-  },
+  // {
+  //   title: 'Company profile',
+  //   url: '/dashboard/business',
+  //   icon: 'billing',
+  //   isActive: false,
+  //   items: [] // Empty array as there are no child items for Dashboard
+  // },
   {
     title: 'Profile',
-    url: '/business/118/places/105/profile',
+    url: '/dashboard/profile',
     icon: 'user',
     isActive: false,
     items: [] // No child items
   },
   {
-    title: 'Manage',
-    url: '/business/118/places/105/manage',
-    icon: 'settings',
+    title: 'Menu Items',
+    url: '/dashboard/menuItems',
+    icon: 'product', // Changed from 'menu' to 'product' to match allowed icon types
     isActive: false,
     items: [] // No child items
   }
