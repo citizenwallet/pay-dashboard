@@ -38,10 +38,6 @@ export async function joinAction(
 ) {
   const client = getServiceRoleClient();
 
-  console.log('data', data);
-
-
-
   const newPk = Wallet.createRandom();
   const address = newPk.address;
 
@@ -104,14 +100,15 @@ export async function joinAction(
     accounts: [account],
     invite_code: inviteCode,
     image: null,
-    display: 'amount'
+    display: 'amount',
+    hidden: true,
+    description: data.description,
+    archived: false
   });
 
   if (placeError) {
     return { error: placeError.message };
   }
-
-
 
   return { success: true };
 }

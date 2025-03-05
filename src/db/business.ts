@@ -35,14 +35,20 @@ export const getBusinessByToken = async (
     .single();
 };
 
-
 export const getBusinessIdByUserId = async (
   client: SupabaseClient,
   userid: number
-)=> {
+) => {
   return client
     .from('users')
     .select('linked_business_id')
     .eq('id', userid)
     .single();
+};
+
+export const getBusinessById = async (
+  client: SupabaseClient,
+  businessId: number
+): Promise<PostgrestSingleResponse<Business>> => {
+  return client.from('businesses').select('*').eq('id', businessId).single();
 };

@@ -39,14 +39,12 @@ export default function UserSignupForm() {
   const onSubmit = async (credentials: UserFormValue) => {
     try {
       startTransition(async () => {
-
         const res = await sendOtpAction(credentials.email);
         localStorage.setItem('otpEmail', credentials.email);
         localStorage.setItem('regName', credentials.name);
         localStorage.setItem('regPhone', credentials.phone);
 
         window.location.href = '/otp';
-
       });
     } catch (e) {
       console.error(e);

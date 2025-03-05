@@ -27,7 +27,6 @@ export async function sendOtpAction(email: string) {
 }
 
 export async function signAction(email: string, otp: string) {
-  console.log('signAction', email, otp);
   try {
     await signIn('credentials', {
       email,
@@ -36,7 +35,6 @@ export async function signAction(email: string, otp: string) {
   } catch (error) {
     return error;
   } finally {
-    console.log("done by action function ..")
     return true;
   }
 }

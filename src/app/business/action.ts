@@ -5,7 +5,7 @@ import {
   isUserLinkedToPlaceAction
 } from '@/actions/session';
 import { getServiceRoleClient } from '@/db';
-import { getBusinessIdByUserId } from '@/db/business';
+import { getBusinessIdByUserId, getBusinessById } from '@/db/business';
 import {
   createPlace,
   getPlaceById,
@@ -20,7 +20,6 @@ import { Wallet } from 'ethers';
 import { getAccountAddress, CommunityConfig } from '@citizenwallet/sdk';
 import Config from '@/cw/community.json';
 import { getLastplace, updateLastplace } from '@/db/users';
-
 
 export async function getPlaceAction() {
   const client = getServiceRoleClient();
@@ -114,6 +113,17 @@ export async function getbusinessidAction(): Promise<number> {
   return busid;
 }
 
+export const getBusinessAction = async () => {
+  const client = getServiceRoleClient();
+  const userId = await getUserIdFromSessionAction();
+  const businessid = await getBusinessIdByUserId(client, userId);
+  const business = await getBusinessById(
+    client,
+    businessid.data?.linked_business_id
+  );
+  return business.data;
+};
+
 export const changeLastPlaceAction = async (placeid: number) => {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
@@ -144,7 +154,7 @@ export const getPlacebyIdAction = async () => {
   return res.data;
 };
 
-export const handleVisibilityToggleAction = async (placeId: number)=> {
+export const handleVisibilityToggleAction = async (placeId: number) => {
   const client = getServiceRoleClient();
 
   const userId = await getUserIdFromSessionAction();
@@ -155,5 +165,4 @@ export const handleVisibilityToggleAction = async (placeId: number)=> {
   }
 
   return await handleVisibilityToggleceById(client, placeId);
-
 };

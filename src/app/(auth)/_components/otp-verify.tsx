@@ -7,8 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
 import { getUserByEmailAction, sendOtpAction, signAction } from '../action';
-import { getServiceRoleClient } from '@/db';
-import { getUserByEmail } from '@/db/users';
 import { generateRandomString } from '@/lib/utils';
 
 export default function OtpEntry() {

@@ -22,12 +22,8 @@ import {
   SidebarRail,
   SidebarTrigger
 } from '@/components/ui/sidebar';
-import { NavMain } from "./nav-main";
-import {
-  ChevronsUpDown,
-  GalleryVerticalEnd,
-  LogOut,
-} from 'lucide-react';
+import { NavMain } from './nav-main';
+import { ChevronsUpDown, GalleryVerticalEnd, LogOut } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import * as React from 'react';
 import { Breadcrumbs } from '../breadcrumbs';
@@ -35,38 +31,43 @@ import ThemeToggle from './ThemeToggle/theme-toggle';
 import { UserNav } from './user-nav';
 import { Logo } from '@/components/logo';
 import { signOut } from 'next-auth/react';
-import { PlaceSwitcher } from "./place-switcher";
+import { PlaceSwitcher } from './place-switcher';
 import { NavButton } from './nav-button';
 import { Place } from '@/db/places';
 import { User } from '@/db/users';
-
-export const company = {
-  name: 'Brussels Pay',
-  logo: GalleryVerticalEnd,
-  plan: 'Business'
-};
+import { getUserFromSessionAction } from '@/actions/session';
+import { usePathname } from 'next/navigation';
+import { Business } from '@/db/business';
 
 export default function AppSidebar({
   isAdmin,
+  user: initialUser,
   places,
-  bussinessid,
+  business,
   lastid,
-  user,
   children
 }: {
-  isAdmin: boolean;
-  places:Place[] | null;
-  bussinessid:number;
-  lastid:Place;
-  user?: User;
+  isAdmin?: boolean;
+  user?: User | null;
+  places: Place[] | null;
+  business: Business | null;
+  lastid: Place;
   children: React.ReactNode;
 }) {
+  const [user, setUser] = React.useState<User | null | undefined>(initialUser);
 
-  const { data: session } = useSession();
+  const session = useSession();
+
+  React.useEffect(() => {
+    if (session.status === 'authenticated' && !user) {
+      getUserFromSessionAction().then((user) => {
+        setUser(user);
+      });
+    }
+  }, [session, user]);
 
   return (
     <SidebarProvider>
-
       <Sidebar collapsible="icon">
         {isAdmin && (
           <div className="align-center flex w-full justify-center bg-orange-500 text-sm font-normal">
@@ -79,19 +80,23 @@ export default function AppSidebar({
               <Logo />
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">{company.name}</span>
-              <span className="truncate text-xs">{company.plan}</span>
-
+              <span className="truncate font-semibold">{business?.name}</span>
+              <span className="truncate text-xs">{business?.vat_number}</span>
             </div>
           </div>
 
-          <PlaceSwitcher bussinessid={bussinessid} places={places} lastid={lastid}/>
-
+          {business && (
+            <PlaceSwitcher
+              business={business}
+              places={places}
+              lastid={lastid}
+            />
+          )}
         </SidebarHeader>
 
         <SidebarContent>
-          <NavButton lastplace={lastid}/>
-          <NavMain businessId={bussinessid} lastid={lastid}/>
+          <NavButton lastplace={lastid} />
+          {business && <NavMain businessId={business.id} lastid={lastid} />}
         </SidebarContent>
 
         <SidebarFooter>
@@ -152,7 +157,6 @@ export default function AppSidebar({
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
 
-
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => signOut()}>
                     <LogOut />
@@ -183,7 +187,6 @@ export default function AppSidebar({
         {/* page main content */}
         {children}
       </SidebarInset>
-
     </SidebarProvider>
   );
 }

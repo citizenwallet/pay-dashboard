@@ -1,7 +1,14 @@
-import { getUserIdFromSessionAction, isUserAdminAction } from '@/actions/session';
+import {
+  getUserIdFromSessionAction,
+  isUserAdminAction
+} from '@/actions/session';
 import AppSidebar from '@/components/layout/app-sidebar';
 import type { Metadata } from 'next';
-import { getbusinessidAction, getLastPlaceAction, getPlaceAction, getPlacebyIdAction } from './action';
+import {
+  getBusinessAction,
+  getPlaceAction,
+  getPlacebyIdAction
+} from './action';
 import { Place } from '@/db/places';
 import { getServiceRoleClient } from '@/db';
 import { getUserById } from '@/db/users';
@@ -17,9 +24,9 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const admin = await isUserAdminAction();
-  const places = await getPlaceAction()
-  const businessId = await getbusinessidAction()
-  const lastplace = await getPlacebyIdAction()
+  const places = await getPlaceAction();
+  const business = await getBusinessAction();
+  const lastplace = await getPlacebyIdAction();
   const userId = await getUserIdFromSessionAction();
   const client = getServiceRoleClient();
   const { data: user } = await getUserById(client, userId);
@@ -30,12 +37,14 @@ export default async function DashboardLayout({
   return (
     <>
       <AppSidebar
-        bussinessid={businessId}
-        lastid={lastplace ?? {} as Place}
+        business={business}
+        lastid={lastplace ?? ({} as Place)}
         places={places}
         isAdmin={admin}
         user={user}
-      >{children}</AppSidebar>
+      >
+        {children}
+      </AppSidebar>
     </>
   );
 }

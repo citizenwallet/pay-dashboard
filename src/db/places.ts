@@ -138,9 +138,6 @@ export const checkUserPlaceAccess = async (
     .eq('businesses.users.id', userId)
     .maybeSingle();
 
-  console.log('data', data);
-  console.log('error', error);
-
   if (error) {
     return false;
   }
@@ -183,7 +180,6 @@ export const handleArchiveToggleById = async (
   client: SupabaseClient,
   placeId: number
 ): Promise<PostgrestSingleResponse<Place | null>> => {
-  
   // Fetch the current state of the place
   const { data: place, error } = await client
     .from('places')
@@ -198,17 +194,12 @@ export const handleArchiveToggleById = async (
   // Toggle the archived and hidden values based on current state
   const newState = {
     archived: place.archived ? false : true,
-    hidden: place.hidden ? false : true,
+    hidden: place.hidden ? false : true
   };
 
   // Update the place with the toggled values
-  return client
-    .from('places')
-    .update(newState)
-    .eq('id', placeId)
-    .maybeSingle();
+  return client.from('places').update(newState).eq('id', placeId).maybeSingle();
 };
-
 
 export const updatePlaceById = async (
   client: SupabaseClient,
@@ -230,16 +221,11 @@ export const updatePlaceById = async (
     .maybeSingle();
 };
 
-
 export const deletePlaceById = async (
   client: SupabaseClient,
   placeId: number
 ): Promise<PostgrestSingleResponse<Place | null>> => {
-  return client
-    .from('places')
-    .delete()
-    .eq('id', placeId)
-    .maybeSingle();
+  return client.from('places').delete().eq('id', placeId).maybeSingle();
 };
 export const getAllPlacesByUserId = async (
   client: SupabaseClient,

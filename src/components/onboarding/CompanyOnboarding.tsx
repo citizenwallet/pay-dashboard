@@ -58,7 +58,6 @@ export function CompanyOnboarding() {
   const handleSubmit = async (data: CompanyInfo) => {
     setLoading(true);
 
-
     await fetch('/api/businesses/onboard', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -105,7 +104,6 @@ export function CompanyOnboarding() {
           if (res.ok) {
             const result = await res.json();
             const data = result.data;
-            console.log(data);
             dispatch({
               type: 'UPDATE_DATA',
               payload: {

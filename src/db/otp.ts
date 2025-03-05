@@ -26,13 +26,12 @@ export const createOtp = async (
         expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString() // 10 minutes
       },
       {
-        onConflict: 'source' 
+        onConflict: 'source'
       }
     )
     .select('*')
     .maybeSingle();
 };
-
 
 export const verifyOtp = async (
   client: SupabaseClient,
