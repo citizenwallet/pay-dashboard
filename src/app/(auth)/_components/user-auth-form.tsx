@@ -19,6 +19,8 @@ import { createClient } from '@/lib/supabase/client';
 import { checkIsUseraction, sendOtpAction } from '../action';
 import { useRouter } from 'next/navigation';
 
+
+
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' })
 });
@@ -38,6 +40,10 @@ export default function UserAuthForm() {
     defaultValues
   });
   const router = useRouter();
+
+  //set the redirect url and store in local storage
+  const redirectUrl = searchParams.get("redirectUrl");
+  localStorage.setItem("redirectUrl", redirectUrl || "");
 
   const onSubmit = async (userData: UserFormValue) => {
     startTransition(async () => {

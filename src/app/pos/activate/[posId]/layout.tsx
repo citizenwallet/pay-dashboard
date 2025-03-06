@@ -1,15 +1,12 @@
 
-import { auth } from '@/auth';
-import type { Metadata } from 'next';
-import { redirect } from 'next/navigation';
+
 import { Suspense } from 'react';
 import PosPage from './page';
-import { getAllPlacesDataAction } from './acrion';
+import { getAllPlacesDataAction } from './action';
+import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
 
-export const metadata: Metadata = {
-    title: 'Pos Activation',
-    description: 'Basic dashboard with Next.js and Shadcn'
-};
+
 
 interface PosLayoutProps {
     params: { posId: string };
@@ -22,8 +19,9 @@ export default async function PosLayout({ params }: PosLayoutProps) {
     //check the user login or not
     const session = await auth();
     if (!session?.user) {
-        return redirect('/login');
+        return redirect('/login?redirectUrl=/pos/activate/' + posId);
     }
+
     return (
         <Suspense fallback={<div>Loading...</div>}>
             <AsyncPage params={{ posId }} />

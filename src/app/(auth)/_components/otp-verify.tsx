@@ -84,7 +84,15 @@ export default function OtpEntry() {
         '/onboarding?invite_code=' +
         invitationCode;
     } else {
-      redirectLocation = process.env.NEXT_PUBLIC_URL + '/dashboard';
+
+      const redirectUrl = localStorage.getItem('redirectUrl') || null;
+
+      if (redirectUrl) {
+        redirectLocation = process.env.NEXT_PUBLIC_URL + `${redirectUrl}`;
+      }else{
+        redirectLocation = process.env.NEXT_PUBLIC_URL + '/dashboard';
+      }
+
     }
     try {
       const success = await signAction(email, otpCode);
