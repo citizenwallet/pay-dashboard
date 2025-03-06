@@ -21,3 +21,14 @@ export const getPosById = async (
     .eq('id', id)
     .maybeSingle();
 };
+
+
+export const getPosByPlaceId = async (
+  client: SupabaseClient,
+  place_id: number
+): Promise<PostgrestSingleResponse<Pos[] | null>> => {
+  return client
+    .from('pos')
+    .select('*')
+    .eq('place_id', place_id);
+};
