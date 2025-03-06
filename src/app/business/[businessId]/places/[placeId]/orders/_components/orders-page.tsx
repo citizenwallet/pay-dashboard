@@ -140,12 +140,7 @@ export const OrdersPage: React.FC<Props> = ({
       <div className="space-y-4">
         <div className="flex items-start justify-between">
           <div className="flex flex-col gap-2">
-            <Link
-              href="/dashboard/overview"
-              className={cn(buttonVariants({ variant: 'ghost' }), 'mb-2')}
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" /> Back to Places
-            </Link>
+            
             <Heading
               title={place.name}
               description={`Orders for ${place.name}`}
