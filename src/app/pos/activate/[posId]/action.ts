@@ -4,7 +4,7 @@ import { getServiceRoleClient } from '@/db';
 import { getAllPlaces, getAllPlacesByUserId } from '@/db/places';
 import { getUserIdFromSessionAction, isUserLinkedToPlaceAction } from '@/actions/session';
 import { isAdmin } from '@/db/users';
-import { createPos } from '@/db/pos';
+import { createPos, getPosById } from '@/db/pos';
 
 export async function getAllPlacesDataAction() {
   const client = getServiceRoleClient();
@@ -32,4 +32,11 @@ export async function createPosAction(placeId: number, name: string,posId: numbe
 
   return await createPos(client, name, posId, placeId);
 
+}
+
+
+export async function isPosAlreadyActiveAction(posId: string): Promise<boolean> {
+  const client = getServiceRoleClient();
+  const posData = await getPosById(client, posId);
+  return !posData.data; 
 }
