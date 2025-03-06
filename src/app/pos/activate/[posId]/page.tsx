@@ -7,6 +7,9 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Place } from "@/db/places"
+import { createPosAction } from "./action"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 
 export default function PosPage(
@@ -19,7 +22,22 @@ export default function PosPage(
             places: Place[] | null
         }
 ) {
-    const [name, setName] = useState("")
+    const [name, setName] = useState("");
+    const [selectedPlace, setSelectedPlace] = useState<string>(places?.[0]?.id.toString() ?? "");
+    const router = useRouter();
+
+    const submitForm = async () => {
+
+        try {
+            const res = await createPosAction(Number(selectedPlace), name, Number(posId));
+            toast.success('Successfully Active Point of Sales App');
+            router.push(`/business/${places?.[0]?.business_id}/places/${selectedPlace}/pos`)
+        } catch (error) {
+            console.error('Failed to update place display:', error);
+            toast.error('Failed to Active Point of Sales App');
+        }
+
+    }
 
     return (
         <div className="flex min-h-screen items-center justify-center p-4">
@@ -31,12 +49,12 @@ export default function PosPage(
                 <CardContent className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="place">Assign to a place</Label>
-                        <Select defaultValue={places?.[0]?.id.toString() ?? ''}>
+                        <Select defaultValue={places?.[0]?.id.toString() ?? ''} onValueChange={setSelectedPlace}>
                             <SelectTrigger id="place">
                                 <SelectValue placeholder="Select a place" />
                             </SelectTrigger>
                             <SelectContent>
-                                {places &&  places?.map((place) => (
+                                {places && places?.map((place) => (
                                     <SelectItem key={place.id} value={place.id.toString()}>
                                         {place.name}
                                     </SelectItem>
@@ -58,7 +76,7 @@ export default function PosPage(
                     <Button
                         className="w-full"
                         disabled={!name.trim()}
-                        onClick={() => console.log("Activating POS with name:", name)}
+                        onClick={submitForm}
                     >
                         Activate POS
                     </Button>
