@@ -30,7 +30,7 @@ export async function createPosAction(placeId: number, name: string,posId: numbe
     throw new Error('User does not have access to this place');
   }
 
-  return await createPos(client, name, posId, placeId);
+  return await createPos(client, name, posId, placeId,"App");
 
 }
 

@@ -1,13 +1,8 @@
-"use client"
+"use client";
 
-
-import type { ColumnDef, PaginationState } from "@tanstack/react-table"
-import { DataTable } from "@/components/ui/data-table"
-import type { Pos } from "@/db/pos"
-import { Button } from "@/components/ui/button"
-import { icons, Plus, Trash } from "lucide-react"
-import { useState } from "react"
-import React from "react"
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { icons, Plus, Trash, Loader } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -15,86 +10,128 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
-} from '@/components/ui/dialog';
-import { Input } from "@/components/ui/input"
-import { toast } from "sonner"
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { Pos } from "@/db/pos";
+import { addVivaPosAction, deletePosAction, updatePosAction } from "./action";
+import { useRouter } from "next/navigation";
+
+
 
 export default function PosListing({
   placeId,
   items = [],
 }: {
-  placeId: number
-  items?: Pos[]
+  placeId: number;
+  items?: Pos[];
 }) {
-  const [isAddDialogOpen, setIsAddDialogOpen] = React.useState(false);
-  const [posName, setposName] = React.useState('');
-  const [posId, setposId] = React.useState('');
+  const [posItems, setPosItems] = useState(items);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
+  const [posName, setPosName] = useState("");
+  const [posId, setPosId] = useState("");
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState("");
+  const [editingType, setEditingType] = useState("");
+  const [loading, setLoading] = useState<string | null>(null);
+  const router = useRouter();
 
+  // Inline Edit Handlers
+  const handleEditClick = (item: Pos, field: string) => {
+    setEditingItemId(item.id);
+    setEditingField(field);
+    setEditingName(item.name);
+    setEditingType(item.type || "");
+  };
 
-  const columns: ColumnDef<Pos>[] = [
-    {
-      accessorKey: "id",
-      header: "ID",
-      cell: ({ row }) => <div>{row.getValue("id")}</div>,
-    },
-    {
-      accessorKey: "name",
-      header: "Name"
-    },
-    {
-      accessorKey: "type",
-      header: "Type"
-    },
-    {
-      accessorKey: "created_at",
-      header: "Created At",
-      cell: ({ row }) => {
-        const isoDate = row.getValue("created_at") as string
-        const date = new Date(isoDate)
-        return (
-          <div>
-            {date.toLocaleDateString()} {date.toLocaleTimeString()}
-          </div>
-        )
-      },
-    },
-    {
-      id: "actions",
-      accessorKey: "Action",
-      header: "Action",
-      cell: ({ row }) => {
-        return (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-red-500 hover:text-red-700 hover:bg-red-100"
-            onClick={() => {
-              console.log("Delete item:", row.original)
-            }}
-          >
-            <Trash className="h-5 w-5" />
-            <span className="sr-only">Delete</span>
-          </Button>
-        )
-      },
-    },
-  ]
+  const handleSave = async (item: Pos) => {
+    setLoading(item.id);
 
-  const handleAddPlace = () => {
-    console.log("Add POS")
+    try {
 
-    if (!posId || !posName) {
-      toast.error("Please enter the details")
-      return
+      // Check if any value has changed
+      const hasChanged =
+        item.name !== editingName ||
+        item.type !== editingType
+
+      if (!hasChanged) {
+        return;
+      }
+
+      const updatedPos = {
+        name: editingName,
+        type: editingType
+      };
+
+      const res = await updatePosAction(Number(item.id), updatedPos.name, placeId, updatedPos.type);
+
+      if (res.error) {
+        toast.error(res.error.message);
+        return;
+      }
+
+      setPosItems((prev) => prev.map((pos) => pos.id === item.id ? {...pos, ...updatedPos} : pos));
+      toast.success("POS terminal updated successfully");
+
+    } catch (error) {
+      toast.error("Error updating POS terminal");
+    } finally {
+      setLoading(null);
+      setEditingItemId(null);
+      setEditingField(null);
     }
-  }
+  };
+
+  const handleDelete = async (id: string) => {
+    setLoading(id);
+    try {
+
+      const res = await deletePosAction(Number(id), placeId);
+      if (res.error) {
+        toast.error(res.error.message);
+        return;
+      }
+      toast.success("POS terminal deleted successfully");
+      setPosItems((prev) => prev.filter((item) => item.id !== id));
+
+    } catch (error) {
+      toast.error("Error deleting POS terminal");
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const handleAddPlace = async () => {
+    try {
+      if (!posId || !posName) {
+        toast.error("Please enter the details");
+        return;
+      }
+      const res = await addVivaPosAction(Number(posId), posName, placeId);
+
+      setPosId("");
+      setPosName("");
+      setIsAddDialogOpen(false);
+
+      if (res.error) {
+        toast.error(res.error.message);
+        return;
+      }      
+      toast.success("POS terminal added successfully");
+      setPosItems((prev) => [...prev, res.data as Pos]);
+    } catch (error) {
+      toast.error(error as string);
+    }
+
+  };
 
   return (
     <div className="w-full">
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
 
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
         <DialogTrigger asChild>
           <Button className="flex items-center gap-2 mb-4">
             <icons.Plus size={16} />
@@ -103,24 +140,24 @@ export default function PosListing({
         </DialogTrigger>
 
         <DialogContent>
-
           <DialogHeader>
-            <DialogTitle>Add  Viva Terminal</DialogTitle>
+            <DialogTitle>Add Viva Terminal</DialogTitle>
             <DialogDescription>
-              Added new Viva Terminal to your places.
+              Add a new Viva Terminal to your place.
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <label htmlFor="id" className="text-sm font-medium">
-                Id
+                ID
               </label>
-              <Input id="id"
-                type="number"
+              <Input
+                id="id"
+                type="text" // Changed to text since id is a string
                 value={posId}
-                onChange={(e) => setposId(e.target.value)}
-                placeholder="Enter Pos name"
+                onChange={(e) => setPosId(e.target.value)}
+                placeholder="Enter POS ID"
               />
             </div>
 
@@ -128,33 +165,123 @@ export default function PosListing({
               <label htmlFor="name" className="text-sm font-medium">
                 Name
               </label>
-              <Input id="name"
+              <Input
+                id="name"
                 value={posName}
-                onChange={(e) => setposName(e.target.value)}
-                placeholder="Enter Pos name"
+                onChange={(e) => setPosName(e.target.value)}
+                placeholder="Enter POS name"
               />
             </div>
           </div>
 
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsAddDialogOpen(false)}
-            >
+            <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
               Cancel
             </Button>
             <Button onClick={handleAddPlace}>Add</Button>
           </DialogFooter>
-
         </DialogContent>
-
       </Dialog>
 
-      <DataTable
-        columns={columns}
-        data={items}
-      />
-      
+      <table className="w-full border-collapse">
+
+        <thead>
+
+          <tr>
+            <th className="border p-2 text-left">ID</th>
+            <th className="border p-2 text-left">Name</th>
+            <th className="border p-2 text-left">Type</th>
+            <th className="border p-2 text-left">Created At</th>
+            <th className="border p-2 text-left">Action</th>
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          {posItems.map((item) => (
+
+            <tr key={item.id} className="hover:bg-gray-50">
+
+              
+              <td className="border p-2">
+                {(item.id)}{" "}
+              </td>
+
+              <td className="border p-2">
+                {editingItemId === item.id && editingField === "name" ? (
+                  <input
+                    type="text"
+                    value={editingName}
+                    onChange={(e) => setEditingName(e.target.value)}
+                    onBlur={() => handleSave(item)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSave(item)}
+                    autoFocus
+                    className="w-full rounded border border-gray-300 p-1"
+                  />
+                ) : (
+                  <div
+                    onClick={() => handleEditClick(item, "name")}
+                    className="cursor-pointer rounded p-1 hover:bg-gray-100"
+                  >
+                    {item.name}
+                  </div>
+                )}
+              </td>
+
+              <td className="border p-2">
+                {editingItemId === item.id && editingField === "type" ? (
+                  <input
+                    type="text"
+                    value={editingType}
+                    onChange={(e) => setEditingType(e.target.value)}
+                    onBlur={() => handleSave(item)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSave(item)}
+                    autoFocus
+                    className="w-full rounded border border-gray-300 p-1"
+                  />
+                ) : (
+                  <div
+                    onClick={() => handleEditClick(item, "type")}
+                    className="cursor-pointer rounded p-1 hover:bg-gray-100"
+                  >
+                    {item.type || (
+                      <span className="italic text-gray-400">No type</span>
+                    )}
+                  </div>
+                )}
+              </td>
+
+              <td className="border p-2">
+                {new Date(item.created_at).toLocaleDateString()}{" "}
+                {new Date(item.created_at).toLocaleTimeString()}
+              </td>
+
+              <td className="border p-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-red-500 hover:text-red-700 hover:bg-red-100"
+                  onClick={() => handleDelete(item.id)}
+                  disabled={loading === item.id}
+                >
+                  {loading === item.id ? (
+                    <Loader className="animate-spin h-5 w-5" />
+                  ) : (
+                    <Trash className="h-5 w-5" />
+                  )}
+                  <span className="sr-only">Delete</span>
+                </Button>
+              </td>
+
+            </tr>
+
+          ))}
+
+        </tbody>
+
+      </table>
+
     </div>
-  )
+  );
 }

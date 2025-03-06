@@ -29,7 +29,8 @@ export const createPos = async (
   client: SupabaseClient,
   name: string,
   posId: number,
-  placeId: number
+  placeId: number,
+  type: string
 ): Promise<PostgrestSingleResponse<Pos | null>> => {
   return client
     .from('pos')
@@ -38,7 +39,7 @@ export const createPos = async (
         id: posId,
         name,
         place_id: placeId,
-        type:"app",
+        type:type,
         created_at: new Date().toISOString(),
         last_activate_at: new Date().toISOString()
       }
@@ -46,3 +47,20 @@ export const createPos = async (
     .select('*')
     .maybeSingle();
 };
+
+export const deletePos = async (
+  client: SupabaseClient,
+  id: number
+): Promise<PostgrestSingleResponse<Pos | null>> => {
+  return client.from('pos').delete().eq('id', id).maybeSingle();
+};
+
+export const updatePos = async (
+  client: SupabaseClient,
+  id: number,
+  name: string,
+  type: string
+): Promise<PostgrestSingleResponse<Pos | null>> => {
+  return client.from('pos').update({ name, type }).eq('id', id).maybeSingle();
+};
+
