@@ -75,11 +75,10 @@ export function NavButton({ lastPlace }: { lastPlace: Place }) {
               <DialogHeader>
                 <DialogTitle>Are you sure?</DialogTitle>
                 <DialogDescription>
-                  {`Do you want to ${
-                    lastPlace.hidden
+                  {`Do you want to ${lastPlace.hidden
                       ? 'making a place public, it will be visible in all public listings'
                       : 'hiding this place, it is still active but not visible in public listings anymore'
-                  }?`}
+                    }?`}
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
@@ -93,10 +92,15 @@ export function NavButton({ lastPlace }: { lastPlace: Place }) {
               </DialogFooter>
             </DialogContent>
           </Dialog>
-          <SidebarMenuButton onClick={handleCopyCheckoutLink}>
-            <Copy />
-            <span>Copy checkout link</span>
-          </SidebarMenuButton>
+
+          {!lastPlace.archived && (
+            <SidebarMenuButton onClick={handleCopyCheckoutLink}>
+              <Copy />
+              <span>Copy checkout link</span>
+            </SidebarMenuButton>
+          )}
+
+
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroup>
