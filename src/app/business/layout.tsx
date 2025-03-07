@@ -38,7 +38,7 @@ export default async function DashboardLayout({
     <>
       <AppSidebar
         business={business}
-        lastid={lastplace ?? ({} as Place)}
+        lastPlace={lastplace ?? ({} as Place)}
         places={places}
         isAdmin={admin}
         user={user}

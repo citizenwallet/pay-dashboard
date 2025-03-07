@@ -30,30 +30,12 @@ interface ProjectItem {
   icon: LucideIcon;
 }
 
-export function NavButton({ lastplace }: { lastplace: Place }) {
-  const { isMobile } = useSidebar();
+export function NavButton({ lastPlace }: { lastPlace: Place }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const router = useRouter();
 
-  // Dynamic button data based on hidden status
-  const data: ProjectItem[] = [
-    {
-      name: lastplace.hidden ? 'Make public' : 'Make hidden',
-      icon: lastplace.hidden ? Eye : EyeOff
-    },
-    ...(lastplace.archived === false
-      ? [
-          {
-            name: 'Copy checkout link',
-            icon: Copy
-          }
-        ]
-      : [])
-  ];
-
   const handleCopyCheckoutLink = () => {
-
-    const checkoutUrl = `${process.env.NEXT_PUBLIC_CHECKOUT_BASE_URL}/${lastplace.slug}`;
+    const checkoutUrl = `${process.env.NEXT_PUBLIC_CHECKOUT_BASE_URL}/${lastPlace.slug}`;
     navigator.clipboard
       .writeText(checkoutUrl)
       .then(() => {
@@ -68,9 +50,9 @@ export function NavButton({ lastplace }: { lastplace: Place }) {
   const handleVisibilityToggle = async () => {
     try {
       setIsDialogOpen(false);
-      const data = await handleVisibilityToggleAction(lastplace.id);
+      await handleVisibilityToggleAction(lastPlace.id);
       toast.success(
-        `Place ${lastplace.hidden ? 'public' : 'hidden'} successfully`
+        `Place ${lastPlace.hidden ? 'public' : 'hidden'} successfully`
       );
       router.refresh();
     } catch (error) {
@@ -81,46 +63,41 @@ export function NavButton({ lastplace }: { lastplace: Place }) {
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarMenu>
-        {data.map((item) => (
-          <SidebarMenuItem key={item.name}>
-            {item.name === 'Make public' || item.name === 'Hide' ? (
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                  <SidebarMenuButton>
-                    <item.icon />
-                    <span>{item.name}</span>
-                  </SidebarMenuButton>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Are you sure?</DialogTitle>
-                    <DialogDescription>
-                      {`Do you want to ${
-                        lastplace.hidden
-                          ? 'making a place public, it will be visible in all public listings'
-                          : 'hiding this place, it is still active but not visible in public listings anymore'
-                      }?`}
-                    </DialogDescription>
-                  </DialogHeader>
-                  <DialogFooter>
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsDialogOpen(false)}
-                    >
-                      No
-                    </Button>
-                    <Button onClick={handleVisibilityToggle}>Yes</Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            ) : (
-              <SidebarMenuButton onClick={handleCopyCheckoutLink}>
-                <item.icon />
-                <span>{item.name}</span>
+        <SidebarMenuItem>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <SidebarMenuButton>
+                {lastPlace.hidden ? <Eye /> : <EyeOff />}
+                <span>{lastPlace.hidden ? 'Make public' : 'Make private'}</span>
               </SidebarMenuButton>
-            )}
-          </SidebarMenuItem>
-        ))}
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Are you sure?</DialogTitle>
+                <DialogDescription>
+                  {`Do you want to ${
+                    lastPlace.hidden
+                      ? 'making a place public, it will be visible in all public listings'
+                      : 'hiding this place, it is still active but not visible in public listings anymore'
+                  }?`}
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsDialogOpen(false)}
+                >
+                  No
+                </Button>
+                <Button onClick={handleVisibilityToggle}>Yes</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          <SidebarMenuButton onClick={handleCopyCheckoutLink}>
+            <Copy />
+            <span>Copy checkout link</span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroup>
   );

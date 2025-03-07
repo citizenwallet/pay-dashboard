@@ -1,7 +1,7 @@
 'use client';
 
-import * as React from 'react';
-import { ChevronsUpDown, GalleryVerticalEnd, Plus } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ChevronsUpDown, Plus } from 'lucide-react';
 
 import {
   DropdownMenu,
@@ -45,31 +45,30 @@ import { Business } from '@/db/business';
 export function PlaceSwitcher({
   places,
   business,
-  lastid
+  lastPlace
 }: {
   places: Place[] | null;
   business: Business;
-  lastid: Place;
+  lastPlace: Place;
 }) {
   const { isMobile } = useSidebar();
-  const [activeTeam, setActiveTeam] = React.useState<Place | null>(
-    places && places.length > 0 ? places[0] : null
-  );
-  const [isAddDialogOpen, setIsAddDialogOpen] = React.useState(false);
-  const [newPlaceName, setNewPlaceName] = React.useState('');
-  const [newPlacedescription, setNewPlacedescription] = React.useState('');
 
-  const [newPlaceSlug, setNewPlaceSlug] = React.useState('');
-  const [newPlaceImage, setNewPlaceImage] = React.useState<File | null>(null);
-  const [imagePreview, setImagePreview] = React.useState<string>('');
-  const [slugTouched, setSlugTouched] = React.useState(false);
-  const [slugError, setSlugError] = React.useState<string | null>(null);
+  const [activePlace, setActivePlace] = useState<Place | null>(lastPlace);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [newPlaceName, setNewPlaceName] = useState('');
+  const [newPlacedescription, setNewPlacedescription] = useState('');
+
+  const [newPlaceSlug, setNewPlaceSlug] = useState('');
+  const [newPlaceImage, setNewPlaceImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
+  const [slugTouched, setSlugTouched] = useState(false);
+  const [slugError, setSlugError] = useState<string | null>(null);
 
   const router = useRouter();
 
   const changePlace = async (place: Place) => {
     try {
-      setActiveTeam(place);
+      setActivePlace(place);
       await changeLastPlaceAction(place.id);
     } catch (error) {
       toast.error('Error with switching the place');
@@ -78,11 +77,12 @@ export function PlaceSwitcher({
     }
   };
   // Auto-generate slug from name if not touched
-  React.useEffect(() => {
+  useEffect(() => {
     if (!slugTouched && newPlaceName) {
       const baseSlug = createSlug(newPlaceName);
       const updateSlug = async () => {
         try {
+          // TODO: use debounce to avoid too many requests
           const uniqueSlug = await generateUniqueSlugAction(baseSlug);
           setNewPlaceSlug(uniqueSlug);
           setSlugError(null);
@@ -97,7 +97,7 @@ export function PlaceSwitcher({
   }, [newPlaceName, slugTouched]);
 
   // Clean up preview URL when component unmounts or image changes
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       if (imagePreview) URL.revokeObjectURL(imagePreview);
     };
@@ -116,13 +116,25 @@ export function PlaceSwitcher({
 
     try {
       const image = newPlaceImage ? await uploadImage(newPlaceImage) : '';
-      const data = await createPlaceAction(
+      const { data, error } = await createPlaceAction(
         newPlaceName,
         newPlacedescription,
         newPlaceSlug,
         image
       );
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (!data) {
+        throw new Error('Failed to create place');
+      }
+
+      setActivePlace(data);
+      setIsAddDialogOpen(false);
+
       toast.success('New Place added');
+      router.replace(`/business/${business.id}/places/${data.id}/orders`);
       router.refresh();
     } catch (error: any) {
       toast.error(error.toString());
@@ -152,14 +164,20 @@ export function PlaceSwitcher({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              {lastid.image && (
-                <Image src={lastid.image} alt="Logo" width={32} height={32} />
-              )}
+              <Image
+                src={activePlace?.image ?? '/shop.png'}
+                alt="Logo"
+                width={32}
+                height={32}
+                className="h-8 w-8 rounded-md object-cover"
+              />
 
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{lastid.name}</span>
+                <span className="truncate font-semibold">
+                  {activePlace?.name}
+                </span>
               </div>
-              {lastid.hidden == true ? (
+              {activePlace?.hidden == true ? (
                 <Badge variant="destructive">Private</Badge>
               ) : (
                 <Badge variant="secondary">Public</Badge>
@@ -186,14 +204,14 @@ export function PlaceSwitcher({
                   className="flex items-center justify-between gap-2 p-2"
                 >
                   <div className="flex items-center gap-2">
-                    {team.image && (
-                      <Image
-                        src={team.image}
-                        alt="Logo"
-                        width={26}
-                        height={26}
-                      />
-                    )}
+                    <Image
+                      src={team.image ?? '/shop.png'}
+                      alt="Logo"
+                      width={26}
+                      height={26}
+                      className="h-6 w-6 rounded-md object-cover"
+                    />
+
                     {team.name}
                   </div>
 

@@ -33,34 +33,34 @@ import { Place } from '@/db/places';
 
 export function NavMain({
   businessId,
-  lastid
+  lastPlace
 }: {
   businessId: number;
-  lastid: Place;
+  lastPlace: Place;
 }) {
   const data = [
     {
       title: 'Orders',
-      url: `/business/${businessId}/places/${lastid.id}/orders`,
+      url: `/business/${businessId}/places/${lastPlace.id}/orders`,
       icon: BoxesIcon,
       isActive: true,
       items: []
     },
     {
       title: 'Checkout',
-      url: `/business/${businessId}/places/${lastid.id}/checkout`,
+      url: `/business/${businessId}/places/${lastPlace.id}/checkout`,
       icon: ShoppingCartIcon,
       items: []
     },
     {
       title: 'Profile',
-      url: `/business/${businessId}/places/${lastid.id}/profile`,
+      url: `/business/${businessId}/places/${lastPlace.id}/profile`,
       icon: User,
       items: []
     },
     {
       title: 'Manage',
-      url: `/business/${businessId}/places/${lastid.id}/manage`,
+      url: `/business/${businessId}/places/${lastPlace.id}/manage`,
       icon: Settings2,
       items: []
     }

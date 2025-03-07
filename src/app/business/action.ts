@@ -86,23 +86,21 @@ export async function createPlaceAction(
 
   const account = await getAccountAddress(community, address);
   if (!account) {
-    return { error: 'Failed to get account address' };
+    throw new Error('Failed to get account address');
   }
 
-  const newplace = await createPlace(client, {
+  return createPlace(client, {
     business_id: busid,
     slug: slug,
     name: name,
     description: description,
     accounts: [account],
     invite_code: invitationCode,
-    image: image,
-    hidden: false,
+    image: image || null,
+    hidden: true,
     archived: false,
     display: 'menu'
   });
-
-  return newplace;
 }
 
 export async function getBusinessIdAction(): Promise<number> {

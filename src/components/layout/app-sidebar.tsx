@@ -23,9 +23,8 @@ import {
   SidebarTrigger
 } from '@/components/ui/sidebar';
 import { NavMain } from './nav-main';
-import { ChevronsUpDown, GalleryVerticalEnd, LogOut } from 'lucide-react';
+import { ChevronsUpDown, LogOut } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import * as React from 'react';
 import { Breadcrumbs } from '../breadcrumbs';
 import ThemeToggle from './ThemeToggle/theme-toggle';
 import { UserNav } from './user-nav';
@@ -36,35 +35,37 @@ import { NavButton } from './nav-button';
 import { Place } from '@/db/places';
 import { User } from '@/db/users';
 import { getUserFromSessionAction } from '@/actions/session';
-import { usePathname } from 'next/navigation';
 import { Business } from '@/db/business';
+import { useState, useEffect } from 'react';
 
 export default function AppSidebar({
   isAdmin,
   user: initialUser,
   places,
   business,
-  lastid,
+  lastPlace,
   children
 }: {
   isAdmin?: boolean;
   user?: User | null;
   places: Place[] | null;
   business: Business | null;
-  lastid: Place;
+  lastPlace: Place;
   children: React.ReactNode;
 }) {
-  const [user, setUser] = React.useState<User | null | undefined>(initialUser);
+  const [user, setUser] = useState<User | null | undefined>(initialUser);
 
   const session = useSession();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (session.status === 'authenticated' && !user) {
       getUserFromSessionAction().then((user) => {
         setUser(user);
       });
     }
   }, [session, user]);
+
+  console.log(lastPlace);
 
   return (
     <SidebarProvider>
@@ -89,14 +90,16 @@ export default function AppSidebar({
             <PlaceSwitcher
               business={business}
               places={places}
-              lastid={lastid}
+              lastPlace={lastPlace}
             />
           )}
         </SidebarHeader>
 
         <SidebarContent>
-          <NavButton lastplace={lastid} />
-          {business && <NavMain businessId={business.id} lastid={lastid} />}
+          <NavButton lastPlace={lastPlace} />
+          {business && (
+            <NavMain businessId={business.id} lastPlace={lastPlace} />
+          )}
         </SidebarContent>
 
         <SidebarFooter>
