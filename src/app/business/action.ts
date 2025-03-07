@@ -11,7 +11,6 @@ import {
   getPlaceById,
   getPlacesByBusinessId,
   handleVisibilityToggleceById,
-  Place,
   uniqueSlugPlace
 } from '@/db/places';
 import { generateRandomString } from '@/lib/utils';
@@ -20,8 +19,6 @@ import { Wallet } from 'ethers';
 import { getAccountAddress, CommunityConfig } from '@citizenwallet/sdk';
 import Config from '@/cw/community.json';
 import { getLastplace, updateLastplace } from '@/db/users';
-import { redirect } from 'next/navigation';
-import { revalidatePath } from 'next/cache';
 
 export async function getPlaceAction() {
   const client = getServiceRoleClient();
@@ -101,7 +98,7 @@ export async function createPlaceAction(
     image: image || null,
     hidden: true,
     archived: false,
-    display: 'menu'
+    display: 'amount'
   });
 
   if (!place || error) {
