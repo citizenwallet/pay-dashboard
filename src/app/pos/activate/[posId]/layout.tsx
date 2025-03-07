@@ -6,6 +6,7 @@ import { getAllPlacesDataAction, isPosAlreadyActiveAction } from './action';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import ErrorPage from './error-posid';
+import { Loader } from 'lucide-react';
 interface PosLayoutProps {
     params: { posId: string };
 }
@@ -21,7 +22,7 @@ export default async function PosLayout({ params }: PosLayoutProps) {
     }
 
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<></>}>
             <AsyncPage params={{ posId }} />
         </Suspense>
     );
