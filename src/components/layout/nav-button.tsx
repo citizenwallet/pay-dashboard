@@ -1,6 +1,6 @@
 'use client';
 
-import { Copy, Eye, EyeOff, type LucideIcon } from 'lucide-react';
+import { Copy, Eye, EyeOff, Check } from 'lucide-react';
 
 import {
   Dialog,
@@ -16,25 +16,26 @@ import {
   SidebarGroup,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar
+  SidebarMenuItem
 } from '@/components/ui/sidebar';
 import { useState } from 'react';
 import { Place } from '@/db/places';
 import { handleVisibilityToggleAction } from '@/app/business/action';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-
-interface ProjectItem {
-  name: string;
-  icon: LucideIcon;
-}
+import { cn } from '@/lib/utils';
 
 export function NavButton({ lastPlace }: { lastPlace: Place }) {
+  const [copied, setCopied] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const router = useRouter();
 
   const handleCopyCheckoutLink = () => {
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+    }, 1000);
+
     const checkoutUrl = `${process.env.NEXT_PUBLIC_CHECKOUT_BASE_URL}/${lastPlace.slug}`;
     navigator.clipboard
       .writeText(checkoutUrl)
@@ -75,10 +76,11 @@ export function NavButton({ lastPlace }: { lastPlace: Place }) {
               <DialogHeader>
                 <DialogTitle>Are you sure?</DialogTitle>
                 <DialogDescription>
-                  {`Do you want to ${lastPlace.hidden
+                  {`Do you want to ${
+                    lastPlace.hidden
                       ? 'making a place public, it will be visible in all public listings'
                       : 'hiding this place, it is still active but not visible in public listings anymore'
-                    }?`}
+                  }?`}
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
@@ -94,13 +96,17 @@ export function NavButton({ lastPlace }: { lastPlace: Place }) {
           </Dialog>
 
           {!lastPlace.archived && (
-            <SidebarMenuButton onClick={handleCopyCheckoutLink}>
-              <Copy />
+            <SidebarMenuButton
+              onClick={handleCopyCheckoutLink}
+              className={cn(
+                'transition-all',
+                copied ? 'border border-green-500' : ''
+              )}
+            >
+              {copied ? <Check /> : <Copy />}
               <span>Copy checkout link</span>
             </SidebarMenuButton>
           )}
-
-
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroup>
