@@ -4,7 +4,8 @@ import { Suspense } from 'react';
 import PosPage from './page';
 import { getAllPlacesDataAction, isPosAlreadyActiveAction } from './action';
 import { auth } from '@/auth';
-import { redirect, notFound } from 'next/navigation';
+import { redirect } from 'next/navigation';
+import ErrorPage from './error-posid';
 interface PosLayoutProps {
     params: { posId: string };
 }
@@ -33,7 +34,7 @@ async function AsyncPage({ params }: { params: { posId: string } }) {
     const response = await getAllPlacesDataAction();
     const data = await isPosAlreadyActiveAction(posId);
     if (!data) {
-        notFound();
+        return <ErrorPage />;
     }
     return <PosPage posId={posId} places={response.data} />;
 
