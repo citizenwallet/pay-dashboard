@@ -41,6 +41,8 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { Business } from '@/db/business';
+import { useDebounce } from 'use-debounce';
+
 
 export function PlaceSwitcher({
   places,
@@ -64,6 +66,7 @@ export function PlaceSwitcher({
   const [imagePreview, setImagePreview] = useState<string>('');
   const [slugTouched, setSlugTouched] = useState(false);
   const [slugError, setSlugError] = useState<string | null>(null);
+  const [debouncedPlaceName] = useDebounce(newPlaceName, 500);
 
   const router = useRouter();
 
@@ -85,11 +88,10 @@ export function PlaceSwitcher({
   };
   // Auto-generate slug from name if not touched
   useEffect(() => {
-    if (!slugTouched && newPlaceName) {
-      const baseSlug = createSlug(newPlaceName);
+    if (!slugTouched && debouncedPlaceName) {
+      const baseSlug = createSlug(debouncedPlaceName);
       const updateSlug = async () => {
         try {
-          // TODO: use debounce to avoid too many requests
           const uniqueSlug = await generateUniqueSlugAction(baseSlug);
           setNewPlaceSlug(uniqueSlug);
           setSlugError(null);
@@ -101,7 +103,7 @@ export function PlaceSwitcher({
       };
       updateSlug();
     }
-  }, [newPlaceName, slugTouched]);
+  }, [debouncedPlaceName, slugTouched]);
 
   // Clean up preview URL when component unmounts or image changes
   useEffect(() => {
