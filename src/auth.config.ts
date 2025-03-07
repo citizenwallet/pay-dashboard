@@ -1,6 +1,6 @@
 import { NextAuthConfig, User } from 'next-auth';
 import CredentialProvider from 'next-auth/providers/credentials';
-import { verifyOtp } from './db/otp';
+import { deleteVerifyOtp, verifyOtp } from './db/otp';
 import { getServiceRoleClient } from './db';
 import { getUserByEmail } from './db/users';
 
@@ -24,6 +24,14 @@ const authConfig = {
         if (!result.valid) {
           return null;
         }
+
+        //Remove OTP from the database after successful verification.
+        const otpres = await deleteVerifyOtp(client, email);
+
+        if (!otpres.valid) {
+          return null;
+        }
+
         const userres = await getUserByEmail(client, email);
         if (!userres || userres.error || !userres.data) {
           return null;
