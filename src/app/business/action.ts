@@ -20,6 +20,8 @@ import { Wallet } from 'ethers';
 import { getAccountAddress, CommunityConfig } from '@citizenwallet/sdk';
 import Config from '@/cw/community.json';
 import { getLastplace, updateLastplace } from '@/db/users';
+import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 
 export async function getPlaceAction() {
   const client = getServiceRoleClient();
@@ -75,8 +77,8 @@ export async function createPlaceAction(
 ) {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
-  const businessid = await getBusinessIdByUserId(client, userId);
-  const busid = businessid.data?.linked_business_id;
+  const { data: business } = await getBusinessIdByUserId(client, userId);
+  const { linked_business_id: linkedBusinessId } = business || {};
   const invitationCode = generateRandomString(16);
 
   const newPk = Wallet.createRandom();
@@ -89,8 +91,8 @@ export async function createPlaceAction(
     throw new Error('Failed to get account address');
   }
 
-  return createPlace(client, {
-    business_id: busid,
+  const { data: place, error } = await createPlace(client, {
+    business_id: linkedBusinessId,
     slug: slug,
     name: name,
     description: description,
@@ -101,6 +103,14 @@ export async function createPlaceAction(
     archived: false,
     display: 'menu'
   });
+
+  if (!place || error) {
+    throw new Error('Failed to create place');
+  }
+
+  await updateLastplace(client, userId, place.id);
+
+  return place;
 }
 
 export async function getBusinessIdAction(): Promise<number> {
@@ -111,7 +121,7 @@ export async function getBusinessIdAction(): Promise<number> {
   return busid;
 }
 
-export const getBusinessAction = async () => {
+export const getLinkedBusinessAction = async () => {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
   const businessid = await getBusinessIdByUserId(client, userId);
@@ -129,7 +139,7 @@ export const changeLastPlaceAction = async (placeid: number) => {
   return data;
 };
 
-export const getLastPlaceAction = async () => {
+export const getLastPlaceIdAction = async () => {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
   const data = await getLastplace(client, userId);
@@ -145,9 +155,9 @@ export const getLastPlaceAction = async () => {
   return lastId;
 };
 
-export const getPlacebyIdAction = async () => {
+export const getLastPlaceAction = async () => {
   const client = getServiceRoleClient();
-  const id = await getLastPlaceAction();
+  const id = await getLastPlaceIdAction();
   const res = await getPlaceById(client, Number(id));
   return res.data;
 };

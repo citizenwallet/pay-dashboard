@@ -54,6 +54,7 @@ export function PlaceSwitcher({
   const { isMobile } = useSidebar();
 
   const [activePlace, setActivePlace] = useState<Place | null>(lastPlace);
+  const [isOpen, setIsOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [newPlaceName, setNewPlaceName] = useState('');
   const [newPlacedescription, setNewPlacedescription] = useState('');
@@ -65,6 +66,12 @@ export function PlaceSwitcher({
   const [slugError, setSlugError] = useState<string | null>(null);
 
   const router = useRouter();
+
+  useEffect(() => {
+    if (lastPlace && lastPlace.id !== activePlace?.id) {
+      setActivePlace(lastPlace);
+    }
+  }, [lastPlace, activePlace]);
 
   const changePlace = async (place: Place) => {
     try {
@@ -116,26 +123,17 @@ export function PlaceSwitcher({
 
     try {
       const image = newPlaceImage ? await uploadImage(newPlaceImage) : '';
-      const { data, error } = await createPlaceAction(
+      const newPlace = await createPlaceAction(
         newPlaceName,
         newPlacedescription,
         newPlaceSlug,
         image
       );
-      if (error) {
-        throw new Error(error.message);
-      }
 
-      if (!data) {
-        throw new Error('Failed to create place');
-      }
-
-      setActivePlace(data);
       setIsAddDialogOpen(false);
-
-      toast.success('New Place added');
-      router.replace(`/business/${business.id}/places/${data.id}/orders`);
-      router.refresh();
+      setActivePlace(newPlace);
+      setIsOpen(false);
+      router.push(`/business/${business.id}/places/${newPlace.id}/orders`);
     } catch (error: any) {
       toast.error(error.toString());
     } finally {
@@ -158,7 +156,7 @@ export function PlaceSwitcher({
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <DropdownMenu>
+        <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"

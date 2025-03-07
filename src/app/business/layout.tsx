@@ -5,9 +5,9 @@ import {
 import AppSidebar from '@/components/layout/app-sidebar';
 import type { Metadata } from 'next';
 import {
-  getBusinessAction,
   getPlaceAction,
-  getPlacebyIdAction
+  getLastPlaceAction,
+  getLinkedBusinessAction
 } from './action';
 import { Place } from '@/db/places';
 import { getServiceRoleClient } from '@/db';
@@ -25,8 +25,8 @@ export default async function DashboardLayout({
 }) {
   const admin = await isUserAdminAction();
   const places = await getPlaceAction();
-  const business = await getBusinessAction();
-  const lastplace = await getPlacebyIdAction();
+  const business = await getLinkedBusinessAction();
+  const lastplace = await getLastPlaceAction();
   const userId = await getUserIdFromSessionAction();
   const client = getServiceRoleClient();
   const { data: user } = await getUserById(client, userId);
