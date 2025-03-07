@@ -1,11 +1,6 @@
 'use client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger
-} from '@/components/ui/collapsible';
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -18,60 +13,51 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
   SidebarProvider,
   SidebarRail,
   SidebarTrigger
 } from '@/components/ui/sidebar';
-import { navItems } from '@/constants/data';
-import {
-  ChevronRight,
-  ChevronsUpDown,
-  GalleryVerticalEnd,
-  LogOut
-} from 'lucide-react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import * as React from 'react';
+import { NavMain } from './nav-main';
+import { ChevronsUpDown, LogOut } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import { Breadcrumbs } from '../breadcrumbs';
-import { Icons } from '../icons';
 import ThemeToggle from './ThemeToggle/theme-toggle';
 import { UserNav } from './user-nav';
 import { Logo } from '@/components/logo';
-import { signOut, useSession } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
+import { PlaceSwitcher } from './place-switcher';
+import { NavButton } from './nav-button';
+import { Place } from '@/db/places';
 import { User } from '@/db/users';
 import { getUserFromSessionAction } from '@/actions/session';
-
-export const company = {
-  name: 'Brussels Pay',
-  logo: GalleryVerticalEnd,
-  plan: 'Business'
-};
+import { Business } from '@/db/business';
+import { useState, useEffect } from 'react';
 
 export default function AppSidebar({
   isAdmin,
   user: initialUser,
+  places,
+  business,
+  lastPlace,
   children
 }: {
   isAdmin?: boolean;
   user?: User | null;
+  places: Place[] | null;
+  business: Business | null;
+  lastPlace: Place;
   children: React.ReactNode;
 }) {
-  const [user, setUser] = React.useState<User | null | undefined>(initialUser);
+  const [user, setUser] = useState<User | null | undefined>(initialUser);
 
-  const pathname = usePathname();
   const session = useSession();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (session.status === 'authenticated' && !user) {
       getUserFromSessionAction().then((user) => {
         setUser(user);
@@ -93,71 +79,27 @@ export default function AppSidebar({
               <Logo />
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">{company.name}</span>
-              <span className="truncate text-xs">{company.plan}</span>
+              <span className="truncate font-semibold">{business?.name}</span>
+              <span className="truncate text-xs">{business?.vat_number}</span>
             </div>
           </div>
+
+          {business && (
+            <PlaceSwitcher
+              business={business}
+              places={places}
+              lastPlace={lastPlace}
+            />
+          )}
         </SidebarHeader>
-        <SidebarContent className="overflow-x-hidden">
-          <SidebarGroup>
-            <SidebarGroupLabel>Overview</SidebarGroupLabel>
-            <SidebarMenu>
-              {navItems.map((item) => {
-                const Icon = item.icon ? Icons[item.icon] : Icons.logo;
-                return item?.items && item?.items?.length > 0 ? (
-                  <Collapsible
-                    key={item.title}
-                    asChild
-                    defaultOpen={item.isActive}
-                    className="group/collapsible"
-                  >
-                    <SidebarMenuItem>
-                      <CollapsibleTrigger asChild>
-                        <SidebarMenuButton
-                          tooltip={item.title}
-                          isActive={pathname === item.url}
-                        >
-                          {item.icon && <Icon />}
-                          <span>{item.title}</span>
-                          <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                        </SidebarMenuButton>
-                      </CollapsibleTrigger>
-                      <CollapsibleContent>
-                        <SidebarMenuSub>
-                          {item.items?.map((subItem) => (
-                            <SidebarMenuSubItem key={subItem.title}>
-                              <SidebarMenuSubButton
-                                asChild
-                                isActive={pathname === subItem.url}
-                              >
-                                <Link href={subItem.url}>
-                                  <span>{subItem.title}</span>
-                                </Link>
-                              </SidebarMenuSubButton>
-                            </SidebarMenuSubItem>
-                          ))}
-                        </SidebarMenuSub>
-                      </CollapsibleContent>
-                    </SidebarMenuItem>
-                  </Collapsible>
-                ) : (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      tooltip={item.title}
-                      isActive={pathname === item.url}
-                    >
-                      <Link href={item.url}>
-                        <Icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroup>
+
+        <SidebarContent>
+          <NavButton lastPlace={lastPlace} />
+          {business && (
+            <NavMain businessId={business.id} lastPlace={lastPlace} />
+          )}
         </SidebarContent>
+
         <SidebarFooter>
           <SidebarMenu>
             <SidebarMenuItem>
@@ -226,8 +168,10 @@ export default function AppSidebar({
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>
+
         <SidebarRail />
       </Sidebar>
+
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">

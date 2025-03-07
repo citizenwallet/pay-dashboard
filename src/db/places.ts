@@ -18,13 +18,12 @@ export interface Place {
   terminal_id: number | null;
   image: string | null;
   description: string | null;
+  hidden: boolean;
+  archived: boolean;
   display: 'amount' | 'menu' | 'topup';
 }
 
-export type NewPlace = Omit<
-  Place,
-  'id' | 'created_at' | 'terminal_id' | 'description'
->;
+export type NewPlace = Omit<Place, 'id' | 'created_at' | 'terminal_id'>;
 
 export interface PlaceSearchResult {
   id: number;
@@ -106,7 +105,6 @@ export const createPlace = async (
   return client.from('places').insert(place).select().single();
 };
 
-// TODO: add pagination
 export const getAllPlaces = async (
   client: SupabaseClient
 ): Promise<PostgrestResponse<Place>> => {
@@ -129,8 +127,8 @@ export const checkUserPlaceAccess = async (
       `
       id,
       business_id,
-      businesses!inner (
-        users!business_users!inner (
+     businesses!inner (
+       users!business_users!inner (
           id
         )
       )
@@ -147,6 +145,88 @@ export const checkUserPlaceAccess = async (
   return data !== null;
 };
 
+export const uniqueSlugPlace = async (
+  client: SupabaseClient,
+  slug: string
+): Promise<PostgrestSingleResponse<{ data: Place | null; error: any }>> => {
+  return await client.from('places').select('id').eq('slug', slug).single();
+};
+
+export const handleVisibilityToggleceById = async (
+  client: SupabaseClient,
+  placeId: number
+): Promise<PostgrestSingleResponse<Place | null>> => {
+  // get the current hidden status
+  const { data: currentPlace, error: fetchError } = await client
+    .from('places')
+    .select('hidden')
+    .eq('id', placeId)
+    .maybeSingle();
+
+  if (fetchError || !currentPlace) {
+    throw fetchError || new Error('Place not found');
+  }
+
+  const newHiddenValue = !currentPlace.hidden;
+
+  return client
+    .from('places')
+    .update({ hidden: newHiddenValue })
+    .eq('id', placeId)
+    .maybeSingle();
+};
+
+export const handleArchiveToggleById = async (
+  client: SupabaseClient,
+  placeId: number
+): Promise<PostgrestSingleResponse<Place | null>> => {
+  // Fetch the current state of the place
+  const { data: place, error } = await client
+    .from('places')
+    .select('archived, hidden')
+    .eq('id', placeId)
+    .single();
+
+  if (error || !place) {
+    throw new Error('Place not found');
+  }
+
+  // Toggle the archived and hidden values based on current state
+  const newState = {
+    archived: place.archived ? false : true,
+    hidden: place.hidden ? false : true
+  };
+
+  // Update the place with the toggled values
+  return client.from('places').update(newState).eq('id', placeId).maybeSingle();
+};
+
+export const updatePlaceById = async (
+  client: SupabaseClient,
+  placeId: number,
+  name: string,
+  description: string,
+  slug: string,
+  newimage: string
+): Promise<PostgrestSingleResponse<Place | null>> => {
+  return client
+    .from('places')
+    .update({
+      name: name,
+      description: description,
+      slug: slug,
+      image: newimage
+    })
+    .eq('id', placeId)
+    .maybeSingle();
+};
+
+export const deletePlaceById = async (
+  client: SupabaseClient,
+  placeId: number
+): Promise<PostgrestSingleResponse<Place | null>> => {
+  return client.from('places').delete().eq('id', placeId).maybeSingle();
+};
 export const getAllPlacesByUserId = async (
   client: SupabaseClient,
   userId: number

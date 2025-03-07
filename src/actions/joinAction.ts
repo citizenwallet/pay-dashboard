@@ -100,7 +100,10 @@ export async function joinAction(
     accounts: [account],
     invite_code: inviteCode,
     image: null,
-    display: 'amount'
+    display: 'amount',
+    hidden: true,
+    description: data.description,
+    archived: false
   });
 
   if (placeError) {
