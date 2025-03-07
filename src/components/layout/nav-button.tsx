@@ -27,6 +27,7 @@ import { cn } from '@/lib/utils';
 
 export function NavButton({ lastPlace }: { lastPlace: Place }) {
   const [copied, setCopied] = useState(false);
+  const [copiedOrdersFeed, setCopiedOrdersFeed] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const router = useRouter();
 
@@ -41,6 +42,24 @@ export function NavButton({ lastPlace }: { lastPlace: Place }) {
       .writeText(checkoutUrl)
       .then(() => {
         toast.success(`Copied to clipboard: ${checkoutUrl}`);
+      })
+      .catch((err) => {
+        console.error('Failed to copy: ', err);
+        toast.error('Failed to copy the link. Please try again.');
+      });
+  };
+
+  const handleCopyOrdersFeedLink = () => {
+    setCopiedOrdersFeed(true);
+    setTimeout(() => {
+      setCopiedOrdersFeed(false);
+    }, 1000);
+
+    const ordersFeedUrl = `${process.env.NEXT_PUBLIC_CHECKOUT_BASE_URL}/${lastPlace.slug}/orders`;
+    navigator.clipboard
+      .writeText(ordersFeedUrl)
+      .then(() => {
+        toast.success(`Copied to clipboard: ${ordersFeedUrl}`);
       })
       .catch((err) => {
         console.error('Failed to copy: ', err);
@@ -105,6 +124,18 @@ export function NavButton({ lastPlace }: { lastPlace: Place }) {
             >
               {copied ? <Check /> : <Copy />}
               <span>Copy checkout link</span>
+            </SidebarMenuButton>
+          )}
+          {!lastPlace.archived && (
+            <SidebarMenuButton
+              onClick={handleCopyOrdersFeedLink}
+              className={cn(
+                'transition-all',
+                copiedOrdersFeed ? 'border border-green-500' : ''
+              )}
+            >
+              {copiedOrdersFeed ? <Check /> : <Copy />}
+              <span>Copy orders feed link</span>
             </SidebarMenuButton>
           )}
         </SidebarMenuItem>
