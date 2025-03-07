@@ -12,6 +12,7 @@ import {
   handleArchiveToggleById,
   handleVisibilityToggleceById
 } from '@/db/places';
+import { getFirstPlace, updateLastplace } from '@/db/users';
 
 export async function getPlaceDataAction(placeId: number) {
   const client = getServiceRoleClient();
@@ -74,5 +75,30 @@ export const deletePlaceAction = async (placeId: number) => {
     throw new Error('Place has orders, cannot delete');
   }
 
-  return await deletePlaceById(client, placeId);
+  const { data: place, error: placeError } = await getPlaceById(
+    client,
+    placeId
+  );
+  if (!place || placeError) {
+    throw new Error('Place not found');
+  }
+
+  const { data: firstPlace, error } = await getFirstPlace(
+    client,
+    place.business_id
+  );
+  if (error) {
+    throw new Error('Error getting first place');
+  }
+
+  if (!firstPlace) {
+    throw new Error('No places found');
+  }
+
+  const { error: deletedPlaceError } = await deletePlaceById(client, placeId);
+  if (deletedPlaceError) {
+    throw new Error('Error deleting place');
+  }
+
+  return updateLastplace(client, userId, firstPlace.id);
 };

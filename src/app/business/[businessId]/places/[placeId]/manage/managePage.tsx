@@ -63,12 +63,14 @@ export default function ManagePage({
 
   const handleDelete = async (place: Place) => {
     try {
-      const data = await deletePlaceAction(place.id);
-      toast.success(`Delete that Place successfully`);
+      await deletePlaceAction(place.id);
+
+      toast.success(`Place deleted successfully`);
+
       setIsDeleteDialogOpen(false);
       router.push('/');
     } catch (error) {
-      toast.error(`Error with Delete the place`);
+      toast.error(`Error deleting the place`);
     }
   };
 

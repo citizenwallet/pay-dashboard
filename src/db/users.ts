@@ -70,21 +70,23 @@ export const updateLastplace = async (
   userid: number,
   placeid: number
 ): Promise<PostgrestSingleResponse<User | null>> => {
-  return client
-    .from('users')
-    .update({ last_place: placeid })
-    .eq('id', userid);
+  return client.from('users').update({ last_place: placeid }).eq('id', userid);
 };
 
-export const getLastplace = async (
+export const getFirstPlace = async (
   client: SupabaseClient,
-  userid: number
-)=> {
+  businessId: number
+) => {
   return client
-  .from('users')
-  .select('last_place') 
-  .eq('id', userid)
-  .single();
+    .from('places')
+    .select('*')
+    .eq('business_id', businessId)
+    .limit(1)
+    .single();
+};
+
+export const getLastplace = async (client: SupabaseClient, userid: number) => {
+  return client.from('users').select('last_place').eq('id', userid).single();
 };
 export const userExists = async (
   client: SupabaseClient,

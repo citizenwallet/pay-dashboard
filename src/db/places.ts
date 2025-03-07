@@ -225,7 +225,7 @@ export const deletePlaceById = async (
   client: SupabaseClient,
   placeId: number
 ): Promise<PostgrestSingleResponse<Place | null>> => {
-  return client.from('places').delete().eq('id', placeId).maybeSingle();
+  return client.from('places').delete().eq('id', placeId);
 };
 export const getAllPlacesByUserId = async (
   client: SupabaseClient,
