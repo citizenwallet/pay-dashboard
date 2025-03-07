@@ -3,7 +3,7 @@
 import { getServiceRoleClient } from '@/db';
 import { isUserLinkedToPlaceAction } from '@/actions/session';
 import { getUserIdFromSessionAction } from '@/actions/session';
-import { createPos, deletePos, getPosByPlaceId, updatePos } from '@/db/pos';
+import { createPos, deletePos, getPosById, getPosByPlaceId, updatePos } from '@/db/pos';
 
 
 
@@ -54,4 +54,14 @@ export async function updatePosAction(id: number, name: string, place_id: number
   const pos = await updatePos(client, id, name, type);
   return pos;
 }
+
+export async function checkPlaceIdAlreadyExistsAction(posId: string) {
+  const client = getServiceRoleClient();
+  const pos = await getPosById(client, posId);
+  if(pos.data){
+    return false;
+  }
+  return true;
+}
+
 

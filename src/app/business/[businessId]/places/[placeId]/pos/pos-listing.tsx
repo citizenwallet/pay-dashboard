@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { icons, Plus, Trash, Loader } from "lucide-react";
+import { icons, Trash, Loader } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -15,8 +15,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Pos } from "@/db/pos";
-import { addVivaPosAction, deletePosAction, updatePosAction } from "./action";
-import { useRouter } from "next/navigation";
+import { addVivaPosAction, checkPlaceIdAlreadyExistsAction, deletePosAction, updatePosAction } from "./action";
+import { useDebounce } from 'use-debounce';
 
 
 
@@ -37,7 +37,9 @@ export default function PosListing({
   const [editingName, setEditingName] = useState("");
   const [editingType, setEditingType] = useState("");
   const [loading, setLoading] = useState<string | null>(null);
-  const router = useRouter();
+  const [handleAddButton, setHandleAddButton] = useState(true);
+  const [debouncedPlaceId] = useDebounce(posId, 500);
+
 
   // Inline Edit Handlers
   const handleEditClick = (item: Pos, field: string) => {
@@ -47,6 +49,7 @@ export default function PosListing({
     setEditingType(item.type || "");
   };
 
+  // Update a POS terminal
   const handleSave = async (item: Pos) => {
     setLoading(item.id);
 
@@ -73,7 +76,7 @@ export default function PosListing({
         return;
       }
 
-      setPosItems((prev) => prev.map((pos) => pos.id === item.id ? {...pos, ...updatedPos} : pos));
+      setPosItems((prev) => prev.map((pos) => pos.id === item.id ? { ...pos, ...updatedPos } : pos));
       toast.success("POS terminal updated successfully");
 
     } catch (error) {
@@ -85,6 +88,7 @@ export default function PosListing({
     }
   };
 
+  // Delete a POS terminal
   const handleDelete = async (id: string) => {
     setLoading(id);
     try {
@@ -104,6 +108,7 @@ export default function PosListing({
     }
   };
 
+  // Add a new POS terminal
   const handleAddPlace = async () => {
     try {
       if (!posId || !posName) {
@@ -119,7 +124,7 @@ export default function PosListing({
       if (res.error) {
         toast.error(res.error.message);
         return;
-      }      
+      }
       toast.success("POS terminal added successfully");
       setPosItems((prev) => [...prev, res.data as Pos]);
     } catch (error) {
@@ -127,6 +132,28 @@ export default function PosListing({
     }
 
   };
+
+  // Check if the POS terminal Id already exists
+  useEffect(() => {
+    const checkPlaceIdAlreadyExists = async () => {
+      if (!debouncedPlaceId) return; // Avoid calling API if ID is empty
+
+      try {
+        const res = await checkPlaceIdAlreadyExistsAction(debouncedPlaceId);
+        if(res){
+          setHandleAddButton(false);
+        }else{
+          setHandleAddButton(true);
+          toast.error("POS terminal Id already exists");
+        }
+
+      } catch (error) {
+        console.error("Error checking place ID:", error);
+      }
+    };
+
+    checkPlaceIdAlreadyExists();
+  }, [debouncedPlaceId]);
 
   return (
     <div className="w-full">
@@ -178,7 +205,7 @@ export default function PosListing({
             <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleAddPlace}>Add</Button>
+            <Button disabled={handleAddButton} onClick={handleAddPlace}>Add</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -203,7 +230,7 @@ export default function PosListing({
 
             <tr key={item.id} className="hover:bg-gray-50">
 
-              
+
               <td className="border p-2">
                 {(item.id)}{" "}
               </td>
