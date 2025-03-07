@@ -619,22 +619,6 @@ export default function ItemListing({
     try {
       setAddingItem(true);
 
-      // Get the place ID from the URL if there are no items
-      let placeId: number;
-      if (items.length > 0) {
-        placeId = items[0].place_id;
-      } else {
-        // Extract place_id from the URL
-        const pathParts = window.location.pathname.split('/');
-        const placeIdIndex = pathParts.findIndex((part) => part === 'menu') + 1;
-        placeId = parseInt(pathParts[placeIdIndex], 10);
-
-        if (isNaN(placeId)) {
-          toast.error('Could not determine place ID');
-          return;
-        }
-      }
-
       const response = await addNewItemAction(placeId);
 
       if (response.error) {
