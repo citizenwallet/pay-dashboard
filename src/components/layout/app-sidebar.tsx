@@ -65,8 +65,6 @@ export default function AppSidebar({
     }
   }, [session, user]);
 
-  console.log(lastPlace);
-
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon">
