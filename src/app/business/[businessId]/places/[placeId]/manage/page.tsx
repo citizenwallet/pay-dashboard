@@ -3,7 +3,7 @@ import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
 import { Suspense } from 'react';
 import ManagePage from './managePage';
-import { getPlaceDataAction, getPlaceOrderAction } from './action';
+import { getPlaceDataAction, placeHasOrdersAction } from './action';
 
 export default async function page({
   params
@@ -20,10 +20,7 @@ export default async function page({
           </div>
           <Separator />
           <Suspense fallback={<div>Loading...</div>}>
-            <AsyncPage
-              businessId={resolvedParams.businessId}
-              placeId={resolvedParams.placeId}
-            />
+            <AsyncPage placeId={resolvedParams.placeId} />
           </Suspense>
         </div>
       </PageContainer>
@@ -31,15 +28,8 @@ export default async function page({
   );
 }
 
-async function AsyncPage({
-  businessId,
-  placeId
-}: {
-  businessId: string;
-  placeId: string;
-}) {
+async function AsyncPage({ placeId }: { placeId: string }) {
   const place = await getPlaceDataAction(parseInt(placeId));
-  const order = await getPlaceOrderAction(parseInt(placeId));
-  const count = order.data?.length;
-  return <ManagePage place={place.data} orderPlace={count} />;
+  const hasOrders = await placeHasOrdersAction(parseInt(placeId));
+  return <ManagePage place={place.data} hasOrders={hasOrders} />;
 }

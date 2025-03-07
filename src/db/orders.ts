@@ -188,6 +188,19 @@ export const getOrderStatus = async (
   return client.from('orders').select('status').eq('id', orderId).single();
 };
 
+export const placeHasOrders = async (
+  client: SupabaseClient,
+  placeId: number
+): Promise<boolean> => {
+  const { count } = await client
+    .from('orders')
+    .select('*', { count: 'exact', head: true })
+    .eq('place_id', placeId)
+    .limit(1);
+
+  return (count ?? 0) > 0;
+};
+
 export const getOrdersByPlace = async (
   client: SupabaseClient,
   placeId: number,
