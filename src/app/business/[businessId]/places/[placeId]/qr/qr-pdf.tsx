@@ -80,7 +80,14 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     width: 450,
     height: 420,
-    position: 'relative'
+    position: 'relative',
+    padding: 40,
+    backgroundColor: 'white'
+  },
+  qrimage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 14
   },
 
   qrContent: {
@@ -119,36 +126,40 @@ const styles = StyleSheet.create({
 });
 
 // Create Document Component
-export const QrPdfDocument = () => (
-  <Document>
-    <Page size="A4" style={styles.page}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Pay here with Brussels Pay</Text>
-          <Text style={styles.subtitle}>
-            Local payments for local businesses
-          </Text>
-        </View>
 
-        <Text style={styles.scanLabel}>Scan to pay</Text>
-        <View style={styles.qrContainer}>
-          <View style={styles.qrBox}>
-            <View style={styles.qrContent} />
+export default function QrPdfDocument({ image }: { image: string }) {
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <Text style={styles.title}>Pay here with Brussels Pay</Text>
+            <Text style={styles.subtitle}>
+              Local payments for local businesses
+            </Text>
+          </View>
+
+          <Text style={styles.scanLabel}>Scan to pay</Text>
+          <View style={styles.qrContainer}>
+            <View style={styles.qrBox}>
+              {/* <View style={styles.qrContent} /> */}
+              <Image style={styles.qrimage} src={image} />
+            </View>
+          </View>
+
+          <View style={styles.footer}>
+            <Text style={styles.subtitleFooter}>
+              learn more at{' '}
+              <Text style={{ textDecoration: 'underline' }}>pay.brussels</Text>
+            </Text>
+          </View>
+
+          <View style={styles.footerLogo}>
+            <Image style={styles.logo} src="/assets/img/logo.png" />
+            <Text style={styles.logoText}>Pay</Text>
           </View>
         </View>
-
-        <View style={styles.footer}>
-          <Text style={styles.subtitleFooter}>
-            learn more at{' '}
-            <Text style={{ textDecoration: 'underline' }}>pay.brussels</Text>
-          </Text>
-        </View>
-
-        <View style={styles.footerLogo}>
-          <Image style={styles.logo} src="/assets/img/logo.png" />
-          <Text style={styles.logoText}>Pay</Text>
-        </View>
-      </View>
-    </Page>
-  </Document>
-);
+      </Page>
+    </Document>
+  );
+}
