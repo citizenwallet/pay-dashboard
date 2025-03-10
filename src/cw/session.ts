@@ -59,9 +59,6 @@ export const verifySessionRequest = async (
 
   const recoveredAddress = verifyMessage(sessionRequestHash, signature);
 
-  console.log('recoveredAddress', recoveredAddress);
-  console.log('sessionOwner', sessionOwner);
-
   return recoveredAddress === sessionOwner;
 };
 
