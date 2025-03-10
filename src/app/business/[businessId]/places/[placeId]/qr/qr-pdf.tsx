@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 import {
   Page,
   Text,
@@ -142,7 +143,6 @@ export default function QrPdfDocument({ image }: { image: string }) {
           <Text style={styles.scanLabel}>Scan to pay</Text>
           <View style={styles.qrContainer}>
             <View style={styles.qrBox}>
-              {/* <View style={styles.qrContent} /> */}
               <Image style={styles.qrimage} src={image} />
             </View>
           </View>
