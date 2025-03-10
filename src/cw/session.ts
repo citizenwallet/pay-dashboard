@@ -10,6 +10,8 @@ import {
   JsonRpcProvider
 } from 'ethers';
 
+// TODO: move to SDK
+
 export const generateSessionSalt = (source: string, type: string) => {
   return id(`${source}:${type}`);
 };

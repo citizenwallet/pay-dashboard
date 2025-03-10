@@ -90,6 +90,7 @@ export async function POST(req: NextRequest) {
 
   const signedSessionHash = await signer.signMessage(sessionHash);
 
+  // TODO: add 2fa provider to community config
   const community = new CommunityConfig(communityJson);
 
   const txHash = await requestSession(
