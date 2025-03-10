@@ -4,6 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import { Suspense } from 'react';
 
 import QrPage from './qr-page';
+import { getPlaceDataAction } from './action';
 
 export default async function QRPage({
   params
@@ -22,7 +23,7 @@ export default async function QRPage({
             />
           </div>
           <Separator />
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<></>}>
             <AsyncPage
               businessId={resolvedParams.businessId}
               placeId={resolvedParams.placeId}
@@ -41,5 +42,12 @@ async function AsyncPage({
   businessId: string;
   placeId: string;
 }) {
-  return <QrPage />;
+  const place = await getPlaceDataAction(
+    parseInt(placeId),
+    parseInt(businessId)
+  );
+  if (!place) {
+    throw new Error('Place not found');
+  }
+  return <QrPage place={place.data} />;
 }
