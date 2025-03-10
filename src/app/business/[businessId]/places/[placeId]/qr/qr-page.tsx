@@ -66,7 +66,7 @@ export default function QrPage({ place }: { place: Place | null }) {
           size={1000}
           fgColor="#0000FF"
           bgColor="#FFFFFF"
-          logoImage={place?.image ?? '/assets/img/logo.svg'}
+          logoImage="/assets/img/logo.svg"
           logoHeight={250}
           logoWidth={250}
           logoOpacity={1}
