@@ -64,6 +64,16 @@ export const verifySessionRequest = async (
   return recoveredAddress === sessionOwner;
 };
 
+export const verifySessionConfirm = async (
+  sessionOwner: string,
+  sessionHash: string,
+  signedSessionHash: string
+) => {
+  const recoveredAddress = verifyMessage(sessionHash, signedSessionHash);
+
+  return recoveredAddress === sessionOwner;
+};
+
 export const requestSession = async (
   community: CommunityConfig,
   signer: Wallet,
@@ -90,6 +100,33 @@ export const requestSession = async (
     signedSessionRequestHash,
     signedSessionHash,
     sessionRequestExpiry
+  );
+
+  return tx.hash;
+};
+
+export const confirmSession = async (
+  community: CommunityConfig,
+  signer: Wallet,
+  sessionManagerAddress: string,
+  sessionRequestHash: string,
+  sessionHash: string,
+  signedSessionHash: string
+) => {
+  const provider = new JsonRpcProvider(community.primaryRPCUrl);
+
+  const connectedSigner = signer.connect(provider);
+
+  const sessionManagerContract = new Contract(
+    sessionManagerAddress,
+    sessionManagerModuleJson.abi,
+    connectedSigner
+  );
+
+  const tx = await sessionManagerContract.confirm(
+    sessionRequestHash,
+    sessionHash,
+    signedSessionHash
   );
 
   return tx.hash;
