@@ -7,9 +7,5 @@ export default async function Dashboard() {
 
   if (!session?.user) {
     return redirect('/');
-  } else {
-    const data = await getPlaceAction();
-    return redirect(`/business/${data.busid}/places/${data.lastId}/orders`);
-
   }
 }
