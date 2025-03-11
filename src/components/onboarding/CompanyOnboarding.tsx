@@ -7,6 +7,9 @@ import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import { jwtVerifyAction } from './action';
+import { signAction } from '@/app/(auth)/action';
 
 const initialState: OnboardingState = {
   step: 1,
@@ -46,6 +49,15 @@ export function CompanyOnboarding() {
   const vat_number = searchParams.get('vat_number');
   const token = searchParams.get('invite_code');
 
+  //get the otpToken from the url
+
+  const otp = searchParams.get('otpToken');
+  useEffect(() => {
+    if (typeof window !== 'undefined' && otp) {
+      localStorage.setItem('otpToken', otp);
+    }
+  }, [otp]);
+
   const handleNext = async (data: CompanyInfo) => {
     dispatch({ type: 'UPDATE_DATA', payload: data });
     dispatch({ type: 'NEXT_STEP' });
@@ -65,10 +77,24 @@ export function CompanyOnboarding() {
         'Content-Type': 'application/json'
       }
     })
-      .then(() => {
+      .then(async () => {
+        //check if the otpToken is valid
+        const token = localStorage.getItem('otpToken');
+        if (token) {
+          try {
+            const decoded: JwtPayload | null = await jwtVerifyAction(token);
+            console.log('decoded otp', decoded);
+            localStorage.removeItem('otpToken');
+            const success = await signAction(decoded?.email, decoded?.otp);
+            toast.success('OTP verified successfully');
+          } catch (error) {
+            toast.error('Invalid or expired OTP. Please try again.');
+          }
+        }
+
         toast.success(t('Your business has been successfully validated !'), {
           onAutoClose: () => {
-            window.location.href = '/dashboard';
+            window.location.href = '/';
           }
         });
       })
