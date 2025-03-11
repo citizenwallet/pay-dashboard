@@ -25,7 +25,6 @@ import {
 import { NavMain } from './nav-main';
 import { ChevronsUpDown, LogOut } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { Breadcrumbs } from '../breadcrumbs';
 import ThemeToggle from './ThemeToggle/theme-toggle';
 import { UserNav } from './user-nav';
 import { Logo } from '@/components/logo';
@@ -177,7 +176,6 @@ export default function AppSidebar({
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumbs />
           </div>
 
           <div className="flex items-center gap-2 px-4">
