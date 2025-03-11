@@ -44,9 +44,17 @@ export async function POST(req: NextRequest) {
 
   const signer = new Wallet(providerPrivateKey);
 
+  const providerAccountAddress = process.env.PROVIDER_ACCOUNT_ADDRESS;
+  if (!providerAccountAddress) {
+    return NextResponse.json({
+      status: StatusCodes.INTERNAL_SERVER_ERROR, // 500
+      message: ReasonPhrases.INTERNAL_SERVER_ERROR // "Internal Server Error" message
+    });
+  }
+
   const sessionRequest: SessionRequest = await req.json();
 
-  if (sessionRequest.provider !== getAddress(signer.address)) {
+  if (sessionRequest.provider !== providerAccountAddress) {
     return NextResponse.json({
       status: StatusCodes.BAD_REQUEST, // 400
       message: ReasonPhrases.BAD_REQUEST // "Bad Request" message
@@ -105,7 +113,7 @@ export async function POST(req: NextRequest) {
   const txHash = await requestSession(
     community,
     signer,
-    '0xE544c1dC66f65967863F03AEdEd38944E6b87309',
+    providerAccountAddress,
     sessionSalt,
     sessionRequestHash,
     sessionRequest.signature,
@@ -146,6 +154,14 @@ export async function PATCH(req: NextRequest) {
 
   const signer = new Wallet(providerPrivateKey);
 
+  const providerAccountAddress = process.env.PROVIDER_ACCOUNT_ADDRESS;
+  if (!providerAccountAddress) {
+    return NextResponse.json({
+      status: StatusCodes.INTERNAL_SERVER_ERROR, // 500
+      message: ReasonPhrases.INTERNAL_SERVER_ERROR // "Internal Server Error" message
+    });
+  }
+
   const sessionRequest: SessionConfirm = await req.json();
 
   if (sessionRequest.provider !== getAddress(signer.address)) {
@@ -179,7 +195,7 @@ export async function PATCH(req: NextRequest) {
   const txHash = await confirmSession(
     community,
     signer,
-    '0xE544c1dC66f65967863F03AEdEd38944E6b87309',
+    providerAccountAddress,
     sessionRequest.sessionRequestHash,
     sessionRequest.sessionHash,
     sessionRequest.signedSessionHash

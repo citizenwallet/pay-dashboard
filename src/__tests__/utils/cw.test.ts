@@ -8,11 +8,11 @@ import { describe, expect, it } from '@jest/globals';
 import { getAddress, Wallet } from 'ethers';
 
 describe('CW Functions', () => {
-  const sessionProvider = '0xb12e64d27d4f96a0Ec82D48771e3bAF755692ba0';
+  const sessionProvider = '0xF3004A1690f97Cf5d307eDc5958a7F76b62f9FC9';
 
   const source = '+32478123123';
   const type = 'sms';
-  const expiry = 1741550131;
+  const expiry = 1741908088;
 
   describe('generateSessionSalt', () => {
     it('should generate session salt correctly', () => {
@@ -35,7 +35,7 @@ describe('CW Functions', () => {
         expiry
       );
       expect(sessionRequestHash).toBe(
-        '0x31c77dde3b3487b36773a547acee0ec7374a622845db01d6a172c85b203e1897'
+        '0x71b84c91b09c4a7a463d2fef1243f7f98009db3d894e9d2695e3a182b1398eec'
       );
     });
   });

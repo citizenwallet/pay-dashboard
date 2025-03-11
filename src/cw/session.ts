@@ -1,14 +1,16 @@
 import sessionManagerModuleJson from '@/cw/abi/SessionManagerModule.json';
 import { generateOtp } from '@/utils/generateotp';
-import { CommunityConfig } from '@citizenwallet/sdk';
+import { BundlerService, CommunityConfig } from '@citizenwallet/sdk';
 import {
-  Contract,
   solidityPackedKeccak256,
   id,
   verifyMessage,
   Wallet,
-  JsonRpcProvider
+  Interface,
+  getBytes
 } from 'ethers';
+
+const sessionManagerInterface = new Interface(sessionManagerModuleJson.abi);
 
 // TODO: move to SDK
 
@@ -77,57 +79,53 @@ export const verifySessionConfirm = async (
 export const requestSession = async (
   community: CommunityConfig,
   signer: Wallet,
-  sessionManagerAddress: string,
+  provider: string,
   sessionSalt: string,
   sessionRequestHash: string,
   signedSessionRequestHash: string,
   signedSessionHash: string,
   sessionRequestExpiry: number
 ): Promise<string> => {
-  const provider = new JsonRpcProvider(community.primaryRPCUrl);
+  const sessionManagerAddress = '0xE544c1dC66f65967863F03AEdEd38944E6b87309';
 
-  const connectedSigner = signer.connect(provider);
+  const bundler = new BundlerService(community);
 
-  const sessionManagerContract = new Contract(
-    sessionManagerAddress,
-    sessionManagerModuleJson.abi,
-    connectedSigner
+  const data = getBytes(
+    sessionManagerInterface.encodeFunctionData('request', [
+      sessionSalt,
+      sessionRequestHash,
+      signedSessionRequestHash,
+      signedSessionHash,
+      sessionRequestExpiry
+    ])
   );
 
-  const tx = await sessionManagerContract.request(
-    sessionSalt,
-    sessionRequestHash,
-    signedSessionRequestHash,
-    signedSessionHash,
-    sessionRequestExpiry
-  );
+  const tx = await bundler.call(signer, sessionManagerAddress, provider, data);
 
-  return tx.hash;
+  return tx;
 };
 
 export const confirmSession = async (
   community: CommunityConfig,
   signer: Wallet,
-  sessionManagerAddress: string,
+  provider: string,
   sessionRequestHash: string,
   sessionHash: string,
   signedSessionHash: string
 ) => {
-  const provider = new JsonRpcProvider(community.primaryRPCUrl);
+  const sessionManagerAddress = '0xE544c1dC66f65967863F03AEdEd38944E6b87309';
 
-  const connectedSigner = signer.connect(provider);
+  const bundler = new BundlerService(community);
 
-  const sessionManagerContract = new Contract(
-    sessionManagerAddress,
-    sessionManagerModuleJson.abi,
-    connectedSigner
+  const data = getBytes(
+    sessionManagerInterface.encodeFunctionData('confirm', [
+      sessionRequestHash,
+      sessionHash,
+      signedSessionHash
+    ])
   );
 
-  const tx = await sessionManagerContract.confirm(
-    sessionRequestHash,
-    sessionHash,
-    signedSessionHash
-  );
+  const tx = await bundler.call(signer, sessionManagerAddress, provider, data);
 
-  return tx.hash;
+  return tx;
 };
