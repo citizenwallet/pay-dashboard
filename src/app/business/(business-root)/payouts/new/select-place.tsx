@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
@@ -21,9 +21,15 @@ import { Place } from '@/db/places';
 import { DataTable } from '@/components/ui/data-table';
 import { DateRange } from 'react-day-picker';
 import { addDays, format } from 'date-fns';
+import { getOrdersAction } from './action';
+import { dataLength } from 'ethers';
+import { DataTableResetFilter } from '@/components/ui/table/data-table-reset-filter';
+import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
+import OrderView from './order-view';
 
 export default function SelectPlace({ places }: { places: Place[] | null }) {
   const selectedPlaceRef = useRef<string | null>(null);
+  const [placeid, setPlaceid] = useState<number | null>(null);
   const [date, setDate] = useState<DateRange | undefined>({
     from: new Date(),
     to: addDays(new Date(), 7)
@@ -53,6 +59,7 @@ export default function SelectPlace({ places }: { places: Place[] | null }) {
         <div className="flex w-full flex-col gap-2">
           <Select
             onValueChange={(value) => {
+              setPlaceid(Number(value));
               selectedPlaceRef.current = value;
               handleSelectionComplete();
             }}
@@ -123,7 +130,7 @@ export default function SelectPlace({ places }: { places: Place[] | null }) {
 
       {isTableVisible && (
         <Suspense fallback={<>Loading...</>}>
-          <AsyncOrderTable place={selectedPlaceRef.current} dateRange={date} />
+          <AsyncOrderTable place={placeid} dateRange={date} />
         </Suspense>
       )}
 
@@ -136,27 +143,8 @@ function AsyncOrderTable({
   place,
   dateRange
 }: {
-  place: string | null;
+  place: number | null;
   dateRange: DateRange | undefined;
 }) {
-  return (
-    <DataTable
-      columns={[
-        { accessorKey: 'business_id', header: 'Business Name' },
-        { accessorKey: 'place_id', header: 'Place Name' },
-        { accessorKey: 'created_at', header: 'Created At' },
-        { accessorKey: 'total', header: 'Total' },
-        { accessorKey: 'status', header: 'from' }
-      ]}
-      data={[
-        {
-          business_id: 'Business 1',
-          place_id: 'Place 1',
-          created_at: '2021-01-01',
-          total: 100,
-          status: 'Pending'
-        }
-      ]}
-    />
-  );
+  return <OrderView place={place} dateRange={dateRange} />;
 }

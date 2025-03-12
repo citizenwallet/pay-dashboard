@@ -281,3 +281,32 @@ export const getOrdersByPlaceWithOutLimit = async (
     .lte('created_at', range.end)
     .order('created_at', { ascending: false });
 };
+
+export const getOrdersNotPayoutBy = async (
+  client: SupabaseClient,
+  placeId: number,
+  dateRange: string = 'today',
+  customStartDate?: string,
+  customEndDate?: string
+): Promise<PostgrestResponse<Order>> => {
+  const range = getDateRangeFilter(dateRange, customStartDate, customEndDate);
+  if (!range) {
+    return client
+      .from('orders')
+      .select()
+      .eq('place_id', placeId)
+      .is('payout_id', null)
+      .eq('status', 'paid')
+      .order('created_at', { ascending: false });
+  }
+
+  return client
+    .from('orders')
+    .select()
+    .eq('place_id', placeId)
+    .is('payout_id', null)
+    .eq('status', 'paid')
+    .gte('created_at', range.start)
+    .lte('created_at', range.end)
+    .order('created_at', { ascending: false });
+};
