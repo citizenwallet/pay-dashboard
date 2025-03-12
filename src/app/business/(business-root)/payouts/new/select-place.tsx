@@ -6,82 +6,72 @@ import {
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList
-} from '@/components/ui/command';
-import { CalendarIcon, CheckIcon, ChevronsUpDown } from 'lucide-react';
-import { useState } from 'react';
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
+import { CalendarIcon } from 'lucide-react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { Place } from '@/db/places';
+import { DataTable } from '@/components/ui/data-table';
+import { DateRange } from 'react-day-picker';
+import { addDays, format } from 'date-fns';
 
 export default function SelectPlace({ places }: { places: Place[] | null }) {
-  const [open, setOpen] = useState(false);
-  const [place, setplace] = useState('');
-  const [dateRange, setDateRange] = useState<{
-    from: Date | undefined;
-    to: Date | undefined;
-  }>({
-    from: undefined,
-    to: undefined
+  const selectedPlaceRef = useRef<string | null>(null);
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: new Date(),
+    to: addDays(new Date(), 7)
   });
+
+  //for get the date range from the date picker
+  const dateRangeRef = useRef<DateRange | undefined>({
+    from: new Date(),
+    to: addDays(new Date(), 7)
+  });
+
+  // State to control when the table should be displayed
+  const [isTableVisible, setIsTableVisible] = useState(false);
+
+  // Function to handle selection completion
+  const handleSelectionComplete = () => {
+    if (selectedPlaceRef.current && dateRangeRef.current) {
+      setIsTableVisible(true);
+    }
+  };
 
   return (
     <>
       {/* place Selector */}
       <div className="space-y-2">
         <label className="text-md font-medium">Places</label>
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={open}
-              className="w-full justify-between"
-            >
-              {place
-                ? places?.find((loc) => loc.id === parseInt(place))?.name
-                : 'Select places...'}
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-[350px] p-0" align="start">
-            <Command className="w-full">
-              <CommandInput placeholder="Search places..." className="w-full" />
-              <CommandList className="w-full">
-                <CommandEmpty>No places found.</CommandEmpty>
-                <CommandGroup>
-                  {places &&
-                    places.map((loc) => (
-                      <CommandItem
-                        key={loc.id}
-                        value={loc.id.toString()}
-                        onSelect={(currentValue) => {
-                          setplace(currentValue === place ? '' : currentValue);
-                          setOpen(false);
-                        }}
-                      >
-                        <CheckIcon
-                          className={cn(
-                            'mr-2 h-4 w-4',
-                            place === loc.id.toString()
-                              ? 'opacity-100'
-                              : 'opacity-0'
-                          )}
-                        />
-                        {loc.name}
-                      </CommandItem>
-                    ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
+        <div className="flex w-full flex-col gap-2">
+          <Select
+            onValueChange={(value) => {
+              selectedPlaceRef.current = value;
+              handleSelectionComplete();
+            }}
+            value={selectedPlaceRef.current || undefined}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select a place" />
+            </SelectTrigger>
+            <SelectContent className="max-h-[250px] overflow-y-auto">
+              <SelectGroup>
+                {places?.map((place, index) => (
+                  <SelectItem key={index} value={place.id.toString()}>
+                    {place.name}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Date Range Picker */}
@@ -95,21 +85,21 @@ export default function SelectPlace({ places }: { places: Place[] | null }) {
                 variant={'outline'}
                 className={cn(
                   'w-full justify-start text-left font-normal',
-                  !dateRange.from && 'text-muted-foreground'
+                  !date && 'text-muted-foreground'
                 )}
               >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {dateRange.from ? (
-                  dateRange.to ? (
+                <CalendarIcon />
+                {date?.from ? (
+                  date.to ? (
                     <>
-                      {format(dateRange.from, 'LLL dd, y')} -{' '}
-                      {format(dateRange.to, 'LLL dd, y')}
+                      {format(date.from, 'LLL dd, y')} -{' '}
+                      {format(date.to, 'LLL dd, y')}
                     </>
                   ) : (
-                    format(dateRange.from, 'LLL dd, y')
+                    format(date.from, 'LLL dd, y')
                   )
                 ) : (
-                  <span>Select date range</span>
+                  <span>Pick a date</span>
                 )}
               </Button>
             </PopoverTrigger>
@@ -117,13 +107,12 @@ export default function SelectPlace({ places }: { places: Place[] | null }) {
               <Calendar
                 initialFocus
                 mode="range"
-                defaultMonth={dateRange.from}
-                selected={dateRange}
+                defaultMonth={date?.from}
+                selected={date}
                 onSelect={(range) => {
-                  setDateRange({
-                    from: range?.from,
-                    to: range?.to
-                  });
+                  setDate(range);
+                  dateRangeRef.current = range;
+                  handleSelectionComplete();
                 }}
                 numberOfMonths={1}
               />
@@ -131,6 +120,43 @@ export default function SelectPlace({ places }: { places: Place[] | null }) {
           </Popover>
         </div>
       </div>
+
+      {isTableVisible && (
+        <Suspense fallback={<>Loading...</>}>
+          <AsyncOrderTable place={selectedPlaceRef.current} dateRange={date} />
+        </Suspense>
+      )}
+
+      <Button>Create Payout</Button>
     </>
+  );
+}
+
+function AsyncOrderTable({
+  place,
+  dateRange
+}: {
+  place: string | null;
+  dateRange: DateRange | undefined;
+}) {
+  return (
+    <DataTable
+      columns={[
+        { accessorKey: 'business_id', header: 'Business Name' },
+        { accessorKey: 'place_id', header: 'Place Name' },
+        { accessorKey: 'created_at', header: 'Created At' },
+        { accessorKey: 'total', header: 'Total' },
+        { accessorKey: 'status', header: 'from' }
+      ]}
+      data={[
+        {
+          business_id: 'Business 1',
+          place_id: 'Place 1',
+          created_at: '2021-01-01',
+          total: 100,
+          status: 'Pending'
+        }
+      ]}
+    />
   );
 }
