@@ -52,3 +52,9 @@ export const getBusinessById = async (
 ): Promise<PostgrestSingleResponse<Business>> => {
   return client.from('businesses').select('*').eq('id', businessId).single();
 };
+
+export const getAllBusiness = async (
+  client: SupabaseClient
+): Promise<PostgrestSingleResponse<Business[]>> => {
+  return client.from('businesses').select('*');
+};
