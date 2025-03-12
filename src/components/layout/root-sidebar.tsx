@@ -30,6 +30,7 @@ import {
   ArrowLeft,
   BellDot,
   ChevronsUpDown,
+  CreditCard,
   Inbox,
   LayoutDashboard,
   LogOut
@@ -44,6 +45,7 @@ import { getUserFromSessionAction } from '@/actions/session';
 import { Business } from '@/db/business';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function RootAppSidebar({
   isAdmin,
@@ -59,6 +61,7 @@ export default function RootAppSidebar({
   const [user, setUser] = useState<User | null | undefined>(initialUser);
 
   const session = useSession();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (session.status === 'authenticated' && !user) {
@@ -93,13 +96,30 @@ export default function RootAppSidebar({
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild isActive>
-                    <Link href="/">
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === '/business'}
+                  >
+                    <Link href="/business">
                       <LayoutDashboard className="h-4 w-4" />
                       <span>Business</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
+
+                {isAdmin && (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === '/business/payouts'}
+                    >
+                      <Link href="/business/payouts">
+                        <CreditCard className="h-4 w-4" />
+                        <span>Payouts</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
