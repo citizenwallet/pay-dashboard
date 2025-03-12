@@ -3,11 +3,12 @@ import { Suspense } from 'react';
 import { getLinkedBusinessAction } from '../(business-details)/[businessId]/action';
 import BusinessCard from './business-card';
 import { getAllBusinessAction } from './action';
+import { SkeletonCard } from '@/components/skeleton-card';
 
 export default function BusinessPage() {
   return (
     <>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<SkeletonCard count={4} />}>
         {asyncBusinessPage()}
       </Suspense>
     </>
