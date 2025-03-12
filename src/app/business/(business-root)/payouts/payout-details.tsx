@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
 import { Payout } from '@/db/payouts';
 import { icons } from 'lucide-react';
+import Link from 'next/link';
 import React from 'react';
 
 export default function PayoutDetailsPage({
@@ -10,11 +11,13 @@ export default function PayoutDetailsPage({
   payouts: Payout[] | null;
 }) {
   return (
-    <>
-      <Button className="flex items-center gap-2">
-        <icons.Plus size={16} />
-        New Payout
-      </Button>
+    <div className="flex flex-col gap-4">
+      <Link href="/business/payouts/new">
+        <Button className="flex items-center gap-2">
+          <icons.Plus size={16} />
+          New Payout
+        </Button>
+      </Link>
 
       <div>
         <DataTable
@@ -36,6 +39,6 @@ export default function PayoutDetailsPage({
           ]}
         />
       </div>
-    </>
+    </div>
   );
 }
