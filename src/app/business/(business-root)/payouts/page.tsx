@@ -5,6 +5,7 @@ import { Separator } from '@/components/ui/separator';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
 import React, { Suspense } from 'react';
 import PayoutDetailsPage from './payout-details';
+import { getAllPayoutAction } from './action';
 
 export default function PayoutsPage() {
   return (
@@ -29,5 +30,7 @@ async function AsyncPayoutsLoader() {
   if (!admin) {
     return <div>You are not authorized to view this page</div>;
   }
-  return <PayoutDetailsPage />;
+  const payouts = await getAllPayoutAction();
+  console.log(payouts);
+  return <PayoutDetailsPage payouts={payouts} />;
 }
