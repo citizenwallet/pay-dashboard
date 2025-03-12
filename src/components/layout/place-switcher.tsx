@@ -34,7 +34,7 @@ import {
   createPlaceAction,
   generateUniqueSlugAction,
   uploadImageAction
-} from '@/app/business/action';
+} from '@/app/business/(business-details)/[businessId]/action';
 import { createSlug } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -42,7 +42,6 @@ import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { Business } from '@/db/business';
 import { useDebounce } from 'use-debounce';
-
 
 export function PlaceSwitcher({
   places,
