@@ -42,7 +42,41 @@ export default function PayoutDetailsPage({
                 new Date(row.original.created_at).toLocaleString()
             },
             { accessorKey: 'total', header: 'Total' },
-            { accessorKey: 'burn', header: 'from' }
+            {
+              accessorKey: 'status',
+              header: 'Status',
+              cell: ({ row }) => {
+                const { burn, transfer, actionDate } = row.original;
+                let statusIcon = null;
+
+                // Format actionDate if available
+                const formattedDate = actionDate
+                  ? new Date(actionDate).toLocaleString()
+                  : '-';
+
+                if (burn) {
+                  statusIcon = (
+                    <div className="flex flex-col items-center">
+                      <span className="text-xl">🔥</span>
+                      <span className="text-sm text-gray-500">
+                        {formattedDate}
+                      </span>
+                    </div>
+                  );
+                } else if (transfer) {
+                  statusIcon = (
+                    <div className="flex flex-col items-center">
+                      <span className="text-xl">🏛️</span>
+                      <span className="text-sm text-gray-500">
+                        {formattedDate}
+                      </span>
+                    </div>
+                  );
+                }
+
+                return statusIcon || <span className="text-gray-400">-</span>;
+              }
+            }
           ]}
           data={payouts ?? []}
         />

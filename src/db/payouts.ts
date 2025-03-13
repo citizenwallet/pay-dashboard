@@ -3,6 +3,7 @@ import 'server-only';
 import { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
 
 export interface Payout {
+  actionDate: string | undefined;
   id: string;
   created_at: string;
   updated_at: string;

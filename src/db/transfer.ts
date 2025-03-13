@@ -12,3 +12,10 @@ export const createTransfer = async (
 ): Promise<PostgrestSingleResponse<Transfer>> => {
   return await client.from('payout_transfer').insert({}).select().single();
 };
+
+export const getTransferById = async (
+  client: SupabaseClient,
+  id: number
+): Promise<PostgrestSingleResponse<Transfer>> => {
+  return await client.from('payout_transfer').select().eq('id', id).single();
+};

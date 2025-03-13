@@ -12,3 +12,10 @@ export const createBurn = async (
 ): Promise<PostgrestSingleResponse<Burn>> => {
   return await client.from('payout_burn').insert({}).select().single();
 };
+
+export const getBurnById = async (
+  client: SupabaseClient,
+  id: number
+): Promise<PostgrestSingleResponse<Burn>> => {
+  return await client.from('payout_burn').select().eq('id', id).single();
+};
