@@ -15,7 +15,7 @@ import { isUserLinkedToPlaceAction } from '@/actions/session';
 import { getUserIdFromSessionAction } from '@/actions/session';
 import { uploadImage } from '@/services/storage/image';
 import { getUserBusinessId } from '@/db/users';
-import { updatePlaceDisplay } from '@/db/places';
+import { DisplayMode, updatePlaceDisplay } from '@/db/places';
 
 export async function getItemsAction(place_id: number) {
   const client = getServiceRoleClient();
@@ -213,16 +213,7 @@ export async function addNewItemAction(placeId: number) {
   }
 
   // Create a new item with default values
-  const newItem = await insertItem(
-    client,
-    'New Item',
-    '',
-    '',
-    0,
-    0,
-    '',
-    placeId
-  );
+  const newItem = await insertItem(client, '', '', '', 0, 0, '', placeId);
 
   // Update the order to place it at the top
   if (newItem.data) {
@@ -237,7 +228,7 @@ export async function addNewItemAction(placeId: number) {
 
 export async function updatePlaceDisplayAction(
   placeId: number,
-  display: 'amount' | 'menu' | 'topup'
+  display: DisplayMode
 ) {
   const client = getServiceRoleClient();
 

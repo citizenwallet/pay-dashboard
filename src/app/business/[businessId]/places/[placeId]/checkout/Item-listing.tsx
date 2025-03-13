@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
+import { DisplayMode } from '@/db/places';
 
 export default function ItemListing({
   placeId,
@@ -40,16 +41,15 @@ export default function ItemListing({
   placeId: number;
   items: Item[];
   currencyLogo: string;
-  displayMode?: 'menu' | 'amount' | 'topup';
+  displayMode?: DisplayMode;
 }) {
   const [items, setItems] = useState<Item[]>(initialItems);
   const [draggingItem, setDraggingItem] = useState<number | null>(null);
   const [loading, setLoading] = useState<number | null>(null);
   const [addingItem, setAddingItem] = useState<boolean>(false);
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
-  const [displayMode, setDisplayMode] = useState<'menu' | 'amount' | 'topup'>(
-    initialDisplayMode
-  );
+  const [displayMode, setDisplayMode] =
+    useState<DisplayMode>(initialDisplayMode);
   const [editingField, setEditingField] = useState<
     'name' | 'description' | 'price' | 'category' | 'vat' | 'image' | null
   >(null);
@@ -199,11 +199,6 @@ export default function ItemListing({
   };
 
   const handleNameSave = async (item: Item) => {
-    if (editingName.trim() === '') {
-      toast.error('Item name cannot be empty');
-      return;
-    }
-
     if (editingName === item.name) {
       setEditingItemId(null);
       setEditingField(null);
@@ -657,10 +652,10 @@ export default function ItemListing({
     if (displayMode === 'topup') return; // Prevent changes if current mode is topup
 
     const oldDisplayMode = displayMode;
-    setDisplayMode(value as 'menu' | 'amount');
+    setDisplayMode(value as DisplayMode);
 
     try {
-      await updatePlaceDisplayAction(placeId, value as 'menu' | 'amount');
+      await updatePlaceDisplayAction(placeId, value as DisplayMode);
       toast.success('Place display mode updated successfully');
     } catch (error) {
       console.error('Failed to update place display:', error);
@@ -717,12 +712,13 @@ export default function ItemListing({
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-600">Display mode:</span>
           <Select value={displayMode} onValueChange={handleDisplayModeChange}>
-            <SelectTrigger className="w-[120px]">
+            <SelectTrigger className="w-[160px]">
               <SelectValue placeholder="Display mode" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="menu">Menu</SelectItem>
               <SelectItem value="amount">Amount</SelectItem>
+              <SelectItem value="amountAndMenu">Amount and Menu</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -812,6 +808,7 @@ export default function ItemListing({
                       autoFocus
                       data-item-id={item.id}
                       className="w-full rounded border border-gray-300 p-1"
+                      placeholder="Enter name"
                     />
                   ) : (
                     <div
