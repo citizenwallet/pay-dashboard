@@ -322,3 +322,10 @@ export const updateOrdersPayout = async (
     .in('id', orderIds)
     .select();
 };
+
+export const getPayoutOrders = async (
+  client: SupabaseClient,
+  payoutId: number
+): Promise<PostgrestResponse<Order>> => {
+  return client.from('orders').select().eq('payout_id', payoutId);
+};
