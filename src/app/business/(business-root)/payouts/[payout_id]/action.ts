@@ -2,7 +2,11 @@
 import { getServiceRoleClient } from '@/db';
 import { createBurn } from '@/db/burn';
 import { getPayoutOrders } from '@/db/orders';
-import { updatePayoutBurn, updatePayoutTransfer } from '@/db/payouts';
+import {
+  getPayoutById,
+  updatePayoutBurn,
+  updatePayoutTransfer
+} from '@/db/payouts';
 import { createTransfer } from '@/db/transfer';
 
 export async function getPayoutAction(payout_id: string) {
@@ -74,4 +78,17 @@ export async function setPayoutStatusAction(payout_id: string, status: string) {
   }
 
   return true;
+}
+
+export async function checkPayoutBurnOrTransferAction(payout_id: string) {
+  const client = getServiceRoleClient();
+  const payout = await getPayoutById(client, payout_id);
+
+  if (payout.data?.burn) {
+    return true;
+  } else if (payout.data?.transfer) {
+    return true;
+  }
+
+  return false;
 }

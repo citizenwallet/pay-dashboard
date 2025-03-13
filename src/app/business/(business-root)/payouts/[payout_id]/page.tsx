@@ -3,7 +3,7 @@ import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
 import { Suspense } from 'react';
-import { getPayoutAction } from './action';
+import { checkPayoutBurnOrTransferAction, getPayoutAction } from './action';
 
 import PayoutDetailsPage from './page-details';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
@@ -43,5 +43,13 @@ const AsyncPayoutOrderPage = async ({ payout_id }: { payout_id: string }) => {
   }
   const orders = await getPayoutAction(payout_id);
 
-  return <PayoutDetailsPage payout_id={payout_id} orders={orders.data ?? []} />;
+  const isBurnOrTransfer = await checkPayoutBurnOrTransferAction(payout_id);
+
+  return (
+    <PayoutDetailsPage
+      payout_id={payout_id}
+      orders={orders.data ?? []}
+      isBurnOrTransfer={isBurnOrTransfer}
+    />
+  );
 };

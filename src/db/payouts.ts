@@ -23,6 +23,13 @@ export const getPayouts = async (
   return await client.from('payouts').select('*');
 };
 
+export const getPayoutById = async (
+  client: SupabaseClient,
+  id: string
+): Promise<PostgrestSingleResponse<Payout>> => {
+  return await client.from('payouts').select('*').eq('id', id).single();
+};
+
 export const createPayouts = async (
   client: SupabaseClient,
   userId: string,

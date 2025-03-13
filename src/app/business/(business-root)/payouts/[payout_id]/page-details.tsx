@@ -18,10 +18,12 @@ import { useRouter } from 'next/navigation';
 
 export default function PayoutDetailsPage({
   payout_id,
-  orders
+  orders,
+  isBurnOrTransfer
 }: {
   payout_id: string;
   orders: Order[];
+  isBurnOrTransfer: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [action, setAction] = useState('');
@@ -69,10 +71,19 @@ export default function PayoutDetailsPage({
     <>
       <div className="mt-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Button onClick={() => handleOpenModal('burn')}>Set As Burnt</Button>
-          <Button onClick={() => handleOpenModal('transferred')}>
-            Set As Transferred
-          </Button>
+          {!isBurnOrTransfer ? (
+            <>
+              <Button onClick={() => handleOpenModal('burn')}>
+                Set As Burnt
+              </Button>
+              <Button onClick={() => handleOpenModal('transferred')}>
+                {' '}
+                Set As Transferred{' '}
+              </Button>
+            </>
+          ) : (
+            <></>
+          )}
 
           {/* Confirmation Modal */}
           <Dialog open={open} onOpenChange={setOpen}>
