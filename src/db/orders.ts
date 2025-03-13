@@ -310,3 +310,15 @@ export const getOrdersNotPayoutBy = async (
     .lte('created_at', range.end)
     .order('created_at', { ascending: false });
 };
+
+export const updateOrdersPayout = async (
+  client: SupabaseClient,
+  payoutId: number,
+  orderIds: number[]
+): Promise<PostgrestSingleResponse<Order[]>> => {
+  return client
+    .from('orders')
+    .update({ payout_id: payoutId })
+    .in('id', orderIds)
+    .select();
+};

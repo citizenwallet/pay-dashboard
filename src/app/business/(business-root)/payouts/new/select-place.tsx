@@ -13,19 +13,20 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import { CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { CalendarIcon } from 'lucide-react';
+import { Suspense, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
 import { Place } from '@/db/places';
-import { DataTable } from '@/components/ui/data-table';
 import { DateRange } from 'react-day-picker';
 import { addDays, format } from 'date-fns';
-import { getOrdersAction } from './action';
-import { dataLength } from 'ethers';
-import { DataTableResetFilter } from '@/components/ui/table/data-table-reset-filter';
-import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
 import OrderView from './order-view';
+import {
+  getUserIdFromSessionAction,
+  isUserAdminAction
+} from '@/actions/session';
+import { toast } from 'sonner';
+import { createPayoutAction } from './action';
 
 export default function SelectPlace({ places }: { places: Place[] | null }) {
   const selectedPlaceRef = useRef<string | null>(null);
@@ -44,7 +45,7 @@ export default function SelectPlace({ places }: { places: Place[] | null }) {
   // State to control when the table should be displayed
   const [isTableVisible, setIsTableVisible] = useState(false);
 
-  // Function to handle selection completion
+  // Function to handle showing order table
   const handleSelectionComplete = () => {
     if (selectedPlaceRef.current && dateRangeRef.current) {
       setIsTableVisible(true);
@@ -133,8 +134,6 @@ export default function SelectPlace({ places }: { places: Place[] | null }) {
           <AsyncOrderTable place={placeid} dateRange={date} />
         </Suspense>
       )}
-
-      <Button>Create Payout</Button>
     </>
   );
 }

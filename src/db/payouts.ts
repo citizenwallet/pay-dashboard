@@ -21,3 +21,25 @@ export const getPayouts = async (
 ): Promise<PostgrestSingleResponse<Payout[]>> => {
   return await client.from('payouts').select('*');
 };
+
+export const createPayouts = async (
+  client: SupabaseClient,
+  userId: string,
+  from: string,
+  to: string,
+  total: number,
+  place_id: string,
+  business_id: string
+) => {
+  return await client
+    .from('payouts')
+    .insert({
+      place_id: place_id,
+      user_id: userId,
+      from: from,
+      to: to,
+      total: total,
+      business_id: business_id
+    })
+    .select();
+};
