@@ -10,6 +10,7 @@ import {
   generateSessionRequestHash,
   generateSessionSalt,
   requestSession,
+  verifyIncomingSessionRequest,
   verifySessionConfirm,
   verifySessionRequest
 } from '@/cw/session';
@@ -121,7 +122,8 @@ export async function POST(req: NextRequest) {
     sessionRequest.expiry
   );
 
-  await sendOtpSMS(sessionRequest.source, challenge);
+  // await sendOtpSMS(sessionRequest.source, challenge);
+  console.log('challenge', challenge);
 
   return NextResponse.json({
     sessionRequestTxHash: txHash,
@@ -138,6 +140,7 @@ interface SessionConfirm {
 }
 
 export async function PATCH(req: NextRequest) {
+  console.log('PATCH');
   const providerPrivateKey = process.env.PROVIDER_PRIVATE_KEY;
 
   if (!providerPrivateKey) {
@@ -156,15 +159,20 @@ export async function PATCH(req: NextRequest) {
 
   const providerAccountAddress = process.env.PROVIDER_ACCOUNT_ADDRESS;
   if (!providerAccountAddress) {
-    return NextResponse.json({
-      status: StatusCodes.INTERNAL_SERVER_ERROR, // 500
-      message: ReasonPhrases.INTERNAL_SERVER_ERROR // "Internal Server Error" message
-    });
+    return NextResponse.json(
+      {
+        status: StatusCodes.INTERNAL_SERVER_ERROR, // 500
+        message: ReasonPhrases.INTERNAL_SERVER_ERROR // "Internal Server Error" message
+      },
+      {
+        status: StatusCodes.INTERNAL_SERVER_ERROR // Using the 500 constant
+      }
+    );
   }
 
   const sessionRequest: SessionConfirm = await req.json();
 
-  if (sessionRequest.provider !== getAddress(signer.address)) {
+  if (sessionRequest.provider !== providerAccountAddress) {
     return NextResponse.json({
       status: StatusCodes.BAD_REQUEST, // 400
       message: ReasonPhrases.BAD_REQUEST // "Bad Request" message
@@ -176,6 +184,8 @@ export async function PATCH(req: NextRequest) {
     sessionRequest.sessionHash,
     sessionRequest.signedSessionHash
   );
+
+  console.log('isValid', isValid);
 
   if (!isValid) {
     return NextResponse.json(
@@ -191,6 +201,28 @@ export async function PATCH(req: NextRequest) {
 
   // TODO: add 2fa provider to community config
   const community = new CommunityConfig(communityJson);
+
+  const isSessionHashValid = await verifyIncomingSessionRequest(
+    community,
+    signer,
+    providerAccountAddress,
+    sessionRequest.sessionRequestHash,
+    sessionRequest.sessionHash
+  );
+
+  console.log('isSessionHashValid', isSessionHashValid);
+
+  if (!isSessionHashValid) {
+    return NextResponse.json(
+      {
+        status: StatusCodes.BAD_REQUEST, // 400
+        message: ReasonPhrases.BAD_REQUEST // "Bad Request" message
+      },
+      {
+        status: StatusCodes.BAD_REQUEST // Using the 400 constant
+      }
+    );
+  }
 
   const txHash = await confirmSession(
     community,
