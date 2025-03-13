@@ -27,6 +27,11 @@ const nextConfig = {
         port: ''
       }
     ]
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '10mb'
+    }
   }
 };
 

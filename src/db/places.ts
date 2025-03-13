@@ -7,6 +7,8 @@ import {
   SupabaseClient
 } from '@supabase/supabase-js';
 
+export type DisplayMode = 'amount' | 'menu' | 'topup' | 'amountAndMenu';
+
 export interface Place {
   id: number;
   created_at: string;
@@ -20,7 +22,7 @@ export interface Place {
   description: string | null;
   hidden: boolean;
   archived: boolean;
-  display: 'amount' | 'menu' | 'topup';
+  display: DisplayMode;
 }
 
 export type NewPlace = Omit<Place, 'id' | 'created_at' | 'terminal_id'>;
@@ -251,7 +253,7 @@ export const getAllPlacesByUserId = async (
 export const updatePlaceDisplay = async (
   client: SupabaseClient,
   placeId: number,
-  display: 'amount' | 'menu' | 'topup'
+  display: DisplayMode
 ) => {
   return client.from('places').update({ display }).eq('id', placeId);
 };
