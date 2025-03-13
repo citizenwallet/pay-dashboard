@@ -31,6 +31,7 @@ export default function OrderView({
   useEffect(() => {
     setOrders([]);
     setIsLoading(true);
+    setTotal(0);
 
     const fetchOrders = async () => {
       try {
