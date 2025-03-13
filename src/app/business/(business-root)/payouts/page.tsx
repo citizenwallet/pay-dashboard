@@ -31,6 +31,5 @@ async function AsyncPayoutsLoader() {
     return <div>You are not authorized to view this page</div>;
   }
   const payouts = await getAllPayoutAction();
-  console.log(payouts);
   return <PayoutDetailsPage payouts={payouts} />;
 }
