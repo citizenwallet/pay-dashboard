@@ -1,6 +1,9 @@
 'use server';
 import { getServiceRoleClient } from '@/db';
+import { createBurn } from '@/db/burn';
 import { getPayoutOrders } from '@/db/orders';
+import { updatePayoutBurn, updatePayoutTransfer } from '@/db/payouts';
+import { createTransfer } from '@/db/transfer';
 
 export async function getPayoutAction(payout_id: string) {
   const client = getServiceRoleClient();
@@ -46,4 +49,29 @@ export async function getPayoutCSVAction(payout_id: string) {
   ].join('\n');
 
   return csvData;
+}
+
+export async function setPayoutStatusAction(payout_id: string, status: string) {
+  const client = getServiceRoleClient();
+  try {
+    if (status == 'burn') {
+      const burn = await createBurn(client);
+      const burnId = burn.data?.id;
+      if (!burnId) {
+        throw new Error('Failed to create burn');
+      }
+      const payout = await updatePayoutBurn(client, payout_id, burnId);
+    } else if (status == 'transferred') {
+      const transfer = await createTransfer(client);
+      const transferId = transfer.data?.id;
+      if (!transferId) {
+        throw new Error('Failed to create transfer');
+      }
+      const payout = await updatePayoutTransfer(client, payout_id, transferId);
+    }
+  } catch (error) {
+    return false;
+  }
+
+  return true;
 }

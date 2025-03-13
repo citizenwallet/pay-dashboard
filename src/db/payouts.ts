@@ -43,3 +43,29 @@ export const createPayouts = async (
     })
     .select();
 };
+
+export const updatePayoutBurn = async (
+  client: SupabaseClient,
+  payout_id: string,
+  burn_id: number
+): Promise<PostgrestSingleResponse<Payout>> => {
+  return await client
+    .from('payouts')
+    .update({ burn: burn_id })
+    .eq('id', payout_id)
+    .select()
+    .single();
+};
+
+export const updatePayoutTransfer = async (
+  client: SupabaseClient,
+  payout_id: string,
+  transfer_id: number
+): Promise<PostgrestSingleResponse<Payout>> => {
+  return await client
+    .from('payouts')
+    .update({ transfer: transfer_id })
+    .eq('id', payout_id)
+    .select()
+    .single();
+};

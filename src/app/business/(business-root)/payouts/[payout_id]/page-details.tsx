@@ -3,9 +3,18 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import React from 'react';
 import OrderViewTable from './order-details';
-import { getPayoutCSVAction } from './action';
+import { getPayoutCSVAction, setPayoutStatusAction } from './action';
 import { toast } from 'sonner';
 import { Order } from '@/db/orders';
+import { useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
+} from '@/components/ui/dialog';
+import { useRouter } from 'next/navigation';
 
 export default function PayoutDetailsPage({
   payout_id,
@@ -14,6 +23,26 @@ export default function PayoutDetailsPage({
   payout_id: string;
   orders: Order[];
 }) {
+  const [open, setOpen] = useState(false);
+  const [action, setAction] = useState('');
+  const router = useRouter();
+  const handleOpenModal = (type: 'burn' | 'transferred') => {
+    setAction(type);
+    setOpen(true);
+  };
+
+  const handleConfirm = async () => {
+    try {
+      await setPayoutStatusAction(payout_id, action);
+      setOpen(false);
+      toast.success(`Payout ${action} successfully`);
+      router.push(`/business/payouts`);
+    } catch (error) {
+      toast.error(`Payout ${action} failed`);
+      router.push(`/business/payouts`);
+    }
+  };
+
   const handleCSVDownload = async () => {
     const csvData = await getPayoutCSVAction(payout_id);
 
@@ -40,8 +69,30 @@ export default function PayoutDetailsPage({
     <>
       <div className="mt-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Button>Set As Burnt</Button>
-          <Button>Set As Transferred</Button>
+          <Button onClick={() => handleOpenModal('burn')}>Set As Burnt</Button>
+          <Button onClick={() => handleOpenModal('transferred')}>
+            Set As Transferred
+          </Button>
+
+          {/* Confirmation Modal */}
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Cannot Reverse This Action!</DialogTitle>
+              </DialogHeader>
+              <p>
+                Are you sure you want to set this as <strong>{action}</strong>?
+              </p>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
+                <Button variant="destructive" onClick={handleConfirm}>
+                  Confirm
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
 
         <button
@@ -51,8 +102,6 @@ export default function PayoutDetailsPage({
           Export as CSV
         </button>
       </div>
-
-      {/* Table goes here */}
 
       <OrderViewTable orders={orders ?? []} />
     </>
