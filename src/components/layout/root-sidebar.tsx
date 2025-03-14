@@ -85,8 +85,8 @@ export default function RootAppSidebar({
               <Logo />
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">{business?.name}</span>
-              <span className="truncate text-xs">{business?.vat_number}</span>
+              <span className="truncate font-semibold">{user?.name}</span>
+              <span className="truncate text-xs">{user?.email}</span>
             </div>
           </div>
         </SidebarHeader>
