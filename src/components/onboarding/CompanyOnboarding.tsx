@@ -83,7 +83,6 @@ export function CompanyOnboarding() {
         if (token) {
           try {
             const decoded: JwtPayload | null = await jwtVerifyAction(token);
-            console.log('decoded otp', decoded);
             localStorage.removeItem('otpToken');
             const success = await signAction(decoded?.email, decoded?.otp);
             toast.success('OTP verified successfully');
