@@ -58,3 +58,17 @@ export const getAllBusiness = async (
 ): Promise<PostgrestSingleResponse<Business[]>> => {
   return client.from('businesses').select('*');
 };
+
+export const checkUserAccessBusiness = async (
+  client: SupabaseClient,
+  userId: number,
+  businessId: number
+): Promise<boolean> => {
+  const { data, error } = await client
+    .from('business_users')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('business_id', businessId)
+    .single();
+  return data ? true : false;
+};
