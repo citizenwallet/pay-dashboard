@@ -5,7 +5,11 @@ import {
   isUserLinkedToPlaceAction
 } from '@/actions/session';
 import { getServiceRoleClient } from '@/db';
-import { getBusinessIdByUserId, getBusinessById } from '@/db/business';
+import {
+  getBusinessIdByUserId,
+  getBusinessById,
+  checkUserAccessBusiness
+} from '@/db/business';
 import {
   createPlace,
   getPlaceById,
@@ -170,4 +174,17 @@ export const handleVisibilityToggleAction = async (placeId: number) => {
   }
 
   return await handleVisibilityToggleceById(client, placeId);
+};
+
+export const checkUserAccessBusinessAction = async (businessId: number) => {
+  const client = getServiceRoleClient();
+  const userId = await getUserIdFromSessionAction();
+  const res = await checkUserAccessBusiness(client, userId, businessId);
+  return res;
+};
+
+export const getBusinessPlacesAction = async (businessId: number) => {
+  const client = getServiceRoleClient();
+  const res = await getPlacesByBusinessId(client, businessId);
+  return res.data;
 };
