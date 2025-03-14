@@ -5,6 +5,12 @@ import { Suspense } from 'react';
 
 import QrPage from './qr-page';
 import { getPlaceDataAction } from './action';
+import { getServiceRoleClient } from '@/db';
+import {
+  getUserIdFromSessionAction,
+  isUserAdminAction
+} from '@/actions/session';
+import { checkUserPlaceAccess } from '@/db/places';
 
 export default async function QRPage({
   params
@@ -42,10 +48,22 @@ async function AsyncPage({
   businessId: string;
   placeId: string;
 }) {
-  const place = await getPlaceDataAction(
-    parseInt(placeId),
-    parseInt(businessId)
-  );
+  const client = getServiceRoleClient();
+  const userId = await getUserIdFromSessionAction();
+  const admin = await isUserAdminAction();
+
+  if (!admin) {
+    const hasPlaceAccess = await checkUserPlaceAccess(
+      client,
+      userId,
+      Number(placeId)
+    );
+    if (!hasPlaceAccess) {
+      throw new Error('You do not have access to this place');
+    }
+  }
+
+  const place = await getPlaceDataAction(parseInt(placeId));
   if (!place) {
     throw new Error('Place not found');
   }
