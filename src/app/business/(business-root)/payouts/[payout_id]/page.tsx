@@ -3,10 +3,11 @@ import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
 import { Suspense } from 'react';
-import { checkPayoutBurnOrTransferAction, getPayoutAction } from './action';
-
+import { getPayoutAction, getPayoutStatusAction } from './action';
+import Config from '@/cw/community.json';
 import PayoutDetailsPage from './page-details';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
+import { CommunityConfig } from '@citizenwallet/sdk';
 
 export default async function PayoutOrderPage({
   params
@@ -43,13 +44,18 @@ const AsyncPayoutOrderPage = async ({ payout_id }: { payout_id: string }) => {
   }
   const orders = await getPayoutAction(payout_id);
 
-  const isBurnOrTransfer = await checkPayoutBurnOrTransferAction(payout_id);
+  const community = new CommunityConfig(Config);
+  const payout = await getPayoutStatusAction(payout_id);
+  if (!payout.data) {
+    return <div>Payout not found</div>;
+  }
 
   return (
     <PayoutDetailsPage
       payout_id={payout_id}
       orders={orders.data ?? []}
-      isBurnOrTransfer={isBurnOrTransfer}
+      currencyLogo={community.community.logo}
+      payout={payout.data}
     />
   );
 };

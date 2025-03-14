@@ -15,15 +15,18 @@ import {
   DialogFooter
 } from '@/components/ui/dialog';
 import { useRouter } from 'next/navigation';
+import { Payout } from '@/db/payouts';
 
 export default function PayoutDetailsPage({
   payout_id,
   orders,
-  isBurnOrTransfer
+  currencyLogo,
+  payout
 }: {
   payout_id: string;
   orders: Order[];
-  isBurnOrTransfer: boolean;
+  currencyLogo: string;
+  payout: Payout;
 }) {
   const [open, setOpen] = useState(false);
   const [action, setAction] = useState('');
@@ -71,19 +74,30 @@ export default function PayoutDetailsPage({
     <>
       <div className="mt-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          {!isBurnOrTransfer ? (
-            <>
+          <>
+            {!payout.burn && (
               <Button onClick={() => handleOpenModal('burn')}>
-                Set As Burnt
+                Set As Burn
               </Button>
+            )}
+            {payout.burn && (
+              <Button variant="outline" disabled>
+                Already Burn
+              </Button>
+            )}
+
+            {!payout.transfer && (
               <Button onClick={() => handleOpenModal('transferred')}>
                 {' '}
                 Set As Transferred{' '}
               </Button>
-            </>
-          ) : (
-            <></>
-          )}
+            )}
+            {payout.transfer && (
+              <Button variant="outline" disabled>
+                Already Transferred
+              </Button>
+            )}
+          </>
 
           {/* Confirmation Modal */}
           <Dialog open={open} onOpenChange={setOpen}>
@@ -114,7 +128,7 @@ export default function PayoutDetailsPage({
         </button>
       </div>
 
-      <OrderViewTable orders={orders ?? []} />
+      <OrderViewTable orders={orders} currencyLogo={currencyLogo} />
     </>
   );
 }

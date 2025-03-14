@@ -4,8 +4,16 @@ import { cn } from '@/lib/utils';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { Order } from '@/db/orders';
+import CurrencyLogo from '@/components/currency-logo';
+import { formatCurrencyNumber } from '@/lib/currency';
 
-export default function OrderViewTable({ orders }: { orders: Order[] }) {
+export default function OrderViewTable({
+  orders,
+  currencyLogo
+}: {
+  orders: Order[];
+  currencyLogo: string;
+}) {
   const [page, setPage] = useState(1);
 
   const itemsPerPage = 5; // Define how many items per page
@@ -43,7 +51,18 @@ export default function OrderViewTable({ orders }: { orders: Order[] }) {
               })}`;
             }
           },
-          { accessorKey: 'total', header: 'Total' }
+          {
+            accessorKey: 'total',
+            header: 'Total',
+            cell: ({ row }) => {
+              return (
+                <p className="flex w-8 items-center gap-1">
+                  <CurrencyLogo logo={currencyLogo} size={18} />
+                  {formatCurrencyNumber(row.original.total)}
+                </p>
+              );
+            }
+          }
         ]}
         data={currentData}
       />

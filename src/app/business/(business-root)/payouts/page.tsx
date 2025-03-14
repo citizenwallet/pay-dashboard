@@ -6,6 +6,8 @@ import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
 import React, { Suspense } from 'react';
 import PayoutDetailsPage from './payout-details';
 import { getAllPayoutAction } from './action';
+import { CommunityConfig } from '@citizenwallet/sdk';
+import Config from '@/cw/community.json';
 
 export default function PayoutsPage() {
   return (
@@ -31,5 +33,11 @@ async function AsyncPayoutsLoader() {
     return <div>You are not authorized to view this page</div>;
   }
   const payouts = await getAllPayoutAction();
-  return <PayoutDetailsPage payouts={payouts} />;
+  const community = new CommunityConfig(Config);
+  return (
+    <PayoutDetailsPage
+      payouts={payouts}
+      currencyLogo={community.community.logo}
+    />
+  );
 }
