@@ -6,6 +6,7 @@ import {
   BoxesIcon,
   ChevronRight,
   LayoutDashboard,
+  PanelBottomClose,
   Settings2,
   ShoppingCartIcon,
   SquareTerminal,
@@ -62,6 +63,12 @@ export function NavMain({
       title: 'Manage',
       url: `/business/${businessId}/places/${lastPlace.id}/manage`,
       icon: Settings2,
+      items: []
+    },
+    {
+      title: 'Payouts',
+      url: `/business/${businessId}/places/${lastPlace.id}/payouts`,
+      icon: PanelBottomClose,
       items: []
     }
   ];
