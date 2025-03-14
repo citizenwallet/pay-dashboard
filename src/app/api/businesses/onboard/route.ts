@@ -4,6 +4,9 @@ import { BusinessService } from '@/services/business.service';
 import { NextResponse } from 'next/server';
 import { StatusCodes, ReasonPhrases } from 'http-status-codes';
 import '@/lib/utils';
+import { createBusinessUser } from '@/db/businessUser';
+import { getServiceRoleClient } from '@/db';
+import { getUserIdbyBusinessId } from '@/db/users';
 
 export async function POST(req: NextRequest) {
   const formData = await req.json();
@@ -41,6 +44,16 @@ export async function POST(req: NextRequest) {
   delete formData.id;
 
   const response = await businessService.updateBusiness(business.id, formData);
+
+  //create business user
+  const client = getServiceRoleClient();
+  const userId = await getUserIdbyBusinessId(client, business.id);
+  const businessUser = await createBusinessUser(
+    client,
+    userId,
+    business.id,
+    'owner'
+  );
 
   return NextResponse.json({
     data: response,

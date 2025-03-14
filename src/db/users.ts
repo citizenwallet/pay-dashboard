@@ -37,6 +37,22 @@ export const getUserBusinessId = async (
   return data?.linked_business_id as number;
 };
 
+export const getUserIdbyBusinessId = async (
+  client: SupabaseClient,
+  businessId: number
+) => {
+  const { data, error } = await client
+    .from('users')
+    .select('id')
+    .eq('linked_business_id', businessId)
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data?.id as number;
+};
+
 export const getUserByEmail = async (
   client: SupabaseClient,
   email: string
