@@ -52,11 +52,6 @@ export function CompanyOnboarding() {
   //get the otpToken from the url
 
   const otp = searchParams.get('otpToken');
-  useEffect(() => {
-    if (typeof window !== 'undefined' && otp) {
-      localStorage.setItem('otpToken', otp);
-    }
-  }, [otp]);
 
   const handleNext = async (data: CompanyInfo) => {
     dispatch({ type: 'UPDATE_DATA', payload: data });
@@ -79,11 +74,10 @@ export function CompanyOnboarding() {
     })
       .then(async () => {
         //check if the otpToken is valid
-        const token = localStorage.getItem('otpToken');
-        if (token) {
+
+        if (otp) {
           try {
-            const decoded: JwtPayload | null = await jwtVerifyAction(token);
-            localStorage.removeItem('otpToken');
+            const decoded: JwtPayload | null = await jwtVerifyAction(otp);
             const success = await signAction(decoded?.email, decoded?.otp);
             toast.success('OTP verified successfully');
           } catch (error) {
