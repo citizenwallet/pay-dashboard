@@ -11,6 +11,8 @@ import { Separator } from '@radix-ui/react-separator';
 import { Suspense } from 'react';
 import PayoutDetailsPage from './details-page';
 import { getPayoutAction } from './action';
+import { CommunityConfig } from '@citizenwallet/sdk';
+import Config from '@/cw/community.json';
 
 export default async function PayoutOrderPage({
   params
@@ -68,6 +70,13 @@ const AsyncPayoutOrderPage = async ({
     }
   }
   const orders = await getPayoutAction(payout_id);
-
-  return <PayoutDetailsPage payout_id={payout_id} orders={orders.data ?? []} />;
+  const community = new CommunityConfig(Config);
+  const currencyLogo = community.community.logo;
+  return (
+    <PayoutDetailsPage
+      payout_id={payout_id}
+      orders={orders.data ?? []}
+      currencyLogo={currencyLogo}
+    />
+  );
 };

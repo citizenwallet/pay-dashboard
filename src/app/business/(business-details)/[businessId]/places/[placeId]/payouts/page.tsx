@@ -11,6 +11,8 @@ import {
 import { checkUserPlaceAccess } from '@/db/places';
 import { getServiceRoleClient } from '@/db';
 import { getPayoutsbyPaceIdAction } from './action';
+import Config from '@/cw/community.json';
+import { CommunityConfig } from '@citizenwallet/sdk';
 
 export default async function PayoutsPage({
   params
@@ -64,12 +66,14 @@ async function PayoutsAsyncPage({
   }
 
   const payouts = await getPayoutsbyPaceIdAction(Number(placeId));
+  const community = new CommunityConfig(Config);
 
   return (
     <PayoutDetailsPage
       payouts={payouts}
       placeId={placeId}
       businessId={businessId}
+      currencyLogo={community.community.logo}
     />
   );
 }

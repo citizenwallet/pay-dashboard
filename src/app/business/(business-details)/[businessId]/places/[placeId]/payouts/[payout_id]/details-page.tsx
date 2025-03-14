@@ -8,10 +8,12 @@ import { Order } from '@/db/orders';
 
 export default function PayoutDetailsPage({
   payout_id,
-  orders
+  orders,
+  currencyLogo
 }: {
   payout_id: string;
   orders: Order[];
+  currencyLogo: string;
 }) {
   const handleCSVDownload = async () => {
     const csvData = await getPayoutCSVAction(payout_id);
@@ -46,7 +48,7 @@ export default function PayoutDetailsPage({
         </button>
       </div>
 
-      <OrderViewTable orders={orders} />
+      <OrderViewTable orders={orders} currencyLogo={currencyLogo} />
     </>
   );
 }

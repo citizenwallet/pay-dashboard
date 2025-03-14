@@ -15,6 +15,8 @@ export interface Payout {
   total: number;
   place_id: string;
   business_id: string;
+  burnDate: string | null;
+  transferDate: string | null;
 }
 
 export const getPayouts = async (

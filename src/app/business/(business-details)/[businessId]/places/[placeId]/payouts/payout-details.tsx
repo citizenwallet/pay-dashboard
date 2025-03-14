@@ -1,18 +1,21 @@
 'use client';
 
+import CurrencyLogo from '@/components/currency-logo';
 import { DataTable } from '@/components/ui/data-table';
 import { Payout } from '@/db/payouts';
-import { GripVertical } from 'lucide-react';
+import { formatCurrencyNumber } from '@/lib/currency';
 import Link from 'next/link';
 
 export default function PayoutDetailsPage({
   payouts,
   placeId,
-  businessId
+  businessId,
+  currencyLogo
 }: {
   payouts: Payout[];
   placeId: string;
   businessId: string;
+  currencyLogo: string;
 }) {
   return (
     <>
@@ -20,12 +23,12 @@ export default function PayoutDetailsPage({
         columns={[
           {
             accessorKey: 'id',
-            header: '',
+            header: 'Id',
             cell: ({ row }) => (
               <Link
                 href={`/business/${businessId}/places/${placeId}/payouts/${row.original.id}`}
               >
-                <GripVertical />
+                {row.original.id}
               </Link>
             )
           },
@@ -41,41 +44,55 @@ export default function PayoutDetailsPage({
             cell: ({ row }) =>
               new Date(row.original.to).toLocaleDateString('en-GB')
           },
-          { accessorKey: 'total', header: 'Total' },
           {
-            accessorKey: 'status',
-            header: 'Status',
+            accessorKey: 'total',
+            header: 'Total',
             cell: ({ row }) => {
-              const { burn, transfer, actionDate } = row.original;
-              let statusIcon = null;
-
-              // Format actionDate if available
-              const formattedDate = actionDate
-                ? new Date(actionDate).toLocaleDateString('en-GB')
-                : '-';
-
-              if (burn) {
-                statusIcon = (
-                  <div className="flex flex-col ">
-                    <span className="text-xl">🔥</span>
-                    <span className="text-sm text-gray-500">
-                      {formattedDate}
-                    </span>
-                  </div>
-                );
-              } else if (transfer) {
-                statusIcon = (
-                  <div className="flex flex-col ">
-                    <span className="text-xl">🏛️</span>
-                    <span className="text-sm text-gray-500">
-                      {formattedDate}
-                    </span>
-                  </div>
-                );
-              }
-
-              return statusIcon || <span className="text-gray-400">-</span>;
+              return (
+                <p className="flex w-8 items-center gap-1">
+                  <CurrencyLogo logo={currencyLogo} size={18} />
+                  {formatCurrencyNumber(row.original.total)}
+                </p>
+              );
             }
+          },
+
+          {
+            accessorKey: 'burn',
+            header: 'Burn',
+            cell: ({ row }) => (
+              <div className="flex items-center space-x-2">
+                <span className="text-red-500">
+                  {row.original.burn ? '🔥' : '-'}
+                </span>
+                <span>
+                  {row.original.burnDate
+                    ? new Date(row.original.burnDate).toLocaleDateString(
+                        'en-GB'
+                      )
+                    : '-'}
+                </span>
+              </div>
+            )
+          },
+
+          {
+            accessorKey: 'transfer',
+            header: 'Transfer',
+            cell: ({ row }) => (
+              <div className="flex items-center space-x-2">
+                <span className="text-blue-500">
+                  {row.original.transfer ? '🏛️' : '-'}
+                </span>
+                <span>
+                  {row.original.transferDate
+                    ? new Date(row.original.transferDate).toLocaleDateString(
+                        'en-GB'
+                      )
+                    : '-'}
+                </span>
+              </div>
+            )
           }
         ]}
         data={payouts}

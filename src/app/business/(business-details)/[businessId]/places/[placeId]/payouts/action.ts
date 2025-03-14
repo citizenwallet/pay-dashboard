@@ -14,14 +14,15 @@ export const getPayoutsbyPaceIdAction = async (placeId: number) => {
   for (const payout of payouts) {
     if (payout.burn) {
       const burnData = await getBurnById(client, Number(payout.burn));
-      payout.actionDate = burnData.data?.created_at;
+      payout.burnDate = burnData.data?.created_at ?? null;
     }
+
     if (payout.transfer) {
       const transferData = await getTransferById(
         client,
         Number(payout.transfer)
       );
-      payout.actionDate = transferData.data?.created_at;
+      payout.transferDate = transferData.data?.created_at ?? null;
     }
   }
 
