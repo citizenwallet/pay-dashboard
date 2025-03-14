@@ -77,3 +77,10 @@ export const updatePayoutTransfer = async (
     .select()
     .single();
 };
+
+export const getPayoutsByPlaceId = async (
+  client: SupabaseClient,
+  placeId: string
+): Promise<PostgrestSingleResponse<Payout[]>> => {
+  return await client.from('payouts').select('*').eq('place_id', placeId);
+};
