@@ -188,3 +188,9 @@ export const getBusinessPlacesAction = async (businessId: number) => {
   const res = await getPlacesByBusinessId(client, businessId);
   return res.data;
 };
+
+export const getBusinessAction = async (businessId: number) => {
+  const client = getServiceRoleClient();
+  const res = await getBusinessById(client, businessId);
+  return res.data;
+};

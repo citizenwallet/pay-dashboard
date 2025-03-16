@@ -7,11 +7,14 @@ import type { Metadata } from 'next';
 import {
   getPlaceAction,
   getLastPlaceAction,
-  getLinkedBusinessAction
+  getLinkedBusinessAction,
+  getBusinessPlacesAction,
+  getBusinessAction
 } from './action';
 import { Place } from '@/db/places';
 import { getServiceRoleClient } from '@/db';
 import { getUserById } from '@/db/users';
+import { Business } from '@/db/business';
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -19,16 +22,50 @@ export const metadata: Metadata = {
 };
 
 export default async function DashboardLayout({
-  children
+  children,
+  params
 }: {
   children: React.ReactNode;
+  params: { businessId: string };
 }) {
+  const { businessId } = await params;
+
+  let places: Place[] = [];
+  let business: Business = {} as Business;
+  let lastplace: Place = {} as Place;
+
   const admin = await isUserAdminAction();
-  const places = await getPlaceAction();
-  const business = await getLinkedBusinessAction();
-  const lastplace = await getLastPlaceAction();
+  if (admin) {
+    const adminbusiness = await getBusinessAction(Number(businessId));
+    if (adminbusiness) {
+      business = adminbusiness;
+    }
+
+    const adminplaces = await getBusinessPlacesAction(Number(businessId));
+    if (adminplaces) {
+      places = adminplaces;
+      lastplace = adminplaces[0];
+    }
+  } else {
+    const userPlaces = await getPlaceAction();
+    if (userPlaces) {
+      places = userPlaces;
+    }
+
+    const userBusiness = await getLinkedBusinessAction();
+    if (userBusiness) {
+      business = userBusiness;
+    }
+
+    const userLastPlace = await getLastPlaceAction();
+    if (userLastPlace) {
+      lastplace = userLastPlace;
+    }
+  }
+
   const userId = await getUserIdFromSessionAction();
   const client = getServiceRoleClient();
+
   const { data: user } = await getUserById(client, userId);
   if (!user) {
     return null;
