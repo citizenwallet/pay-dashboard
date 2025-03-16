@@ -1,32 +1,13 @@
 'use client';
 
 import { Suspense, useEffect, useRef, useState } from 'react';
-import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-
 import { Download } from 'lucide-react';
 import { QRCode } from 'react-qrcode-logo';
+import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
 import QrPdfDocument from './qr-pdf';
 import { Place } from '@/db/places';
-
-//for error handling in pdf creation
-const PDFViewer = dynamic(
-  () => import('@react-pdf/renderer').then((mod) => mod.PDFViewer),
-  {
-    ssr: false,
-    loading: () => <p>Loading...</p>
-  }
-);
-
-//for error handling in pdf downloading
-const PDFDownloadLink = dynamic(
-  () => import('@react-pdf/renderer').then((mod) => mod.PDFDownloadLink),
-  {
-    ssr: false,
-    loading: () => <p>Loading...</p>
-  }
-);
 
 export default function QrPage({ place }: { place: Place | null }) {
   const [qrValue, setQrValue] = useState(
