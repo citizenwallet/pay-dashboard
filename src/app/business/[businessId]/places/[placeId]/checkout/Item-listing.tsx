@@ -2,7 +2,7 @@
 import { Item } from '@/db/items';
 import { icons } from 'lucide-react';
 import { toast } from 'sonner';
-import { useState, useRef, KeyboardEvent, ChangeEvent } from 'react';
+import { useState, useRef, KeyboardEvent, ChangeEvent, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -61,6 +61,23 @@ export default function ItemListing({
   const [uploadingImage, setUploadingImage] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkDevice = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+    return () => window.removeEventListener('resize', checkDevice);
+  }, []);
+
+  // Add move handlers
+  const handleMoveUp = (index: number) => {};
+
+  const handleMoveDown = (index: number) => {};
 
   const handleDragStart = (id: number) => {
     setDraggingItem(id);
@@ -725,7 +742,7 @@ export default function ItemListing({
       </div>
 
       {displayMode !== 'amount' && (
-        <table className="w-full border-collapse">
+        <table className="w-full border-collapse overflow-x-auto">
           <thead>
             <tr>
               <th className="border p-2 text-left"></th>
@@ -743,22 +760,51 @@ export default function ItemListing({
             {items.map((item, index) => (
               <tr
                 key={item.id}
-                draggable
-                onDragStart={() => handleDragStart(item.id)}
-                onDragOver={(e) => handleDragOver(e, index)}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  if (draggingItem !== null) {
-                    handleDrop(draggingItem, index);
-                    setDraggingItem(null);
-                  }
-                }}
+                {...(isDesktop
+                  ? {
+                      draggable: true,
+                      onDragStart: () => handleDragStart(item.id),
+                      onDragOver: (e) => handleDragOver(e, index),
+                      onDrop: (e) => {
+                        e.preventDefault();
+                        if (draggingItem !== null) {
+                          handleDrop(draggingItem, index);
+                          setDraggingItem(null);
+                        }
+                      }
+                    }
+                  : {})}
                 className={item.hidden ? 'bg-gray-50 opacity-70' : ''}
               >
-                <td className="w-[50px] border p-2">
+                {/* <td className="w-[50px] border p-2">
                   <div className="flex h-[50px] w-[50px] items-center justify-center">
                     <icons.GripVertical size={20} className="text-gray-500" />
                   </div>
+                </td> */}
+
+                <td className="w-[50px] border p-2">
+                  {!isDesktop ? (
+                    <div className="flex flex-col items-center gap-1">
+                      <button
+                        onClick={() => handleMoveUp(index)}
+                        disabled={index === 0}
+                        className="text-gray-500 disabled:opacity-50"
+                      >
+                        <icons.ChevronUp size={20} />
+                      </button>
+                      <button
+                        onClick={() => handleMoveDown(index)}
+                        disabled={index === items.length - 1}
+                        className="text-gray-500 disabled:opacity-50"
+                      >
+                        <icons.ChevronDown size={20} />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex h-[50px] w-[50px] items-center justify-center">
+                      <icons.GripVertical size={20} className="text-gray-500" />
+                    </div>
+                  )}
                 </td>
 
                 <td className="w-[50px] border p-2">
