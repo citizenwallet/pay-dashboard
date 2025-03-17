@@ -11,6 +11,7 @@ import {
   isUserAdminAction
 } from '@/actions/session';
 import { checkUserPlaceAccess } from '@/db/places';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default async function QRPage({
   params
@@ -29,7 +30,9 @@ export default async function QRPage({
             />
           </div>
           <Separator />
-          <Suspense fallback={<></>}>
+          <Suspense
+            fallback={<Skeleton className="h-[500px] w-[100%] rounded-xl" />}
+          >
             <AsyncPage
               businessId={resolvedParams.businessId}
               placeId={resolvedParams.placeId}
