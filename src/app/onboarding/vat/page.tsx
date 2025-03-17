@@ -1,4 +1,4 @@
-import { auth } from '@/auth';
+import { auth, signIn } from '@/auth';
 import VatPage from './vat-page';
 import { redirect } from 'next/navigation';
 import { getServiceRoleClient } from '@/db';
@@ -6,23 +6,45 @@ import { getBusinessByToken } from '@/db/business';
 import Image from 'next/image';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import jwt from 'jsonwebtoken';
 
 export default async function VatMainPage({
   searchParams
 }: {
-  searchParams: Promise<{ invite_code?: string }>;
+  searchParams: Promise<{ invite_code?: string; otpToken?: string }>;
 }) {
-  const session = await auth();
-  if (!session?.user) {
-    return redirect('/onboarding');
-  }
-
+  const otpToken = (await searchParams)?.otpToken;
   const inviteCode = (await searchParams)?.invite_code;
+  const client = getServiceRoleClient();
+  let decoded: { email: string; otp: string; iat: number; exp: number } | null =
+    null;
   if (!inviteCode) {
     return redirect('/onboarding');
   }
 
-  const client = getServiceRoleClient();
+  if (otpToken) {
+    const secretKey = process.env.JWT_SECRET;
+    if (!secretKey) {
+      throw new Error('JWT_SECRET is not defined');
+    }
+    try {
+      decoded = (await jwt.verify(otpToken, secretKey)) as {
+        email: string;
+        otp: string;
+        iat: number;
+        exp: number;
+      };
+    } catch (error) {
+      console.log(error);
+      return redirect('/onboarding');
+    }
+  } else {
+    const session = await auth();
+    if (!session?.user) {
+      return redirect('/onboarding');
+    }
+  }
+
   const business = await getBusinessByToken(client, inviteCode);
 
   if (!business.data) {
@@ -48,7 +70,7 @@ export default async function VatMainPage({
         </div>
 
         <Suspense fallback={<Skeleton className="h-4 w-[250px]" />}>
-          <VatPage business={business.data} />
+          <VatPage business={business.data} decoded={decoded} />
         </Suspense>
       </div>
     </div>

@@ -6,8 +6,15 @@ import { updateBusinessVatAction } from '../action';
 import { Business } from '@/db/business';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { signAction } from '@/app/(auth)/action';
 
-export default function VatPage({ business }: { business: Business }) {
+export default function VatPage({
+  business,
+  decoded
+}: {
+  business: Business;
+  decoded: { email: string; otp: string; iat: number; exp: number } | null;
+}) {
   const [vatNumber, setVatNumber] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,6 +26,14 @@ export default function VatPage({ business }: { business: Business }) {
 
   const handleSubmit = async () => {
     setLoading(true);
+    if (decoded) {
+      const success = await signAction(decoded?.email, decoded?.otp);
+      if (!success) {
+        setError('Invalid OTP');
+        return;
+      }
+    }
+
     if (!vatNumber) {
       setError('VAT number is required');
       return;
