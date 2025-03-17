@@ -1,9 +1,23 @@
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import { Label } from '@/components/ui/label';
+import DetailsPage from './details-page';
+import { redirect } from 'next/navigation';
+import { fetchCompanyForVatNumber } from '@/services/vat';
+import { auth } from '@/auth';
+import { getServiceRoleClient } from '@/db';
+import { getBusinessByVatNumber } from '@/db/business';
+import { Suspense } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default function CompanyDetailsPage() {
+export default async function CompanyDetailsPage({
+  searchParams
+}: {
+  searchParams: Promise<{ vat?: string }>;
+}) {
+  const vat = (await searchParams)?.vat;
+  if (!vat) {
+    return redirect('/onboarding');
+  }
+
   return (
     <>
       <div className="flex min-h-screen flex-col items-center justify-center bg-white">
@@ -23,47 +37,33 @@ export default function CompanyDetailsPage() {
             </h1>
           </div>
 
-          <div className="mt-8 space-y-6">
-            <div className="space-y-0">
-              <Label className="text-sm font-medium text-gray-900">
-                Legal name
-              </Label>
-              <Input
-                type="text"
-                className="h-8 rounded-md border border-black px-4 text-black"
-              />
-            </div>
-
-            <div className="space-y-0">
-              <Label className="text-sm font-medium text-gray-900">
-                Address
-              </Label>
-              <Input
-                type="text"
-                className="h-8 rounded-md border border-black px-4 text-black"
-              />
-            </div>
-
-            <div className="space-y-0">
-              <Label className="text-sm font-medium text-gray-900">IBAN</Label>
-              <Input
-                type="text"
-                className="h-8 rounded-md border border-black px-4 text-black"
-              />
-            </div>
-
-            <div className="flex justify-between">
-              <Button className="h-10 w-24 rounded-md border border-black bg-gray-100 text-sm font-medium text-gray-900 hover:bg-gray-200">
-                Previous
-              </Button>
-
-              <Button className="h-10 w-24 rounded-md bg-gray-100 text-sm font-medium text-gray-900 hover:bg-gray-200">
-                Next
-              </Button>
-            </div>
-          </div>
+          <Suspense fallback={<Skeleton className="h-4 w-[250px]" />}>
+            {asyncDetailLoader(vat)}
+          </Suspense>
         </div>
       </div>
     </>
   );
+}
+
+async function asyncDetailLoader(vat: string) {
+  const session = await auth();
+  if (!session?.user) {
+    return redirect('/onboarding');
+  }
+
+  const client = getServiceRoleClient();
+  const business = await getBusinessByVatNumber(client, vat);
+
+  if (!business.data) {
+    return redirect('/onboarding');
+  }
+
+  const company = await fetchCompanyForVatNumber(vat);
+  let companyData = null;
+  if (company?.isValid) {
+    companyData = company;
+  }
+
+  return <DetailsPage company={companyData} business={business.data} />;
 }

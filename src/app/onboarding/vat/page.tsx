@@ -1,37 +1,33 @@
-'use client';
-import { Button } from '@/components/ui/button';
-import { ButtonLoading } from '@/components/ui/button-loading';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { auth } from '@/auth';
+import VatPage from './vat-page';
+import { redirect } from 'next/navigation';
+import { getServiceRoleClient } from '@/db';
+import { getBusinessByToken } from '@/db/business';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import { Suspense } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default function VatPage() {
-  const [vatNumber, setVatNumber] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+export default async function VatMainPage({
+  searchParams
+}: {
+  searchParams: Promise<{ invite_code?: string }>;
+}) {
+  const session = await auth();
+  if (!session?.user) {
+    return redirect('/onboarding');
+  }
 
-  const handleSubmit = () => {
-    // Basic validation
-    if (!vatNumber) {
-      setError('VAT number is required');
-      return;
-    }
+  const inviteCode = (await searchParams)?.invite_code;
+  if (!inviteCode) {
+    return redirect('/onboarding');
+  }
 
-    if (!/^[A-Z]{2}[0-9]{8,12}$/.test(vatNumber)) {
-      setError('Please enter a valid VAT number');
-      return;
-    }
+  const client = getServiceRoleClient();
+  const business = await getBusinessByToken(client, inviteCode);
 
-    setLoading(true);
-    setError('');
-
-    // Simulate an async operation
-    setTimeout(() => {
-      console.log('VAT Number submitted:', vatNumber);
-      setLoading(false);
-    }, 1000);
-  };
+  if (!business.data) {
+    return redirect('/onboarding');
+  }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-white">
@@ -51,28 +47,9 @@ export default function VatPage() {
           </h1>
         </div>
 
-        <div className="mt-8 space-y-6">
-          <div className="space-y-2">
-            <p className="text-left text-sm text-gray-700">
-              In order to complete your registration, please provide us with
-              your VAT number:
-            </p>
-            <Input
-              type="text"
-              placeholder="EX: BE0790756234"
-              className="h-10 rounded-md border border-black px-4 text-black"
-            />
-          </div>
-
-          <div className="flex justify-start">
-            <Button
-              type="submit"
-              className="h-10 w-24 rounded-md bg-gray-100 text-sm font-medium text-gray-900 hover:bg-gray-200"
-            >
-              Next
-            </Button>
-          </div>
-        </div>
+        <Suspense fallback={<Skeleton className="h-4 w-[250px]" />}>
+          <VatPage business={business.data} />
+        </Suspense>
       </div>
     </div>
   );

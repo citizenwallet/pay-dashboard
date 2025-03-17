@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
 import { getUserByEmailAction, sendOtpAction, signAction } from '../action';
 import { generateRandomString } from '@/lib/utils';
+import { joinAction } from '@/actions/joinAction';
 
 export default function OtpEntry() {
   const [otpCode, setOtpCode] = useState('');
@@ -68,20 +69,15 @@ export default function OtpEntry() {
         name: localStorage.getItem('regName') || '',
         phone: localStorage.getItem('regPhone') || ''
       };
-      const res = await fetch('/api/auth/join', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          ...credentials,
-          invite_code: invitationCode
-        })
+
+      const res = await joinAction(invitationCode, {
+        ...credentials,
+        description: ''
       });
 
       redirectLocation =
         process.env.NEXT_PUBLIC_URL +
-        '/onboarding?invite_code=' +
+        '/onboarding/vat?invite_code=' +
         invitationCode;
     } else {
       redirectLocation = process.env.NEXT_PUBLIC_URL + '/';
