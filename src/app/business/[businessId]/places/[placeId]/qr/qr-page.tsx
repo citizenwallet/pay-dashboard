@@ -13,7 +13,7 @@ export default function QrPage({ place }: { place: Place | null }) {
   const [qrValue, setQrValue] = useState(
     `${process.env.NEXT_PUBLIC_CHECKOUT_BASE_URL}/${place?.slug}`
   );
-  const [rqimage, setqrimage] = useState('');
+  const [qrImage, setQrImage] = useState('');
 
   //get the qr image url
   useEffect(() => {
@@ -21,7 +21,7 @@ export default function QrPage({ place }: { place: Place | null }) {
       const canvas = document.getElementById('qr-canvas') as HTMLCanvasElement;
       if (canvas) {
         const base64Image = canvas.toDataURL('image/png');
-        setqrimage(base64Image);
+        setQrImage(base64Image);
       }
     }, 100);
   }, [qrValue]);
@@ -30,7 +30,7 @@ export default function QrPage({ place }: { place: Place | null }) {
     <>
       {/* download the pdf  */}
       <PDFDownloadLink
-        document={<QrPdfDocument image={rqimage} />}
+        document={<QrPdfDocument image={qrImage} />}
         fileName="qrcode.pdf"
       >
         <Button className="mt-2 flex items-center">
@@ -71,7 +71,7 @@ export default function QrPage({ place }: { place: Place | null }) {
         <CardContent className="pt-6">
           <div className="h-[500px] overflow-hidden rounded-md border">
             <PDFViewer width="100%" height="100%" className="h-full w-full">
-              <QrPdfDocument image={rqimage} />
+              <QrPdfDocument image={qrImage} />
             </PDFViewer>
           </div>
         </CardContent>
