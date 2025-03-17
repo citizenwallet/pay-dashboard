@@ -8,7 +8,7 @@ import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { jwtVerifyAction } from './action';
+import { businessOnboardAction, jwtVerifyAction } from './action';
 import { signAction } from '@/app/(auth)/action';
 
 const initialState: OnboardingState = {
@@ -65,13 +65,7 @@ export function CompanyOnboarding() {
   const handleSubmit = async (data: CompanyInfo) => {
     setLoading(true);
 
-    await fetch('/api/businesses/onboard', {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
+    await businessOnboardAction(data)
       .then(async () => {
         //check if the otpToken is valid
 
@@ -96,6 +90,7 @@ export function CompanyOnboarding() {
           t('Oops, there is an error during the validation of your company')
         );
       });
+
     setLoading(false);
   };
 
