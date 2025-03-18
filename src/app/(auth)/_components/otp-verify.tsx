@@ -6,7 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
-import { getUserByEmailAction, sendOtpAction, signAction } from '../action';
+import {
+  getBusinessByIdAction,
+  getUserByEmailAction,
+  sendOtpAction,
+  signAction
+} from '../action';
 import { generateRandomString } from '@/lib/utils';
 import { joinAction } from '@/actions/joinAction';
 
@@ -17,6 +22,7 @@ export default function OtpEntry() {
   const [isCounting, setIsCounting] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -49,6 +55,7 @@ export default function OtpEntry() {
   };
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
+    setIsLoading(true);
     e.preventDefault();
     setErrorMessage('');
     setSuccessMessage('');
@@ -80,13 +87,27 @@ export default function OtpEntry() {
         '/onboarding/vat?invite_code=' +
         invitationCode;
     } else {
-      redirectLocation = process.env.NEXT_PUBLIC_URL + '/';
+      //check the user registation complete or not
+      const business = await getBusinessByIdAction(
+        user.data?.linked_business_id
+      );
+
+      if (business.data?.status == 'Registered') {
+        redirectLocation = process.env.NEXT_PUBLIC_URL + '/';
+      } else {
+        redirectLocation =
+          process.env.NEXT_PUBLIC_URL +
+          '/onboarding/vat?invite_code=' +
+          business.data?.invite_code;
+      }
     }
     try {
       const success = await signAction(email, otpCode);
       router.push(redirectLocation);
     } catch (error) {
       setErrorMessage('Invalid or expired OTP. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -118,8 +139,8 @@ export default function OtpEntry() {
               className="text-center"
               required
             />
-            <Button type="submit" className="w-full">
-              Login
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? 'Logging in...' : 'Login'}
             </Button>
           </form>
 
