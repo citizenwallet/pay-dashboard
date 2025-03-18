@@ -75,9 +75,92 @@ export default function ItemListing({
   }, []);
 
   // Add move handlers
-  const handleMoveUp = (index: number) => {};
+  const handleMoveUp = async (index: number) => {
+    // If the item is already at the top, do nothing
+    if (index === 0) return;
 
-  const handleMoveDown = (index: number) => {};
+    // Create a copy of the items array
+    const updatedItems = [...items];
+
+    // Swap the item with the one above it
+    const itemToMove = updatedItems[index];
+    updatedItems[index] = updatedItems[index - 1];
+    updatedItems[index - 1] = itemToMove;
+
+    // Update the state with the new order
+    setItems(updatedItems);
+
+    // Calculate previous and next item IDs for the new position
+    const draggedItemId = itemToMove.id;
+    const previousItemId = index - 2 >= 0 ? updatedItems[index - 2].id : null;
+    const nextItemId = updatedItems[index].id; // The item now below it
+
+    // Update the order in the backend
+    try {
+      const item = await updateItemOrderInPlaceAction(
+        items[0].place_id,
+        draggedItemId,
+        previousItemId,
+        nextItemId
+      );
+
+      if (item.error) {
+        toast.error('Failed to update item order');
+        // Revert to the original order on failure
+        setItems(items);
+      } else {
+        toast.success('Item moved up successfully');
+      }
+    } catch (error) {
+      console.error('Failed to update item order:', error);
+      setItems(items); // Revert on error
+      toast.error('Failed to update item order');
+    }
+  };
+
+  const handleMoveDown = async (index: number) => {
+    // If the item is already at the bottom, do nothing
+    if (index === items.length - 1) return;
+
+    // Create a copy of the items array
+    const updatedItems = [...items];
+
+    // Swap the item with the one below it
+    const itemToMove = updatedItems[index];
+    updatedItems[index] = updatedItems[index + 1];
+    updatedItems[index + 1] = itemToMove;
+
+    // Update the state with the new order
+    setItems(updatedItems);
+
+    // Calculate previous and next item IDs for the new position
+    const draggedItemId = itemToMove.id;
+    const previousItemId = updatedItems[index].id; // The item now above it
+    const nextItemId =
+      index + 2 < updatedItems.length ? updatedItems[index + 2].id : null;
+
+    // Update the order in the backend
+    try {
+      const item = await updateItemOrderInPlaceAction(
+        items[0].place_id,
+        draggedItemId,
+        previousItemId,
+        nextItemId
+      );
+
+      if (item.error) {
+        toast.error('Failed to update item order');
+        // Revert to the original order on failure
+        setItems(items);
+      } else {
+        toast.success('Item moved down successfully');
+      }
+    } catch (error) {
+      console.error('Failed to update item order:', error);
+      setItems(items); // Revert on error
+      toast.error('Failed to update item order');
+    }
+  };
 
   const handleDragStart = (id: number) => {
     setDraggingItem(id);
