@@ -23,10 +23,20 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: process.env.ASSETS_DOMAIN ?? '',
+        port: ''
+      },
+      {
+        protocol: 'https',
         hostname: 'ounjigiydhimruivuxjv.supabase.co',
         port: ''
       }
     ]
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '10mb'
+    }
   }
 };
 
