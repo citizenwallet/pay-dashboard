@@ -42,7 +42,6 @@ import { Logo } from '@/components/logo';
 import { signOut } from 'next-auth/react';
 import { User } from '@/db/users';
 import { getUserFromSessionAction } from '@/actions/session';
-import { Business } from '@/db/business';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -50,12 +49,10 @@ import { usePathname } from 'next/navigation';
 export default function RootAppSidebar({
   isAdmin,
   user: initialUser,
-  business,
   children
 }: {
   isAdmin?: boolean;
   user?: User | null;
-  business: Business | null;
   children: React.ReactNode;
 }) {
   const [user, setUser] = useState<User | null | undefined>(initialUser);
