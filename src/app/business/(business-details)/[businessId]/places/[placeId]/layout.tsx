@@ -9,9 +9,10 @@ import {
   getLastPlaceAction,
   getLinkedBusinessAction,
   getBusinessPlacesAction,
-  getBusinessAction
+  getBusinessAction,
+  getPlaceByIdAction
 } from './action';
-import { Place } from '@/db/places';
+import { checkUserPlaceAccess, Place } from '@/db/places';
 import { getServiceRoleClient } from '@/db';
 import { getUserById } from '@/db/users';
 import { Business } from '@/db/business';
@@ -26,13 +27,22 @@ export default async function DashboardLayout({
   params
 }: {
   children: React.ReactNode;
-  params: { businessId: string };
+  params: { businessId: string; placeId: string };
 }) {
   const { businessId } = await params;
+  const { placeId } = await params;
 
   let places: Place[] = [];
   let business: Business = {} as Business;
   let lastplace: Place = {} as Place;
+
+  const userId = await getUserIdFromSessionAction();
+  const client = getServiceRoleClient();
+
+  const { data: user } = await getUserById(client, userId);
+  if (!user) {
+    return null;
+  }
 
   const admin = await isUserAdminAction();
   if (admin) {
@@ -47,6 +57,15 @@ export default async function DashboardLayout({
       lastplace = adminplaces[0];
     }
   } else {
+    const hasPlaceAccess = await checkUserPlaceAccess(
+      client,
+      userId,
+      Number(placeId)
+    );
+    if (!hasPlaceAccess) {
+      throw new Error('You do not have access to this place');
+    }
+
     const userPlaces = await getPlaceAction();
     if (userPlaces) {
       places = userPlaces;
@@ -57,18 +76,10 @@ export default async function DashboardLayout({
       business = userBusiness;
     }
 
-    const userLastPlace = await getLastPlaceAction();
+    const userLastPlace = await getPlaceByIdAction(Number(placeId));
     if (userLastPlace) {
       lastplace = userLastPlace;
     }
-  }
-
-  const userId = await getUserIdFromSessionAction();
-  const client = getServiceRoleClient();
-
-  const { data: user } = await getUserById(client, userId);
-  if (!user) {
-    return null;
   }
 
   return (

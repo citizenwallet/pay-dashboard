@@ -4,7 +4,7 @@ import {
   getBusinessPlacesAction,
   getLastPlaceAction,
   getPlaceAction
-} from './action';
+} from './places/[placeId]/action';
 import { redirect } from 'next/navigation';
 import {
   getUserIdFromSessionAction,

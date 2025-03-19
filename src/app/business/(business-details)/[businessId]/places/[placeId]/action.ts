@@ -194,3 +194,9 @@ export const getBusinessAction = async (businessId: number) => {
   const res = await getBusinessById(client, businessId);
   return res.data;
 };
+
+export const getPlaceByIdAction = async (placeId: number) => {
+  const client = getServiceRoleClient();
+  const res = await getPlaceById(client, placeId);
+  return res.data;
+};

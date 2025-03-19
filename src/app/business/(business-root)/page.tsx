@@ -1,6 +1,6 @@
 import { isUserAdminAction } from '@/actions/session';
 import { Suspense } from 'react';
-import { getLinkedBusinessAction } from '../(business-details)/[businessId]/action';
+import { getLinkedBusinessAction } from '../(business-details)/[businessId]/places/[placeId]/action';
 import BusinessCard from './business-card';
 import { getAllBusinessAction } from './action';
 import { SkeletonCard } from '@/components/skeleton-card';

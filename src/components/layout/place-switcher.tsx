@@ -34,7 +34,7 @@ import {
   createPlaceAction,
   generateUniqueSlugAction,
   uploadImageAction
-} from '@/app/business/(business-details)/[businessId]/action';
+} from '@/app/business/(business-details)/[businessId]/places/[placeId]/action';
 import { createSlug } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -305,7 +305,7 @@ export function PlaceSwitcher({
                       }}
                     />
                     {imagePreview && (
-                      <img
+                      <Image
                         src={imagePreview}
                         alt="Preview"
                         className="mt-2 h-20 w-20 rounded-md object-cover"
