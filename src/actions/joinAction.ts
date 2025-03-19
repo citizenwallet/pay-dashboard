@@ -58,7 +58,10 @@ export async function joinAction(
       account,
       email: data.email,
       phone: data.phone,
-      invite_code: inviteCode
+      invite_code: inviteCode,
+      iban_number: '',
+      address_legal: '',
+      legal_name: ''
     }
   );
 
