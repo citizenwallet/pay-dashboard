@@ -4,13 +4,13 @@ import { Separator } from '@/components/ui/separator';
 import { Suspense } from 'react';
 
 import QrPage from './qr-page';
-import { getPlaceDataAction } from './action';
 import { getServiceRoleClient } from '@/db';
 import {
   getUserIdFromSessionAction,
   isUserAdminAction
 } from '@/actions/session';
-import { checkUserPlaceAccess } from '@/db/places';
+import { checkUserPlaceAccess, getPlaceById } from '@/db/places';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default async function QRPage({
   params
@@ -29,7 +29,9 @@ export default async function QRPage({
             />
           </div>
           <Separator />
-          <Suspense fallback={<></>}>
+          <Suspense
+            fallback={<Skeleton className="h-[500px] w-[100%] rounded-xl" />}
+          >
             <AsyncPage
               businessId={resolvedParams.businessId}
               placeId={resolvedParams.placeId}
@@ -63,7 +65,7 @@ async function AsyncPage({
     }
   }
 
-  const place = await getPlaceDataAction(parseInt(placeId));
+  const place = await getPlaceById(client, Number(placeId));
   if (!place) {
     throw new Error('Place not found');
   }
