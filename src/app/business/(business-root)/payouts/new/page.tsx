@@ -5,6 +5,8 @@ import { Separator } from '@/components/ui/separator';
 import { Suspense } from 'react';
 import SelectPlace from './select-place';
 import { getAllPlacesAction } from './action';
+import { CommunityConfig } from '@citizenwallet/sdk';
+import Config from '@/cw/community.json';
 
 export default function PayoutNewPage() {
   return (
@@ -28,5 +30,9 @@ async function AsyncPayoutNewPage() {
     return <div>You are not authorized to view this page</div>;
   }
   const places = await getAllPlacesAction();
-  return <SelectPlace places={places} />;
+  const community = new CommunityConfig(Config);
+
+  return (
+    <SelectPlace places={places} currencyLogo={community.community.logo} />
+  );
 }

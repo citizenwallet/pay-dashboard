@@ -14,13 +14,17 @@ import {
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { formatCurrencyNumber } from '@/lib/currency';
+import CurrencyLogo from '@/components/currency-logo';
 
 export default function OrderView({
   place,
-  dateRange
+  dateRange,
+  currencyLogo
 }: {
   place: number | null;
   dateRange: DateRange | undefined;
+  currencyLogo: string;
 }) {
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -116,7 +120,10 @@ export default function OrderView({
       <div className="mb-4 space-y-2">
         <label className="text-sm font-medium">Total Payout</label>
         <div className="flex items-center gap-2 rounded-md border border-gray-300 p-2">
-          <span className="text-sm font-medium">{total}</span>
+          <span className="flex gap-1 text-sm font-medium">
+            <CurrencyLogo logo={currencyLogo} size={18} />
+            {formatCurrencyNumber(total)}
+          </span>
         </div>
       </div>
 
@@ -136,7 +143,18 @@ export default function OrderView({
               })}`;
             }
           },
-          { accessorKey: 'total', header: 'Total' }
+          {
+            accessorKey: 'total',
+            header: 'Total',
+            cell: ({ row }) => {
+              return (
+                <p className="flex w-8 items-center gap-1">
+                  <CurrencyLogo logo={currencyLogo} size={18} />
+                  {formatCurrencyNumber(row.original.total)}
+                </p>
+              );
+            }
+          }
         ]}
         data={currentData}
       />

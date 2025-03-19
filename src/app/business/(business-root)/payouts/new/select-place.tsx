@@ -28,7 +28,13 @@ import {
 import { toast } from 'sonner';
 import { createPayoutAction } from './action';
 
-export default function SelectPlace({ places }: { places: Place[] | null }) {
+export default function SelectPlace({
+  places,
+  currencyLogo
+}: {
+  places: Place[] | null;
+  currencyLogo: string;
+}) {
   const selectedPlaceRef = useRef<string | null>(null);
   const [placeid, setPlaceid] = useState<number | null>(null);
   const [date, setDate] = useState<DateRange | undefined>({
@@ -131,7 +137,11 @@ export default function SelectPlace({ places }: { places: Place[] | null }) {
 
       {isTableVisible && (
         <Suspense fallback={<>Loading...</>}>
-          <AsyncOrderTable place={placeid} dateRange={date} />
+          <AsyncOrderTable
+            place={placeid}
+            dateRange={date}
+            currencyLogo={currencyLogo}
+          />
         </Suspense>
       )}
     </>
@@ -140,10 +150,18 @@ export default function SelectPlace({ places }: { places: Place[] | null }) {
 
 function AsyncOrderTable({
   place,
-  dateRange
+  dateRange,
+  currencyLogo
 }: {
   place: number | null;
   dateRange: DateRange | undefined;
+  currencyLogo: string;
 }) {
-  return <OrderView place={place} dateRange={dateRange} />;
+  return (
+    <OrderView
+      place={place}
+      dateRange={dateRange}
+      currencyLogo={currencyLogo}
+    />
+  );
 }
