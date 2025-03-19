@@ -38,7 +38,7 @@ export const getBusinessByToken = async (
     .single();
 };
 
-export const getBusinessIdByUserId = async (
+export const getLinkedBusinessByUserId = async (
   client: SupabaseClient,
   userid: number
 ) => {
