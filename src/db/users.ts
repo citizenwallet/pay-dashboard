@@ -119,3 +119,15 @@ export const userExists = async (
   }
   return true;
 };
+
+export const createUser = async (
+  client: SupabaseClient,
+  user: {
+    name: string;
+    email: string;
+    phone: string;
+    linked_business_id: number;
+  }
+) => {
+  return await client.from('users').insert(user);
+};
