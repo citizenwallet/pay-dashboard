@@ -19,27 +19,22 @@ export default async function QRPage({
 }) {
   const resolvedParams = await params;
   return (
-    <div>
-      <PageContainer>
-        <div className="space-y-4">
-          <div className="flex items-start justify-between">
-            <Heading
-              title="QR Code  "
-              description="Manage your Place QR Code"
-            />
-          </div>
-          <Separator />
-          <Suspense
-            fallback={<Skeleton className="h-[500px] w-[100%] rounded-xl" />}
-          >
-            <AsyncPage
-              businessId={resolvedParams.businessId}
-              placeId={resolvedParams.placeId}
-            />
-          </Suspense>
+    <PageContainer scrollable>
+      <div className="flex h-full min-h-svh flex-1 flex-col space-y-4">
+        <div className="flex items-start justify-between">
+          <Heading title="QR Code" description="Manage your Place QR Code" />
         </div>
-      </PageContainer>
-    </div>
+        <Separator />
+        <Suspense
+          fallback={<Skeleton className="h-full w-full flex-1 rounded-xl" />}
+        >
+          <AsyncPage
+            businessId={resolvedParams.businessId}
+            placeId={resolvedParams.placeId}
+          />
+        </Suspense>
+      </div>
+    </PageContainer>
   );
 }
 
