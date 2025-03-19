@@ -824,262 +824,268 @@ export default function ItemListing({
         </div>
       </div>
 
-      {displayMode !== 'amount' && (
-        <table className="w-full border-collapse overflow-x-auto">
-          <thead>
-            <tr>
-              <th className="border p-2 text-left"></th>
-              <th className="border p-2 text-left">Image</th>
-              <th className="border p-2 text-left">Name</th>
-              <th className="border p-2 text-left">Description</th>
-              <th className="border p-2 text-left">Category</th>
-              <th className="border p-2 text-left">Price</th>
-              <th className="border p-2 text-left">VAT %</th>
-              <th className="border p-2 text-left">Visible</th>
-              <th className="border p-2 text-left">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item, index) => (
-              <tr
-                key={item.id}
-                {...(isDesktop
-                  ? {
-                      draggable: true,
-                      onDragStart: () => handleDragStart(item.id),
-                      onDragOver: (e) => handleDragOver(e, index),
-                      onDrop: (e) => {
-                        e.preventDefault();
-                        if (draggingItem !== null) {
-                          handleDrop(draggingItem, index);
-                          setDraggingItem(null);
+      <div className="w-[90vw] overflow-x-auto md:w-full">
+        {displayMode !== 'amount' && (
+          <table className="w-full border-collapse">
+            <thead>
+              <tr>
+                <th className="border p-2 text-left"></th>
+                <th className="border p-2 text-left">Image</th>
+                <th className="border p-2 text-left">Name</th>
+                <th className="border p-2 text-left">Description</th>
+                <th className="border p-2 text-left">Category</th>
+                <th className="border p-2 text-left">Price</th>
+                <th className="border p-2 text-left">VAT %</th>
+                <th className="border p-2 text-left">Visible</th>
+                <th className="border p-2 text-left">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item, index) => (
+                <tr
+                  key={item.id}
+                  {...(isDesktop
+                    ? {
+                        draggable: true,
+                        onDragStart: () => handleDragStart(item.id),
+                        onDragOver: (e) => handleDragOver(e, index),
+                        onDrop: (e) => {
+                          e.preventDefault();
+                          if (draggingItem !== null) {
+                            handleDrop(draggingItem, index);
+                            setDraggingItem(null);
+                          }
                         }
                       }
-                    }
-                  : {})}
-                className={item.hidden ? 'bg-gray-50 opacity-70' : ''}
-              >
-                {/* <td className="w-[50px] border p-2">
+                    : {})}
+                  className={item.hidden ? 'bg-gray-50 opacity-70' : ''}
+                >
+                  {/* <td className="w-[50px] border p-2">
                   <div className="flex h-[50px] w-[50px] items-center justify-center">
                     <icons.GripVertical size={20} className="text-gray-500" />
                   </div>
                 </td> */}
 
-                <td className="w-[50px] border p-2">
-                  {!isDesktop ? (
-                    <div className="flex flex-col items-center gap-1">
-                      <button
-                        onClick={() => handleMoveUp(index)}
-                        disabled={index === 0}
-                        className="text-gray-500 disabled:opacity-50"
-                      >
-                        <icons.ChevronUp size={20} />
-                      </button>
-                      <button
-                        onClick={() => handleMoveDown(index)}
-                        disabled={index === items.length - 1}
-                        className="text-gray-500 disabled:opacity-50"
-                      >
-                        <icons.ChevronDown size={20} />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex h-[50px] w-[50px] items-center justify-center">
-                      <icons.GripVertical size={20} className="text-gray-500" />
-                    </div>
-                  )}
-                </td>
-
-                <td className="w-[50px] border p-2">
-                  {loading === item.id && editingField === 'image' ? (
-                    <div className="flex h-[50px] w-[50px] items-center justify-center rounded-md bg-gray-100">
-                      <icons.Loader
-                        className="animate-spin text-gray-500"
-                        size={24}
-                      />
-                    </div>
-                  ) : item.image ? (
-                    <div
-                      className="relative flex w-[50px] cursor-pointer items-center justify-center overflow-hidden rounded-md"
-                      onClick={() => handleImageClick(item)}
-                    >
-                      <Image
-                        src={item.image}
-                        alt={item.name}
-                        width={50}
-                        height={50}
-                        className="rounded-md object-cover transition-opacity hover:opacity-80"
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 transition-all hover:bg-opacity-30">
-                        <icons.Camera
-                          className="text-white opacity-0 transition-opacity hover:opacity-100"
+                  <td className="w-[50px] border p-2">
+                    {!isDesktop ? (
+                      <div className="flex flex-col items-center gap-1">
+                        <button
+                          onClick={() => handleMoveUp(index)}
+                          disabled={index === 0}
+                          className="text-gray-500 disabled:opacity-50"
+                        >
+                          <icons.ChevronUp size={20} />
+                        </button>
+                        <button
+                          onClick={() => handleMoveDown(index)}
+                          disabled={index === items.length - 1}
+                          className="text-gray-500 disabled:opacity-50"
+                        >
+                          <icons.ChevronDown size={20} />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex h-[50px] w-[50px] items-center justify-center">
+                        <icons.GripVertical
                           size={20}
+                          className="text-gray-500"
                         />
                       </div>
-                    </div>
-                  ) : (
-                    <div
-                      className="flex h-[50px] w-[50px] cursor-pointer items-center justify-center rounded-md bg-gray-100 transition-colors hover:bg-gray-200"
-                      onClick={() => handleImageClick(item)}
-                    >
-                      <icons.ImagePlus className="text-gray-500" size={24} />
-                    </div>
-                  )}
-                </td>
-                <td className="border p-2">
-                  {editingItemId === item.id && editingField === 'name' ? (
-                    <input
-                      type="text"
-                      value={editingName}
-                      onChange={handleNameChange}
-                      onKeyDown={(e) => handleNameKeyDown(e, item)}
-                      onBlur={() => handleNameSave(item)}
-                      autoFocus
-                      data-item-id={item.id}
-                      className="w-full rounded border border-gray-300 p-1"
-                      placeholder="Enter name"
-                    />
-                  ) : (
-                    <div
-                      onClick={() => handleNameClick(item)}
-                      className="cursor-pointer rounded p-1 hover:bg-gray-100"
-                    >
-                      {item.name}
-                    </div>
-                  )}
-                </td>
-                <td className="border p-2">
-                  {editingItemId === item.id &&
-                  editingField === 'description' ? (
-                    <textarea
-                      value={editingDescription}
-                      onChange={handleDescriptionChange}
-                      onKeyDown={(e) => handleDescriptionKeyDown(e, item)}
-                      onBlur={() => handleDescriptionSave(item)}
-                      autoFocus
-                      className="w-full rounded border border-gray-300 p-1"
-                      rows={3}
-                      placeholder="Enter description"
-                    />
-                  ) : (
-                    <div
-                      onClick={() => handleDescriptionClick(item)}
-                      className="cursor-pointer rounded p-1 hover:bg-gray-100"
-                    >
-                      {item.description || (
-                        <span className="italic text-gray-400">
-                          No description
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </td>
-                <td className="border p-2">
-                  {editingItemId === item.id && editingField === 'category' ? (
-                    <input
-                      type="text"
-                      value={editingCategory}
-                      onChange={handleCategoryChange}
-                      onKeyDown={(e) => handleCategoryKeyDown(e, item)}
-                      onBlur={() => handleCategorySave(item)}
-                      autoFocus
-                      className="w-full rounded border border-gray-300 p-1"
-                    />
-                  ) : (
-                    <div
-                      onClick={() => handleCategoryClick(item)}
-                      className="cursor-pointer rounded p-1 hover:bg-gray-100"
-                    >
-                      {item.category || (
-                        <span className="italic text-gray-400">
-                          No category
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </td>
-                <td className="border p-2">
-                  {editingItemId === item.id && editingField === 'price' ? (
-                    <div className="flex items-center gap-1">
-                      <CurrencyLogo logo={currencyLogo} size={18} />
+                    )}
+                  </td>
+
+                  <td className="w-[50px] border p-2">
+                    {loading === item.id && editingField === 'image' ? (
+                      <div className="flex h-[50px] w-[50px] items-center justify-center rounded-md bg-gray-100">
+                        <icons.Loader
+                          className="animate-spin text-gray-500"
+                          size={24}
+                        />
+                      </div>
+                    ) : item.image ? (
+                      <div
+                        className="relative flex w-[50px] cursor-pointer items-center justify-center overflow-hidden rounded-md"
+                        onClick={() => handleImageClick(item)}
+                      >
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          width={50}
+                          height={50}
+                          className="rounded-md object-cover transition-opacity hover:opacity-80"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 transition-all hover:bg-opacity-30">
+                          <icons.Camera
+                            className="text-white opacity-0 transition-opacity hover:opacity-100"
+                            size={20}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div
+                        className="flex h-[50px] w-[50px] cursor-pointer items-center justify-center rounded-md bg-gray-100 transition-colors hover:bg-gray-200"
+                        onClick={() => handleImageClick(item)}
+                      >
+                        <icons.ImagePlus className="text-gray-500" size={24} />
+                      </div>
+                    )}
+                  </td>
+                  <td className="border p-2">
+                    {editingItemId === item.id && editingField === 'name' ? (
                       <input
                         type="text"
-                        value={editingPrice}
-                        onChange={handlePriceChange}
-                        onKeyDown={(e) => handlePriceKeyDown(e, item)}
-                        onBlur={() => handlePriceSave(item)}
+                        value={editingName}
+                        onChange={handleNameChange}
+                        onKeyDown={(e) => handleNameKeyDown(e, item)}
+                        onBlur={() => handleNameSave(item)}
                         autoFocus
-                        className="w-20 rounded border border-gray-300 p-1"
+                        data-item-id={item.id}
+                        className="w-full rounded border border-gray-300 p-1"
+                        placeholder="Enter name"
                       />
-                    </div>
-                  ) : (
-                    <div
-                      onClick={() => handlePriceClick(item)}
-                      className="flex w-fit cursor-pointer items-center gap-1 rounded p-1 hover:bg-gray-100"
-                    >
-                      <CurrencyLogo logo={currencyLogo} size={18} />
-                      {formatCurrencyNumber(item.price)}
-                    </div>
-                  )}
-                </td>
-                <td className="border p-2">
-                  {editingItemId === item.id && editingField === 'vat' ? (
-                    <div className="flex items-center gap-1">
+                    ) : (
+                      <div
+                        onClick={() => handleNameClick(item)}
+                        className="cursor-pointer rounded p-1 hover:bg-gray-100"
+                      >
+                        {item.name}
+                      </div>
+                    )}
+                  </td>
+                  <td className="border p-2">
+                    {editingItemId === item.id &&
+                    editingField === 'description' ? (
+                      <textarea
+                        value={editingDescription}
+                        onChange={handleDescriptionChange}
+                        onKeyDown={(e) => handleDescriptionKeyDown(e, item)}
+                        onBlur={() => handleDescriptionSave(item)}
+                        autoFocus
+                        className="w-full rounded border border-gray-300 p-1"
+                        rows={3}
+                        placeholder="Enter description"
+                      />
+                    ) : (
+                      <div
+                        onClick={() => handleDescriptionClick(item)}
+                        className="cursor-pointer rounded p-1 hover:bg-gray-100"
+                      >
+                        {item.description || (
+                          <span className="italic text-gray-400">
+                            No description
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </td>
+                  <td className="border p-2">
+                    {editingItemId === item.id &&
+                    editingField === 'category' ? (
                       <input
                         type="text"
-                        value={editingVat}
-                        onChange={handleVatChange}
-                        onKeyDown={(e) => handleVatKeyDown(e, item)}
-                        onBlur={() => handleVatSave(item)}
+                        value={editingCategory}
+                        onChange={handleCategoryChange}
+                        onKeyDown={(e) => handleCategoryKeyDown(e, item)}
+                        onBlur={() => handleCategorySave(item)}
                         autoFocus
-                        className="w-16 rounded border border-gray-300 p-1"
+                        className="w-full rounded border border-gray-300 p-1"
                       />
-                      <span>%</span>
+                    ) : (
+                      <div
+                        onClick={() => handleCategoryClick(item)}
+                        className="cursor-pointer rounded p-1 hover:bg-gray-100"
+                      >
+                        {item.category || (
+                          <span className="italic text-gray-400">
+                            No category
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </td>
+                  <td className="border p-2">
+                    {editingItemId === item.id && editingField === 'price' ? (
+                      <div className="flex items-center gap-1">
+                        <CurrencyLogo logo={currencyLogo} size={18} />
+                        <input
+                          type="text"
+                          value={editingPrice}
+                          onChange={handlePriceChange}
+                          onKeyDown={(e) => handlePriceKeyDown(e, item)}
+                          onBlur={() => handlePriceSave(item)}
+                          autoFocus
+                          className="w-20 rounded border border-gray-300 p-1"
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        onClick={() => handlePriceClick(item)}
+                        className="flex w-fit cursor-pointer items-center gap-1 rounded p-1 hover:bg-gray-100"
+                      >
+                        <CurrencyLogo logo={currencyLogo} size={18} />
+                        {formatCurrencyNumber(item.price)}
+                      </div>
+                    )}
+                  </td>
+                  <td className="border p-2">
+                    {editingItemId === item.id && editingField === 'vat' ? (
+                      <div className="flex items-center gap-1">
+                        <input
+                          type="text"
+                          value={editingVat}
+                          onChange={handleVatChange}
+                          onKeyDown={(e) => handleVatKeyDown(e, item)}
+                          onBlur={() => handleVatSave(item)}
+                          autoFocus
+                          className="w-16 rounded border border-gray-300 p-1"
+                        />
+                        <span>%</span>
+                      </div>
+                    ) : (
+                      <div
+                        onClick={() => handleVatClick(item)}
+                        className="flex w-fit cursor-pointer items-center gap-1 rounded p-1 hover:bg-gray-100"
+                      >
+                        {item.vat}%
+                      </div>
+                    )}
+                  </td>
+                  <td className="border p-2">
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={!item.hidden}
+                        onCheckedChange={(checked) =>
+                          handleHiddenToggle(item, !checked)
+                        }
+                        disabled={loading === item.id}
+                        aria-label={`Toggle visibility for ${item.name}`}
+                      />
+                      <Label className="text-sm text-gray-600">
+                        {item.hidden ? 'Hidden' : 'Visible'}
+                      </Label>
                     </div>
-                  ) : (
-                    <div
-                      onClick={() => handleVatClick(item)}
-                      className="flex w-fit cursor-pointer items-center gap-1 rounded p-1 hover:bg-gray-100"
-                    >
-                      {item.vat}%
+                  </td>
+                  <td className="border p-2">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleDelete(item.id, item.place_id)}
+                        className="hover:text-red-600"
+                        disabled={loading === item.id}
+                      >
+                        {loading === item.id ? (
+                          <icons.Loader className="animate-spin" size={20} />
+                        ) : (
+                          <icons.Trash size={20} />
+                        )}
+                      </button>
                     </div>
-                  )}
-                </td>
-                <td className="border p-2">
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      checked={!item.hidden}
-                      onCheckedChange={(checked) =>
-                        handleHiddenToggle(item, !checked)
-                      }
-                      disabled={loading === item.id}
-                      aria-label={`Toggle visibility for ${item.name}`}
-                    />
-                    <Label className="text-sm text-gray-600">
-                      {item.hidden ? 'Hidden' : 'Visible'}
-                    </Label>
-                  </div>
-                </td>
-                <td className="border p-2">
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handleDelete(item.id, item.place_id)}
-                      className="hover:text-red-600"
-                      disabled={loading === item.id}
-                    >
-                      {loading === item.id ? (
-                        <icons.Loader className="animate-spin" size={20} />
-                      ) : (
-                        <icons.Trash size={20} />
-                      )}
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
 
       {displayMode === 'amount' && (
         <div className="rounded-lg border border-gray-200 p-6 text-center">
