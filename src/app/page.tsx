@@ -9,6 +9,6 @@ export default async function Page() {
     return redirect('/login');
   } else {
     const data = await getPlaceAction();
-    return redirect(`/business/${data.busid}/places/${data.lastId}/orders`);
+    return redirect(`/business/${data.busId}/places/${data.lastId}/orders`);
   }
 }
