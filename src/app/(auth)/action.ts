@@ -2,6 +2,7 @@
 
 import { signIn } from '@/auth';
 import { getServiceRoleClient } from '@/db';
+import { getBusinessById } from '@/db/business';
 import { createOtp } from '@/db/otp';
 import { getUserByEmail, userExists } from '@/db/users';
 import { sendOtpEmail } from '@/services/brevo';
@@ -43,4 +44,10 @@ export async function getUserByEmailAction(email: string) {
   const client = getServiceRoleClient();
   const user = await getUserByEmail(client, email);
   return user;
+}
+
+export async function getBusinessByIdAction(id: number) {
+  const client = getServiceRoleClient();
+  const business = await getBusinessById(client, id);
+  return business;
 }

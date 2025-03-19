@@ -25,6 +25,11 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'ounjigiydhimruivuxjv.supabase.co',
         port: ''
+      },
+      {
+        protocol: 'https',
+        hostname: 'assets.citizenwallet.xyz',
+        port: ''
       }
     ]
   }
