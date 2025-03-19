@@ -111,7 +111,11 @@ export default function ManagePage({
               >
                 Cancel
               </Button>
-              <Button disabled={loading} onClick={() => handleHide(place!)}>
+              <Button
+                className="mb-2 md:mb-0"
+                disabled={loading}
+                onClick={() => handleHide(place!)}
+              >
                 {loading ? 'Hiding...' : 'Confirm'}
               </Button>
             </DialogFooter>
@@ -159,7 +163,11 @@ export default function ManagePage({
               >
                 Cancel
               </Button>
-              <Button disabled={loading} onClick={() => handleArchive(place!)}>
+              <Button
+                className="mb-2 md:mb-0"
+                disabled={loading}
+                onClick={() => handleArchive(place!)}
+              >
                 {loading ? 'Archiving...' : 'Confirm'}
               </Button>
             </DialogFooter>
