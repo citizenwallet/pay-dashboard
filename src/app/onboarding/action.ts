@@ -27,6 +27,7 @@ export async function updateBusinessDetailsAction(
   const client = getServiceRoleClient();
 
   const business = await updateBusiness(client, businessId, {
+    name: legalName,
     legal_name: legalName,
     address_legal: address,
     iban_number: iban,

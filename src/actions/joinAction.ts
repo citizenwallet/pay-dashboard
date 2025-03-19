@@ -97,7 +97,7 @@ export async function joinAction(
   }
 
   const { error: placeError } = await createPlace(client, {
-    name: data.name,
+    name: 'My Place',
     slug,
     business_id: business.id,
     accounts: [account],
@@ -105,7 +105,7 @@ export async function joinAction(
     image: null,
     display: 'amount',
     hidden: true,
-    description: data.description,
+    description: '',
     archived: false
   });
 
