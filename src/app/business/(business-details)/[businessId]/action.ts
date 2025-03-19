@@ -6,7 +6,7 @@ import {
 } from '@/actions/session';
 import { getServiceRoleClient } from '@/db';
 import {
-  getBusinessIdByUserId,
+  getLinkedBusinessByUserId,
   getBusinessById,
   checkUserAccessBusiness
 } from '@/db/business';
@@ -27,7 +27,7 @@ import { getLastplace, updateLastplace } from '@/db/users';
 export async function getPlaceAction() {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
-  const businessid = await getBusinessIdByUserId(client, userId);
+  const businessid = await getLinkedBusinessByUserId(client, userId);
   const places = await getPlacesByBusinessId(
     client,
     businessid.data?.linked_business_id
@@ -38,7 +38,7 @@ export async function getPlaceAction() {
 export async function uploadImageAction(file: File): Promise<string> {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
-  const businessid = await getBusinessIdByUserId(client, userId);
+  const businessid = await getLinkedBusinessByUserId(client, userId);
   const busId = businessid.data?.linked_business_id;
 
   const url = await uploadImage(client, file, busId);
@@ -78,7 +78,7 @@ export async function createPlaceAction(
 ) {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
-  const { data: business } = await getBusinessIdByUserId(client, userId);
+  const { data: business } = await getLinkedBusinessByUserId(client, userId);
   const { linked_business_id: linkedBusinessId } = business || {};
   const invitationCode = generateRandomString(16);
 
@@ -117,7 +117,7 @@ export async function createPlaceAction(
 export async function getBusinessIdAction(): Promise<number> {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
-  const businessid = await getBusinessIdByUserId(client, userId);
+  const businessid = await getLinkedBusinessByUserId(client, userId);
   const busid = businessid.data?.linked_business_id;
   return busid;
 }
@@ -125,7 +125,7 @@ export async function getBusinessIdAction(): Promise<number> {
 export const getLinkedBusinessAction = async () => {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
-  const businessid = await getBusinessIdByUserId(client, userId);
+  const businessid = await getLinkedBusinessByUserId(client, userId);
   const business = await getBusinessById(
     client,
     businessid.data?.linked_business_id
