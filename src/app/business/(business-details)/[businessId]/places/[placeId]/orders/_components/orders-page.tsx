@@ -301,14 +301,16 @@ export const OrdersPage: React.FC<Props> = ({
             </div>
           )}
         </div>
-        <DataTable
-          columns={createColumns(currencyLogo)}
-          data={orders}
-          pageCount={Math.ceil(pagination.totalItems / pagination.limit)}
-          pageSize={pagination.limit}
-          pageIndex={pagination.offset / pagination.limit}
-          onPaginationChange={onPaginationChange}
-        />
+        <div className="w-[92vw] overflow-x-auto md:w-full">
+          <DataTable
+            columns={createColumns(currencyLogo)}
+            data={orders}
+            pageCount={Math.ceil(pagination.totalItems / pagination.limit)}
+            pageSize={pagination.limit}
+            pageIndex={pagination.offset / pagination.limit}
+            onPaginationChange={onPaginationChange}
+          />
+        </div>
       </div>
     </PageContainer>
   );
