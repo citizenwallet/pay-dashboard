@@ -2,7 +2,6 @@ import sessionManagerModuleJson from '@/cw/abi/SessionManagerModule.json';
 import { generateOtp } from '@/utils/generateotp';
 import { BundlerService, CommunityConfig } from '@citizenwallet/sdk';
 import {
-  solidityPackedKeccak256,
   id,
   verifyMessage,
   Wallet,
@@ -10,7 +9,8 @@ import {
   getBytes,
   JsonRpcProvider,
   Contract,
-  hexlify
+  keccak256,
+  AbiCoder
 } from 'ethers';
 
 const sessionManagerInterface = new Interface(sessionManagerModuleJson.abi);
@@ -27,20 +27,29 @@ export const generateSessionRequestHash = (
   salt: string,
   expiry: number
 ) => {
-  return solidityPackedKeccak256(
+  // Use ABI encoding to match the Dart implementation
+  const abiCoder = new AbiCoder();
+  const packedData = abiCoder.encode(
     ['address', 'address', 'bytes32', 'uint48'],
-    [sessionProvider, sessionOwner, salt, expiry]
+    [sessionProvider, sessionOwner, salt, BigInt(expiry)]
   );
+
+  const result = keccak256(packedData);
+  return result;
 };
 
 export const generateSessionHash = (
   sessionRequestHash: string,
   challenge: number
 ) => {
-  return solidityPackedKeccak256(
+  // Use ABI encoding to match the Dart implementation
+  const abiCoder = new AbiCoder();
+  const packedData = abiCoder.encode(
     ['bytes32', 'uint256'],
-    [sessionRequestHash, challenge]
+    [sessionRequestHash, BigInt(challenge)]
   );
+
+  return keccak256(packedData);
 };
 
 export const generateSessionChallenge = () => {
@@ -64,7 +73,10 @@ export const verifySessionRequest = async (
     expiry
   );
 
-  const recoveredAddress = verifyMessage(sessionRequestHash, signature);
+  const recoveredAddress = verifyMessage(
+    getBytes(sessionRequestHash),
+    signature
+  );
 
   return recoveredAddress === sessionOwner;
 };
@@ -74,7 +86,10 @@ export const verifySessionConfirm = async (
   sessionHash: string,
   signedSessionHash: string
 ) => {
-  const recoveredAddress = verifyMessage(sessionHash, signedSessionHash);
+  const recoveredAddress = verifyMessage(
+    getBytes(sessionHash),
+    signedSessionHash
+  );
 
   return recoveredAddress === sessionOwner;
 };
@@ -89,7 +104,7 @@ export const requestSession = async (
   signedSessionHash: string,
   sessionRequestExpiry: number
 ): Promise<string> => {
-  const sessionManagerAddress = '0xE544c1dC66f65967863F03AEdEd38944E6b87309';
+  const sessionManagerAddress = '0x42163CCf27eBEf3902669567c218796ec974868e';
 
   const bundler = new BundlerService(community);
 
@@ -104,39 +119,6 @@ export const requestSession = async (
   );
 
   const tx = await bundler.call(signer, sessionManagerAddress, provider, data);
-
-  return tx;
-};
-
-export const confirmSession = async (
-  community: CommunityConfig,
-  signer: Wallet,
-  provider: string,
-  sessionRequestHash: string,
-  sessionHash: string,
-  signedSessionHash: string
-) => {
-  const sessionManagerAddress = '0xE544c1dC66f65967863F03AEdEd38944E6b87309';
-
-  const bundler = new BundlerService(community);
-
-  console.log('sessionRequestHash', sessionRequestHash);
-  console.log('sessionHash', sessionHash);
-  console.log('signedSessionHash', signedSessionHash);
-
-  const data = getBytes(
-    sessionManagerInterface.encodeFunctionData('confirm', [
-      sessionRequestHash,
-      sessionHash,
-      signedSessionHash
-    ])
-  );
-
-  console.log('data', hexlify(data));
-
-  const tx = await bundler.call(signer, sessionManagerAddress, provider, data);
-
-  console.log('tx', tx);
 
   return tx;
 };
@@ -162,7 +144,7 @@ export const verifyIncomingSessionRequest = async (
 ): Promise<boolean> => {
   try {
     // Get the session manager contract address
-    const sessionManagerAddress = '0xE544c1dC66f65967863F03AEdEd38944E6b87309';
+    const sessionManagerAddress = '0x42163CCf27eBEf3902669567c218796ec974868e';
 
     const rpcProvider = new JsonRpcProvider(community.primaryRPCUrl);
 
@@ -172,12 +154,7 @@ export const verifyIncomingSessionRequest = async (
       rpcProvider
     );
 
-    console.log('provider: ', provider);
-    console.log('sessionRequestHash: ', sessionRequestHash);
-
     const result = await contract.sessionRequests(provider, sessionRequestHash);
-
-    console.log('result', result);
     if (result.length < 5) {
       throw new Error('Session request not found');
     }
@@ -192,12 +169,10 @@ export const verifyIncomingSessionRequest = async (
     // Extract the stored signedSessionHash from the result
     const storedSignedSessionHash = result[1];
 
-    console.log('storedSignedSessionHash', storedSignedSessionHash);
-
     // Sign the provided sessionHash with the signer
-    const calculatedSignedSessionHash = await signer.signMessage(sessionHash);
-
-    console.log('calculatedSignedSessionHash', calculatedSignedSessionHash);
+    const calculatedSignedSessionHash = await signer.signMessage(
+      getBytes(sessionHash)
+    );
 
     // Compare the stored signedSessionHash with the provided one
     return storedSignedSessionHash === calculatedSignedSessionHash;
@@ -205,4 +180,29 @@ export const verifyIncomingSessionRequest = async (
     console.error('Error verifying incoming session request:', error);
     return false;
   }
+};
+
+export const confirmSession = async (
+  community: CommunityConfig,
+  signer: Wallet,
+  provider: string,
+  sessionRequestHash: string,
+  sessionHash: string,
+  signedSessionHash: string
+) => {
+  const sessionManagerAddress = '0x42163CCf27eBEf3902669567c218796ec974868e';
+
+  const bundler = new BundlerService(community);
+
+  const data = getBytes(
+    sessionManagerInterface.encodeFunctionData('confirm', [
+      sessionRequestHash,
+      sessionHash,
+      signedSessionHash
+    ])
+  );
+
+  const tx = await bundler.call(signer, sessionManagerAddress, provider, data);
+
+  return tx;
 };

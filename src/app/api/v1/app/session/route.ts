@@ -14,7 +14,7 @@ import {
   verifySessionConfirm,
   verifySessionRequest
 } from '@/cw/session';
-import { getAddress, Wallet } from 'ethers';
+import { getBytes, Wallet } from 'ethers';
 import communityJson from '@/cw/community.json';
 import { CommunityConfig } from '@citizenwallet/sdk';
 import { sendOtpSMS } from '@/services/brevo';
@@ -95,8 +95,6 @@ export async function POST(req: NextRequest) {
     sessionRequest.type
   );
 
-  const challenge = await generateSessionChallenge();
-
   const sessionRequestHash = generateSessionRequestHash(
     sessionRequest.provider,
     sessionRequest.owner,
@@ -104,9 +102,11 @@ export async function POST(req: NextRequest) {
     sessionRequest.expiry
   );
 
+  const challenge = await generateSessionChallenge();
+
   const sessionHash = generateSessionHash(sessionRequestHash, challenge);
 
-  const signedSessionHash = await signer.signMessage(sessionHash);
+  const signedSessionHash = await signer.signMessage(getBytes(sessionHash));
 
   // TODO: add 2fa provider to community config
   const community = new CommunityConfig(communityJson);
@@ -140,7 +140,6 @@ interface SessionConfirm {
 }
 
 export async function PATCH(req: NextRequest) {
-  console.log('PATCH');
   const providerPrivateKey = process.env.PROVIDER_PRIVATE_KEY;
 
   if (!providerPrivateKey) {
@@ -171,7 +170,6 @@ export async function PATCH(req: NextRequest) {
   }
 
   const sessionRequest: SessionConfirm = await req.json();
-
   if (sessionRequest.provider !== providerAccountAddress) {
     return NextResponse.json({
       status: StatusCodes.BAD_REQUEST, // 400
@@ -184,8 +182,6 @@ export async function PATCH(req: NextRequest) {
     sessionRequest.sessionHash,
     sessionRequest.signedSessionHash
   );
-
-  console.log('isValid', isValid);
 
   if (!isValid) {
     return NextResponse.json(
@@ -209,8 +205,6 @@ export async function PATCH(req: NextRequest) {
     sessionRequest.sessionRequestHash,
     sessionRequest.sessionHash
   );
-
-  console.log('isSessionHashValid', isSessionHashValid);
 
   if (!isSessionHashValid) {
     return NextResponse.json(
