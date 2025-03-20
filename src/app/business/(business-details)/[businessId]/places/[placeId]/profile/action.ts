@@ -5,8 +5,8 @@ import {
   isUserLinkedToPlaceAction
 } from '@/actions/session';
 import { getServiceRoleClient } from '@/db';
-import { getBusinessIdByUserId } from '@/db/business';
-import { getPlaceById, Place, updatePlaceById } from '@/db/places';
+import { getLinkedBusinessByUserId } from '@/db/business';
+import { getPlaceById, updatePlaceById } from '@/db/places';
 import { uploadImage } from '@/services/storage/upload';
 
 export async function getPlaceDataAction(placeId: number, businessId: number) {
@@ -37,7 +37,7 @@ export async function updatePlaceAction({
 }) {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
-  const businessid = await getBusinessIdByUserId(client, userId);
+  const businessid = await getLinkedBusinessByUserId(client, userId);
   const busid = businessid.data?.linked_business_id;
   let url = oldimage;
   const res = await isUserLinkedToPlaceAction(client, userId, placeId);

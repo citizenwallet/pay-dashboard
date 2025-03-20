@@ -96,7 +96,6 @@ export default function ProfileEdit({ place }: { place: Place | null }) {
                 <FormLabel>Name</FormLabel>
                 <FormControl>
                   <Input
-                    className="text-base"
                     disabled={loading}
                     placeholder="Profile name"
                     {...field}
@@ -115,7 +114,6 @@ export default function ProfileEdit({ place }: { place: Place | null }) {
                 <FormLabel>Slug</FormLabel>
                 <FormControl>
                   <Input
-                    className="text-base"
                     disabled={loading}
                     placeholder="profile-slug"
                     {...field}

@@ -1,23 +1,22 @@
 'use server';
-
 import { getServiceRoleClient } from '@/db';
-import { getOrdersByPlaceWithOutLimit } from '@/db/orders';
+import { getPayoutOrders } from '@/db/orders';
 
-export async function exportCsvAction(place_id: number, dateRange: string, customStartDate?: string, customEndDate?: string) {
+export async function getPayoutAction(payout_id: string) {
   const client = getServiceRoleClient();
-  const orderResponse = await getOrdersByPlaceWithOutLimit(
-    client,
-    place_id,
-    dateRange,
-    customStartDate,
-    customEndDate
-  );
+  const payout = await getPayoutOrders(client, Number(payout_id));
+  return payout;
+}
 
-  if (!orderResponse.data || orderResponse.data.length === 0) {
-    return null;
+export async function getPayoutCSVAction(payout_id: string) {
+  const client = getServiceRoleClient();
+  const payout = await getPayoutOrders(client, Number(payout_id));
+
+  if (!payout.data || payout.data.length === 0) {
+    return ''; // Return an empty CSV string instead of null
   }
 
-  const orders = orderResponse.data;
+  const orders = payout.data;
 
   const csvHeaders = [
     'ID',
@@ -29,6 +28,7 @@ export async function exportCsvAction(place_id: number, dateRange: string, custo
     'Fees',
     'Place ID'
   ];
+
   const csvData = [
     csvHeaders.join(','),
     ...orders.map((order) =>

@@ -5,7 +5,11 @@ import {
   isUserLinkedToPlaceAction
 } from '@/actions/session';
 import { getServiceRoleClient } from '@/db';
-import { getBusinessIdByUserId, getBusinessById } from '@/db/business';
+import {
+  getLinkedBusinessByUserId,
+  getBusinessById,
+  checkUserAccessBusiness
+} from '@/db/business';
 import {
   createPlace,
   getPlaceById,
@@ -23,7 +27,7 @@ import { getLastplace, updateLastplace } from '@/db/users';
 export async function getPlaceAction() {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
-  const businessid = await getBusinessIdByUserId(client, userId);
+  const businessid = await getLinkedBusinessByUserId(client, userId);
   const places = await getPlacesByBusinessId(
     client,
     businessid.data?.linked_business_id
@@ -34,7 +38,7 @@ export async function getPlaceAction() {
 export async function uploadImageAction(file: File): Promise<string> {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
-  const businessid = await getBusinessIdByUserId(client, userId);
+  const businessid = await getLinkedBusinessByUserId(client, userId);
   const busId = businessid.data?.linked_business_id;
 
   const url = await uploadImage(client, file, busId);
@@ -74,7 +78,7 @@ export async function createPlaceAction(
 ) {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
-  const { data: business } = await getBusinessIdByUserId(client, userId);
+  const { data: business } = await getLinkedBusinessByUserId(client, userId);
   const { linked_business_id: linkedBusinessId } = business || {};
   const invitationCode = generateRandomString(16);
 
@@ -113,7 +117,7 @@ export async function createPlaceAction(
 export async function getBusinessIdAction(): Promise<number> {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
-  const businessid = await getBusinessIdByUserId(client, userId);
+  const businessid = await getLinkedBusinessByUserId(client, userId);
   const busid = businessid.data?.linked_business_id;
   return busid;
 }
@@ -121,7 +125,7 @@ export async function getBusinessIdAction(): Promise<number> {
 export const getLinkedBusinessAction = async () => {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
-  const businessid = await getBusinessIdByUserId(client, userId);
+  const businessid = await getLinkedBusinessByUserId(client, userId);
   const business = await getBusinessById(
     client,
     businessid.data?.linked_business_id
@@ -170,4 +174,29 @@ export const handleVisibilityToggleAction = async (placeId: number) => {
   }
 
   return await handleVisibilityToggleceById(client, placeId);
+};
+
+export const checkUserAccessBusinessAction = async (businessId: number) => {
+  const client = getServiceRoleClient();
+  const userId = await getUserIdFromSessionAction();
+  const res = await checkUserAccessBusiness(client, userId, businessId);
+  return res;
+};
+
+export const getBusinessPlacesAction = async (businessId: number) => {
+  const client = getServiceRoleClient();
+  const res = await getPlacesByBusinessId(client, businessId);
+  return res.data;
+};
+
+export const getBusinessAction = async (businessId: number) => {
+  const client = getServiceRoleClient();
+  const res = await getBusinessById(client, businessId);
+  return res.data;
+};
+
+export const getPlaceByIdAction = async (placeId: number) => {
+  const client = getServiceRoleClient();
+  const res = await getPlaceById(client, placeId);
+  return res.data;
 };

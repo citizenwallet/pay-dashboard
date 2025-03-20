@@ -6,6 +6,7 @@ import {
   BoxesIcon,
   ChevronRight,
   LayoutDashboard,
+  PanelBottomClose,
   QrCode,
   Settings2,
   ShoppingCartIcon,
@@ -69,6 +70,12 @@ export function NavMain({
       title: 'QR Code',
       url: `/business/${businessId}/places/${lastPlace.id}/qr`,
       icon: QrCode,
+      items: []
+    },
+    {
+      title: 'Payouts',
+      url: `/business/${businessId}/places/${lastPlace.id}/payouts`,
+      icon: PanelBottomClose,
       items: []
     }
   ];

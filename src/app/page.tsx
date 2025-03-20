@@ -13,9 +13,9 @@ export default async function Page() {
     //check the user completed the registation flow
     const data = await getPlaceAction();
     const client = getServiceRoleClient();
-    const business = await getBusinessById(client, data.busid);
+    const business = await getBusinessById(client, data.busId);
     if (business.data?.status == 'Registered') {
-      return redirect(`/business/${data.busid}/places/${data.lastId}/orders`);
+      return redirect(`/business/${data.busId}/places/${data.lastId}/orders`);
     } else {
       return redirect(
         `/onboarding/vat?invite_code=${business.data?.invite_code}`
