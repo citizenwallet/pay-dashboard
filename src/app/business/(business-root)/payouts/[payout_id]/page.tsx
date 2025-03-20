@@ -9,16 +9,13 @@ import PayoutDetailsPage from './page-details';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
 import { CommunityConfig } from '@citizenwallet/sdk';
 
-type PayoutOrderPageProps = {
-  params: { payout_id: string };
-};
-
 export default async function PayoutOrderPage({
   params
 }: {
-  params: Promise<PayoutOrderPageProps>;
+  params: Promise<{ payout_id: string }>;
 }) {
-  const payout_id = await params;
+  const { payout_id } = await params;
+
   return (
     <>
       <PageContainer>
@@ -33,7 +30,7 @@ export default async function PayoutOrderPage({
           <Suspense
             fallback={<DataTableSkeleton columnCount={5} rowCount={10} />}
           >
-            {AsyncPayoutOrderPage(payout_id.params.payout_id)}
+            {AsyncPayoutOrderPage(payout_id)}
           </Suspense>
         </div>
       </PageContainer>
