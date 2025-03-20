@@ -67,6 +67,7 @@ export default function UserSignupForm() {
                 <FormLabel>Name</FormLabel>
                 <FormControl>
                   <Input
+                    className="text-base"
                     type="text"
                     placeholder="Enter your name..."
                     disabled={loading}
@@ -100,6 +101,7 @@ export default function UserSignupForm() {
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input
+                    className="text-base"
                     type="email"
                     placeholder="Enter your email..."
                     disabled={loading}

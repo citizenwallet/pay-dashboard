@@ -23,12 +23,12 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: process.env.ASSETS_DOMAIN ?? '',
+        hostname: 'ounjigiydhimruivuxjv.supabase.co',
         port: ''
       },
       {
         protocol: 'https',
-        hostname: 'ounjigiydhimruivuxjv.supabase.co',
+        hostname: 'assets.citizenwallet.xyz',
         port: ''
       }
     ]

@@ -88,7 +88,7 @@ export default function DetailsPage({
         <Label className="text-sm font-medium text-gray-900">Legal name</Label>
         <Input
           type="text"
-          className="h-8 rounded-md border border-black px-4 text-black"
+          className="h-8 rounded-md border border-black px-4 text-base text-black"
           value={legalName}
           onChange={(e) => setLegalName(e.target.value)}
           disabled={loading}
@@ -102,7 +102,7 @@ export default function DetailsPage({
         <Label className="text-sm font-medium text-gray-900">Address</Label>
         <Input
           type="text"
-          className="h-8 rounded-md border border-black px-4 text-black"
+          className="h-8 rounded-md border border-black px-4 text-base text-black"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
           disabled={loading}
@@ -116,7 +116,7 @@ export default function DetailsPage({
         <Label className="text-sm font-medium text-gray-900">IBAN</Label>
         <Input
           type="text"
-          className="h-8 rounded-md border border-black px-4 text-black"
+          className="h-8 rounded-md border border-black px-4 text-base text-black"
           value={iban}
           onChange={(e) => setIban(e.target.value)}
           disabled={loading}

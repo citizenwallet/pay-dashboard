@@ -58,7 +58,7 @@ export default function VatPage({
         <Input
           type="text"
           placeholder="EX: BE0790756234"
-          className="h-10 rounded-md border border-black px-4 text-black"
+          className="h-10 rounded-md border border-black px-4 text-base text-black"
           value={vatNumber}
           onChange={(e) => setVatNumber(e.target.value)}
         />
