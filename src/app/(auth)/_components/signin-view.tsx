@@ -4,7 +4,7 @@ import UserAuthForm from './user-auth-form';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
-
+import Image from 'next/image';
 export const metadata: Metadata = {
   title: 'Authentication',
   description: 'Authentication forms built using the components.'
@@ -18,7 +18,7 @@ export default function SignInViewPage() {
       <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
         <div className="absolute inset-0 bg-zinc-900" />
         <div className="relative z-20 flex items-center text-lg font-medium">
-          <img
+          <Image
             className="mr-2 h-6 w-6"
             src="/assets/img/logo.svg"
             alt="Logo"

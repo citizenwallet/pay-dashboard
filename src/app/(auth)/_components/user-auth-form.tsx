@@ -77,6 +77,7 @@ export default function UserAuthForm() {
                 <FormLabel title={'Email'} />
                 <FormControl>
                   <Input
+                    className="text-base"
                     type="email"
                     placeholder="Enter your email..."
                     disabled={loading}

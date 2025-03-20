@@ -252,6 +252,7 @@ export function PlaceSwitcher({
                       Place Name
                     </label>
                     <Input
+                      className="text-base"
                       id="name"
                       value={newPlaceName}
                       onChange={(e) => setNewPlaceName(e.target.value)}
@@ -264,6 +265,7 @@ export function PlaceSwitcher({
                       Description
                     </label>
                     <Input
+                      className="text-base"
                       id="description"
                       value={newPlacedescription}
                       onChange={(e) => setNewPlacedescription(e.target.value)}
@@ -276,6 +278,7 @@ export function PlaceSwitcher({
                       Slug
                     </label>
                     <Input
+                      className="text-base"
                       id="slug"
                       value={newPlaceSlug}
                       onChange={(e) => {
