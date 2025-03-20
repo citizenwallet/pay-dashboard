@@ -4,13 +4,13 @@ import { Separator } from '@/components/ui/separator';
 import { Suspense } from 'react';
 
 import QrPage from './qr-page';
-import { getPlaceDataAction } from './action';
 import { getServiceRoleClient } from '@/db';
 import {
   getUserIdFromSessionAction,
   isUserAdminAction
 } from '@/actions/session';
-import { checkUserPlaceAccess } from '@/db/places';
+import { checkUserPlaceAccess, getPlaceById } from '@/db/places';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default async function QRPage({
   params
@@ -19,25 +19,22 @@ export default async function QRPage({
 }) {
   const resolvedParams = await params;
   return (
-    <div>
-      <PageContainer>
-        <div className="space-y-4">
-          <div className="flex items-start justify-between">
-            <Heading
-              title="QR Code  "
-              description="Manage your Place QR Code"
-            />
-          </div>
-          <Separator />
-          <Suspense fallback={<></>}>
-            <AsyncPage
-              businessId={resolvedParams.businessId}
-              placeId={resolvedParams.placeId}
-            />
-          </Suspense>
+    <PageContainer scrollable>
+      <div className="flex h-full min-h-svh flex-1 flex-col space-y-4">
+        <div className="flex items-start justify-between">
+          <Heading title="QR Code" description="Manage your Place QR Code" />
         </div>
-      </PageContainer>
-    </div>
+        <Separator />
+        <Suspense
+          fallback={<Skeleton className="h-full w-full flex-1 rounded-xl" />}
+        >
+          <AsyncPage
+            businessId={resolvedParams.businessId}
+            placeId={resolvedParams.placeId}
+          />
+        </Suspense>
+      </div>
+    </PageContainer>
   );
 }
 
@@ -63,7 +60,7 @@ async function AsyncPage({
     }
   }
 
-  const place = await getPlaceDataAction(parseInt(placeId));
+  const place = await getPlaceById(client, Number(placeId));
   if (!place) {
     throw new Error('Place not found');
   }

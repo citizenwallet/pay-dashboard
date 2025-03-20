@@ -4,11 +4,10 @@ import { CompanyVATStep } from '@/components/onboarding';
 import { CompanyInfoStep } from '@/components/onboarding';
 import { OnboardingState, OnboardingAction, CompanyInfo } from './types';
 import { useTranslations } from 'next-intl';
-import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { jwtVerifyAction } from './action';
+import { businessOnboardAction, jwtVerifyAction } from './action';
 import { signAction } from '@/app/(auth)/action';
 
 const initialState: OnboardingState = {
@@ -40,18 +39,19 @@ function onboardingReducer(
   }
 }
 
-export function CompanyOnboarding() {
+export function CompanyOnboarding({
+  otpToken,
+  vat_number,
+  token
+}: {
+  otpToken: string | null;
+  vat_number: string | null;
+  token: string | null;
+}) {
   const [loading, setLoading] = useState(false);
-  const searchParams = useSearchParams();
   const [state, dispatch] = useReducer(onboardingReducer, initialState);
   const [tokenValid, setTokenValid] = useState(true);
   const t = useTranslations('Common');
-  const vat_number = searchParams.get('vat_number');
-  const token = searchParams.get('invite_code');
-
-  //get the otpToken from the url
-
-  const otp = searchParams.get('otpToken');
 
   const handleNext = async (data: CompanyInfo) => {
     dispatch({ type: 'UPDATE_DATA', payload: data });
@@ -65,19 +65,13 @@ export function CompanyOnboarding() {
   const handleSubmit = async (data: CompanyInfo) => {
     setLoading(true);
 
-    await fetch('/api/businesses/onboard', {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
+    await businessOnboardAction(data)
       .then(async () => {
         //check if the otpToken is valid
 
-        if (otp) {
+        if (otpToken) {
           try {
-            const decoded: JwtPayload | null = await jwtVerifyAction(otp);
+            const decoded: JwtPayload | null = await jwtVerifyAction(otpToken);
             const success = await signAction(decoded?.email, decoded?.otp);
             toast.success('OTP verified successfully');
           } catch (error) {
@@ -96,6 +90,7 @@ export function CompanyOnboarding() {
           t('Oops, there is an error during the validation of your company')
         );
       });
+
     setLoading(false);
   };
 
