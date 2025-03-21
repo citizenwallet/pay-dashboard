@@ -3,12 +3,17 @@
 import CurrencyLogo from '@/components/currency-logo';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
-
+import { Input } from '@/components/ui/input';
 import { Payout } from '@/db/payouts';
 import { formatCurrencyNumber } from '@/lib/currency';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
-import React from 'react';
+import { useRef, useState } from 'react';
+import { toast } from 'sonner';
+import {
+  updatePayoutBurnDateAction,
+  updatePayoutTransferDateAction
+} from './action';
 
 export default function PayoutDetailsPage({
   payouts,
@@ -17,6 +22,64 @@ export default function PayoutDetailsPage({
   payouts: Payout[];
   currencyLogo: string;
 }) {
+  const [payoutData, setPayoutData] = useState<Payout[]>(payouts);
+
+  const [editingIdBurnDate, setEditingIdBurnDate] = useState<string | null>(
+    null
+  );
+  const [editBurnDate, setEditBurnDate] = useState<string>('');
+  const dateInputRef = useRef<HTMLDivElement>(null);
+
+  const [editingIdTransferDate, setEditingIdTransferDate] = useState<
+    string | null
+  >(null);
+  const [editTransferDate, setEditTransferDate] = useState<string>('');
+  const dateInputRefTransferDate = useRef<HTMLDivElement>(null);
+
+  // Burn Date edit open
+  const handleBurnEditClick = (id: string, date: Date) => {
+    setEditingIdBurnDate(id);
+    setEditingIdTransferDate(null);
+    const formattedDate = date.toISOString().split('T')[0];
+    setEditBurnDate(formattedDate);
+  };
+
+  // Burn Date edit save
+  const handleSaveEditBurnDate = async (id: string, date: string) => {
+    try {
+      setPayoutData(
+        payouts.map((p) => (p.id === id ? { ...p, burnDate: date } : p))
+      );
+      setEditingIdBurnDate(null);
+      await updatePayoutBurnDateAction(id, date);
+      toast.success('Burn date updated successfully');
+    } catch (error) {
+      toast.error('Failed to update burn date');
+    }
+  };
+
+  // Transfer Date edit open
+  const handleTransferEditClick = (id: string, date: Date) => {
+    setEditingIdTransferDate(id);
+    setEditingIdBurnDate(null);
+    const formattedDate = date.toISOString().split('T')[0];
+    setEditTransferDate(formattedDate);
+  };
+
+  // Transfer Date edit save
+  const handleSaveEditTransferDate = async (id: string, date: string) => {
+    try {
+      setPayoutData(
+        payouts.map((p) => (p.id === id ? { ...p, transferDate: date } : p))
+      );
+      setEditingIdTransferDate(null);
+      await updatePayoutTransferDateAction(id, date);
+      toast.success('Transfer date updated successfully');
+    } catch (error) {
+      toast.error('Failed to update transfer date');
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <Link href="/business/payouts/new">
@@ -65,13 +128,40 @@ export default function PayoutDetailsPage({
                 <span className="text-red-500">
                   {row.original.burn ? '🔥' : '-'}
                 </span>
-                <span>
-                  {row.original.burnDate
-                    ? new Date(row.original.burnDate).toLocaleDateString(
-                        'en-GB'
-                      )
-                    : '-'}
-                </span>
+                {editingIdBurnDate === row.original.id ? (
+                  <div ref={dateInputRef} className="flex items-center gap-1">
+                    <Input
+                      type="date"
+                      value={editBurnDate}
+                      onChange={(e) => {
+                        setEditBurnDate(e.target.value);
+                        handleSaveEditBurnDate(row.original.id, e.target.value);
+                      }}
+                      autoFocus
+                      className="h-8 w-36"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1">
+                    <span
+                      className="cursor-pointer hover:text-blue-500 hover:underline"
+                      onClick={() =>
+                        row.original.burnDate &&
+                        handleBurnEditClick(
+                          row.original.id,
+                          new Date(row.original.burnDate)
+                        )
+                      }
+                    >
+                      {row.original.burnDate
+                        ? new Date(row.original.burnDate).toLocaleDateString(
+                            'en-US',
+                            { year: 'numeric', month: 'short', day: 'numeric' }
+                          )
+                        : '-'}
+                    </span>
+                  </div>
+                )}
               </div>
             )
           },
@@ -84,18 +174,54 @@ export default function PayoutDetailsPage({
                 <span className="text-blue-500">
                   {row.original.transfer ? '🏛️' : '-'}
                 </span>
-                <span>
-                  {row.original.transferDate
-                    ? new Date(row.original.transferDate).toLocaleDateString(
-                        'en-GB'
-                      )
-                    : '-'}
-                </span>
+                {editingIdTransferDate === row.original.id ? (
+                  <div
+                    ref={dateInputRefTransferDate}
+                    className="flex items-center gap-1"
+                  >
+                    <Input
+                      type="date"
+                      value={editTransferDate}
+                      onChange={(e) => {
+                        setEditTransferDate(e.target.value);
+                        handleSaveEditTransferDate(
+                          row.original.id,
+                          e.target.value
+                        );
+                      }}
+                      autoFocus
+                      className="h-8 w-36"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1">
+                    <span
+                      className="cursor-pointer hover:text-blue-500 hover:underline"
+                      onClick={() =>
+                        row.original.transferDate &&
+                        handleTransferEditClick(
+                          row.original.id,
+                          new Date(row.original.transferDate)
+                        )
+                      }
+                    >
+                      {row.original.transferDate
+                        ? new Date(
+                            row.original.transferDate
+                          ).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          })
+                        : '-'}
+                    </span>
+                  </div>
+                )}
               </div>
             )
           }
         ]}
-        data={payouts}
+        data={payoutData}
       />
     </div>
   );
