@@ -1,11 +1,18 @@
 'use server';
+import { isUserAdminAction } from '@/actions/session';
 import { getServiceRoleClient } from '@/db';
 import { getBurnById } from '@/db/burn';
 import { getBusinessById } from '@/db/business';
-import { getPayouts, Payout } from '@/db/payouts';
+import {
+  getPayoutBurnId,
+  getPayouts,
+  getPayoutTransferId,
+  Payout,
+  updatePayoutBurnDate,
+  updatePayoutTransferDate
+} from '@/db/payouts';
 import { getPlaceById } from '@/db/places';
 import { getTransferById } from '@/db/transfer';
-import { SupabaseClient } from '@supabase/supabase-js';
 
 export async function getAllPayoutAction() {
   const client = getServiceRoleClient();
@@ -41,4 +48,39 @@ export async function getAllPayoutAction() {
     }
   }
   return payouts;
+}
+
+export async function updatePayoutBurnDateAction(id: string, date: string) {
+  const admin = await isUserAdminAction();
+  if (!admin) {
+    return { error: 'You are not authorized to update payout burn date' };
+  }
+  const client = getServiceRoleClient();
+  const { data: payoutBurnId } = await getPayoutBurnId(client, id);
+
+  if (!payoutBurnId) {
+    return { error: 'Payout burn id not found' };
+  }
+
+  return await updatePayoutBurnDate(client, payoutBurnId.burn.toString(), date);
+}
+
+export async function updatePayoutTransferDateAction(id: string, date: string) {
+  const admin = await isUserAdminAction();
+  if (!admin) {
+    return { error: 'You are not authorized to update payout transfer date' };
+  }
+
+  const client = getServiceRoleClient();
+  const { data: payoutTransferId } = await getPayoutTransferId(client, id);
+
+  if (!payoutTransferId) {
+    return { error: 'Payout burn id not found' };
+  }
+
+  return await updatePayoutTransferDate(
+    client,
+    payoutTransferId.transfer.toString(),
+    date
+  );
 }

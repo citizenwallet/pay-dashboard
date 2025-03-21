@@ -86,3 +86,51 @@ export const getPayoutsByPlaceId = async (
 ): Promise<PostgrestSingleResponse<Payout[]>> => {
   return await client.from('payouts').select('*').eq('place_id', placeId);
 };
+
+export const getPayoutBurnId = async (
+  client: SupabaseClient,
+  payoutId: string
+): Promise<PostgrestSingleResponse<Payout>> => {
+  return await client
+    .from('payouts')
+    .select('burn')
+    .eq('id', payoutId)
+    .single();
+};
+
+export const getPayoutTransferId = async (
+  client: SupabaseClient,
+  payoutId: string
+): Promise<PostgrestSingleResponse<Payout>> => {
+  return await client
+    .from('payouts')
+    .select('transfer')
+    .eq('id', payoutId)
+    .single();
+};
+
+export const updatePayoutBurnDate = async (
+  client: SupabaseClient,
+  payoutBurnId: string,
+  burnDate: string
+): Promise<PostgrestSingleResponse<Payout>> => {
+  return await client
+    .from('payout_burn')
+    .update({ created_at: burnDate })
+    .eq('id', payoutBurnId)
+    .select()
+    .single();
+};
+
+export const updatePayoutTransferDate = async (
+  client: SupabaseClient,
+  payoutTransferId: string,
+  transferDate: string
+): Promise<PostgrestSingleResponse<Payout>> => {
+  return await client
+    .from('payout_transfer')
+    .update({ created_at: transferDate })
+    .eq('id', payoutTransferId)
+    .select()
+    .single();
+};
