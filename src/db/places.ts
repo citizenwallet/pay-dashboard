@@ -51,6 +51,33 @@ export const getPlacesByBusinessId = async (
     .order('id', { ascending: true });
 };
 
+export const getPlacesCountByBusinessId = async (
+  client: SupabaseClient,
+  businessId: number
+): Promise<{ count: number }> => {
+  const response = await client
+    .from('places')
+    .select('*', { count: 'exact', head: true })
+    .eq('business_id', businessId);
+  return { count: response.count || 0 };
+};
+
+export const getPlacesByBusinessIdWithLimit = async (
+  client: SupabaseClient,
+  businessId: number,
+  limit: number = 10,
+  offset: number = 0,
+  search: string = ''
+): Promise<PostgrestResponse<Place[]>> => {
+  return client
+    .from('places')
+    .select('*')
+    .eq('business_id', businessId)
+    .ilike('name', `%${search}%`)
+    .order('id', { ascending: true })
+    .range(offset, offset + limit - 1);
+};
+
 export const getPlaceByTerminalId = async (
   client: SupabaseClient,
   terminalId: number
