@@ -48,5 +48,10 @@ export async function updatePlaceAction({
   if (image.size != 0) {
     url = await uploadImage(client, image, busid);
   }
-  return await updatePlaceById(client, placeId, name, description, slug, url);
+  return await updatePlaceById(client, placeId, {
+    name,
+    description,
+    slug,
+    image: url
+  });
 }

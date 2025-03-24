@@ -233,21 +233,9 @@ export const handleArchiveToggleById = async (
 export const updatePlaceById = async (
   client: SupabaseClient,
   placeId: number,
-  name: string,
-  description: string,
-  slug: string,
-  newimage: string
+  place: Partial<Place>
 ): Promise<PostgrestSingleResponse<Place | null>> => {
-  return client
-    .from('places')
-    .update({
-      name: name,
-      description: description,
-      slug: slug,
-      image: newimage
-    })
-    .eq('id', placeId)
-    .maybeSingle();
+  return client.from('places').update(place).eq('id', placeId).maybeSingle();
 };
 
 export const deletePlaceById = async (
