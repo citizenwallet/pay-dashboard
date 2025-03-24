@@ -2,7 +2,8 @@
 import { Input } from '@/components/ui/input';
 import { ArrowRight, Search } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState, useCallback } from 'react';
+import { useDebounce } from 'use-debounce';
 
 export default function SearchInput({ className }: { className?: string }) {
   const router = useRouter();
@@ -11,22 +12,34 @@ export default function SearchInput({ className }: { className?: string }) {
   const [searchTerm, setSearchTerm] = useState(
     searchParams.get('search') || ''
   );
+  const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
 
-  const handleSearch = (e: FormEvent) => {
+  const handleSearch = useCallback(
+    (query: string) => {
+      const params = new URLSearchParams(searchParams);
+
+      if (query) {
+        params.set('search', query);
+      } else {
+        params.delete('search');
+      }
+      router.push(`${pathname}?${params.toString()}`);
+    },
+    [pathname, router, searchParams]
+  );
+
+  useEffect(() => {
+    handleSearch(debouncedSearchTerm);
+  }, [debouncedSearchTerm, handleSearch]);
+
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    const params = new URLSearchParams(searchParams);
-
-    if (searchTerm) {
-      params.set('search', searchTerm);
-    } else {
-      params.delete('search');
-    }
-    router.push(`${pathname}?${params.toString()}`);
+    handleSearch(searchTerm);
   };
 
   return (
-    <div className={` space-y-2 ${className || ''}`}>
-      <form onSubmit={handleSearch} className="relative w-full">
+    <div className={`space-y-2 ${className || ''}`}>
+      <form onSubmit={handleSubmit} className="relative w-full">
         <Input
           className="peer w-full pl-9 pr-9"
           placeholder="Search for anything..."
