@@ -27,7 +27,7 @@ export default async function DashboardLayout({
   params
 }: {
   children: React.ReactNode;
-  params: { businessId: string; placeId: string };
+  params: Promise<{ businessId: string; placeId: string }>;
 }) {
   const { businessId } = await params;
   const { placeId } = await params;
