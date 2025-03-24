@@ -13,6 +13,9 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
@@ -22,40 +25,40 @@ import {
   SidebarRail,
   SidebarTrigger
 } from '@/components/ui/sidebar';
-import { NavMain } from './nav-main';
-import { ArrowLeft, ChevronsUpDown, LogOut } from 'lucide-react';
+import {
+  AppWindow,
+  ArrowLeft,
+  BellDot,
+  ChevronsUpDown,
+  CreditCard,
+  Inbox,
+  LayoutDashboard,
+  LogOut
+} from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import ThemeToggle from './ThemeToggle/theme-toggle';
 import { UserNav } from './user-nav';
 import { Logo } from '@/components/logo';
 import { signOut } from 'next-auth/react';
-import { PlaceSwitcher } from './place-switcher';
-import { NavButton } from './nav-button';
-import { Place } from '@/db/places';
 import { User } from '@/db/users';
 import { getUserFromSessionAction } from '@/actions/session';
-import { Business } from '@/db/business';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
-export default function AppSidebar({
+export default function RootAppSidebar({
   isAdmin,
   user: initialUser,
-  places,
-  business,
-  lastPlace,
   children
 }: {
   isAdmin?: boolean;
   user?: User | null;
-  places: Place[] | null;
-  business: Business | null;
-  lastPlace: Place;
   children: React.ReactNode;
 }) {
   const [user, setUser] = useState<User | null | undefined>(initialUser);
 
   const session = useSession();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (session.status === 'authenticated' && !user) {
@@ -75,32 +78,48 @@ export default function AppSidebar({
         )}
         <SidebarHeader>
           <div className="flex gap-2 py-2 text-sidebar-accent-foreground ">
-            <Link href="/business">
-              <ArrowLeft />
-            </Link>
             <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
               <Logo />
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">{business?.name}</span>
-              <span className="truncate text-xs">{business?.vat_number}</span>
+              <span className="truncate font-semibold">{user?.name}</span>
+              <span className="truncate text-xs">{user?.email}</span>
             </div>
           </div>
-
-          {business && (
-            <PlaceSwitcher
-              business={business}
-              places={places}
-              lastPlace={lastPlace}
-            />
-          )}
         </SidebarHeader>
 
         <SidebarContent>
-          <NavButton lastPlace={lastPlace} />
-          {business && (
-            <NavMain businessId={business.id} lastPlace={lastPlace} />
-          )}
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === '/business'}
+                  >
+                    <Link href="/business">
+                      <LayoutDashboard className="h-4 w-4" />
+                      <span>Business</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+
+                {isAdmin && (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === '/business/payouts'}
+                    >
+                      <Link href="/business/payouts">
+                        <CreditCard className="h-4 w-4" />
+                        <span>Payouts</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
         </SidebarContent>
 
         <SidebarFooter>
