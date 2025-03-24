@@ -445,7 +445,11 @@ export default function PlacesPage({
       accessorKey: 'id',
       cell: ({ row }: { row: Row<Place> }) => {
         return (
-          <Link href={`/places/${row.original.id}`}>{row.original.id}</Link>
+          <Link
+            href={`/business/${row.original.business_id}/places/${row.original.id}/list`}
+          >
+            {row.original.id}
+          </Link>
         );
       }
     },

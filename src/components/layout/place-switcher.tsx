@@ -18,11 +18,9 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 export function PlaceSwitcher({
-  places,
   business,
   lastPlace
 }: {
-  places: Place[] | null;
   business: Business;
   lastPlace: Place;
 }) {
