@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Place } from '@/db/places';
 import { PaginationState, Row } from '@tanstack/react-table';
-import { icons } from 'lucide-react';
+import { Plus, Upload, Loader, Camera, ImagePlus } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -43,13 +43,15 @@ export default function PlacesPage({
   offset,
   limit,
   search,
-  count
+  count,
+  placeId
 }: {
   place: Place[];
   offset: number;
   limit: number;
   search: string | null;
   count: number;
+  placeId: string;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -461,10 +463,7 @@ export default function PlacesPage({
           <div className="w-[50px] p-2">
             {loadingId === row.original.id ? (
               <div className="flex h-[50px] w-[50px] items-center justify-center rounded-md bg-gray-100">
-                <icons.Loader
-                  className="animate-spin text-gray-500"
-                  size={24}
-                />
+                <Loader className="animate-spin text-gray-500" size={24} />
               </div>
             ) : row.original.image ? (
               <div
@@ -479,7 +478,7 @@ export default function PlacesPage({
                   className="rounded-md object-cover transition-opacity hover:opacity-80"
                 />
                 <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 transition-all hover:bg-opacity-30">
-                  <icons.Camera
+                  <Camera
                     className="text-white opacity-0 transition-opacity hover:opacity-100"
                     size={20}
                   />
@@ -490,7 +489,7 @@ export default function PlacesPage({
                 className="flex h-[50px] w-[50px] cursor-pointer items-center justify-center rounded-md bg-gray-100 transition-colors hover:bg-gray-200"
                 onClick={() => handleImageClick(row.original)}
               >
-                <icons.ImagePlus className="text-gray-500" size={24} />
+                <ImagePlus className="text-gray-500" size={24} />
               </div>
             )}
           </div>
@@ -632,114 +631,127 @@ export default function PlacesPage({
       />
 
       <div className="mb-8 flex items-center justify-between">
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="flex items-center gap-2">
-              <icons.Plus size={16} />
-              Add Place
-            </Button>
-          </DialogTrigger>
+        <div className="flex items-center gap-2">
+          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="flex items-center gap-2">
+                <Plus size={16} />
+                Add Place
+              </Button>
+            </DialogTrigger>
 
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add a New Place</DialogTitle>
-              <DialogDescription>
-                Enter the details for the new place below.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <label htmlFor="name" className="text-sm font-medium">
-                  Place Name
-                </label>
-                <Input
-                  className="text-base"
-                  id="name"
-                  value={newPlaceName}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setNewPlaceName(e.target.value)
-                  }
-                  placeholder="Enter place name"
-                />
-              </div>
-
-              <div className="grid gap-2">
-                <label htmlFor="description" className="text-sm font-medium">
-                  Description
-                </label>
-                <Input
-                  className="text-base"
-                  id="description"
-                  value={newPlacedescription}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setNewPlacedescription(e.target.value)
-                  }
-                  placeholder="Enter place description"
-                />
-              </div>
-
-              <div className="grid gap-2">
-                <label htmlFor="slug" className="text-sm font-medium">
-                  Slug
-                </label>
-                <Input
-                  className="text-base"
-                  id="slug"
-                  value={newPlaceSlug}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    setNewPlaceSlug(e.target.value);
-                    setSlugTouched(true);
-                  }}
-                  placeholder="Enter slug"
-                />
-                {slugError && (
-                  <p className="text-sm text-red-500">{slugError}</p>
-                )}
-              </div>
-              <div className="grid gap-2">
-                <label htmlFor="image" className="text-sm font-medium">
-                  Image
-                </label>
-                <input
-                  id="image"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      setNewPlaceImage(file);
-                      setImagePreview(URL.createObjectURL(file));
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add a New Place</DialogTitle>
+                <DialogDescription>
+                  Enter the details for the new place below.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <label htmlFor="name" className="text-sm font-medium">
+                    Place Name
+                  </label>
+                  <Input
+                    className="text-base"
+                    id="name"
+                    value={newPlaceName}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setNewPlaceName(e.target.value)
                     }
-                  }}
-                />
-                {imagePreview && (
-                  <Image
-                    src={imagePreview}
-                    alt="Preview"
-                    className="mt-2 h-20 w-20 rounded-md object-cover"
-                    width={80}
-                    height={80}
+                    placeholder="Enter place name"
                   />
-                )}
+                </div>
+
+                <div className="grid gap-2">
+                  <label htmlFor="description" className="text-sm font-medium">
+                    Description
+                  </label>
+                  <Input
+                    className="text-base"
+                    id="description"
+                    value={newPlacedescription}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setNewPlacedescription(e.target.value)
+                    }
+                    placeholder="Enter place description"
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <label htmlFor="slug" className="text-sm font-medium">
+                    Slug
+                  </label>
+                  <Input
+                    className="text-base"
+                    id="slug"
+                    value={newPlaceSlug}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setNewPlaceSlug(e.target.value);
+                      setSlugTouched(true);
+                    }}
+                    placeholder="Enter slug"
+                  />
+                  {slugError && (
+                    <p className="text-sm text-red-500">{slugError}</p>
+                  )}
+                </div>
+                <div className="grid gap-2">
+                  <label htmlFor="image" className="text-sm font-medium">
+                    Image
+                  </label>
+                  <input
+                    id="image"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setNewPlaceImage(file);
+                        setImagePreview(URL.createObjectURL(file));
+                      }
+                    }}
+                  />
+                  {imagePreview && (
+                    <Image
+                      src={imagePreview}
+                      alt="Preview"
+                      className="mt-2 h-20 w-20 rounded-md object-cover"
+                      width={80}
+                      height={80}
+                    />
+                  )}
+                </div>
               </div>
-            </div>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setIsAddDialogOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                className="mb-2 md:mb-0"
-                onClick={handleAddPlace}
-                disabled={isAddLoading}
-              >
-                {isAddLoading ? 'Adding...' : 'Add'}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsAddDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="mb-2 md:mb-0"
+                  onClick={handleAddPlace}
+                  disabled={isAddLoading}
+                >
+                  {isAddLoading ? 'Adding...' : 'Add'}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          <Button
+            className="flex items-center gap-2"
+            onClick={() =>
+              router.push(
+                `/business/${places[0].business_id}/places/${placeId}/list/upload`
+              )
+            }
+          >
+            <Upload size={16} />
+            Upload places
+          </Button>
+        </div>
 
         <SearchInput className="w-80" />
       </div>
