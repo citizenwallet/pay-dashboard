@@ -25,7 +25,7 @@ export default function SearchInput({ className }: { className?: string }) {
   };
 
   return (
-    <div className={`w-full space-y-2 ${className || ''}`}>
+    <div className={` space-y-2 ${className || ''}`}>
       <form onSubmit={handleSearch} className="relative w-full">
         <Input
           className="peer w-full pl-9 pr-9"
