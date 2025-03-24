@@ -10,7 +10,7 @@ import { icons } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import {
   checkPlaceSlugAlreadyExistsAction,
@@ -22,7 +22,7 @@ import {
 } from './action';
 
 export default function PlacesPage({
-  place: initialPlaces,
+  place,
   offset,
   limit,
   search,
@@ -37,7 +37,7 @@ export default function PlacesPage({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [places, setPlaces] = useState<Place[]>(initialPlaces);
+  const [places, setPlaces] = useState<Place[]>(place);
   const [loadingId, setLoadingId] = useState<number | null>(null);
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
   const [editingField, setEditingField] = useState<
@@ -49,6 +49,10 @@ export default function PlacesPage({
   const [editingDescription, setEditingDescription] = useState<string>('');
   const [editingSlug, setEditingSlug] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setPlaces(place);
+  }, [place]);
 
   //for name editing
   const handleNameClick = (place: Place) => {
