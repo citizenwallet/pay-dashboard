@@ -21,20 +21,24 @@ interface Props {
 export default async function ListPage({ params }: Props) {
   const resolvedParams = await params;
   return (
-    <PageContainer scrollable>
-      <div className="flex h-full min-h-svh flex-1 flex-col space-y-4">
-        <div className="flex items-start justify-between">
-          <Heading title="Upload" description="Upload your Place List" />
+    <div>
+      <PageContainer>
+        <div className="space-y-4">
+          <div className="flex items-start justify-between">
+            <Heading title="Upload" description="Upload your Place List" />
+          </div>
+          <Separator />
+          <Suspense
+            fallback={<DataTableSkeleton columnCount={5} rowCount={10} />}
+          >
+            <AsyncPage
+              businessId={resolvedParams.businessId}
+              placeId={resolvedParams.placeId}
+            />
+          </Suspense>
         </div>
-        <Separator />
-        <Suspense fallback={<DataTableSkeleton columnCount={5} rowCount={5} />}>
-          <AsyncPage
-            businessId={resolvedParams.businessId}
-            placeId={resolvedParams.placeId}
-          />
-        </Suspense>
-      </div>
-    </PageContainer>
+      </PageContainer>
+    </div>
   );
 }
 

@@ -1,12 +1,12 @@
 'use client';
 import { Button } from '@/components/ui/button';
-import { Download, Loader, Upload } from 'lucide-react';
+import { ArrowRight, Download, Loader, Search, Upload } from 'lucide-react';
 import React, { useRef, useState } from 'react';
 import { downloadCsvTemplateAction } from './action';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { DataTable } from '@/components/ui/data-table';
-import { Row } from '@tanstack/react-table';
+import { Row, PaginationState } from '@tanstack/react-table';
 
 interface CsvPlace {
   id: number;
@@ -20,6 +20,9 @@ export default function UploadPlace() {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<CsvPlace[]>([]);
   const [uploadCsv, setUploadCsv] = useState<boolean>(false);
+  const [paginatedData, setPaginatedData] = useState<CsvPlace[]>([]);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(20);
 
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
   const [editingField, setEditingField] = useState<
@@ -40,6 +43,7 @@ export default function UploadPlace() {
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('onput');
     setIsLoading(true);
     const file = event.target.files?.[0];
     if (!file) return;
@@ -103,9 +107,11 @@ export default function UploadPlace() {
         id: index
       }));
       setData(data);
+      setPaginatedData(data.slice(0, pageSize));
     };
     reader.readAsText(file);
     setIsLoading(false);
+    fileInputRef.current!.value = '';
   };
 
   //for name editing
@@ -135,6 +141,14 @@ export default function UploadPlace() {
     setData(
       data.map((p) => (p.id === place.id ? { ...p, name: editingName } : p))
     );
+    setPaginatedData(
+      paginatedData.map((p) =>
+        p.id === place.id ? { ...p, name: editingName } : p
+      )
+    );
+    setEditingItemId(null);
+    setEditingField(null);
+    setEditingName('');
     // Save logic would go here
   };
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -167,11 +181,36 @@ export default function UploadPlace() {
         p.id === place.id ? { ...p, description: editingDescription } : p
       )
     );
+    setPaginatedData(
+      paginatedData.map((p) =>
+        p.id === place.id ? { ...p, description: editingDescription } : p
+      )
+    );
+    setEditingItemId(null);
+    setEditingField(null);
+    setEditingDescription('');
   };
   const handleDescriptionClick = (place: CsvPlace) => {
     setEditingItemId(place.id);
     setEditingField('description');
     setEditingDescription(place.description || '');
+  };
+
+  const handlePaginationChange = (
+    updater: PaginationState | ((old: PaginationState) => PaginationState)
+  ) => {
+    const newState =
+      typeof updater === 'function'
+        ? updater({ pageIndex, pageSize })
+        : updater;
+    setPageIndex(newState.pageIndex);
+    setPageSize(newState.pageSize);
+    setPaginatedData(
+      data.slice(
+        newState.pageIndex * newState.pageSize,
+        (newState.pageIndex + 1) * newState.pageSize
+      )
+    );
   };
 
   const columns = [
@@ -282,16 +321,70 @@ export default function UploadPlace() {
         </div>
       )}
 
-      <div className="w-[95vw] overflow-x-auto md:w-full">
+      <div className="w-[95vw] overflow-y-auto md:w-full">
         {uploadCsv && (
-          <DataTable
-            columns={columns}
-            data={data}
-            pageCount={2}
-            pageSize={25}
-            pageIndex={0}
-            onPaginationChange={() => {}}
-          />
+          <>
+            <div className="relative w-full">
+              <Input
+                className="peer w-full pl-9 pr-9"
+                placeholder="Search for anything..."
+                type="search"
+              />
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 text-muted-foreground/80 peer-disabled:opacity-50">
+                <Search
+                  size={16}
+                  strokeWidth={2}
+                  aria-hidden="true"
+                  role="presentation"
+                />
+              </div>
+              <button
+                className="absolute inset-y-px right-px flex h-full w-9 items-center justify-center rounded-r-lg text-muted-foreground/80 ring-offset-background transition-shadow hover:text-foreground focus-visible:border focus-visible:border-ring focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label="Submit search"
+                type="submit"
+              >
+                <ArrowRight
+                  size={16}
+                  strokeWidth={2}
+                  aria-hidden="true"
+                  role="presentation"
+                />
+              </button>
+            </div>
+
+            <DataTable
+              columns={columns}
+              data={paginatedData}
+              pageCount={Math.ceil(data.length / pageSize)}
+              pageSize={pageSize}
+              pageIndex={pageIndex}
+              onPaginationChange={handlePaginationChange}
+            />
+
+            <div className="mb-6 flex justify-start gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setUploadCsv(false);
+                  setData([]);
+                  setPaginatedData([]);
+                  setPageIndex(0);
+                }}
+                className="w-[150]"
+              >
+                Cancel
+              </Button>
+              <Button
+                className="w-[150]"
+                variant="default"
+                onClick={() => {
+                  console.log(paginatedData);
+                }}
+              >
+                Confirm
+              </Button>
+            </div>
+          </>
         )}
       </div>
     </div>
