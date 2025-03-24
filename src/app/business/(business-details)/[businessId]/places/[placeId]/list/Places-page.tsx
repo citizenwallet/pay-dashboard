@@ -20,6 +20,23 @@ import {
   updatePlaceNameAction,
   updatePlaceSlugAction
 } from './action';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { useDebounce } from 'use-debounce';
+import { createSlug } from '@/lib/utils';
+import {
+  generateUniqueSlugAction,
+  uploadImageAction,
+  createPlaceAction
+} from '@/app/business/(business-details)/[businessId]/places/[placeId]/action';
 
 export default function PlacesPage({
   place,
@@ -50,9 +67,40 @@ export default function PlacesPage({
   const [editingSlug, setEditingSlug] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Add dialog state and form states
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState<boolean>(false);
+  const [newPlaceName, setNewPlaceName] = useState<string>('');
+  const [newPlacedescription, setNewPlacedescription] = useState<string>('');
+  const [newPlaceSlug, setNewPlaceSlug] = useState<string>('');
+  const [newPlaceImage, setNewPlaceImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [slugError, setSlugError] = useState<string | null>(null);
+  const [slugTouched, setSlugTouched] = useState<boolean>(false);
+  const [debouncedPlaceName] = useDebounce(newPlaceName, 500);
+  const [isAddLoading, setIsAddLoading] = useState<boolean>(false);
+
   useEffect(() => {
     setPlaces(place);
   }, [place]);
+
+  // Auto-generate slug from name if not touched
+  useEffect(() => {
+    if (!slugTouched && debouncedPlaceName) {
+      const baseSlug = createSlug(debouncedPlaceName);
+      const updateSlug = async () => {
+        try {
+          const uniqueSlug = await generateUniqueSlugAction(baseSlug);
+          setNewPlaceSlug(uniqueSlug);
+          setSlugError(null);
+        } catch (err) {
+          setSlugError(
+            'Unable to generate a unique slug. Please edit manually.'
+          );
+        }
+      };
+      updateSlug();
+    }
+  }, [debouncedPlaceName, slugTouched]);
 
   //for name editing
   const handleNameClick = (place: Place) => {
@@ -333,6 +381,64 @@ export default function PlacesPage({
     [pathname, router, searchParams, offset, limit]
   );
 
+  const handleAddPlace = async () => {
+    // Validate form
+
+    if (!newPlaceName.trim()) {
+      toast.error('Place name is required');
+      return;
+    }
+
+    if (slugTouched && !newPlaceSlug.trim()) {
+      setSlugError('Slug is required');
+      return;
+    }
+    setIsAddLoading(true);
+    try {
+      // Check if slug exists (if provided)
+      if (newPlaceSlug.trim()) {
+        const slugExists = await checkPlaceSlugAlreadyExistsAction(
+          newPlaceSlug,
+          0
+        );
+        if (slugExists) {
+          return;
+        }
+      }
+
+      const image = newPlaceImage ? await uploadImage(newPlaceImage) : '';
+      const newPlace = await createPlaceAction(
+        newPlaceName,
+        newPlacedescription,
+        newPlaceSlug,
+        image
+      );
+
+      toast.success('Place added successfully!');
+
+      setNewPlaceName('');
+      setNewPlacedescription('');
+      setNewPlaceSlug('');
+      setNewPlaceImage(null);
+      setImagePreview(null);
+      setSlugError(null);
+      setSlugTouched(false);
+      setIsAddDialogOpen(false);
+
+      setPlaces([...places, newPlace]);
+    } catch (error) {
+      console.error('Failed to add place:', error);
+      toast.error('Failed to add place');
+    } finally {
+      setIsAddLoading(false);
+    }
+  };
+
+  const uploadImage = async (file: File): Promise<string> => {
+    const imageUrl = await uploadImageAction(file);
+    return imageUrl;
+  };
+
   const columns = [
     {
       header: 'id',
@@ -521,9 +627,119 @@ export default function PlacesPage({
         }}
       />
 
-      <div className="flex justify-end">
+      <div className="mb-8 flex items-center justify-between">
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="flex items-center gap-2">
+              <icons.Plus size={16} />
+              Add Place
+            </Button>
+          </DialogTrigger>
+
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add a New Place</DialogTitle>
+              <DialogDescription>
+                Enter the details for the new place below.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <label htmlFor="name" className="text-sm font-medium">
+                  Place Name
+                </label>
+                <Input
+                  className="text-base"
+                  id="name"
+                  value={newPlaceName}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setNewPlaceName(e.target.value)
+                  }
+                  placeholder="Enter place name"
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <label htmlFor="description" className="text-sm font-medium">
+                  Description
+                </label>
+                <Input
+                  className="text-base"
+                  id="description"
+                  value={newPlacedescription}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setNewPlacedescription(e.target.value)
+                  }
+                  placeholder="Enter place description"
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <label htmlFor="slug" className="text-sm font-medium">
+                  Slug
+                </label>
+                <Input
+                  className="text-base"
+                  id="slug"
+                  value={newPlaceSlug}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setNewPlaceSlug(e.target.value);
+                    setSlugTouched(true);
+                  }}
+                  placeholder="Enter slug"
+                />
+                {slugError && (
+                  <p className="text-sm text-red-500">{slugError}</p>
+                )}
+              </div>
+              <div className="grid gap-2">
+                <label htmlFor="image" className="text-sm font-medium">
+                  Image
+                </label>
+                <input
+                  id="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setNewPlaceImage(file);
+                      setImagePreview(URL.createObjectURL(file));
+                    }
+                  }}
+                />
+                {imagePreview && (
+                  <Image
+                    src={imagePreview}
+                    alt="Preview"
+                    className="mt-2 h-20 w-20 rounded-md object-cover"
+                    width={80}
+                    height={80}
+                  />
+                )}
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setIsAddDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="mb-2 md:mb-0"
+                onClick={handleAddPlace}
+                disabled={isAddLoading}
+              >
+                {isAddLoading ? 'Adding...' : 'Add'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
         <SearchInput className="w-80" />
       </div>
+
       <div className="w-[95vw] overflow-x-auto md:w-full">
         <DataTable
           columns={columns}
