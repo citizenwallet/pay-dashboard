@@ -14,7 +14,7 @@ export const metadata = {
 
 interface Props {
   params: Promise<{
-    businessId:string;
+    businessId: string;
     placeId: string;
   }>;
   searchParams: Promise<{
@@ -36,7 +36,7 @@ export default async function Page(props: Props) {
 
 async function AsyncPage({ params, searchParams }: Props) {
   const client = getServiceRoleClient();
-  const { businessId,placeId } = await params;
+  const { businessId, placeId } = await params;
   const placeid = parseInt(placeId);
 
   const userId = await getUserIdFromSessionAction();
@@ -55,18 +55,24 @@ async function AsyncPage({ params, searchParams }: Props) {
     offset: rawOffset = '0',
     dateRange = 'today',
     startDate,
-    endDate,
+    endDate
   } = await searchParams;
 
   const limit = parseInt(rawLimit);
   const offset = parseInt(rawOffset);
 
   const [place, ordersResponse, ordersCount] = await Promise.all([
-
     getPlaceById(client, placeid),
-    getOrdersByPlace(client, placeid, limit, offset, dateRange, startDate, endDate),
-    getOrdersByPlaceCount(client, placeid, dateRange, startDate, endDate),
-
+    getOrdersByPlace(
+      client,
+      placeid,
+      limit,
+      offset,
+      dateRange,
+      startDate,
+      endDate
+    ),
+    getOrdersByPlaceCount(client, placeid, dateRange, startDate, endDate)
   ]);
 
   if (!place.data) {

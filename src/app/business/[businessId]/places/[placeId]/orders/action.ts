@@ -1,9 +1,15 @@
 'use server';
 
+import Stripe from 'stripe';
 import { getServiceRoleClient } from '@/db';
 import { getOrdersByPlaceWithOutLimit } from '@/db/orders';
 
-export async function exportCsvAction(place_id: number, dateRange: string, customStartDate?: string, customEndDate?: string) {
+export async function exportCsvAction(
+  place_id: number,
+  dateRange: string,
+  customStartDate?: string,
+  customEndDate?: string
+) {
   const client = getServiceRoleClient();
   const orderResponse = await getOrdersByPlaceWithOutLimit(
     client,
@@ -46,4 +52,21 @@ export async function exportCsvAction(place_id: number, dateRange: string, custo
   ].join('\n');
 
   return csvData;
+}
+
+export async function postRefund(transactionId: number) {
+  // Initialize Stripe client
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+    apiVersion: '2025-02-24.acacia'
+  });
+
+  try {
+    // Create a refund for the given transaction
+    return await stripe.refunds.create({
+      payment_intent: transactionId.toString()
+    });
+  } catch (error) {
+    console.error('Error while processing refund:', error);
+    throw new Error('Failed to process refund.');
+  }
 }

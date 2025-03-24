@@ -3,11 +3,9 @@
 import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
 import { cn, humanizeDate } from '@/lib/utils';
-import { buttonVariants } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import React from 'react';
-import Link from 'next/link';
 import { DataTable } from '@/components/ui/data-table';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { Place } from '@/db/places';
@@ -101,6 +99,17 @@ const createColumns = (currencyLogo: string): ColumnDef<Order>[] => [
   {
     accessorKey: 'description',
     header: 'Description'
+  },
+  {
+    accessorKey: 'action',
+    header: 'Actions',
+    cell: ({ row }) => {
+      return (
+        <>
+          <Button onClick={() => handleRefund(row)}>Refund</Button>
+        </>
+      );
+    }
   }
 ];
 
@@ -121,7 +130,8 @@ export const OrdersPage: React.FC<Props> = ({
   const initialEndDate = searchParams.get('endDate') || '';
 
   const [dateRange, setDateRange] = React.useState(initialDateRange);
-  const [customStartDate, setCustomStartDate] = React.useState(initialStartDate);
+  const [customStartDate, setCustomStartDate] =
+    React.useState(initialStartDate);
   const [customEndDate, setCustomEndDate] = React.useState(initialEndDate);
 
   const onPaginationChange = React.useCallback(
@@ -133,9 +143,9 @@ export const OrdersPage: React.FC<Props> = ({
       const newState =
         typeof updaterOrValue === 'function'
           ? updaterOrValue({
-            pageIndex: pagination.offset / pagination.limit,
-            pageSize: pagination.limit
-          })
+              pageIndex: pagination.offset / pagination.limit,
+              pageSize: pagination.limit
+            })
           : updaterOrValue;
 
       const params = new URLSearchParams(searchParams);
@@ -148,11 +158,21 @@ export const OrdersPage: React.FC<Props> = ({
       }
       router.push(`${pathname}?${params.toString()}`);
     },
-    [pathname, router, searchParams, pagination, dateRange, customStartDate, customEndDate]
+    [
+      pathname,
+      router,
+      searchParams,
+      pagination,
+      dateRange,
+      customStartDate,
+      customEndDate
+    ]
   );
 
   // Handle date range change
-  const handleDateRangeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleDateRangeChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     const newRange = event.target.value;
     setDateRange(newRange);
     const params = new URLSearchParams(searchParams);
@@ -179,8 +199,12 @@ export const OrdersPage: React.FC<Props> = ({
 
   // Export to CSV function
   const exportToCSV = async () => {
-
-    const csvData = await exportCsvAction(place.id, dateRange,customStartDate, customEndDate);
+    const csvData = await exportCsvAction(
+      place.id,
+      dateRange,
+      customStartDate,
+      customEndDate
+    );
 
     if (!csvData) {
       toast.error('No orders found for the given place and date range.');
@@ -208,7 +232,7 @@ export const OrdersPage: React.FC<Props> = ({
     { value: 'last7days', label: 'Last 7 Days' },
     { value: 'thisMonth', label: 'This Month' },
     { value: 'lastMonth', label: 'Last Month' },
-    { value: 'custom', label: 'Custom Range' },
+    { value: 'custom', label: 'Custom Range' }
   ];
 
   return (
@@ -216,7 +240,6 @@ export const OrdersPage: React.FC<Props> = ({
       <div className="space-y-4">
         <div className="flex items-start justify-between">
           <div className="flex flex-col gap-2">
-            
             <Heading
               title={place.name}
               description={`Orders for ${place.name}`}
