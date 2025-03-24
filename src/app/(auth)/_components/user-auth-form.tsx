@@ -77,6 +77,7 @@ export default function UserAuthForm() {
                 <FormLabel title={'Email'} />
                 <FormControl>
                   <Input
+                    className="text-base"
                     type="email"
                     placeholder="Enter your email..."
                     disabled={loading}
@@ -92,7 +93,7 @@ export default function UserAuthForm() {
           </Button>
 
           <div className="flex justify-center">
-            <a href="/register" className="text-sm text-primary">
+            <a href="/onboarding" className="text-sm text-primary">
               Don&nbsp;t have an account? Sign up here
             </a>
           </div>

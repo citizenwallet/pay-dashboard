@@ -23,9 +23,8 @@ import {
   SidebarTrigger
 } from '@/components/ui/sidebar';
 import { NavMain } from './nav-main';
-import { ChevronsUpDown, LogOut } from 'lucide-react';
+import { ArrowLeft, ChevronsUpDown, LogOut } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { Breadcrumbs } from '../breadcrumbs';
 import ThemeToggle from './ThemeToggle/theme-toggle';
 import { UserNav } from './user-nav';
 import { Logo } from '@/components/logo';
@@ -37,6 +36,7 @@ import { User } from '@/db/users';
 import { getUserFromSessionAction } from '@/actions/session';
 import { Business } from '@/db/business';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 export default function AppSidebar({
   isAdmin,
@@ -75,6 +75,9 @@ export default function AppSidebar({
         )}
         <SidebarHeader>
           <div className="flex gap-2 py-2 text-sidebar-accent-foreground ">
+            <Link href="/business">
+              <ArrowLeft />
+            </Link>
             <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
               <Logo />
             </div>
@@ -177,7 +180,6 @@ export default function AppSidebar({
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumbs />
           </div>
 
           <div className="flex items-center gap-2 px-4">

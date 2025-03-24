@@ -34,7 +34,7 @@ import {
   createPlaceAction,
   generateUniqueSlugAction,
   uploadImageAction
-} from '@/app/business/action';
+} from '@/app/business/(business-details)/[businessId]/places/[placeId]/action';
 import { createSlug } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -42,7 +42,6 @@ import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { Business } from '@/db/business';
 import { useDebounce } from 'use-debounce';
-
 
 export function PlaceSwitcher({
   places,
@@ -136,8 +135,8 @@ export function PlaceSwitcher({
       setActivePlace(newPlace);
       setIsOpen(false);
       router.push(`/business/${business.id}/places/${newPlace.id}/orders`);
-    } catch (error: any) {
-      toast.error(error.toString());
+    } catch (error: Error | unknown) {
+      toast.error(error instanceof Error ? error.message : 'An error occurred');
     } finally {
       setNewPlaceName('');
       setNewPlaceSlug('');
@@ -253,6 +252,7 @@ export function PlaceSwitcher({
                       Place Name
                     </label>
                     <Input
+                      className="text-base"
                       id="name"
                       value={newPlaceName}
                       onChange={(e) => setNewPlaceName(e.target.value)}
@@ -265,6 +265,7 @@ export function PlaceSwitcher({
                       Description
                     </label>
                     <Input
+                      className="text-base"
                       id="description"
                       value={newPlacedescription}
                       onChange={(e) => setNewPlacedescription(e.target.value)}
@@ -277,6 +278,7 @@ export function PlaceSwitcher({
                       Slug
                     </label>
                     <Input
+                      className="text-base"
                       id="slug"
                       value={newPlaceSlug}
                       onChange={(e) => {
@@ -306,10 +308,12 @@ export function PlaceSwitcher({
                       }}
                     />
                     {imagePreview && (
-                      <img
+                      <Image
                         src={imagePreview}
                         alt="Preview"
                         className="mt-2 h-20 w-20 rounded-md object-cover"
+                        width={80}
+                        height={80}
                       />
                     )}
                   </div>
@@ -321,7 +325,9 @@ export function PlaceSwitcher({
                   >
                     Cancel
                   </Button>
-                  <Button onClick={handleAddPlace}>Add</Button>
+                  <Button className="mb-2 md:mb-0" onClick={handleAddPlace}>
+                    Add
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>

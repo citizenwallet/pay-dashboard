@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/sidebar';
 import { useState } from 'react';
 import { Place } from '@/db/places';
-import { handleVisibilityToggleAction } from '@/app/business/action';
+import { handleVisibilityToggleAction } from '@/app/business/(business-details)/[businessId]/places/[placeId]/action';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';

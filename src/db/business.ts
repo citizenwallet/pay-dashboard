@@ -13,6 +13,9 @@ export interface Business {
   account: string | null;
   email: string | null;
   phone: string | null;
+  iban_number: string | null;
+  address_legal: string | null;
+  legal_name: string | null;
 }
 
 export type NewBusiness = Omit<Business, 'id' | 'created_at'>;
@@ -35,7 +38,7 @@ export const getBusinessByToken = async (
     .single();
 };
 
-export const getBusinessIdByUserId = async (
+export const getLinkedBusinessByUserId = async (
   client: SupabaseClient,
   userid: number
 ) => {
@@ -51,4 +54,42 @@ export const getBusinessById = async (
   businessId: number
 ): Promise<PostgrestSingleResponse<Business>> => {
   return client.from('businesses').select('*').eq('id', businessId).single();
+};
+
+export const getAllBusiness = async (
+  client: SupabaseClient
+): Promise<PostgrestSingleResponse<Business[]>> => {
+  return client.from('businesses').select('*');
+};
+
+export const checkUserAccessBusiness = async (
+  client: SupabaseClient,
+  userId: number,
+  businessId: number
+): Promise<boolean> => {
+  const { data, error } = await client
+    .from('business_users')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('business_id', businessId)
+    .single();
+  return data ? true : false;
+};
+export const updateBusiness = async (
+  client: SupabaseClient,
+  id: number,
+  data: Partial<Business>
+): Promise<PostgrestSingleResponse<Business>> => {
+  return client.from('businesses').update(data).eq('id', id).select().single();
+};
+
+export const getBusinessByVatNumber = async (
+  client: SupabaseClient,
+  vatNumber: string
+): Promise<PostgrestSingleResponse<Business>> => {
+  return client
+    .from('businesses')
+    .select('*')
+    .eq('vat_number', vatNumber)
+    .single();
 };
