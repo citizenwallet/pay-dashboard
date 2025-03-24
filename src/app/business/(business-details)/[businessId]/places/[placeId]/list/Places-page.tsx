@@ -10,6 +10,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { useRef, useState } from 'react';
+import {
+  updatePlaceDescriptionAction,
+  updatePlaceHiddenAction,
+  updatePlaceImageAction,
+  updatePlaceNameAction
+} from './action';
+import { toast } from 'sonner';
 
 export default function PlacesPage({
   place: initialPlaces,
@@ -63,6 +70,19 @@ export default function PlacesPage({
       return;
     }
 
+    try {
+      await updatePlaceNameAction(place.id, editingName);
+      setEditingItemId(null);
+      setEditingField(null);
+      toast.success('Place name updated successfully');
+
+      const updatedPlaces = places.map((p) =>
+        p.id === place.id ? { ...p, name: editingName } : p
+      );
+      setPlaces(updatedPlaces);
+    } catch (error) {
+      console.error(`Failed to update place name:`, error);
+    }
     // Save logic would go here
   };
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,7 +111,19 @@ export default function PlacesPage({
       return;
     }
 
-    // Save logic would go here
+    try {
+      await updatePlaceDescriptionAction(place.id, editingDescription);
+      setEditingItemId(null);
+      setEditingField(null);
+      toast.success('Place description updated successfully');
+
+      const updatedPlaces = places.map((p) =>
+        p.id === place.id ? { ...p, description: editingDescription } : p
+      );
+      setPlaces(updatedPlaces);
+    } catch (error) {
+      console.error(`Failed to update place description:`, error);
+    }
   };
   const handleDescriptionClick = (place: Place) => {
     setEditingItemId(place.id);
@@ -134,6 +166,17 @@ export default function PlacesPage({
     try {
       setLoadingId(place.id);
 
+      try {
+        await updatePlaceHiddenAction(place.id, hidden);
+        toast.success('Place visibility updated successfully');
+
+        const updatedPlaces = places.map((p) =>
+          p.id === place.id ? { ...p, hidden: hidden } : p
+        );
+        setPlaces(updatedPlaces);
+      } catch (error) {
+        console.error(`Failed to update place visibility:`, error);
+      }
       // Save logic would go here
     } catch (error) {
       console.error(`Failed to update place visibility:`, error);
@@ -174,6 +217,41 @@ export default function PlacesPage({
       setEditingItemId(null);
       setEditingField(null);
       return;
+    }
+
+    try {
+      setLoadingId(place.id);
+
+      // Create a FormData object to send the file
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('placeId', place.id.toString());
+
+      // Upload the image using FormData
+      const { response, imageUrl } = await updatePlaceImageAction(formData);
+
+      if (response.error) {
+        toast.error('Failed to update item image');
+      } else {
+        toast.success('Item image updated successfully');
+
+        // Update the local state with the new image URL
+        const updatedPlaces = places.map((p) =>
+          p.id === place.id ? { ...p, image: imageUrl } : p
+        );
+        setPlaces(updatedPlaces);
+      }
+    } catch (error) {
+      console.error('Failed to update item image:', error);
+      toast.error('Failed to update item image');
+    } finally {
+      setEditingItemId(null);
+      setEditingField(null);
+      setLoadingId(null);
+      // Reset the file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
