@@ -1,5 +1,6 @@
 'use client';
 import SearchInput from '@/components/search-input';
+import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
@@ -10,13 +11,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { useRef, useState } from 'react';
+import { toast } from 'sonner';
 import {
+  checkPlaceSlugAlreadyExistsAction,
   updatePlaceDescriptionAction,
   updatePlaceHiddenAction,
   updatePlaceImageAction,
-  updatePlaceNameAction
+  updatePlaceNameAction,
+  updatePlaceSlugAction
 } from './action';
-import { toast } from 'sonner';
 
 export default function PlacesPage({
   place: initialPlaces,
@@ -40,6 +43,7 @@ export default function PlacesPage({
   const [editingField, setEditingField] = useState<
     'image' | 'name' | 'description' | 'slug' | 'hidden' | null
   >(null);
+  const [editingSlugError, setEditingSlugError] = useState<boolean>(false);
 
   const [editingName, setEditingName] = useState<string>('');
   const [editingDescription, setEditingDescription] = useState<string>('');
@@ -153,7 +157,54 @@ export default function PlacesPage({
       return;
     }
 
-    // Save logic would go here
+    try {
+      const res = await checkPlaceSlugAlreadyExistsAction(
+        editingSlug,
+        place.id
+      );
+
+      if (res) {
+        setEditingSlugError(true);
+        toast.custom((t) => (
+          <div>
+            <h3>This slug is already taken by another place </h3>
+            <p>Please try another one</p>
+            <div className="mt-4 flex justify-end gap-3">
+              <Button
+                onClick={() => {
+                  toast.dismiss(t);
+                  setEditingItemId(null);
+                  setEditingField(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button className="ml-4 bg-red-600 text-white hover:bg-red-700">
+                Pick another slug
+              </Button>
+            </div>
+          </div>
+        ));
+      } else {
+        try {
+          setLoadingId(place.id);
+          await updatePlaceSlugAction(place.id, editingSlug);
+          toast.success('Place slug updated successfully');
+          const updatedPlaces = places.map((p) =>
+            p.id === place.id ? { ...p, slug: editingSlug } : p
+          );
+          setPlaces(updatedPlaces);
+        } catch (error) {
+          console.error(`Failed to update place slug:`, error);
+        } finally {
+          setLoadingId(null);
+          setEditingItemId(null);
+          setEditingField(null);
+        }
+      }
+    } catch (error) {
+      console.error(`Failed to check place slug:`, error);
+    }
   };
   const handleSlugClick = (place: Place) => {
     setEditingItemId(place.id);
@@ -408,7 +459,9 @@ export default function PlacesPage({
                 onBlur={() => handleSlugSave(row.original)}
                 autoFocus
                 data-item-id={row.original.id}
-                className="w-40 rounded border border-gray-300 p-1"
+                className={`w-40 rounded border ${
+                  editingSlugError ? 'border-red-500' : 'border-gray-300'
+                } p-1`}
                 placeholder="Enter slug"
               />
             ) : (

@@ -283,3 +283,10 @@ export const getPlaceDisplay = async (
     .eq('id', placeId)
     .maybeSingle();
 };
+
+export const getPlaceBySlug = async (
+  client: SupabaseClient,
+  slug: string
+): Promise<PostgrestSingleResponse<Place | null>> => {
+  return client.from('places').select('*').eq('slug', slug).maybeSingle();
+};

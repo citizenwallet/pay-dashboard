@@ -5,7 +5,7 @@ import {
   isUserLinkedToPlaceAction
 } from '@/actions/session';
 import { getServiceRoleClient } from '@/db';
-import { updatePlaceById } from '@/db/places';
+import { getPlaceBySlug, updatePlaceById } from '@/db/places';
 import { getUserBusinessId } from '@/db/users';
 import { uploadImage } from '@/services/storage/upload';
 
@@ -108,4 +108,47 @@ export async function updatePlaceImageAction(formData: FormData) {
     console.error('Error uploading image:', error);
     throw new Error('Failed to upload image');
   }
+}
+
+export async function checkPlaceSlugAlreadyExistsAction(
+  slug: string,
+  placeId: number
+) {
+  const client = getServiceRoleClient();
+  const userId = await getUserIdFromSessionAction();
+
+  const res = await isUserLinkedToPlaceAction(client, userId, placeId);
+  if (!res) {
+    throw new Error('User does not have access to this place');
+  }
+
+  const { data, error } = await getPlaceBySlug(client, slug);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (data) {
+    return true;
+  }
+  return false;
+}
+
+export async function updatePlaceSlugAction(placeId: number, slug: string) {
+  const client = getServiceRoleClient();
+  const userId = await getUserIdFromSessionAction();
+
+  const res = await isUserLinkedToPlaceAction(client, userId, placeId);
+  if (!res) {
+    throw new Error('User does not have access to this place');
+  }
+  const { data, error } = await updatePlaceById(client, placeId, {
+    slug
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
 }
