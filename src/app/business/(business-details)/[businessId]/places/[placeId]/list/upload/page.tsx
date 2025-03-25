@@ -64,5 +64,5 @@ async function AsyncPage({
     }
   }
 
-  return <UploadPlace />;
+  return <UploadPlace placeId={placeId} />;
 }

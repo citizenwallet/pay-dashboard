@@ -8,7 +8,10 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useDebounce } from 'use-debounce';
-import { downloadCsvTemplateAction } from './action';
+import {
+  createPlaceWithoutSlugAction,
+  downloadCsvTemplateAction
+} from './action';
 
 interface CsvPlace {
   id: number;
@@ -17,7 +20,7 @@ interface CsvPlace {
   uploaded: boolean;
 }
 
-export default function UploadPlace() {
+export default function UploadPlace({ placeId }: { placeId: string }) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -37,6 +40,8 @@ export default function UploadPlace() {
   const [search, setSearch] = useState<string>('');
   const [debouncedSearch] = useDebounce(search, 500);
   const [uploading, setUploading] = useState<boolean>(false);
+  const [shouldContinueUpload, setShouldContinueUpload] =
+    useState<boolean>(true);
 
   //search for places and handle pagination
   useEffect(() => {
@@ -62,7 +67,6 @@ export default function UploadPlace() {
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('onput');
     setIsLoading(true);
     const file = event.target.files?.[0];
     if (!file) return;
@@ -369,9 +373,89 @@ export default function UploadPlace() {
         new Promise((resolve) => setTimeout(resolve, ms));
 
       for (const place of data) {
+        if (!shouldContinueUpload) break;
+
         await delay(1000);
-        console.log(place);
-        // Update both data and paginatedData
+        try {
+          const result = await createPlaceWithoutSlugAction(
+            place.name,
+            place.description,
+            Number(placeId)
+          );
+
+          if (result && 'error' in result) {
+            console.error('Error creating place:', result.message);
+
+            await new Promise<void>((resolve) => {
+              toast.custom((t) => (
+                <div>
+                  <h3>
+                    Do you want to continue uploading the remaining places?
+                  </h3>
+                  <p>
+                    An unexpected error occurred while uploading {place.name}
+                  </p>
+                  <div className="mt-4 flex justify-end gap-3">
+                    <Button
+                      onClick={() => {
+                        setShouldContinueUpload(false);
+                        toast.dismiss(t);
+                        resolve();
+                      }}
+                    >
+                      No
+                    </Button>
+
+                    <Button
+                      className="ml-4 bg-red-600 text-white hover:bg-red-700"
+                      onClick={() => {
+                        toast.dismiss(t);
+                        resolve();
+                      }}
+                    >
+                      Continue
+                    </Button>
+                  </div>
+                </div>
+              ));
+            });
+
+            if (!shouldContinueUpload) break;
+          }
+        } catch (error) {
+          console.error('Unexpected error:', error);
+
+          await new Promise<void>((resolve) => {
+            toast.custom((t) => (
+              <div>
+                <h3>Do you want to continue uploading the remaining places?</h3>
+                <p>An unexpected error occurred while uploading {place.name}</p>
+                <div className="mt-4 flex justify-end gap-3">
+                  <Button
+                    onClick={() => {
+                      setShouldContinueUpload(false);
+                      toast.dismiss(t);
+                      resolve();
+                    }}
+                  >
+                    No
+                  </Button>
+
+                  <Button
+                    className="ml-4 bg-red-600 text-white hover:bg-red-700"
+                    onClick={() => {
+                      toast.dismiss(t);
+                      resolve();
+                    }}
+                  >
+                    Continue
+                  </Button>
+                </div>
+              </div>
+            ));
+          });
+          if (!shouldContinueUpload) break;
+        }
 
         const updatedData = data.map((p) =>
           p.id === place.id ? { ...p, uploaded: true } : p
