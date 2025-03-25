@@ -1,12 +1,13 @@
 'use client';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Download, Loader, Search, Upload } from 'lucide-react';
-import React, { useRef, useState } from 'react';
-import { downloadCsvTemplateAction } from './action';
-import { Input } from '@/components/ui/input';
-import { toast } from 'sonner';
 import { DataTable } from '@/components/ui/data-table';
-import { Row, PaginationState } from '@tanstack/react-table';
+import { Input } from '@/components/ui/input';
+import { PaginationState, Row } from '@tanstack/react-table';
+import { ArrowRight, Download, Loader, Search, Upload } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { useDebounce } from 'use-debounce';
+import { downloadCsvTemplateAction } from './action';
 
 interface CsvPlace {
   id: number;
@@ -30,6 +31,21 @@ export default function UploadPlace() {
   >(null);
   const [editingName, setEditingName] = useState<string>('');
   const [editingDescription, setEditingDescription] = useState<string>('');
+
+  const [search, setSearch] = useState<string>('');
+  const [debouncedSearch] = useDebounce(search, 500);
+
+  //search for places and handle pagination
+  useEffect(() => {
+    const filteredData = data.filter((place) =>
+      place.name.toLowerCase().includes(debouncedSearch.toLowerCase())
+    );
+    const paginatedResult = filteredData.slice(
+      pageIndex * pageSize,
+      (pageIndex + 1) * pageSize
+    );
+    setPaginatedData(paginatedResult);
+  }, [data, debouncedSearch, pageIndex, pageSize]);
 
   const downloadCsvTemplate = async () => {
     const csvData = await downloadCsvTemplateAction();
@@ -324,32 +340,36 @@ export default function UploadPlace() {
       <div className="w-[95vw] overflow-y-auto md:w-full">
         {uploadCsv && (
           <>
-            <div className="relative w-full">
-              <Input
-                className="peer w-full pl-9 pr-9"
-                placeholder="Search for anything..."
-                type="search"
-              />
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                <Search
-                  size={16}
-                  strokeWidth={2}
-                  aria-hidden="true"
-                  role="presentation"
+            <div className="flex w-full justify-end">
+              <div className="relative my-4 w-[300]">
+                <Input
+                  className="peer w-full pl-9 pr-9"
+                  placeholder="Search for anything..."
+                  type="search"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
                 />
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 text-muted-foreground/80 peer-disabled:opacity-50">
+                  <Search
+                    size={16}
+                    strokeWidth={2}
+                    aria-hidden="true"
+                    role="presentation"
+                  />
+                </div>
+                <button
+                  className="absolute inset-y-px right-px flex h-full w-9 items-center justify-center rounded-r-lg text-muted-foreground/80 ring-offset-background transition-shadow hover:text-foreground focus-visible:border focus-visible:border-ring focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+                  aria-label="Submit search"
+                  type="submit"
+                >
+                  <ArrowRight
+                    size={16}
+                    strokeWidth={2}
+                    aria-hidden="true"
+                    role="presentation"
+                  />
+                </button>
               </div>
-              <button
-                className="absolute inset-y-px right-px flex h-full w-9 items-center justify-center rounded-r-lg text-muted-foreground/80 ring-offset-background transition-shadow hover:text-foreground focus-visible:border focus-visible:border-ring focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-                aria-label="Submit search"
-                type="submit"
-              >
-                <ArrowRight
-                  size={16}
-                  strokeWidth={2}
-                  aria-hidden="true"
-                  role="presentation"
-                />
-              </button>
             </div>
 
             <DataTable
@@ -361,7 +381,7 @@ export default function UploadPlace() {
               onPaginationChange={handlePaginationChange}
             />
 
-            <div className="mb-6 flex justify-start gap-2">
+            <div className="mb-6 mt-4 flex justify-start gap-2">
               <Button
                 variant="outline"
                 onClick={() => {
