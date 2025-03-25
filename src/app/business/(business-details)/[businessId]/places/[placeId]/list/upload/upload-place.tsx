@@ -12,6 +12,7 @@ import {
   createPlaceWithoutSlugAction,
   downloadCsvTemplateAction
 } from './action';
+import { Progress } from '@/components/ui/progress';
 
 interface CsvPlace {
   id: number;
@@ -42,6 +43,7 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
   const [uploading, setUploading] = useState<boolean>(false);
   const [shouldContinueUpload, setShouldContinueUpload] =
     useState<boolean>(true);
+  const [progress, setProgress] = useState<number>(0);
 
   //search for places and handle pagination
   useEffect(() => {
@@ -314,6 +316,7 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
         </p>
         <div className="mt-4 flex justify-end gap-3">
           <Button
+            className="ml-4 bg-red-600 text-white hover:bg-red-700"
             onClick={() => {
               toast.dismiss(t);
             }}
@@ -322,7 +325,6 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
           </Button>
 
           <Button
-            className="ml-4 bg-red-600 text-white hover:bg-red-700"
             onClick={() => {
               toast.dismiss(t);
               setUploadCsv(false);
@@ -345,6 +347,7 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
         <p>This will upload {data.length} places to your business.</p>
         <div className="mt-4 flex justify-end gap-3">
           <Button
+            className="ml-4 bg-red-600 text-white hover:bg-red-700"
             onClick={() => {
               toast.dismiss(t);
             }}
@@ -353,7 +356,6 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
           </Button>
 
           <Button
-            className="ml-4 bg-red-600 text-white hover:bg-red-700"
             onClick={() => {
               toast.dismiss(t);
               setUploading(true);
@@ -464,6 +466,8 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
         setPaginatedData((prevData) =>
           prevData.filter((p) => p.id !== place.id)
         );
+        const newProgress = Math.round(((place.id + 1) / data.length) * 100);
+        setProgress(newProgress);
       }
     } catch (error) {
       console.error(error);
@@ -567,28 +571,28 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
             />
 
             <div className="mb-6 mt-4 flex justify-start gap-2">
-              <Button
-                variant="outline"
-                onClick={cancelUpload}
-                className="w-[150]"
-                disabled={uploading}
-              >
-                Cancel
-              </Button>
-
-              <Button
-                className="w-[150]"
-                variant="default"
-                onClick={confirmUpload}
-                disabled={uploading}
-              >
-                Confirm
-              </Button>
-
-              {uploading && (
-                <div className="flex h-[50px] w-[50px] items-center justify-center rounded-md">
-                  <Loader className="animate-spin text-gray-500" size={24} />
+              {uploading ? (
+                <div className="mt-4 w-full">
+                  <Progress value={progress} />
                 </div>
+              ) : (
+                <>
+                  <Button
+                    variant="outline"
+                    onClick={cancelUpload}
+                    className="w-[150]"
+                  >
+                    Cancel
+                  </Button>
+
+                  <Button
+                    className="w-[150]"
+                    variant="default"
+                    onClick={confirmUpload}
+                  >
+                    Confirm
+                  </Button>
+                </>
               )}
             </div>
           </>
