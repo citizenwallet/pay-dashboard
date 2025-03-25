@@ -4,6 +4,7 @@ import { DataTable } from '@/components/ui/data-table';
 import { Input } from '@/components/ui/input';
 import { PaginationState, Row } from '@tanstack/react-table';
 import { ArrowRight, Download, Loader, Search, Upload } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useDebounce } from 'use-debounce';
@@ -17,6 +18,7 @@ interface CsvPlace {
 }
 
 export default function UploadPlace() {
+  const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<CsvPlace[]>([]);
@@ -34,6 +36,7 @@ export default function UploadPlace() {
 
   const [search, setSearch] = useState<string>('');
   const [debouncedSearch] = useDebounce(search, 500);
+  const [uploading, setUploading] = useState<boolean>(false);
 
   //search for places and handle pagination
   useEffect(() => {
@@ -122,8 +125,10 @@ export default function UploadPlace() {
         uploaded: false,
         id: index
       }));
+
       setData(data);
-      setPaginatedData(data.slice(0, pageSize));
+      // only show uploaded false places
+      setPaginatedData(data.filter((place) => !place.uploaded));
     };
     reader.readAsText(file);
     setIsLoading(false);
@@ -222,10 +227,12 @@ export default function UploadPlace() {
     setPageIndex(newState.pageIndex);
     setPageSize(newState.pageSize);
     setPaginatedData(
-      data.slice(
-        newState.pageIndex * newState.pageSize,
-        (newState.pageIndex + 1) * newState.pageSize
-      )
+      data
+        .filter((place) => !place.uploaded)
+        .slice(
+          newState.pageIndex * newState.pageSize,
+          (newState.pageIndex + 1) * newState.pageSize
+        )
     );
   };
 
@@ -292,6 +299,100 @@ export default function UploadPlace() {
       }
     }
   ];
+
+  //cancel upload
+  const cancelUpload = () => {
+    toast.custom((t) => (
+      <div>
+        <h3>Are you sure you want to cancel?</h3>
+        <p>
+          All your work on this page will be lost. Existing data is not changed.
+        </p>
+        <div className="mt-4 flex justify-end gap-3">
+          <Button
+            onClick={() => {
+              toast.dismiss(t);
+            }}
+          >
+            Cancel
+          </Button>
+
+          <Button
+            className="ml-4 bg-red-600 text-white hover:bg-red-700"
+            onClick={() => {
+              toast.dismiss(t);
+              setUploadCsv(false);
+              setData([]);
+              setPaginatedData([]);
+            }}
+          >
+            Confirm
+          </Button>
+        </div>
+      </div>
+    ));
+  };
+
+  //confirm upload
+  const confirmUpload = () => {
+    toast.custom((t) => (
+      <div>
+        <h3>Are you sure you want to confirm?</h3>
+        <p>This will upload {data.length} places to your business.</p>
+        <div className="mt-4 flex justify-end gap-3">
+          <Button
+            onClick={() => {
+              toast.dismiss(t);
+            }}
+          >
+            Cancel
+          </Button>
+
+          <Button
+            className="ml-4 bg-red-600 text-white hover:bg-red-700"
+            onClick={() => {
+              toast.dismiss(t);
+              setUploading(true);
+              uploadData();
+            }}
+          >
+            Confirm
+          </Button>
+        </div>
+      </div>
+    ));
+  };
+
+  const uploadData = async () => {
+    try {
+      const delay = (ms: number) =>
+        new Promise((resolve) => setTimeout(resolve, ms));
+
+      for (const place of data) {
+        await delay(1000);
+        console.log(place);
+        // Update both data and paginatedData
+
+        const updatedData = data.map((p) =>
+          p.id === place.id ? { ...p, uploaded: true } : p
+        );
+        setData((prevData) => prevData.filter((p) => p.id !== place.id));
+        setPaginatedData((prevData) =>
+          prevData.filter((p) => p.id !== place.id)
+        );
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setUploading(false);
+      toast.success('Places uploaded successfully');
+      setUploadCsv(false);
+      setData([]);
+      setPaginatedData([]);
+      router.back();
+    }
+  };
+
   return (
     <div className="w-full space-y-2">
       {/* for csv file upload */}
@@ -384,25 +485,27 @@ export default function UploadPlace() {
             <div className="mb-6 mt-4 flex justify-start gap-2">
               <Button
                 variant="outline"
-                onClick={() => {
-                  setUploadCsv(false);
-                  setData([]);
-                  setPaginatedData([]);
-                  setPageIndex(0);
-                }}
+                onClick={cancelUpload}
                 className="w-[150]"
+                disabled={uploading}
               >
                 Cancel
               </Button>
+
               <Button
                 className="w-[150]"
                 variant="default"
-                onClick={() => {
-                  console.log(paginatedData);
-                }}
+                onClick={confirmUpload}
+                disabled={uploading}
               >
                 Confirm
               </Button>
+
+              {uploading && (
+                <div className="flex h-[50px] w-[50px] items-center justify-center rounded-md">
+                  <Loader className="animate-spin text-gray-500" size={24} />
+                </div>
+              )}
             </div>
           </>
         )}
