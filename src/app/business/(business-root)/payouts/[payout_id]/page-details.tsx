@@ -16,6 +16,10 @@ import {
 } from '@/components/ui/dialog';
 import { useRouter } from 'next/navigation';
 import { Payout } from '@/db/payouts';
+import {
+  updatePayoutBurnDateAction,
+  updatePayoutTransferDateAction
+} from '../action';
 
 export default function PayoutDetailsPage({
   payout_id,
@@ -34,6 +38,51 @@ export default function PayoutDetailsPage({
   const handleOpenModal = (type: 'burn' | 'transferred') => {
     setAction(type);
     setOpen(true);
+  };
+  const [isBurnEditing, setIsBurnEditing] = useState(false);
+  const [editingBurnDate, setEditingBurnDate] = useState(payout.burnDate || '');
+
+  const [isTransferEditing, setIsTransferEditing] = useState(false);
+  const [editingTransferDate, setEditingTransferDate] = useState(
+    payout.transferDate || ''
+  );
+
+  const handleBurnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleBurnSave();
+    } else if (e.key === 'Escape') {
+      setIsBurnEditing(false);
+      setEditingBurnDate(payout.burnDate || '');
+    }
+  };
+
+  const handleBurnSave = async () => {
+    try {
+      setIsBurnEditing(false);
+      await updatePayoutBurnDateAction(payout_id, editingBurnDate);
+      toast.success(`Payout burn date updated successfully`);
+    } catch (error) {
+      toast.error(`Payout burn date update failed`);
+    }
+  };
+
+  const handleTransferKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleTransferSave();
+    } else if (e.key === 'Escape') {
+      setIsTransferEditing(false);
+      setEditingTransferDate(payout.transferDate || '');
+    }
+  };
+
+  const handleTransferSave = async () => {
+    try {
+      setIsTransferEditing(false);
+      await updatePayoutTransferDateAction(payout_id, editingTransferDate);
+      toast.success(`Payout transfer date updated successfully`);
+    } catch (error) {
+      toast.error(`Payout transfer date update failed`);
+    }
   };
 
   const handleConfirm = async () => {
@@ -81,17 +130,32 @@ export default function PayoutDetailsPage({
               </Button>
             )}
             {payout.burn && (
-              <div className="flex flex-col items-center gap-3">
-                <div className="flex items-center">
-                  {payout.burnDate
-                    ? new Date(payout.burnDate).toLocaleString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric'
-                      })
-                    : '-'}
-                </div>
-
+              <div className="flex flex-col items-center gap-4">
+                {isBurnEditing ? (
+                  <input
+                    type="date"
+                    value={editingBurnDate.split('T')[0]}
+                    onChange={(e) => setEditingBurnDate(e.target.value)}
+                    onKeyDown={(e) => handleBurnKeyDown(e)}
+                    onBlur={() => handleBurnSave()}
+                    autoFocus
+                    className="w-full rounded border border-gray-300 p-1"
+                    placeholder="Enter date"
+                  />
+                ) : (
+                  <div
+                    className="flex items-center"
+                    onClick={() => setIsBurnEditing(true)}
+                  >
+                    {editingBurnDate
+                      ? new Date(editingBurnDate).toLocaleString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        })
+                      : '-'}
+                  </div>
+                )}
                 <Button variant="outline" disabled>
                   Already Burn
                 </Button>
@@ -108,16 +172,32 @@ export default function PayoutDetailsPage({
               </Button>
             )}
             {payout.transfer && (
-              <div className="flex flex-col items-center gap-2">
-                <div className="flex items-center">
-                  {payout.transferDate
-                    ? new Date(payout.transferDate).toLocaleString('en-US', {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric'
-                      })
-                    : '-'}
-                </div>
+              <div className="flex flex-col items-center gap-4">
+                {isTransferEditing ? (
+                  <input
+                    type="date"
+                    value={editingTransferDate.split('T')[0]}
+                    onChange={(e) => setEditingTransferDate(e.target.value)}
+                    onKeyDown={(e) => handleTransferKeyDown(e)}
+                    onBlur={() => handleTransferSave()}
+                    autoFocus
+                    className="w-full rounded border border-gray-300 p-1"
+                    placeholder="Enter date"
+                  />
+                ) : (
+                  <div
+                    className="flex items-center"
+                    onClick={() => setIsTransferEditing(true)}
+                  >
+                    {editingTransferDate
+                      ? new Date(editingTransferDate).toLocaleString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        })
+                      : '-'}
+                  </div>
+                )}
                 <Button variant="outline" disabled>
                   Already Transferred
                 </Button>
