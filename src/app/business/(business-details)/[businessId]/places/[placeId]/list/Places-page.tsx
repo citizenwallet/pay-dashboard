@@ -401,7 +401,7 @@ export default function PlacesPage({
       if (newPlaceSlug.trim()) {
         const slugExists = await checkPlaceSlugAlreadyExistsAction(
           newPlaceSlug,
-          0
+          Number(placeId)
         );
         if (slugExists) {
           return;
