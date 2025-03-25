@@ -1,13 +1,14 @@
 'use server';
+import { isUserAdminAction } from '@/actions/session';
 import { getServiceRoleClient } from '@/db';
-import { createBurn } from '@/db/burn';
+import { createBurn, getBurnById } from '@/db/burn';
 import { getPayoutOrders } from '@/db/orders';
 import {
   getPayoutById,
   updatePayoutBurn,
   updatePayoutTransfer
 } from '@/db/payouts';
-import { createTransfer } from '@/db/transfer';
+import { createTransfer, getTransferById } from '@/db/transfer';
 
 export async function getPayoutAction(payout_id: string) {
   const client = getServiceRoleClient();
@@ -81,7 +82,24 @@ export async function setPayoutStatusAction(payout_id: string, status: string) {
 }
 
 export async function getPayoutStatusAction(payout_id: string) {
+  const admin = await isUserAdminAction();
+  if (!admin) {
+    return { error: 'You are not authorized to update payout transfer date' };
+  }
+
   const client = getServiceRoleClient();
   const payout = await getPayoutById(client, payout_id);
-  return payout;
+  if (payout.data?.burn) {
+    const burnData = await getBurnById(client, Number(payout.data.burn));
+    payout.data.burnDate = burnData.data?.created_at ?? null;
+  }
+
+  if (payout.data?.transfer) {
+    const transferData = await getTransferById(
+      client,
+      Number(payout.data.transfer)
+    );
+    payout.data.transferDate = transferData.data?.created_at ?? null;
+  }
+  return { payout };
 }

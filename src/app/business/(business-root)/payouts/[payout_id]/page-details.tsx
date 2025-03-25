@@ -73,29 +73,55 @@ export default function PayoutDetailsPage({
   return (
     <>
       <div className="mt-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-7">
           <>
             {!payout.burn && (
-              <Button onClick={() => handleOpenModal('burn')}>
+              <Button className="mt-7" onClick={() => handleOpenModal('burn')}>
                 Set As Burn
               </Button>
             )}
             {payout.burn && (
-              <Button variant="outline" disabled>
-                Already Burn
-              </Button>
+              <div className="flex flex-col items-center gap-3">
+                <div className="flex items-center">
+                  {payout.burnDate
+                    ? new Date(payout.burnDate).toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })
+                    : '-'}
+                </div>
+
+                <Button variant="outline" disabled>
+                  Already Burn
+                </Button>
+              </div>
             )}
 
             {!payout.transfer && (
-              <Button onClick={() => handleOpenModal('transferred')}>
+              <Button
+                className="mt-7"
+                onClick={() => handleOpenModal('transferred')}
+              >
                 {' '}
                 Set As Transferred{' '}
               </Button>
             )}
             {payout.transfer && (
-              <Button variant="outline" disabled>
-                Already Transferred
-              </Button>
+              <div className="flex flex-col items-center gap-2">
+                <div className="flex items-center">
+                  {payout.transferDate
+                    ? new Date(payout.transferDate).toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })
+                    : '-'}
+                </div>
+                <Button variant="outline" disabled>
+                  Already Transferred
+                </Button>
+              </div>
             )}
           </>
 
