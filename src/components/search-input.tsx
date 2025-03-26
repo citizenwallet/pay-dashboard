@@ -1,15 +1,51 @@
 'use client';
 import { Input } from '@/components/ui/input';
 import { ArrowRight, Search } from 'lucide-react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { FormEvent, useEffect, useState, useCallback } from 'react';
+import { useDebounce } from 'use-debounce';
 
-export default function SearchInput() {
+export default function SearchInput({ className }: { className?: string }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [searchTerm, setSearchTerm] = useState(
+    searchParams.get('search') || ''
+  );
+  const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
+
+  const handleSearch = useCallback(
+    (query: string) => {
+      const params = new URLSearchParams(searchParams);
+
+      if (query) {
+        params.set('search', query);
+      } else {
+        params.delete('search');
+      }
+      router.push(`${pathname}?${params.toString()}`);
+    },
+    [pathname, router, searchParams]
+  );
+
+  useEffect(() => {
+    handleSearch(debouncedSearchTerm);
+  }, [debouncedSearchTerm, handleSearch]);
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    handleSearch(searchTerm);
+  };
+
   return (
-    <div className="w-full space-y-2">
-      <div className="relative w-full">
+    <div className={`space-y-2 ${className || ''}`}>
+      <form onSubmit={handleSubmit} className="relative w-full">
         <Input
           className="peer w-full pl-9 pr-9"
           placeholder="Search for anything..."
           type="search"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 text-muted-foreground/80 peer-disabled:opacity-50">
           <Search
@@ -31,7 +67,7 @@ export default function SearchInput() {
             role="presentation"
           />
         </button>
-      </div>
+      </form>
     </div>
   );
 }

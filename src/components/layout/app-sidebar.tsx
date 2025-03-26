@@ -1,4 +1,6 @@
 'use client';
+import { getUserFromSessionAction } from '@/actions/session';
+import { Logo } from '@/components/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -22,39 +24,34 @@ import {
   SidebarRail,
   SidebarTrigger
 } from '@/components/ui/sidebar';
-import { NavMain } from './nav-main';
-import { ArrowLeft, ChevronsUpDown, LogOut } from 'lucide-react';
-import { useSession } from 'next-auth/react';
-import ThemeToggle from './ThemeToggle/theme-toggle';
-import { UserNav } from './user-nav';
-import { Logo } from '@/components/logo';
-import { signOut } from 'next-auth/react';
-import { PlaceSwitcher } from './place-switcher';
-import { NavButton } from './nav-button';
+import { Business } from '@/db/business';
 import { Place } from '@/db/places';
 import { User } from '@/db/users';
-import { getUserFromSessionAction } from '@/actions/session';
-import { Business } from '@/db/business';
-import { useState, useEffect } from 'react';
+import { ArrowLeft, ChevronsUpDown, LogOut } from 'lucide-react';
+import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { NavButton } from './nav-button';
+import { NavMain } from './nav-main';
+import { PlaceSwitcher } from './place-switcher';
+import ThemeToggle from './ThemeToggle/theme-toggle';
+import { UserNav } from './user-nav';
 
 export default function AppSidebar({
   isAdmin,
   user: initialUser,
-  places,
   business,
   lastPlace,
   children
 }: {
   isAdmin?: boolean;
   user?: User | null;
-  places: Place[] | null;
   business: Business | null;
   lastPlace: Place;
   children: React.ReactNode;
 }) {
   const [user, setUser] = useState<User | null | undefined>(initialUser);
-
+  const [Place, setPlace] = useState<Place>(lastPlace);
   const session = useSession();
 
   useEffect(() => {
@@ -63,7 +60,9 @@ export default function AppSidebar({
         setUser(user);
       });
     }
-  }, [session, user]);
+
+    setPlace(lastPlace);
+  }, [session, user, lastPlace]);
 
   return (
     <SidebarProvider>
@@ -87,20 +86,12 @@ export default function AppSidebar({
             </div>
           </div>
 
-          {business && (
-            <PlaceSwitcher
-              business={business}
-              places={places}
-              lastPlace={lastPlace}
-            />
-          )}
+          {business && <PlaceSwitcher business={business} lastPlace={Place} />}
         </SidebarHeader>
 
         <SidebarContent>
-          <NavButton lastPlace={lastPlace} />
-          {business && (
-            <NavMain businessId={business.id} lastPlace={lastPlace} />
-          )}
+          <NavButton lastPlace={Place} />
+          {business && <NavMain businessId={business.id} lastPlace={Place} />}
         </SidebarContent>
 
         <SidebarFooter>

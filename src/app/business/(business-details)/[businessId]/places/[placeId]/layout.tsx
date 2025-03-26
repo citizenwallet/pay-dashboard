@@ -3,19 +3,18 @@ import {
   isUserAdminAction
 } from '@/actions/session';
 import AppSidebar from '@/components/layout/app-sidebar';
+import { getServiceRoleClient } from '@/db';
+import { Business } from '@/db/business';
+import { checkUserPlaceAccess, Place } from '@/db/places';
+import { getUserById } from '@/db/users';
 import type { Metadata } from 'next';
 import {
-  getPlaceAction,
-  getLastPlaceAction,
-  getLinkedBusinessAction,
-  getBusinessPlacesAction,
+  changeLastPlaceAction,
   getBusinessAction,
+  getLinkedBusinessAction,
+  getPlaceAction,
   getPlaceByIdAction
 } from './action';
-import { checkUserPlaceAccess, Place } from '@/db/places';
-import { getServiceRoleClient } from '@/db';
-import { getUserById } from '@/db/users';
-import { Business } from '@/db/business';
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -45,16 +44,16 @@ export default async function DashboardLayout({
   }
 
   const admin = await isUserAdminAction();
+
   if (admin) {
-    const adminbusiness = await getBusinessAction(Number(businessId));
-    if (adminbusiness) {
-      business = adminbusiness;
+    const adminBusiness = await getBusinessAction(Number(businessId));
+    if (adminBusiness) {
+      business = adminBusiness;
     }
 
-    const adminplaces = await getBusinessPlacesAction(Number(businessId));
-    if (adminplaces) {
-      places = adminplaces;
-      lastplace = adminplaces[0];
+    const userLastPlace = await getPlaceByIdAction(Number(placeId));
+    if (userLastPlace) {
+      lastplace = userLastPlace;
     }
   } else {
     const hasPlaceAccess = await checkUserPlaceAccess(
@@ -80,6 +79,8 @@ export default async function DashboardLayout({
     if (userLastPlace) {
       lastplace = userLastPlace;
     }
+
+    await changeLastPlaceAction(Number(placeId));
   }
 
   return (
@@ -87,7 +88,6 @@ export default async function DashboardLayout({
       <AppSidebar
         business={business}
         lastPlace={lastplace ?? ({} as Place)}
-        places={places}
         isAdmin={admin}
         user={user}
       >
