@@ -14,7 +14,7 @@ import {
   getPlacesCountByBusinessId
 } from '@/db/places';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
-import PlacesPage from './Places-page';
+import PlacesPage from './places';
 
 interface Props {
   params: Promise<{
