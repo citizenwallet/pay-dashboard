@@ -9,6 +9,10 @@ import { getAllPayoutAction } from './action';
 import { CommunityConfig } from '@citizenwallet/sdk';
 import Config from '@/cw/community.json';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default function PayoutsPage() {
   return (
     <PageContainer>
@@ -20,7 +24,7 @@ export default function PayoutsPage() {
         <Suspense
           fallback={<DataTableSkeleton columnCount={5} rowCount={10} />}
         >
-          {AsyncPayoutsLoader()}
+          <AsyncPayoutsLoader />
         </Suspense>
       </div>
     </PageContainer>
