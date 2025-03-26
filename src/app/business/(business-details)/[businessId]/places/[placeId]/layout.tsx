@@ -46,9 +46,9 @@ export default async function DashboardLayout({
   const admin = await isUserAdminAction();
 
   if (admin) {
-    const adminbusiness = await getBusinessAction(Number(businessId));
-    if (adminbusiness) {
-      business = adminbusiness;
+    const adminBusiness = await getBusinessAction(Number(businessId));
+    if (adminBusiness) {
+      business = adminBusiness;
     }
 
     const userLastPlace = await getPlaceByIdAction(Number(placeId));
