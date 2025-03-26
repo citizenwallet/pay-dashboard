@@ -3,7 +3,7 @@
 import { getUserIdFromSessionAction } from '@/actions/session';
 import { getServiceRoleClient } from '@/db';
 import { getLinkedBusinessByUserId } from '@/db/business';
-import { getPlacesByBusinessId } from '@/db/places';
+import { getPlaceById, getPlacesByBusinessId } from '@/db/places';
 import { getLastplace } from '@/db/users';
 
 export async function getPlaceAllAction() {
@@ -23,8 +23,6 @@ export async function getPlaceAction(): Promise<{
 }> {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
-  const business = await getLinkedBusinessByUserId(client, userId);
-  const busId: number = business.data?.linked_business_id; // output
 
   const data = await getLastplace(client, userId);
   let lastId: number = data.data?.last_place;
@@ -34,6 +32,13 @@ export async function getPlaceAction(): Promise<{
       lastId = places[0].id;
     }
   }
+
+  const { data: place } = await getPlaceById(client, lastId);
+
+  if (!place) {
+    return { lastId: 0, busId: 0 };
+  }
+  const busId: number = place?.business_id;
 
   return { lastId, busId };
 }
