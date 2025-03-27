@@ -109,19 +109,20 @@ export default function LegalPage({ businessId }: { businessId: number }) {
 
         <div className="mt-8 flex flex-col gap-4 sm:flex-row">
           <Button
-            className="flex-1 bg-primary hover:bg-primary/90"
-            disabled={!membershipAccepted || !termsAccepted || loading}
-            onClick={AggreeWithTerms}
-          >
-            {loading ? <Loader2 className="animate-spin" /> : 'Confirm'}
-          </Button>
-          <Button
             disabled={loading}
             variant="outline"
             className="hover:bg-red flex-1 border-red-500 text-red-500"
             onClick={() => signOut()}
           >
             Cancel and Logout
+          </Button>
+
+          <Button
+            className="flex-1 bg-primary hover:bg-primary/90"
+            disabled={!membershipAccepted || !termsAccepted || loading}
+            onClick={AggreeWithTerms}
+          >
+            {loading ? <Loader2 className="animate-spin" /> : 'Confirm'}
           </Button>
         </div>
       </div>
