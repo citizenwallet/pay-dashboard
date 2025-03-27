@@ -5,6 +5,8 @@ import {
   PostgrestSingleResponse,
   SupabaseClient
 } from '@supabase/supabase-js';
+import { encodeBase64 } from 'ethers';
+import Stripe from 'stripe';
 
 export type OrderStatus = 'pending' | 'paid' | 'cancelled';
 
@@ -329,3 +331,69 @@ export const getPayoutOrders = async (
 ): Promise<PostgrestResponse<Order>> => {
   return client.from('orders').select().eq('payout_id', payoutId);
 };
+
+export async function getRefund(
+  supabase: SupabaseClient,
+  orderId: number
+): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*')
+    .eq('id', orderId)
+    .limit(1);
+  if (error) throw error;
+
+  const order = data[0];
+
+  if (order.processor_tx) {
+    const { data: processorData, error: processorError } = await supabase
+      .from('orders_processor_tx')
+      .select('*')
+      .eq('id', orderId)
+      .limit(1);
+
+    if (processorError) throw processorError;
+
+    const orderProcess = processorData?.[0];
+
+    if (orderProcess) {
+      switch (orderProcess.type) {
+        case 'viva':
+          const id = orderProcess.processor_tx_id;
+          const amount = order.total;
+          const url = `https://demo.vivapayments.com/api/transactions/${id}?amount=${amount}`;
+
+          const token = encodeBase64(
+            `${process.env.VIVA_API_KEY}:${process.env.VIVA_API_SECRET}`
+          );
+
+          const options = {
+            method: 'DELETE',
+            headers: {
+              Authorization: `Basic ${token}`
+            }
+          };
+          const res = await fetch(url, options);
+          if (res.ok) {
+            return true;
+          }
+          break;
+        case 'stripe':
+          const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+            apiVersion: '2025-02-24.acacia'
+          });
+          const refundRes = await stripe.refunds.create(
+            orderProcess.processor_tx_id
+          );
+
+          if (refundRes.status === 'succeeded') {
+            return true;
+          }
+          break;
+      }
+    }
+  }
+
+  // Return false if no refundable
+  return false;
+}

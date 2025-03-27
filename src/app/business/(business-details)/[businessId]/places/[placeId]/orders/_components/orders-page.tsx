@@ -13,7 +13,7 @@ import { Order } from '@/db/orders';
 import { formatCurrencyNumber } from '@/lib/currency';
 import CurrencyLogo from '@/components/currency-logo';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { exportCsvAction } from '../action';
+import { exportCsvAction, postRefundAction } from '../action';
 import { toast } from 'sonner';
 
 interface Props {
@@ -106,7 +106,9 @@ const createColumns = (currencyLogo: string): ColumnDef<Order>[] => [
     cell: ({ row }) => {
       return (
         <>
-          <Button onClick={() => handleRefund(row)}>Refund</Button>
+          <Button onClick={() => postRefundAction(row.original.id)}>
+            Refund
+          </Button>
         </>
       );
     }
