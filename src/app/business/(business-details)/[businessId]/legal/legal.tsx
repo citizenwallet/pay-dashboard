@@ -69,14 +69,17 @@ export default function LegalPage({ businessId }: { businessId: number }) {
             htmlFor="membership"
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            <Link
-              href="/legal/membership-agreement-fr"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:underline"
-            >
-              Accept Membership Agreement
-            </Link>
+            I agree to become a{' '}
+            <>
+              <Link
+                href="/legal/membership-agreement-fr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline"
+              >
+                member of Brussels Pay VZW/ASBL
+              </Link>
+            </>
           </label>
         </div>
 
@@ -90,14 +93,17 @@ export default function LegalPage({ businessId }: { businessId: number }) {
             htmlFor="terms"
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            <Link
-              href="/legal/terms-and-conditions-fr"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:underline"
-            >
-              Accept Terms and Conditions
-            </Link>
+            I agree to the{' '}
+            <>
+              <Link
+                href="/legal/terms-and-conditions-fr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline"
+              >
+                terms and conditions.
+              </Link>
+            </>
           </label>
         </div>
 
