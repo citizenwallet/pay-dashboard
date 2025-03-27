@@ -106,9 +106,11 @@ const createColumns = (currencyLogo: string): ColumnDef<Order>[] => [
     cell: ({ row }) => {
       return (
         <>
-          <Button onClick={() => postRefundAction(row.original.id)}>
-            Refund
-          </Button>
+          {row.original.processor_tx && (
+            <Button onClick={() => postRefundAction(row.original.id)}>
+              Refund
+            </Button>
+          )}
         </>
       );
     }
