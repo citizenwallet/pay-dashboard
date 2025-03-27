@@ -68,9 +68,18 @@ export function NavMain({
     },
     {
       title: 'QR Code',
-      url: `/business/${businessId}/places/${lastPlace.id}/qr`,
+      url: `#`,
       icon: QrCode,
-      items: []
+      items: [
+        {
+          title: 'Light',
+          url: `/business/${businessId}/places/${lastPlace.id}/qr/light`
+        },
+        {
+          title: 'Dark',
+          url: `/business/${businessId}/places/${lastPlace.id}/qr/dark`
+        }
+      ]
     },
     {
       title: 'Payouts',
@@ -90,16 +99,41 @@ export function NavMain({
             defaultOpen={item.isActive}
             className="group/collapsible"
           >
-            <SidebarMenuItem>
-              <Link href={item.url}>
+            {item.items.length > 0 ? (
+              <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
                   <SidebarMenuButton tooltip={item.title}>
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>
+                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                   </SidebarMenuButton>
                 </CollapsibleTrigger>
-              </Link>
-            </SidebarMenuItem>
+                <CollapsibleContent>
+                  <SidebarMenuSub>
+                    {item.items?.map((subItem) => (
+                      <SidebarMenuSubItem key={subItem.title}>
+                        <SidebarMenuSubButton asChild>
+                          <a href={subItem.url}>
+                            <span>{subItem.title}</span>
+                          </a>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              </SidebarMenuItem>
+            ) : (
+              <SidebarMenuItem>
+                <Link href={item.url}>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton tooltip={item.title}>
+                      {item.icon && <item.icon />}
+                      <span>{item.title}</span>
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                </Link>
+              </SidebarMenuItem>
+            )}
           </Collapsible>
         ))}
       </SidebarMenu>
