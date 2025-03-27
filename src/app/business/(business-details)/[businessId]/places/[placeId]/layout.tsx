@@ -4,7 +4,7 @@ import {
 } from '@/actions/session';
 import AppSidebar from '@/components/layout/app-sidebar';
 import { getServiceRoleClient } from '@/db';
-import { Business } from '@/db/business';
+import { Business, getBusinessById } from '@/db/business';
 import { checkUserPlaceAccess, Place } from '@/db/places';
 import { getUserById } from '@/db/users';
 import type { Metadata } from 'next';
@@ -15,7 +15,7 @@ import {
   getPlaceAction,
   getPlaceByIdAction
 } from './action';
-
+import { redirect } from 'next/navigation';
 export const metadata: Metadata = {
   title: 'Dashboard',
   description: 'Basic dashboard with Next.js and Shadcn'
@@ -56,6 +56,15 @@ export default async function DashboardLayout({
       lastplace = userLastPlace;
     }
   } else {
+    //check if the business is accepted agreement
+    const businessData = await getBusinessById(client, Number(businessId));
+    if (
+      !businessData.data?.accepted_membership_agreement ||
+      !businessData.data?.accepted_terms_and_conditions
+    ) {
+      redirect(`/business/${businessId}/legal`);
+    }
+
     const hasPlaceAccess = await checkUserPlaceAccess(
       client,
       userId,

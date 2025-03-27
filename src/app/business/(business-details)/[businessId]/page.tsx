@@ -11,6 +11,7 @@ import {
   getBusinessPlacesAction,
   getLastPlaceAction
 } from './places/[placeId]/action';
+import { getBusinessById } from '@/db/business';
 
 export default async function BusinessDetailsPage({
   params
@@ -48,6 +49,18 @@ export default async function BusinessDetailsPage({
     );
     if (!hasAccess) {
       return redirect('/business');
+    }
+
+    //check if the business is accepted agreement
+    const business = await getBusinessById(
+      client,
+      Number(resolvedParams.businessId)
+    );
+    if (
+      !business.data?.accepted_membership_agreement ||
+      !business.data?.accepted_terms_and_conditions
+    ) {
+      return redirect(`/business/${resolvedParams.businessId}/legal`);
     }
 
     const place = await getLastPlaceAction();
