@@ -15,13 +15,10 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
 import { createClient } from '@/lib/supabase/client';
-import GoogleSignInButton from '@/app/(auth)/_components/google-auth-button';
-import { joinAction } from '@/actions/joinAction';
 import { generateRandomString } from '@/lib/utils';
-import { prisma } from '@/lib/prisma';
-import { UserService } from '@/services/user.service';
 import { PhoneInput } from '@/components/ui/phone-input';
 import Link from 'next/link';
+import { sendOtpAction } from '../action';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
@@ -42,39 +39,12 @@ export default function UserSignupForm() {
   const onSubmit = async (credentials: UserFormValue) => {
     try {
       startTransition(async () => {
-        const supabase = await createClient();
+        const res = await sendOtpAction(credentials.email);
+        localStorage.setItem('otpEmail', credentials.email);
+        localStorage.setItem('regName', credentials.name);
+        localStorage.setItem('regPhone', credentials.phone);
 
-        // Generate an invitation code
-        const invitationCode = generateRandomString(16);
-
-        const { data, error } = await supabase.auth.signInWithOtp({
-          email: credentials.email,
-          options: {
-            shouldCreateUser: true,
-            emailRedirectTo:
-              process.env.NEXTAUTH_URL +
-              '/onboarding?invite_code=' +
-              invitationCode
-          }
-        });
-
-        if (error) {
-          toast.error('An error occurred while signing up');
-          return;
-        }
-
-        // Create user in database
-        const { success } = await joinAction(invitationCode, {
-          email: credentials.email,
-          name: credentials.name,
-          phone: credentials.phone,
-          description: '',
-          image: ''
-        });
-
-        if (success) {
-          window.location.href = '/onboarding?invite_code=' + invitationCode;
-        }
+        window.location.href = '/otp';
       });
     } catch (e) {
       console.error(e);
@@ -97,6 +67,7 @@ export default function UserSignupForm() {
                 <FormLabel>Name</FormLabel>
                 <FormControl>
                   <Input
+                    className="text-base"
                     type="text"
                     placeholder="Enter your name..."
                     disabled={loading}
@@ -130,6 +101,7 @@ export default function UserSignupForm() {
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input
+                    className="text-base"
                     type="email"
                     placeholder="Enter your email..."
                     disabled={loading}
@@ -145,22 +117,11 @@ export default function UserSignupForm() {
             Sign Up
           </Button>
 
-          <div className="flex justify-center">
+          <div className="mt-2 flex justify-center">
             <Link href="/login">Already have an account? Login</Link>
           </div>
         </form>
       </Form>
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with
-          </span>
-        </div>
-      </div>
-      <GoogleSignInButton />
     </>
   );
 }

@@ -10,15 +10,14 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signIn } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
-import GoogleSignInButton from '@/app/(auth)/_components/google-auth-button';
 import { createClient } from '@/lib/supabase/client';
-import MailLinkSent from '@/app/(auth)/_components/magic-link-sent';
+import { checkIsUseraction, sendOtpAction } from '../action';
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' })
@@ -38,25 +37,27 @@ export default function UserAuthForm() {
     resolver: zodResolver(formSchema),
     defaultValues
   });
+  const router = useRouter();
 
   const onSubmit = async (userData: UserFormValue) => {
     startTransition(async () => {
-      const supabase = createClient();
-
-      const { data, error } = await supabase.auth.signInWithOtp({
-        email: userData.email,
-        options: {
-          emailRedirectTo: process.env.NEXTAUTH_URL + '/dashboard'
+      const data = await checkIsUseraction(userData.email);
+      if (data) {
+        //user already signing so ,otp send
+        try {
+          const res = await sendOtpAction(userData.email);
+          if (res) {
+            setMailSent(true);
+            //use local storage for store email
+            localStorage.setItem('otpEmail', userData.email);
+            //then should go to otp page
+            router.push('/otp');
+          }
+        } catch (error) {
+          toast.error('Something went wrong, please try again later.');
         }
-      });
-
-      if (error) {
-        console.error(error);
-        toast.error('An error occurred while signing in');
-        setMailSent(false);
-        return;
       } else {
-        window.location.href = '/sent';
+        toast.error('Your email is not registered, please sign up');
       }
     });
   };
@@ -73,9 +74,10 @@ export default function UserAuthForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel title={'Email'} />
                 <FormControl>
                   <Input
+                    className="text-base"
                     type="email"
                     placeholder="Enter your email..."
                     disabled={loading}
@@ -91,23 +93,12 @@ export default function UserAuthForm() {
           </Button>
 
           <div className="flex justify-center">
-            <a href="/register" className="text-sm text-primary">
+            <a href="/onboarding" className="text-sm text-primary">
               Don&nbsp;t have an account? Sign up here
             </a>
           </div>
         </form>
       </Form>
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with
-          </span>
-        </div>
-      </div>
-      <GoogleSignInButton />
     </>
   );
 }

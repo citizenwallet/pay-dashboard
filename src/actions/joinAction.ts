@@ -9,7 +9,7 @@ import { Wallet } from 'ethers';
 import { getAccountAddress, CommunityConfig } from '@citizenwallet/sdk';
 import Config from '@/cw/community.json';
 import { createSlug, generateRandomString } from '@/lib/utils';
-import { createUser } from './createUser';
+import { createUser } from '@/db/users';
 
 const joinFormSchema = z.object({
   name: z.string().min(1, {
@@ -35,18 +35,8 @@ const joinFormSchema = z.object({
 export async function joinAction(
   inviteCode: string,
   data: z.infer<typeof joinFormSchema>
-  //   image?: File
 ) {
   const client = getServiceRoleClient();
-
-  //   let imageUrl = null;
-  //   if (image) {
-  //     const { url, error: uploadError } = await uploadImage(image, "businesses");
-  //     if (uploadError) {
-  //       return { error: `Failed to upload image: ${uploadError.message}` };
-  //     }
-  //     imageUrl = url;
-  //   }
 
   const newPk = Wallet.createRandom();
   const address = newPk.address;
@@ -68,7 +58,10 @@ export async function joinAction(
       account,
       email: data.email,
       phone: data.phone,
-      invite_code: inviteCode
+      invite_code: inviteCode,
+      iban_number: '',
+      address_legal: '',
+      legal_name: ''
     }
   );
 
@@ -104,27 +97,29 @@ export async function joinAction(
   }
 
   const { error: placeError } = await createPlace(client, {
-    name: data.name,
+    name: 'My Place',
     slug,
     business_id: business.id,
     accounts: [account],
     invite_code: inviteCode,
-    image: null
+    image: null,
+    display: 'amount',
+    hidden: true,
+    description: '',
+    archived: false
+  });
+
+  //create the new user
+  const user = await createUser(client, {
+    name: data.name,
+    email: data.email,
+    phone: data.phone,
+    linked_business_id: business.id
   });
 
   if (placeError) {
     return { error: placeError.message };
   }
-
-  // Create a new user
-  await createUser({
-    email: data.email,
-    linked_business_id: business.id,
-    name: data.name,
-    phone: data.phone,
-    description: data.description,
-    image: data.image
-  });
 
   return { success: true };
 }

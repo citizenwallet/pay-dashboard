@@ -30,6 +30,10 @@ import {
 } from '@tanstack/react-table';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { parseAsInteger, useQueryState } from 'nuqs';
+import { createParser } from 'nuqs/server';
+
+// Add the adapter configuration at the top of the file
+createParser(parseAsInteger);
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
