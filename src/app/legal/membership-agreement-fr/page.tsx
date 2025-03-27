@@ -5,7 +5,12 @@ import fs from 'fs';
 import path from 'path';
 
 export default function MembershipAgreement() {
-  const filePath = path.join(process.cwd(), 'public', 'agreement', 'sample.md');
+  const filePath = path.join(
+    process.cwd(),
+    'public',
+    'agreement',
+    'membership agreement.md'
+  );
   const content = fs.readFileSync(filePath, 'utf-8');
 
   return (
