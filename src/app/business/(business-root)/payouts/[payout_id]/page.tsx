@@ -44,10 +44,9 @@ const AsyncPayoutOrderPage = async (payout_id: string) => {
     return <div>You are not authorized to view this page</div>;
   }
   const orders = await getPayoutAction(payout_id);
-
   const community = new CommunityConfig(Config);
-  const payout = await getPayoutStatusAction(payout_id);
-  if (!payout.data) {
+  const { payout } = await getPayoutStatusAction(payout_id);
+  if (!payout?.data) {
     return <div>Payout not found</div>;
   }
 

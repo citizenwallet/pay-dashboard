@@ -51,6 +51,33 @@ export const getPlacesByBusinessId = async (
     .order('id', { ascending: true });
 };
 
+export const getPlacesCountByBusinessId = async (
+  client: SupabaseClient,
+  businessId: number
+): Promise<{ count: number }> => {
+  const response = await client
+    .from('places')
+    .select('*', { count: 'exact', head: true })
+    .eq('business_id', businessId);
+  return { count: response.count || 0 };
+};
+
+export const getPlacesByBusinessIdWithLimit = async (
+  client: SupabaseClient,
+  businessId: number,
+  limit: number = 10,
+  offset: number = 0,
+  search: string = ''
+): Promise<PostgrestResponse<Place[]>> => {
+  return client
+    .from('places')
+    .select('*')
+    .eq('business_id', businessId)
+    .ilike('name', `%${search}%`)
+    .order('id', { ascending: true })
+    .range(offset, offset + limit - 1);
+};
+
 export const getPlaceByTerminalId = async (
   client: SupabaseClient,
   terminalId: number
@@ -206,21 +233,9 @@ export const handleArchiveToggleById = async (
 export const updatePlaceById = async (
   client: SupabaseClient,
   placeId: number,
-  name: string,
-  description: string,
-  slug: string,
-  newimage: string
+  place: Partial<Place>
 ): Promise<PostgrestSingleResponse<Place | null>> => {
-  return client
-    .from('places')
-    .update({
-      name: name,
-      description: description,
-      slug: slug,
-      image: newimage
-    })
-    .eq('id', placeId)
-    .maybeSingle();
+  return client.from('places').update(place).eq('id', placeId).maybeSingle();
 };
 
 export const deletePlaceById = async (
@@ -267,4 +282,11 @@ export const getPlaceDisplay = async (
     .select('display')
     .eq('id', placeId)
     .maybeSingle();
+};
+
+export const getPlaceBySlug = async (
+  client: SupabaseClient,
+  slug: string
+): Promise<PostgrestSingleResponse<Place | null>> => {
+  return client.from('places').select('*').eq('slug', slug).maybeSingle();
 };
