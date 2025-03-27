@@ -28,7 +28,49 @@ interface Props {
   balance: number;
 }
 
-const createColumns = (currencyLogo: string): ColumnDef<Order>[] => [
+const createColumns = (
+  currencyLogo: string
+): (
+  | {
+      accessorKey: string;
+      header: string;
+      cell: ({ row }: { row: any }) => any;
+    }
+  | {
+      accessorKey: string;
+      header: string;
+      cell: ({ row }: { row: any }) => string;
+    }
+  | {
+      accessorKey: string;
+      header: string;
+      cell: ({ row }: { row: any }) => React.JSX.Element;
+    }
+  | {
+      accessorKey: string;
+      header: string;
+      cell: ({ row }: { row: any }) => React.JSX.Element;
+    }
+  | {
+      accessorKey: string;
+      header: string;
+      cell: ({ row }: { row: any }) => React.JSX.Element;
+    }
+  | {
+      accessorKey: string;
+      header: string;
+      cell: ({ row }: { row: any }) => React.JSX.Element;
+    }
+  | {
+      accessorKey: string;
+      header: string;
+    }
+  | {
+      accessorKey: string;
+      header: string;
+      cell: ({ row }: { row: any }) => React.JSX.Element;
+    }
+)[] => [
   {
     accessorKey: 'id',
     header: 'ID',
@@ -106,7 +148,7 @@ const createColumns = (currencyLogo: string): ColumnDef<Order>[] => [
     cell: ({ row }) => {
       return (
         <>
-          {row.original.processor_tx && (
+          {row.original?.processor_tx && (
             <Button onClick={() => postRefundAction(row.original.id)}>
               Refund
             </Button>
