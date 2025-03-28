@@ -7,6 +7,8 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { updateBusinessDetailsAction } from '../action';
 import { toast } from 'sonner';
+import { Checkbox } from '@/components/ui/checkbox';
+import Link from 'next/link';
 
 export default function DetailsPage({
   company,
@@ -22,8 +24,12 @@ export default function DetailsPage({
   const [errors, setErrors] = useState({
     legalName: '',
     address: '',
-    iban: ''
+    iban: '',
+    terms: ''
   });
+  const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+  const [isMembershipAccepted, setIsMembershipAccepted] = useState(false);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -34,9 +40,9 @@ export default function DetailsPage({
   }, [company]);
 
   const handleSubmit = async () => {
-    setErrors({ legalName: '', address: '', iban: '' });
+    setErrors({ legalName: '', address: '', iban: '', terms: '' });
     let hasError = false;
-    const newErrors = { legalName: '', address: '', iban: '' };
+    const newErrors = { legalName: '', address: '', iban: '', terms: '' };
 
     if (!legalName.trim()) {
       newErrors.legalName = 'Legal name is required';
@@ -51,6 +57,11 @@ export default function DetailsPage({
       hasError = true;
     }
 
+    if (!isTermsAccepted || !isMembershipAccepted) {
+      newErrors.terms = 'You must accept the agreements';
+      hasError = true;
+    }
+
     if (hasError) {
       setErrors(newErrors);
       return;
@@ -62,7 +73,9 @@ export default function DetailsPage({
         business.id,
         legalName,
         address,
-        iban
+        iban,
+        isTermsAccepted,
+        isMembershipAccepted
       );
       toast.success('Your business has been successfully validated !', {
         onAutoClose: () => {
@@ -83,8 +96,8 @@ export default function DetailsPage({
   };
 
   return (
-    <div className="mt-8 space-y-6">
-      <div className="space-y-1">
+    <div className="mt-8">
+      <div className="space-y-3">
         <Label className="text-sm font-medium text-gray-900">Legal name</Label>
         <Input
           type="text"
@@ -98,7 +111,7 @@ export default function DetailsPage({
         )}
       </div>
 
-      <div className="space-y-1">
+      <div className="mt-4 space-y-2">
         <Label className="text-sm font-medium text-gray-900">Address</Label>
         <Input
           type="text"
@@ -112,7 +125,7 @@ export default function DetailsPage({
         )}
       </div>
 
-      <div className="space-y-1">
+      <div className="mt-4 space-y-2">
         <Label className="text-sm font-medium text-gray-900">IBAN</Label>
         <Input
           type="text"
@@ -124,7 +137,53 @@ export default function DetailsPage({
         {errors.iban && <p className="text-sm text-red-500">{errors.iban}</p>}
       </div>
 
-      <div className="flex justify-between">
+      <div className="mt-6 flex items-center space-x-2">
+        <Checkbox
+          id="terms2"
+          className="border-black text-black"
+          checked={isMembershipAccepted}
+          onCheckedChange={() => setIsMembershipAccepted(!isMembershipAccepted)}
+        />
+        <label
+          htmlFor="terms2"
+          className="text-sm font-medium leading-none text-black peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          <Link
+            href="/legal/membership-agreement-fr"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:underline"
+          >
+            Accept Membership Agreement
+          </Link>
+        </label>
+      </div>
+
+      <div className="mt-4 flex items-center space-x-2">
+        <Checkbox
+          id="terms2"
+          className="border-black text-black"
+          checked={isTermsAccepted}
+          onCheckedChange={() => setIsTermsAccepted(!isTermsAccepted)}
+        />
+        <label
+          htmlFor="terms2"
+          className="text-sm font-medium leading-none text-black peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          <Link
+            href="/legal/terms-and-conditions-fr"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:underline"
+          >
+            Accept Terms and Conditions
+          </Link>
+        </label>
+      </div>
+
+      <p className="mt-4 text-sm text-red-500">{errors.terms}</p>
+
+      <div className="mt-6 flex justify-between">
         <Button
           className="h-10 w-24 rounded-md border border-black bg-gray-100 text-sm font-medium text-gray-900 hover:bg-gray-200"
           disabled={loading}

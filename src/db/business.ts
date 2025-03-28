@@ -16,6 +16,8 @@ export interface Business {
   iban_number: string | null;
   address_legal: string | null;
   legal_name: string | null;
+  accepted_membership_agreement: string | null;
+  accepted_terms_and_conditions: string | null;
 }
 
 export type NewBusiness = Omit<Business, 'id' | 'created_at'>;
