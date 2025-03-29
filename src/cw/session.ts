@@ -102,11 +102,13 @@ export const requestSession = async (
   sessionRequestHash: string,
   signedSessionRequestHash: string,
   signedSessionHash: string,
-  sessionRequestExpiry: number
+  sessionExpiry: number
 ): Promise<string> => {
-  const sessionManagerAddress = '0x42163CCf27eBEf3902669567c218796ec974868e';
+  const sessionManagerAddress = '0x18C0F6b6C69EAA853BbE910E35881d3A5442bFc0';
 
   const bundler = new BundlerService(community);
+
+  const challengeExpiry = Math.floor(Date.now() / 1000) + 120;
 
   const data = getBytes(
     sessionManagerInterface.encodeFunctionData('request', [
@@ -114,7 +116,8 @@ export const requestSession = async (
       sessionRequestHash,
       signedSessionRequestHash,
       signedSessionHash,
-      sessionRequestExpiry
+      sessionExpiry,
+      challengeExpiry
     ])
   );
 
@@ -144,7 +147,7 @@ export const verifyIncomingSessionRequest = async (
 ): Promise<boolean> => {
   try {
     // Get the session manager contract address
-    const sessionManagerAddress = '0x42163CCf27eBEf3902669567c218796ec974868e';
+    const sessionManagerAddress = '0x18C0F6b6C69EAA853BbE910E35881d3A5442bFc0';
 
     const rpcProvider = new JsonRpcProvider(community.primaryRPCUrl);
 
@@ -166,8 +169,14 @@ export const verifyIncomingSessionRequest = async (
       throw new Error('Session request expired');
     }
 
+    // check the challenge expiry
+    const challengeExpiry = Number(result[1]);
+    if (challengeExpiry < now) {
+      throw new Error('Challenge expired');
+    }
+
     // Extract the stored signedSessionHash from the result
-    const storedSignedSessionHash = result[1];
+    const storedSignedSessionHash = result[2];
 
     // Sign the provided sessionHash with the signer
     const calculatedSignedSessionHash = await signer.signMessage(
@@ -190,7 +199,7 @@ export const confirmSession = async (
   sessionHash: string,
   signedSessionHash: string
 ) => {
-  const sessionManagerAddress = '0x42163CCf27eBEf3902669567c218796ec974868e';
+  const sessionManagerAddress = '0x18C0F6b6C69EAA853BbE910E35881d3A5442bFc0';
 
   const bundler = new BundlerService(community);
 
