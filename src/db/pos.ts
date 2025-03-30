@@ -7,7 +7,6 @@ export interface Pos {
   created_at: string;
   place_id: string;
   type: string;
-  last_activate_at: string;
   name: string;
 }
 
@@ -28,9 +27,10 @@ export const getPosByPlaceId = async (
 export const createPos = async (
   client: SupabaseClient,
   name: string,
-  posId: number,
+  posId: string,
   placeId: number,
-  type: string
+  type: string,
+  is_active: boolean
 ): Promise<PostgrestSingleResponse<Pos | null>> => {
   return client
     .from('pos')
@@ -39,9 +39,9 @@ export const createPos = async (
         id: posId,
         name,
         place_id: placeId,
-        type:type,
+        type: type,
         created_at: new Date().toISOString(),
-        last_activate_at: new Date().toISOString()
+        is_active: is_active
       }
     ])
     .select('*')
@@ -64,3 +64,15 @@ export const updatePos = async (
   return client.from('pos').update({ name, type }).eq('id', id).maybeSingle();
 };
 
+export const updatePosStatus = async (
+  client: SupabaseClient,
+  posId: string,
+  is_active: boolean
+): Promise<PostgrestSingleResponse<Pos | null>> => {
+  return client
+    .from('pos')
+    .update({ is_active })
+    .eq('id', posId)
+    .select()
+    .maybeSingle();
+};
