@@ -2,28 +2,7 @@
 
 import CurrencyLogo from '@/components/currency-logo';
 import { Button } from '@/components/ui/button';
-import { DataTable } from '@/components/ui/data-table';
 import { Input } from '@/components/ui/input';
-import { Payout } from '@/db/payouts';
-import { formatCurrencyNumber } from '@/lib/currency';
-import { Plus } from 'lucide-react';
-import Link from 'next/link';
-import { useRef, useState, useEffect } from 'react';
-import { toast } from 'sonner';
-import {
-  updatePayoutBurnDateAction,
-  updatePayoutTransferDateAction,
-  getAllPayoutAction
-} from './action';
-import { useRouter } from 'next/navigation';
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  SortingState,
-  getSortedRowModel
-} from '@tanstack/react-table';
 import {
   Table,
   TableBody,
@@ -32,6 +11,27 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
+import { Payout } from '@/db/payouts';
+import { formatCurrencyNumber } from '@/lib/currency';
+import {
+  ColumnDef,
+  SortingState,
+  flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable
+} from '@tanstack/react-table';
+import { Plus } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import {
+  getAllPayoutAction,
+  updatePayoutBurnDateAction,
+  updatePayoutTransferDateAction
+} from './action';
 
 export default function PayoutDetailsPage({
   payouts,
@@ -53,6 +53,8 @@ export default function PayoutDetailsPage({
   const dateInputRefTransferDate = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(15);
 
   // Fetch fresh data when component mounts or when router changes
   useEffect(() => {
@@ -403,9 +405,27 @@ export default function PayoutDetailsPage({
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     state: {
-      sorting
+      sorting,
+      pagination: {
+        pageIndex,
+        pageSize
+      }
+    },
+    onPaginationChange: (updater) => {
+      if (typeof updater === 'function') {
+        const newState = updater({
+          pageIndex,
+          pageSize
+        });
+        setPageIndex(newState.pageIndex);
+        setPageSize(15);
+      } else {
+        setPageIndex(updater.pageIndex);
+        setPageSize(15);
+      }
     }
   });
 
@@ -465,6 +485,34 @@ export default function PayoutDetailsPage({
               )}
             </TableBody>
           </Table>
+          <div className="mr-7 flex items-center justify-end px-2 py-4">
+            <div className="flex items-center space-x-6 lg:space-x-8">
+              <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+                Page {table.getState().pagination.pageIndex + 1} of{' '}
+                {table.getPageCount()}
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  className="h-8 w-8 p-0"
+                  onClick={() => table.previousPage()}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  <span className="sr-only">Go to previous page</span>
+                  {'<'}
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-8 w-8 p-0"
+                  onClick={() => table.nextPage()}
+                  disabled={!table.getCanNextPage()}
+                >
+                  <span className="sr-only">Go to next page</span>
+                  {'>'}
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
