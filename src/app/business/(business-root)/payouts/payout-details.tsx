@@ -16,6 +16,22 @@ import {
   getAllPayoutAction
 } from './action';
 import { useRouter } from 'next/navigation';
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+  SortingState,
+  getSortedRowModel
+} from '@tanstack/react-table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table';
 
 export default function PayoutDetailsPage({
   payouts,
@@ -36,6 +52,7 @@ export default function PayoutDetailsPage({
   const [editTransferDate, setEditTransferDate] = useState<string>('');
   const dateInputRefTransferDate = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   // Fetch fresh data when component mounts or when router changes
   useEffect(() => {
@@ -118,6 +135,280 @@ export default function PayoutDetailsPage({
     };
   }, [editingIdBurnDate, editingIdTransferDate]);
 
+  const columns: ColumnDef<Payout>[] = [
+    {
+      accessorKey: 'id',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Id
+            {column.getIsSorted() === 'asc'
+              ? ' ↑'
+              : column.getIsSorted() === 'desc'
+              ? ' ↓'
+              : ''}
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <Link
+          href={`/business/payouts/${row.original.id}`}
+          className="flex h-16 items-center"
+        >
+          {row.original.id}
+        </Link>
+      )
+    },
+    {
+      accessorKey: 'business_id',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Business Name
+            {column.getIsSorted() === 'asc'
+              ? ' ↑'
+              : column.getIsSorted() === 'desc'
+              ? ' ↓'
+              : ''}
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="flex h-16 items-center">{row.original.business_id}</div>
+      )
+    },
+    {
+      accessorKey: 'place_id',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Place Name
+            {column.getIsSorted() === 'asc'
+              ? ' ↑'
+              : column.getIsSorted() === 'desc'
+              ? ' ↓'
+              : ''}
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="flex h-16 items-center">{row.original.place_id}</div>
+      )
+    },
+    {
+      accessorKey: 'created_at',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Created At
+            {column.getIsSorted() === 'asc'
+              ? ' ↑'
+              : column.getIsSorted() === 'desc'
+              ? ' ↓'
+              : ''}
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="flex h-16 items-center">
+          {row.original.created_at
+            ? new Date(row.original.created_at).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              })
+            : '-'}
+        </div>
+      )
+    },
+    {
+      accessorKey: 'total',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Total
+            {column.getIsSorted() === 'asc'
+              ? ' ↑'
+              : column.getIsSorted() === 'desc'
+              ? ' ↓'
+              : ''}
+          </Button>
+        );
+      },
+      cell: ({ row }) => {
+        return (
+          <p className="flex h-16 w-8 items-center gap-1">
+            <CurrencyLogo logo={currencyLogo} size={18} />
+            {formatCurrencyNumber(row.original.total)}
+          </p>
+        );
+      }
+    },
+    {
+      accessorKey: 'burn',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Burn
+            {column.getIsSorted() === 'asc'
+              ? ' ↑'
+              : column.getIsSorted() === 'desc'
+              ? ' ↓'
+              : ''}
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="flex h-16 items-center space-x-2">
+          <span className="text-red-500">{row.original.burn ? '🔥' : '-'}</span>
+          {editingIdBurnDate === row.original.id ? (
+            <div ref={dateInputRef} className="flex items-center gap-1">
+              <Input
+                type="date"
+                value={editBurnDate}
+                onChange={(e) => {
+                  setEditBurnDate(e.target.value);
+                  handleSaveEditBurnDate(row.original.id, e.target.value);
+                }}
+                autoFocus
+                className="h-8 w-36"
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') {
+                    setEditingIdBurnDate(null);
+                  }
+                }}
+              />
+            </div>
+          ) : (
+            <div className="flex items-center gap-1">
+              <span
+                className="cursor-pointer hover:text-blue-500 hover:underline"
+                onClick={() =>
+                  row.original.burnDate &&
+                  handleBurnEditClick(
+                    row.original.id,
+                    new Date(row.original.burnDate)
+                  )
+                }
+              >
+                {row.original.burnDate
+                  ? new Date(row.original.burnDate).toLocaleDateString(
+                      'en-US',
+                      {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      }
+                    )
+                  : '-'}
+              </span>
+            </div>
+          )}
+        </div>
+      )
+    },
+    {
+      accessorKey: 'transfer',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Transfer
+            {column.getIsSorted() === 'asc'
+              ? ' ↑'
+              : column.getIsSorted() === 'desc'
+              ? ' ↓'
+              : ''}
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="flex h-16 items-center space-x-2">
+          <span className="text-blue-500">
+            {row.original.transfer ? '🏛️' : '-'}
+          </span>
+          {editingIdTransferDate === row.original.id ? (
+            <div
+              ref={dateInputRefTransferDate}
+              className="flex items-center gap-1"
+            >
+              <Input
+                type="date"
+                value={editTransferDate}
+                onChange={(e) => {
+                  setEditTransferDate(e.target.value);
+                  handleSaveEditTransferDate(row.original.id, e.target.value);
+                }}
+                autoFocus
+                className="h-8 w-36"
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') {
+                    setEditingIdTransferDate(null);
+                  }
+                }}
+              />
+            </div>
+          ) : (
+            <div className="flex items-center gap-1">
+              <span
+                className="cursor-pointer hover:text-blue-500 hover:underline"
+                onClick={() =>
+                  row.original.transferDate &&
+                  handleTransferEditClick(
+                    row.original.id,
+                    new Date(row.original.transferDate)
+                  )
+                }
+              >
+                {row.original.transferDate
+                  ? new Date(row.original.transferDate).toLocaleDateString(
+                      'en-US',
+                      {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      }
+                    )
+                  : '-'}
+              </span>
+            </div>
+          )}
+        </div>
+      )
+    }
+  ];
+
+  const table = useReactTable({
+    data: payoutData,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: setSorting,
+    state: {
+      sorting
+    }
+  });
+
   return (
     <div className="flex flex-col gap-4">
       <Link href="/business/payouts/new">
@@ -127,184 +418,54 @@ export default function PayoutDetailsPage({
         </Button>
       </Link>
       <div className="w-[90vw] overflow-x-auto md:w-full">
-        <DataTable
-          columns={[
-            {
-              accessorKey: 'id',
-              header: 'Id',
-              cell: ({ row }) => (
-                <Link
-                  href={`/business/payouts/${row.original.id}`}
-                  className="flex h-16 items-center"
-                >
-                  {row.original.id}
-                </Link>
-              )
-            },
-            {
-              accessorKey: 'business_id',
-              header: 'Business Name',
-              cell: ({ row }) => (
-                <div className="flex h-16 items-center">
-                  {row.original.business_id}
-                </div>
-              )
-            },
-            {
-              accessorKey: 'place_id',
-              header: 'Place Name',
-              cell: ({ row }) => (
-                <div className="flex h-16 items-center">
-                  {row.original.place_id}
-                </div>
-              )
-            },
-            {
-              accessorKey: 'created_at',
-              header: 'Created At',
-              cell: ({ row }) => (
-                <div className="flex h-16 items-center">
-                  {row.original.created_at
-                    ? new Date(row.original.created_at).toLocaleString(
-                        'en-US',
-                        { year: 'numeric', month: 'short', day: 'numeric' }
-                      )
-                    : '-'}
-                </div>
-              )
-            },
-            {
-              accessorKey: 'total',
-              header: 'Total',
-              cell: ({ row }) => {
-                return (
-                  <p className="flex h-16 w-8 items-center gap-1">
-                    <CurrencyLogo logo={currencyLogo} size={18} />
-                    {formatCurrencyNumber(row.original.total)}
-                  </p>
-                );
-              }
-            },
-            {
-              accessorKey: 'burn',
-              header: 'Burn',
-              cell: ({ row }) => (
-                <div className="flex h-16 items-center space-x-2">
-                  <span className="text-red-500">
-                    {row.original.burn ? '🔥' : '-'}
-                  </span>
-                  {editingIdBurnDate === row.original.id ? (
-                    <div ref={dateInputRef} className="flex items-center gap-1">
-                      <Input
-                        type="date"
-                        value={editBurnDate}
-                        onChange={(e) => {
-                          setEditBurnDate(e.target.value);
-                          handleSaveEditBurnDate(
-                            row.original.id,
-                            e.target.value
-                          );
-                        }}
-                        autoFocus
-                        className="h-8 w-36"
-                        onKeyDown={(e) => {
-                          if (e.key === 'Escape') {
-                            setEditingIdBurnDate(null);
-                          }
-                        }}
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1">
-                      <span
-                        className="cursor-pointer hover:text-blue-500 hover:underline"
-                        onClick={() =>
-                          row.original.burnDate &&
-                          handleBurnEditClick(
-                            row.original.id,
-                            new Date(row.original.burnDate)
-                          )
-                        }
-                      >
-                        {row.original.burnDate
-                          ? new Date(row.original.burnDate).toLocaleDateString(
-                              'en-US',
-                              {
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric'
-                              }
-                            )
-                          : '-'}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              )
-            },
-
-            {
-              accessorKey: 'transfer',
-              header: 'Transfer',
-              cell: ({ row }) => (
-                <div className="flex h-16 items-center space-x-2">
-                  <span className="text-blue-500">
-                    {row.original.transfer ? '🏛️' : '-'}
-                  </span>
-                  {editingIdTransferDate === row.original.id ? (
-                    <div
-                      ref={dateInputRefTransferDate}
-                      className="flex items-center gap-1"
-                    >
-                      <Input
-                        type="date"
-                        value={editTransferDate}
-                        onChange={(e) => {
-                          setEditTransferDate(e.target.value);
-                          handleSaveEditTransferDate(
-                            row.original.id,
-                            e.target.value
-                          );
-                        }}
-                        autoFocus
-                        className="h-8 w-36"
-                        onKeyDown={(e) => {
-                          if (e.key === 'Escape') {
-                            setEditingIdTransferDate(null);
-                          }
-                        }}
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1">
-                      <span
-                        className="cursor-pointer hover:text-blue-500 hover:underline"
-                        onClick={() =>
-                          row.original.transferDate &&
-                          handleTransferEditClick(
-                            row.original.id,
-                            new Date(row.original.transferDate)
-                          )
-                        }
-                      >
-                        {row.original.transferDate
-                          ? new Date(
-                              row.original.transferDate
-                            ).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'short',
-                              day: 'numeric'
-                            })
-                          : '-'}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              )
-            }
-          ]}
-          data={payoutData}
-        />
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );
