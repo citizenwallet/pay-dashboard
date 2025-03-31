@@ -32,15 +32,19 @@ import {
   updatePayoutBurnDateAction,
   updatePayoutTransferDateAction
 } from './action';
+import SearchInput from '@/components/search-input';
 
 export default function PayoutDetailsPage({
   payouts,
-  currencyLogo
+  currencyLogo,
+  search
 }: {
   payouts: Payout[];
   currencyLogo: string;
+  search?: string;
 }) {
-  const [payoutData, setPayoutData] = useState<Payout[]>(payouts);
+  const [originalData, setOriginalData] = useState<Payout[]>(payouts);
+  const [filteredData, setFilteredData] = useState<Payout[]>(payouts);
   const [editingIdBurnDate, setEditingIdBurnDate] = useState<string | null>(
     null
   );
@@ -58,12 +62,26 @@ export default function PayoutDetailsPage({
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(15);
 
+  // Filter data based on search query
+  useEffect(() => {
+    const filtered = originalData.filter((payout) => {
+      if (!search) return true;
+      const searchLower = search.toLowerCase();
+      return (
+        payout.business_id.toLowerCase().includes(searchLower) ||
+        payout.place_id.toLowerCase().includes(searchLower)
+      );
+    });
+    setFilteredData(filtered);
+    setPageIndex(0);
+  }, [search, originalData]);
+
   // Fetch fresh data when component mounts or when router changes
   useEffect(() => {
     const fetchData = async () => {
       try {
         const freshData = await getAllPayoutAction();
-        setPayoutData(freshData);
+        setOriginalData(freshData);
       } catch (error) {
         console.error('Failed to fetch fresh data:', error);
       }
@@ -82,8 +100,8 @@ export default function PayoutDetailsPage({
   // Burn Date edit save
   const handleSaveEditBurnDate = async (id: string, date: string) => {
     try {
-      setPayoutData(
-        payouts.map((p) => (p.id === id ? { ...p, burnDate: date } : p))
+      setOriginalData(
+        originalData.map((p) => (p.id === id ? { ...p, burnDate: date } : p))
       );
       setEditingIdBurnDate(null);
       await updatePayoutBurnDateAction(id, date);
@@ -104,8 +122,10 @@ export default function PayoutDetailsPage({
   // Transfer Date edit save
   const handleSaveEditTransferDate = async (id: string, date: string) => {
     try {
-      setPayoutData(
-        payouts.map((p) => (p.id === id ? { ...p, transferDate: date } : p))
+      setOriginalData(
+        originalData.map((p) =>
+          p.id === id ? { ...p, transferDate: date } : p
+        )
       );
       setEditingIdTransferDate(null);
       await updatePayoutTransferDateAction(id, date);
@@ -403,7 +423,7 @@ export default function PayoutDetailsPage({
   ];
 
   const table = useReactTable({
-    data: payoutData,
+    data: filteredData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -433,12 +453,16 @@ export default function PayoutDetailsPage({
 
   return (
     <div className="flex flex-col gap-4">
-      <Link href="/business/payouts/new">
-        <Button className="flex items-center gap-2">
-          <Plus size={16} />
-          New Payout
-        </Button>
-      </Link>
+      <div className="flex items-center justify-between">
+        <Link href="/business/payouts/new">
+          <Button className="flex items-center gap-2">
+            <Plus size={16} />
+            New Payout
+          </Button>
+        </Link>
+        <SearchInput className="w-80" />
+      </div>
+
       <div className="w-[90vw] overflow-x-auto md:w-full">
         <div className="rounded-md border">
           <Table>

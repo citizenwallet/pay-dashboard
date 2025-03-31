@@ -13,7 +13,16 @@ import Config from '@/cw/community.json';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export default function PayoutsPage() {
+interface PayoutsPageProps {
+  searchParams: Promise<{
+    search?: string;
+  }>;
+}
+
+export default async function PayoutsPage({ searchParams }: PayoutsPageProps) {
+  const resolvedSearchParams = await searchParams;
+  const { search } = resolvedSearchParams;
+
   return (
     <PageContainer>
       <div className="space-y-4">
@@ -24,14 +33,14 @@ export default function PayoutsPage() {
         <Suspense
           fallback={<DataTableSkeleton columnCount={5} rowCount={10} />}
         >
-          <AsyncPayoutsLoader />
+          <AsyncPayoutsLoader search={search} />
         </Suspense>
       </div>
     </PageContainer>
   );
 }
 
-async function AsyncPayoutsLoader() {
+async function AsyncPayoutsLoader({ search }: { search?: string }) {
   const admin = await isUserAdminAction();
   if (!admin) {
     return <div>You are not authorized to view this page</div>;
@@ -42,6 +51,7 @@ async function AsyncPayoutsLoader() {
     <PayoutDetailsPage
       payouts={payouts}
       currencyLogo={community.community.logo}
+      search={search}
     />
   );
 }
