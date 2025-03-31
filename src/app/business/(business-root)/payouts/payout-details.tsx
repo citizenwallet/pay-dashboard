@@ -52,7 +52,9 @@ export default function PayoutDetailsPage({
   const [editTransferDate, setEditTransferDate] = useState<string>('');
   const dateInputRefTransferDate = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: 'transfer', desc: false }
+  ]);
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(15);
 
