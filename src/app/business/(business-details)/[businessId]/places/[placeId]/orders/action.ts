@@ -1,7 +1,7 @@
 'use server';
-
 import { getServiceRoleClient } from '@/db';
 import { getOrdersByPlaceWithOutLimit } from '@/db/orders';
+import { getRefund } from '@/db/orders';
 
 export async function exportCsvAction(
   place_id: number,
@@ -51,4 +51,9 @@ export async function exportCsvAction(
   ].join('\n');
 
   return csvData;
+}
+
+export async function postRefundAction(transactionId: number) {
+  const client = getServiceRoleClient();
+  return await getRefund(client, transactionId);
 }
