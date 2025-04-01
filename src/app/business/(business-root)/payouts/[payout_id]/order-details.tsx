@@ -16,7 +16,7 @@ export default function OrderViewTable({
 }) {
   const [page, setPage] = useState(1);
 
-  const itemsPerPage = 5; // Define how many items per page
+  const itemsPerPage = 15; // Define how many items per page
 
   // Pagination logic
   const totalPages = Math.ceil(orders.length / itemsPerPage);

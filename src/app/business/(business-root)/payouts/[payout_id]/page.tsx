@@ -44,6 +44,8 @@ const AsyncPayoutOrderPage = async (payout_id: string) => {
     return <div>You are not authorized to view this page</div>;
   }
   const orders = await getPayoutAction(payout_id);
+
+  const totalAmount = orders.data?.reduce((acc, order) => acc + order.total, 0);
   const community = new CommunityConfig(Config);
   const { payout } = await getPayoutStatusAction(payout_id);
   if (!payout?.data) {
@@ -56,6 +58,7 @@ const AsyncPayoutOrderPage = async (payout_id: string) => {
       orders={orders.data ?? []}
       currencyLogo={community.community.logo}
       payout={payout.data}
+      totalAmount={totalAmount ?? 0}
     />
   );
 };

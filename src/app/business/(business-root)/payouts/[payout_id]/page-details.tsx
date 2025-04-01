@@ -20,17 +20,21 @@ import {
   updatePayoutBurnDateAction,
   updatePayoutTransferDateAction
 } from '../action';
+import { formatCurrencyNumber } from '@/lib/currency';
+import CurrencyLogo from '@/components/currency-logo';
 
 export default function PayoutDetailsPage({
   payout_id,
   orders,
   currencyLogo,
-  payout
+  payout,
+  totalAmount
 }: {
   payout_id: string;
   orders: Order[];
   currencyLogo: string;
   payout: Payout;
+  totalAmount: number;
 }) {
   const [open, setOpen] = useState(false);
   const [action, setAction] = useState('');
@@ -254,6 +258,16 @@ export default function PayoutDetailsPage({
         >
           Export as CSV
         </button>
+      </div>
+
+      <div className="mt-6 flex items-center justify-between pt-6">
+        <div className="flex items-center gap-7">
+          <p className="flex items-center gap-2">
+            Total Amount:
+            <CurrencyLogo logo={currencyLogo} size={18} />
+            {formatCurrencyNumber(totalAmount)}
+          </p>
+        </div>
       </div>
 
       <OrderViewTable orders={orders} currencyLogo={currencyLogo} />
