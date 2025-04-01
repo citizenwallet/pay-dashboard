@@ -3,11 +3,9 @@
 import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
 import { cn, humanizeDate } from '@/lib/utils';
-import { buttonVariants } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import React from 'react';
-import Link from 'next/link';
 import { DataTable } from '@/components/ui/data-table';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { Place } from '@/db/places';
@@ -15,7 +13,7 @@ import { Order } from '@/db/orders';
 import { formatCurrencyNumber } from '@/lib/currency';
 import CurrencyLogo from '@/components/currency-logo';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { exportCsvAction } from '../action';
+import { exportCsvAction, postRefundAction } from '../action';
 import { toast } from 'sonner';
 
 interface Props {
@@ -30,7 +28,49 @@ interface Props {
   balance: number;
 }
 
-const createColumns = (currencyLogo: string): ColumnDef<Order>[] => [
+const createColumns = (
+  currencyLogo: string
+): (
+  | {
+      accessorKey: string;
+      header: string;
+      cell: ({ row }: { row: any }) => any;
+    }
+  | {
+      accessorKey: string;
+      header: string;
+      cell: ({ row }: { row: any }) => string;
+    }
+  | {
+      accessorKey: string;
+      header: string;
+      cell: ({ row }: { row: any }) => React.JSX.Element;
+    }
+  | {
+      accessorKey: string;
+      header: string;
+      cell: ({ row }: { row: any }) => React.JSX.Element;
+    }
+  | {
+      accessorKey: string;
+      header: string;
+      cell: ({ row }: { row: any }) => React.JSX.Element;
+    }
+  | {
+      accessorKey: string;
+      header: string;
+      cell: ({ row }: { row: any }) => React.JSX.Element;
+    }
+  | {
+      accessorKey: string;
+      header: string;
+    }
+  | {
+      accessorKey: string;
+      header: string;
+      cell: ({ row }: { row: any }) => React.JSX.Element;
+    }
+)[] => [
   {
     accessorKey: 'id',
     header: 'ID',
@@ -101,6 +141,21 @@ const createColumns = (currencyLogo: string): ColumnDef<Order>[] => [
   {
     accessorKey: 'description',
     header: 'Description'
+  },
+  {
+    accessorKey: 'action',
+    header: 'Actions',
+    cell: ({ row }) => {
+      return (
+        <>
+          {row.original?.processor_tx && (
+            <Button onClick={() => postRefundAction(row.original.id)}>
+              Refund
+            </Button>
+          )}
+        </>
+      );
+    }
   }
 ];
 
