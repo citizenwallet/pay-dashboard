@@ -7,6 +7,9 @@ import { Order } from '@/db/orders';
 import CurrencyLogo from '@/components/currency-logo';
 import { formatCurrencyNumber } from '@/lib/currency';
 
+type SortField = 'id' | 'created_at' | 'total';
+type SortDirection = 'asc' | 'desc';
+
 export default function OrderViewTable({
   orders,
   currencyLogo
@@ -15,20 +18,46 @@ export default function OrderViewTable({
   currencyLogo: string;
 }) {
   const [page, setPage] = useState(1);
+  const [sortField, setSortField] = useState<SortField>('created_at');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   const itemsPerPage = 15; // Define how many items per page
 
+  // Sorting logic
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  // Sort the orders array
+  const sortedOrders = [...orders].sort((a, b) => {
+    if (sortField === 'id') {
+      return sortDirection === 'asc' ? a.id - b.id : b.id - a.id;
+    } else if (sortField === 'created_at') {
+      return sortDirection === 'asc'
+        ? new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        : new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    } else if (sortField === 'total') {
+      return sortDirection === 'asc' ? a.total - b.total : b.total - a.total;
+    }
+    return 0;
+  });
+
   // Pagination logic
-  const totalPages = Math.ceil(orders.length / itemsPerPage);
+  const totalPages = Math.ceil(sortedOrders.length / itemsPerPage);
   const isFirstPage = page === 1;
-  const isLastPage = page * itemsPerPage >= orders.length;
+  const isLastPage = page * itemsPerPage >= sortedOrders.length;
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
 
   // Get the current data slice for the page
-  const currentData = orders.slice(
+  const currentData = sortedOrders.slice(
     (page - 1) * itemsPerPage,
     page * itemsPerPage
   );
@@ -37,10 +66,33 @@ export default function OrderViewTable({
     <div>
       <DataTable
         columns={[
-          { accessorKey: 'id', header: 'ID' },
+          {
+            accessorKey: 'id',
+            header: () => (
+              <button
+                onClick={() => handleSort('id')}
+                className="flex items-center gap-1 hover:text-primary"
+              >
+                ID
+                {sortField === 'id' && (
+                  <span>{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                )}
+              </button>
+            )
+          },
           {
             accessorKey: 'created_at',
-            header: 'Date',
+            header: () => (
+              <button
+                onClick={() => handleSort('created_at')}
+                className="flex items-center gap-1 hover:text-primary"
+              >
+                Date
+                {sortField === 'created_at' && (
+                  <span>{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                )}
+              </button>
+            ),
             cell: ({ row }) => {
               const date = new Date(row.original.created_at);
               return `${date.toLocaleDateString(
@@ -53,7 +105,17 @@ export default function OrderViewTable({
           },
           {
             accessorKey: 'total',
-            header: 'Total',
+            header: () => (
+              <button
+                onClick={() => handleSort('total')}
+                className="flex items-center gap-1 hover:text-primary"
+              >
+                Total
+                {sortField === 'total' && (
+                  <span>{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                )}
+              </button>
+            ),
             cell: ({ row }) => {
               return (
                 <p className="flex w-8 items-center gap-1">
