@@ -116,10 +116,10 @@ export default function PayoutDetailsPage({
       await setPayoutStatusAction(payout_id, action);
       setOpen(false);
       toast.success(`Payout ${action} successfully`);
-      router.push(`/business/payouts`);
+      router.push(`/business/payouts/${payout_id}`);
     } catch (error) {
       toast.error(`Payout ${action} failed`);
-      router.push(`/business/payouts`);
+      router.push(`/business/payouts/${payout_id}`);
     }
   };
 
