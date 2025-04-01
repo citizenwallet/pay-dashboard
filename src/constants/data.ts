@@ -53,5 +53,12 @@ export const navItems: NavItem[] = [
     icon: 'user',
     isActive: false,
     items: [] // No child items
+  },
+  {
+    title: 'Menu Items',
+    url: '/dashboard/menuItems',
+    icon: 'product', // Changed from 'menu' to 'product' to match allowed icon types
+    isActive: false,
+    items: [] // No child items
   }
 ];

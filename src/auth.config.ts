@@ -1,51 +1,75 @@
-import { NextAuthConfig } from 'next-auth';
+import { NextAuthConfig, User } from 'next-auth';
 import CredentialProvider from 'next-auth/providers/credentials';
-import GoogleProvider from 'next-auth/providers/google';
-import { UserService } from '@/services/user.service';
-import { createClient } from '@/lib/supabase/server';
+import { deleteVerifyOtp, verifyOtp } from './db/otp';
+import { getServiceRoleClient } from './db';
+import { getUserByEmail } from './db/users';
 
-// @ts-ignore
 const authConfig = {
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_ID ?? '',
-      clientSecret: process.env.GOOGLE_SECRET ?? '',
-      authorization: {
-        params: {
-          prompt: 'consent',
-          access_type: 'offline',
-          response_type: 'code'
-        }
-      }
-    }),
     CredentialProvider({
+      name: 'OTP Login',
       credentials: {
-        email: {
-          type: 'email'
-        },
-        password: {
-          type: 'password'
-        }
+        email: { label: 'Email', type: 'email' },
+        code: { label: 'Verification Code', type: 'text' }
       },
-      //@ts-ignore
-      async authorize(credentials, req) {
-        const service = new UserService();
+      async authorize(credentials, request) {
+        const email = credentials?.email as string;
+        const code = credentials?.code as string;
 
-        const user: any = await service.getUserByEmail(
-          credentials.email as string
-        );
-
-        if (user) {
-          return user;
-        } else {
-          // If you return null then an error will be displayed advising the user to check their details.
+        if (!email || !code) {
           return null;
         }
+        const client = getServiceRoleClient();
+        const result = await verifyOtp(client, email, code);
+        if (!result.valid) {
+          return null;
+        }
+
+        //Remove OTP from the database after successful verification.
+        const otpres = await deleteVerifyOtp(client, email);
+
+        if (!otpres.valid) {
+          return null;
+        }
+
+        const userres = await getUserByEmail(client, email);
+        if (!userres || userres.error || !userres.data) {
+          return null;
+          //new user sign up here
+        }
+        if (userres.error) {
+          return null;
+        }
+
+        const user = {
+          id: userres.data.id.toString(),
+          email: userres.data.email,
+          name: userres.data.name || undefined
+        };
+
+        return user;
       }
     })
   ],
   pages: {
     signIn: '/login'
+  },
+  callbacks: {
+    jwt: async ({ token, user }) => {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    session: async ({ session, token }) => {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: `${token.id}`
+        }
+      };
+    }
   }
 } satisfies NextAuthConfig;
 

@@ -40,29 +40,22 @@ export function CompanyVATStep({ onNext, initialData }: VATStepProps) {
     if (isValid) {
       const response = await fetch(`/api/vat?vat=${data.vat_number}`);
 
-      if (!response.ok) {
-        setError('vat_number', {
-          type: 'manual',
-          message: 'Invalid VAT number'
-        });
-        return;
-      }
+      // if (!response.ok) {
+      //   setError('vat_number', {
+      //     type: 'manual',
+      //     message: 'Invalid VAT number'
+      //   });
+      //   return;
+      // }
 
       const result = await response.json();
 
       if (result.isValid) {
         data.address_legal = result.address.replace(/\n/g, ', ');
         data.legal_name = result.name;
-        onNext(data);
-      } else {
-        setError('vat_number', {
-          type: 'manual',
-          message: 'Invalid VAT number'
-        });
       }
-    } else {
-      setError('vat_number', { type: 'manual', message: 'Invalid VAT number' });
     }
+    onNext(data);
 
     setLoading(false);
   };

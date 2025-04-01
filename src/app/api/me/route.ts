@@ -1,120 +1,118 @@
 // Generate transactions for a user
-import { prisma } from '@/lib/prisma';
-import { auth } from '@/auth';
-import { StatusCodes } from 'http-status-codes';
-import { NextRequest } from 'next/server';
-import { v4 as uuidv4 } from 'uuid';
-import { joinAction } from '@/actions/joinAction';
+import { NextResponse } from 'next/server';
 
-export async function PUT(request: NextRequest) {
-  const session = await auth();
-  const body: any = await request.json();
-
-  if (!session?.user) {
-    return Response.redirect('/');
-  }
-
-  const user = await prisma.users.findFirst({
-    where: {
-      email: session.user.email
-    }
+export async function PUT() {
+  return NextResponse.json({
+    message: 'Hello, world!'
   });
+  //   const session = await auth();
+  //   const body: any = await request.json();
 
-  if (!user) {
-    return Response.json({
-      error: 'User not found',
-      status: StatusCodes.NOT_FOUND
-    });
-  }
+  //   if (!session?.user) {
+  //     return Response.redirect('/');
+  //   }
 
-  const res = await prisma.users.update({
-    where: {
-      id: user.id as any
-    },
-    data: {
-      ...(body as any)
-    }
-  });
+  //   const user = await prisma.users.findFirst({
+  //     where: {
+  //       email: session.user.email
+  //     }
+  //   });
 
-  console.log(res, {
-    ...(body as any)
-  });
+  //   if (!user) {
+  //     return Response.json({
+  //       error: 'User not found',
+  //       status: StatusCodes.NOT_FOUND
+  //     });
+  //   }
 
-  if (!user) {
-    return Response.json({
-      error: 'User not found',
-      status: StatusCodes.NOT_FOUND
-    });
-  } else {
-    return Response.json({ user });
-  }
-}
+  //   const res = await prisma.users.update({
+  //     where: {
+  //       id: user.id
+  //     },
+  //     data: {
+  //       ...(body as any)
+  //     }
+  //   });
 
-export async function GET() {
-  const session = await auth();
+  //   console.log(res, {
+  //     ...(body as any)
+  //   });
 
-  if (!session?.user) {
-    return Response.redirect('/');
-  }
+  //   if (!user) {
+  //     return Response.json({
+  //       error: 'User not found',
+  //       status: StatusCodes.NOT_FOUND
+  //     });
+  //   } else {
+  //     return Response.json({ user });
+  //   }
+  // }
 
-  const user = await prisma.users.findFirst({
-    where: {
-      email: session.user.email
-    }
-  });
+  // export async function GET() {
+  //   const session = await auth();
 
-  if (!user) {
-    return Response.json({
-      error: 'User not found',
-      status: StatusCodes.NOT_FOUND
-    });
-  }
+  //   if (!session?.user) {
+  //     return Response.redirect('/');
+  //   }
 
-  if (!user.linked_business_id) {
-    const inviteCode = uuidv4();
-    await joinAction(inviteCode, {
-      email: session.user.email as string,
-      name: session.user.name || '',
-      phone: '',
-      description: '',
-      image: ''
-    });
-  }
+  //   const user = await prisma.users.findFirst({
+  //     where: {
+  //       email: session.user.email
+  //     }
+  //   });
 
-  // Find businesses that the user has access to
-  const businesses = await prisma.businesses.findFirst({
-    where: {
-      id: user.linked_business_id as any
-    }
-  });
+  //   if (!user) {
+  //     return Response.json({
+  //       error: 'User not found',
+  //       status: StatusCodes.NOT_FOUND
+  //     });
+  //   }
 
-  if (!businesses) {
-    return Response.json({
-      error: 'Business not found',
-      status: StatusCodes.NOT_FOUND
-    });
-  }
+  //   if (!user.linked_business_id) {
+  //     const inviteCode = uuidv4();
+  //     await joinAction(inviteCode, {
+  //       email: session.user.email as string,
+  //       name: session.user.name || '',
+  //       phone: '',
+  //       description: '',
+  //       image: ''
+  //     });
+  //   }
 
-  const places = await prisma.places.findMany({
-    where: {
-      business_id: businesses.id as any
-    }
-  });
+  //   // Find businesses that the user has access to
+  //   const businesses = await prisma.businesses.findFirst({
+  //     where: {
+  //       id: user.linked_business_id as any
+  //     }
+  //   });
 
-  const placesIds: string[] = [];
+  //   if (!businesses) {
+  //     return Response.json({
+  //       error: 'Business not found',
+  //       status: StatusCodes.NOT_FOUND
+  //     });
+  //   }
 
-  for (const place of places) {
-    if (place?.accounts) {
-      for (const account of place.accounts as string[]) {
-        placesIds.push(account);
-      }
-    }
-  }
+  //   const places = await prisma.places.findMany({
+  //     where: {
+  //       business_id: businesses.id as any
+  //     }
+  //   });
 
-  return Response.json({
-    places,
-    user,
-    business: businesses,
-    accounts: placesIds
-  });
+  //   const placesIds: string[] = [];
+
+  //   for (const place of places) {
+  //     if (place?.accounts) {
+  //       for (const account of place.accounts as string[]) {
+  //         placesIds.push(account);
+  //       }
+  //     }
+  //   }
+
+  //   return Response.json({
+  //     places,
+  //     user,
+  //     business: businesses,
+  //     accounts: placesIds
+  //   });
 }

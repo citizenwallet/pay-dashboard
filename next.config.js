@@ -20,6 +20,16 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'ipfs.internal.citizenwallet.xyz',
         port: ''
+      },
+      {
+        protocol: 'https',
+        hostname: 'ounjigiydhimruivuxjv.supabase.co',
+        port: ''
+      },
+      {
+        protocol: 'https',
+        hostname: 'assets.citizenwallet.xyz',
+        port: ''
       }
     ]
   }

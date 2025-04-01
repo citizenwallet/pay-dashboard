@@ -3,8 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
-import { Icons } from '@/components/icons';
-import { FcGoogle } from "react-icons/fc";
+import { FcGoogle } from 'react-icons/fc';
 
 export default function GoogleSignInButton() {
   const searchParams = useSearchParams();
