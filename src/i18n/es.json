@@ -59,5 +59,16 @@
     "net": "Neto",
     "status": "Estado",
     "description": "Descripción"
+  },
+  "qr": {
+    "QrCode": "Código QR",
+    "qrDescription": "Gestionar tu código QR de lugar",
+    "download": "Descargar",
+    "Paytitle": "Paga aquí con Brussels Pay",
+    "Paydescription": "Pagos locales para negocios locales",
+    "Scantopay": "Escanea para pagar",
+    "learnmoreat": "Aprende más en",
+    "paybrussels": "pay.brussels",
+    "Pay": "Pagar"
   }
 }

@@ -59,5 +59,16 @@
     "net": "Net",
     "status": "Status",
     "description": "Description"
+  },
+  "qr": {
+    "QrCode": "QR Code",
+    "qrDescription": "Manage your Place QR Code",
+    "download": "Download",
+    "Paytitle": "Pay here with Brussels Pay",
+    "Paydescription": "Local payments for local businesses",
+    "Scantopay": "Scan to pay",
+    "learnmoreat": "Learn more at",
+    "paybrussels": "pay.brussels",
+    "Pay": "Pay"
   }
 }
