@@ -1,22 +1,21 @@
 'use client';
 
-import PageContainer from '@/components/layout/page-container';
-import { Heading } from '@/components/ui/heading';
-import { cn, humanizeDate } from '@/lib/utils';
-import { buttonVariants } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
-import React from 'react';
-import Link from 'next/link';
-import { DataTable } from '@/components/ui/data-table';
-import { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { Place } from '@/db/places';
-import { Order } from '@/db/orders';
-import { formatCurrencyNumber } from '@/lib/currency';
 import CurrencyLogo from '@/components/currency-logo';
+import PageContainer from '@/components/layout/page-container';
+import { buttonVariants } from '@/components/ui/button';
+import { DataTable } from '@/components/ui/data-table';
+import { Heading } from '@/components/ui/heading';
+import { Separator } from '@/components/ui/separator';
+import { Order } from '@/db/orders';
+import { Place } from '@/db/places';
+import { formatCurrencyNumber } from '@/lib/currency';
+import { cn, humanizeDate } from '@/lib/utils';
+import { ColumnDef, PaginationState } from '@tanstack/react-table';
+import { useTranslations } from 'next-intl';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { exportCsvAction } from '../action';
+import React from 'react';
 import { toast } from 'sonner';
+import { exportCsvAction } from '../action';
 
 interface Props {
   place: Place;
@@ -30,24 +29,27 @@ interface Props {
   balance: number;
 }
 
-const createColumns = (currencyLogo: string): ColumnDef<Order>[] => [
+const createColumns = (
+  currencyLogo: string,
+  t: Function
+): ColumnDef<Order>[] => [
   {
     accessorKey: 'id',
-    header: 'ID',
+    header: t('id'),
     cell: ({ row }) => {
       return row.original.id;
     }
   },
   {
     accessorKey: 'date',
-    header: 'Date',
+    header: t('date'),
     cell: ({ row }) => {
       return humanizeDate(row.original.created_at);
     }
   },
   {
     accessorKey: 'total',
-    header: 'Total',
+    header: t('total'),
     cell: ({ row }) => {
       return (
         <p className="flex w-8 items-center gap-1">
@@ -59,7 +61,7 @@ const createColumns = (currencyLogo: string): ColumnDef<Order>[] => [
   },
   {
     accessorKey: 'fees',
-    header: 'Fees',
+    header: t('fees'),
     cell: ({ row }) => {
       return (
         <p className="flex w-8 items-center gap-1">
@@ -71,7 +73,7 @@ const createColumns = (currencyLogo: string): ColumnDef<Order>[] => [
   },
   {
     accessorKey: 'net',
-    header: 'Net',
+    header: t('net'),
     cell: ({ row }) => {
       return (
         <p className="flex w-8 items-center gap-1">
@@ -83,7 +85,7 @@ const createColumns = (currencyLogo: string): ColumnDef<Order>[] => [
   },
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: t('status'),
     cell: ({ row }) => {
       return (
         <span
@@ -100,7 +102,7 @@ const createColumns = (currencyLogo: string): ColumnDef<Order>[] => [
   },
   {
     accessorKey: 'description',
-    header: 'Description'
+    header: t('description')
   }
 ];
 
@@ -114,7 +116,7 @@ export const OrdersPage: React.FC<Props> = ({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
+  const t = useTranslations('order');
   // Initialize state from searchParams
   const initialDateRange = searchParams.get('dateRange') || 'today';
   const initialStartDate = searchParams.get('startDate') || '';
@@ -218,12 +220,12 @@ export const OrdersPage: React.FC<Props> = ({
 
   // Date range options
   const dateRangeOptions = [
-    { value: 'today', label: 'Today' },
-    { value: 'yesterday', label: 'Yesterday' },
-    { value: 'last7days', label: 'Last 7 Days' },
-    { value: 'thisMonth', label: 'This Month' },
-    { value: 'lastMonth', label: 'Last Month' },
-    { value: 'custom', label: 'Custom Range' }
+    { value: 'today', label: t('today') },
+    { value: 'yesterday', label: t('yesterday') },
+    { value: 'last7days', label: t('last7days') },
+    { value: 'thisMonth', label: t('thisMonth') },
+    { value: 'lastMonth', label: t('lastMonth') },
+    { value: 'custom', label: t('customRange') }
   ];
 
   return (
@@ -233,7 +235,7 @@ export const OrdersPage: React.FC<Props> = ({
           <div className="flex flex-col gap-2">
             <Heading
               title={place.name}
-              description={`Orders for ${place.name}`}
+              description={`${t('ordersFor')} ${place.name}`}
             />
             <p className="flex items-center gap-1 text-2xl font-bold">
               <CurrencyLogo logo={currencyLogo} size={32} />{' '}
@@ -245,7 +247,7 @@ export const OrdersPage: React.FC<Props> = ({
             onClick={exportToCSV}
             className={cn(buttonVariants({ variant: 'outline' }), 'self-start')}
           >
-            Export as CSV
+            {t('exportAsCSV')}
           </button>
         </div>
         <Separator />
@@ -253,7 +255,7 @@ export const OrdersPage: React.FC<Props> = ({
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-4">
             <label htmlFor="dateRange" className="text-sm font-medium">
-              Date Range:
+              {t('dateRange')}
             </label>
             <select
               id="dateRange"
@@ -274,7 +276,7 @@ export const OrdersPage: React.FC<Props> = ({
             <div className="flex items-center gap-4">
               <div className="flex flex-col gap-1">
                 <label htmlFor="startDate" className="text-sm font-medium">
-                  Start Date:
+                  {t('startDate')}
                 </label>
                 <input
                   type="date"
@@ -287,7 +289,7 @@ export const OrdersPage: React.FC<Props> = ({
               </div>
               <div className="flex flex-col gap-1">
                 <label htmlFor="endDate" className="text-sm font-medium">
-                  End Date:
+                  {t('endDate')}
                 </label>
                 <input
                   type="date"
@@ -303,7 +305,7 @@ export const OrdersPage: React.FC<Props> = ({
         </div>
         <div className="w-[92vw] overflow-x-auto md:w-full">
           <DataTable
-            columns={createColumns(currencyLogo)}
+            columns={createColumns(currencyLogo, t)}
             data={orders}
             pageCount={Math.ceil(pagination.totalItems / pagination.limit)}
             pageSize={pagination.limit}

@@ -37,5 +37,27 @@
     "light": "Light",
     "dark": "Dark",
     "system": "System"
+  },
+  "order": {
+    "dateRange": "Date Range",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "last7days": "Last 7 Days",
+    "thisMonth": "This Month",
+    "lastMonth": "Last Month",
+    "customRange": "Custom Range",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "exportAsCSV": "Export as CSV",
+    "ordersFor": "Orders for",
+    "noResults": "No results",
+    "of": "of",
+    "id": "ID",
+    "date": "Date",
+    "total": "Total",
+    "fees": "Fees",
+    "net": "Net",
+    "status": "Status",
+    "description": "Description"
   }
 }

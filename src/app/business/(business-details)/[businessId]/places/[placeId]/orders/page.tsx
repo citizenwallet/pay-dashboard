@@ -7,6 +7,7 @@ import Config from '@/cw/community.json';
 import { CommunityConfig, getAccountBalance } from '@citizenwallet/sdk';
 import { isAdmin } from '@/db/users';
 import { getUserIdFromSessionAction } from '@/actions/session';
+import { getTranslations } from 'next-intl/server';
 
 export const metadata = {
   title: 'Place Orders'
