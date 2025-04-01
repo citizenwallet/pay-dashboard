@@ -36,6 +36,7 @@ import { NavMain } from './nav-main';
 import { PlaceSwitcher } from './place-switcher';
 import ThemeToggle from './ThemeToggle/theme-toggle';
 import { UserNav } from './user-nav';
+import LanguageSwitcher from './language-switcher';
 
 export default function AppSidebar({
   isAdmin,
@@ -175,6 +176,7 @@ export default function AppSidebar({
 
           <div className="flex items-center gap-2 px-4">
             <UserNav />
+            <LanguageSwitcher />
             <ThemeToggle />
           </div>
         </header>

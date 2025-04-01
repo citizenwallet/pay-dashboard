@@ -32,8 +32,11 @@ import {
   ChevronsUpDown,
   CreditCard,
   Inbox,
+  Languages,
   LayoutDashboard,
-  LogOut
+  LogOut,
+  MoonIcon,
+  SunIcon
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import ThemeToggle from './ThemeToggle/theme-toggle';
@@ -45,6 +48,8 @@ import { getUserFromSessionAction } from '@/actions/session';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import LanguageSwitcher from './language-switcher';
 
 export default function RootAppSidebar({
   isAdmin,
@@ -203,6 +208,7 @@ export default function RootAppSidebar({
 
           <div className="flex items-center gap-2 px-4">
             <UserNav />
+            <LanguageSwitcher />
             <ThemeToggle />
           </div>
         </header>
