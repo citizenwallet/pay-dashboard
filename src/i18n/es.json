@@ -5,6 +5,37 @@
     "profile": "Perfil",
     "manage": "Gestionar",
     "qrcode": "Código QR",
-    "payouts": "Pagos"
+    "payouts": "Pagos",
+    "place": "Lugar",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "systemAdmin": "ADMINISTRADOR DEL SISTEMA",
+    "logout": "Cerrar sesión"
+  },
+  "navButton": {
+    "copyToClipboard": "Copiar al portapapeles",
+    "failedToCopy": "Error al copiar el enlace. Por favor, inténtelo de nuevo.",
+    "copyCheckoutLink": "Copiar enlace de checkout",
+    "copyOrdersFeedLink": "Copiar enlace de feed de pedidos",
+    "makePublic": "Hacer público",
+    "makePrivate": "Hacer privado",
+    "place": "Lugar",
+    "public": "Público",
+    "private": "Privado",
+    "successfully": "correctamente",
+    "errorVisibilityToggle": "Error al manejar el cambio de visibilidad del lugar",
+    "doYouWantTo": "¿Quieres",
+    "makePublicDescription": "hacer un lugar público, será visible en todas las listas públicas",
+    "makePrivateDescription": "ocultar este lugar, sigue activo pero no visible en las listas públicas",
+    "yes": "Sí",
+    "no": "No",
+    "areYouSure": "¿Estás seguro?"
+  },
+  "userNav": {
+    "profile": "Perfil",
+    "logout": "Cerrar sesión",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema"
   }
 }

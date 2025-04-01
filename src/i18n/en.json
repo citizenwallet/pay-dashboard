@@ -5,6 +5,37 @@
     "profile": "Profile",
     "manage": "Manage",
     "qrcode": "QR Code",
-    "payouts": "Payouts"
+    "payouts": "Payouts",
+    "place": "Place",
+    "light": "Light",
+    "dark": "Dark",
+    "systemAdmin": "SYSTEM ADMIN",
+    "logout": "Logout"
+  },
+  "navButton": {
+    "copyToClipboard": "Copy to clipboard",
+    "failedToCopy": "Failed to copy the link. Please try again.",
+    "copyCheckoutLink": "Copy checkout link",
+    "copyOrdersFeedLink": "Copy orders feed link",
+    "makePublic": "Make public",
+    "makePrivate": "Make private",
+    "place": "Place",
+    "public": "Public",
+    "private": "Private",
+    "successfully": "successfully",
+    "errorVisibilityToggle": "Error with handle Visibility Toggle the place",
+    "doYouWantTo": "Do you want to",
+    "makePublicDescription": "making a place public, it will be visible in all public listings",
+    "makePrivateDescription": "hiding this place, it is still active but not visible in public listings anymore",
+    "yes": "Yes",
+    "no": "No",
+    "areYouSure": "Are you sure?"
+  },
+  "userNav": {
+    "profile": "Profile",
+    "logout": "Logout",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
   }
 }
