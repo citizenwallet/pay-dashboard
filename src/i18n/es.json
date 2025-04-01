@@ -1,0 +1,10 @@
+{
+  "sidebar": {
+    "orders": "Pedidos",
+    "checkout": "Checkout",
+    "profile": "Perfil",
+    "manage": "Gestionar",
+    "qrcode": "Código QR",
+    "payouts": "Pagos"
+  }
+}

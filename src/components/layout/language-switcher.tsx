@@ -8,10 +8,33 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function LanguageSwitcher() {
   const [language, setLanguage] = useState('en');
+  const router = useRouter();
+
+  useEffect(() => {
+    const cookieLocale = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('NEXT_LOCALE='))
+      ?.split('=')[1];
+    if (cookieLocale) {
+      setLanguage(cookieLocale);
+    } else {
+      const browserLocale = navigator.language.split('-')[0];
+      setLanguage(browserLocale);
+      document.cookie = `NEXT_LOCALE=${browserLocale};`;
+      router.refresh();
+    }
+  }, [router]);
+
+  const handleLanguageChange = (newLanguage: string) => {
+    setLanguage(newLanguage);
+    document.cookie = `NEXT_LOCALE=${newLanguage};`;
+    router.refresh();
+  };
 
   return (
     <DropdownMenu>
@@ -27,7 +50,7 @@ export default function LanguageSwitcher() {
             language === 'en' ? 'bg-primary text-primary-foreground' : ''
           }`}
           onClick={() => {
-            setLanguage('en');
+            handleLanguageChange('en');
           }}
         >
           English
@@ -37,7 +60,7 @@ export default function LanguageSwitcher() {
             language === 'es' ? 'bg-primary text-primary-foreground' : ''
           }`}
           onClick={() => {
-            setLanguage('es');
+            handleLanguageChange('es');
           }}
         >
           Spanish
