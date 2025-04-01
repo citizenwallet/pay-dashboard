@@ -361,7 +361,7 @@ export async function getRefund(
         case 'viva':
           const id = orderProcess.processor_tx_id;
           const amount = order.total;
-          const url = `https://demo.vivapayments.com/api/transactions/${id}?amount=${amount}`;
+          const url = `${process.env.VIVA_API_URL}/api/transactions/${id}?amount=${amount}`;
 
           const token = encodeBase64(
             `${process.env.VIVA_API_KEY}:${process.env.VIVA_API_SECRET}`
