@@ -59,8 +59,18 @@ export default function PayoutDetailsPage({
   const handleBurnSave = async () => {
     try {
       setIsBurnEditing(false);
-      await updatePayoutBurnDateAction(payout_id, editingBurnDate);
-      toast.success(`Payout burn date updated successfully`);
+
+      if (editingBurnDate == payout.burnDate) {
+        return;
+      }
+
+      if (editingBurnDate) {
+        await updatePayoutBurnDateAction(payout_id, editingBurnDate);
+        toast.success(`Payout burn date updated successfully`);
+      } else {
+        toast.error(`Payout burn date is Empty,You can't update Empty Date`);
+        setEditingBurnDate(payout.burnDate || '');
+      }
     } catch (error) {
       toast.error(`Payout burn date update failed`);
     }
@@ -78,8 +88,20 @@ export default function PayoutDetailsPage({
   const handleTransferSave = async () => {
     try {
       setIsTransferEditing(false);
-      await updatePayoutTransferDateAction(payout_id, editingTransferDate);
-      toast.success(`Payout transfer date updated successfully`);
+
+      if (editingTransferDate == payout.transferDate) {
+        return;
+      }
+
+      if (editingTransferDate) {
+        await updatePayoutTransferDateAction(payout_id, editingTransferDate);
+        toast.success(`Payout transfer date updated successfully`);
+      } else {
+        toast.error(
+          `Payout transfer date is Empty,You can't update Empty Date`
+        );
+        setEditingTransferDate(payout.transferDate || '');
+      }
     } catch (error) {
       toast.error(`Payout transfer date update failed`);
     }
@@ -125,7 +147,7 @@ export default function PayoutDetailsPage({
         <div className="flex items-center gap-7">
           <>
             {!payout.burn && (
-              <Button className="mt-7" onClick={() => handleOpenModal('burn')}>
+              <Button className="mt-10" onClick={() => handleOpenModal('burn')}>
                 Set As Burn
               </Button>
             )}
@@ -144,7 +166,7 @@ export default function PayoutDetailsPage({
                   />
                 ) : (
                   <div
-                    className="flex items-center"
+                    className="flex cursor-pointer items-center"
                     onClick={() => setIsBurnEditing(true)}
                   >
                     {editingBurnDate
@@ -164,7 +186,7 @@ export default function PayoutDetailsPage({
 
             {!payout.transfer && (
               <Button
-                className="mt-7"
+                className="mt-10"
                 onClick={() => handleOpenModal('transferred')}
               >
                 {' '}
@@ -186,7 +208,7 @@ export default function PayoutDetailsPage({
                   />
                 ) : (
                   <div
-                    className="flex items-center"
+                    className="flex cursor-pointer items-center"
                     onClick={() => setIsTransferEditing(true)}
                   >
                     {editingTransferDate
@@ -215,10 +237,10 @@ export default function PayoutDetailsPage({
                 Are you sure you want to set this as <strong>{action}</strong>?
               </p>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setOpen(false)}>
+                <Button variant="destructive" onClick={() => setOpen(false)}>
                   Cancel
                 </Button>
-                <Button variant="destructive" onClick={handleConfirm}>
+                <Button variant="outline" onClick={handleConfirm}>
                   Confirm
                 </Button>
               </DialogFooter>

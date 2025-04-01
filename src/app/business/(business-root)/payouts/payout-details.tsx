@@ -12,8 +12,10 @@ import { useRef, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import {
   updatePayoutBurnDateAction,
-  updatePayoutTransferDateAction
+  updatePayoutTransferDateAction,
+  getAllPayoutAction
 } from './action';
+import { useRouter } from 'next/navigation';
 
 export default function PayoutDetailsPage({
   payouts,
@@ -33,6 +35,20 @@ export default function PayoutDetailsPage({
   >(null);
   const [editTransferDate, setEditTransferDate] = useState<string>('');
   const dateInputRefTransferDate = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+
+  // Fetch fresh data when component mounts or when router changes
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const freshData = await getAllPayoutAction();
+        setPayoutData(freshData);
+      } catch (error) {
+        console.error('Failed to fetch fresh data:', error);
+      }
+    };
+    fetchData();
+  }, [router]);
 
   // Burn Date edit open
   const handleBurnEditClick = (id: string, date: Date) => {
