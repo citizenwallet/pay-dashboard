@@ -3,9 +3,8 @@
 import CurrencyLogo from '@/components/currency-logo';
 import SearchInput from '@/components/search-input';
 import { Button } from '@/components/ui/button';
-import { DataTable } from '@/components/ui/data-table';
+import { DataTable } from '@/components/ui/data-table-rowclick';
 import { Input } from '@/components/ui/input';
-import { Payout } from '@/db/payouts';
 import { formatCurrencyNumber } from '@/lib/currency';
 import { Column, PaginationState, Row } from '@tanstack/react-table';
 import { Plus } from 'lucide-react';
@@ -510,6 +509,10 @@ export default function PayoutDetailsPage({
           pageSize={limit}
           pageIndex={offset / limit}
           onPaginationChange={onPaginationChange}
+          onRowClick={(row) =>
+            router.push(`/business/payouts/${row.original.id}`)
+          }
+          rowClassName="cursor-pointer"
         />
       </div>
     </div>
