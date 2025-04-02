@@ -1,50 +1,37 @@
 'use client';
 
 import CurrencyLogo from '@/components/currency-logo';
+import SearchInput from '@/components/search-input';
 import { Button } from '@/components/ui/button';
+import { DataTable } from '@/components/ui/data-table';
 import { Input } from '@/components/ui/input';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from '@/components/ui/table';
 import { Payout } from '@/db/payouts';
 import { formatCurrencyNumber } from '@/lib/currency';
-import {
-  ColumnDef,
-  SortingState,
-  flexRender,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable
-} from '@tanstack/react-table';
+import { PaginationState, Row } from '@tanstack/react-table';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import {
-  getAllPayoutAction,
   updatePayoutBurnDateAction,
   updatePayoutTransferDateAction
 } from './action';
-import SearchInput from '@/components/search-input';
 
 export default function PayoutDetailsPage({
   payouts,
   currencyLogo,
-  search
+  count,
+  limit,
+  offset
 }: {
   payouts: Payout[];
   currencyLogo: string;
-  search?: string;
+  count: number;
+  limit: number;
+  offset: number;
 }) {
-  const [originalData, setOriginalData] = useState<Payout[]>(payouts);
-  const [filteredData, setFilteredData] = useState<Payout[]>(payouts);
+  const [payoutData, setPayoutData] = useState<Payout[]>(payouts);
   const [editingIdBurnDate, setEditingIdBurnDate] = useState<string | null>(
     null
   );
@@ -56,38 +43,12 @@ export default function PayoutDetailsPage({
   const [editTransferDate, setEditTransferDate] = useState<string>('');
   const dateInputRefTransferDate = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: 'transfer', desc: false }
-  ]);
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(15);
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
 
-  // Filter data based on search query
   useEffect(() => {
-    const filtered = originalData.filter((payout) => {
-      if (!search) return true;
-      const searchLower = search.toLowerCase();
-      return (
-        payout.business_id.toLowerCase().includes(searchLower) ||
-        payout.place_id.toLowerCase().includes(searchLower)
-      );
-    });
-    setFilteredData(filtered);
-    setPageIndex(0);
-  }, [search, originalData]);
-
-  // Fetch fresh data when component mounts or when router changes
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const freshData = await getAllPayoutAction();
-        setOriginalData(freshData);
-      } catch (error) {
-        console.error('Failed to fetch fresh data:', error);
-      }
-    };
-    fetchData();
-  }, [router]);
+    setPayoutData(payouts);
+  }, [payouts]);
 
   // Burn Date edit open
   const handleBurnEditClick = (id: string, date: Date) => {
@@ -100,8 +61,8 @@ export default function PayoutDetailsPage({
   // Burn Date edit save
   const handleSaveEditBurnDate = async (id: string, date: string) => {
     try {
-      setOriginalData(
-        originalData.map((p) => (p.id === id ? { ...p, burnDate: date } : p))
+      setPayoutData(
+        payouts.map((p) => (p.id === id ? { ...p, burnDate: date } : p))
       );
       setEditingIdBurnDate(null);
       await updatePayoutBurnDateAction(id, date);
@@ -122,10 +83,8 @@ export default function PayoutDetailsPage({
   // Transfer Date edit save
   const handleSaveEditTransferDate = async (id: string, date: string) => {
     try {
-      setOriginalData(
-        originalData.map((p) =>
-          p.id === id ? { ...p, transferDate: date } : p
-        )
+      setPayoutData(
+        payouts.map((p) => (p.id === id ? { ...p, transferDate: date } : p))
       );
       setEditingIdTransferDate(null);
       await updatePayoutTransferDateAction(id, date);
@@ -159,25 +118,33 @@ export default function PayoutDetailsPage({
     };
   }, [editingIdBurnDate, editingIdTransferDate]);
 
-  const columns: ColumnDef<Payout>[] = [
+  const onPaginationChange = useCallback(
+    (
+      updaterOrValue:
+        | PaginationState
+        | ((old: PaginationState) => PaginationState)
+    ) => {
+      const newState =
+        typeof updaterOrValue === 'function'
+          ? updaterOrValue({
+              pageIndex: offset / limit,
+              pageSize: limit
+            })
+          : updaterOrValue;
+
+      const params = new URLSearchParams(searchParams);
+      params.set('offset', (newState.pageIndex * newState.pageSize).toString());
+      params.set('limit', newState.pageSize.toString());
+      router.push(`${pathname}?${params.toString()}`);
+    },
+    [pathname, router, searchParams, offset, limit]
+  );
+
+  const columns = [
     {
       accessorKey: 'id',
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          >
-            Id
-            {column.getIsSorted() === 'asc'
-              ? ' ↑'
-              : column.getIsSorted() === 'desc'
-              ? ' ↓'
-              : ''}
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
+      header: 'Id',
+      cell: ({ row }: { row: Row<Payout> }) => (
         <Link
           href={`/business/payouts/${row.original.id}`}
           className="flex h-16 items-center"
@@ -188,64 +155,22 @@ export default function PayoutDetailsPage({
     },
     {
       accessorKey: 'business_id',
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          >
-            Business Name
-            {column.getIsSorted() === 'asc'
-              ? ' ↑'
-              : column.getIsSorted() === 'desc'
-              ? ' ↓'
-              : ''}
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
+      header: 'Business Name',
+      cell: ({ row }: { row: Row<Payout> }) => (
         <div className="flex h-16 items-center">{row.original.business_id}</div>
       )
     },
     {
       accessorKey: 'place_id',
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          >
-            Place Name
-            {column.getIsSorted() === 'asc'
-              ? ' ↑'
-              : column.getIsSorted() === 'desc'
-              ? ' ↓'
-              : ''}
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
+      header: 'Place Name',
+      cell: ({ row }: { row: Row<Payout> }) => (
         <div className="flex h-16 items-center">{row.original.place_id}</div>
       )
     },
     {
       accessorKey: 'created_at',
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          >
-            Created At
-            {column.getIsSorted() === 'asc'
-              ? ' ↑'
-              : column.getIsSorted() === 'desc'
-              ? ' ↓'
-              : ''}
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
+      header: 'Created At',
+      cell: ({ row }: { row: Row<Payout> }) => (
         <div className="flex h-16 items-center">
           {row.original.created_at
             ? new Date(row.original.created_at).toLocaleString('en-US', {
@@ -259,22 +184,8 @@ export default function PayoutDetailsPage({
     },
     {
       accessorKey: 'total',
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          >
-            Total
-            {column.getIsSorted() === 'asc'
-              ? ' ↑'
-              : column.getIsSorted() === 'desc'
-              ? ' ↓'
-              : ''}
-          </Button>
-        );
-      },
-      cell: ({ row }) => {
+      header: 'Total',
+      cell: ({ row }: { row: Row<Payout> }) => {
         return (
           <p className="flex h-16 w-8 items-center gap-1">
             <CurrencyLogo logo={currencyLogo} size={18} />
@@ -285,22 +196,8 @@ export default function PayoutDetailsPage({
     },
     {
       accessorKey: 'burn',
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          >
-            Burn
-            {column.getIsSorted() === 'asc'
-              ? ' ↑'
-              : column.getIsSorted() === 'desc'
-              ? ' ↓'
-              : ''}
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
+      header: 'Burn',
+      cell: ({ row }: { row: Row<Payout> }) => (
         <div className="flex h-16 items-center space-x-2">
           <span className="text-red-500">{row.original.burn ? '🔥' : '-'}</span>
           {editingIdBurnDate === row.original.id ? (
@@ -349,24 +246,11 @@ export default function PayoutDetailsPage({
         </div>
       )
     },
+
     {
       accessorKey: 'transfer',
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          >
-            Transfer
-            {column.getIsSorted() === 'asc'
-              ? ' ↑'
-              : column.getIsSorted() === 'desc'
-              ? ' ↓'
-              : ''}
-          </Button>
-        );
-      },
-      cell: ({ row }) => (
+      header: 'Transfer',
+      cell: ({ row }: { row: Row<Payout> }) => (
         <div className="flex h-16 items-center space-x-2">
           <span className="text-blue-500">
             {row.original.transfer ? '🏛️' : '-'}
@@ -422,35 +306,6 @@ export default function PayoutDetailsPage({
     }
   ];
 
-  const table = useReactTable({
-    data: filteredData,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
-    state: {
-      sorting,
-      pagination: {
-        pageIndex,
-        pageSize
-      }
-    },
-    onPaginationChange: (updater) => {
-      if (typeof updater === 'function') {
-        const newState = updater({
-          pageIndex,
-          pageSize
-        });
-        setPageIndex(newState.pageIndex);
-        setPageSize(15);
-      } else {
-        setPageIndex(updater.pageIndex);
-        setPageSize(15);
-      }
-    }
-  });
-
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
@@ -460,86 +315,19 @@ export default function PayoutDetailsPage({
             New Payout
           </Button>
         </Link>
+
         <SearchInput className="w-80" />
       </div>
 
       <div className="w-[90vw] overflow-x-auto md:w-full">
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && 'selected'}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-          <div className="mr-7 flex items-center justify-end px-2 py-4">
-            <div className="flex items-center space-x-6 lg:space-x-8">
-              <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-                Page {table.getState().pagination.pageIndex + 1} of{' '}
-                {table.getPageCount()}
-              </div>
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="outline"
-                  className="h-8 w-8 p-0"
-                  onClick={() => table.previousPage()}
-                  disabled={!table.getCanPreviousPage()}
-                >
-                  <span className="sr-only">Go to previous page</span>
-                  {'<'}
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-8 w-8 p-0"
-                  onClick={() => table.nextPage()}
-                  disabled={!table.getCanNextPage()}
-                >
-                  <span className="sr-only">Go to next page</span>
-                  {'>'}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <DataTable
+          columns={columns}
+          data={payoutData}
+          pageCount={Math.ceil(count / limit)}
+          pageSize={limit}
+          pageIndex={offset / limit}
+          onPaginationChange={onPaginationChange}
+        />
       </div>
     </div>
   );

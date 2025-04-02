@@ -14,22 +14,40 @@ import {
 import { getPlaceById } from '@/db/places';
 import { getTransferById } from '@/db/transfer';
 
-export async function getAllPayoutAction() {
+export async function getAllPayoutAction(
+  limit: number,
+  offset: number,
+  search?: string
+) {
   const client = getServiceRoleClient();
-  const payoutResponse = await getPayouts(client);
-
-  const payouts: Payout[] = payoutResponse.data ?? [];
+  const payoutResponse = await getPayouts(client, limit, offset);
+  let payouts: Payout[] = payoutResponse.data ?? [];
 
   //assign place and business name to payout
   for (const payout of payouts) {
-    const placeData = await getPlaceById(client, Number(payout.place_id));
+    const placeData = await client
+      .from('places')
+      .select('*')
+      .eq('id', payout.place_id)
+      .maybeSingle();
     payout.place_id = placeData.data?.name ?? '';
 
-    const businessData = await getBusinessById(
-      client,
-      Number(payout.business_id)
-    );
+    const businessData = await client
+      .from('businesses')
+      .select('*')
+      .eq('id', payout.business_id)
+      .maybeSingle();
     payout.business_id = businessData.data?.name ?? '';
+  }
+
+  //when have search then show only that payout
+  if (search) {
+    //fiter business and place name,search like %search%
+    payouts = payouts.filter(
+      (payout) =>
+        payout.business_id.toLowerCase().includes(search.toLowerCase()) ||
+        payout.place_id.toLowerCase().includes(search.toLowerCase())
+    );
   }
 
   //assign burn and transfer name to payout

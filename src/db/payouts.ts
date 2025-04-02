@@ -20,9 +20,15 @@ export interface Payout {
 }
 
 export const getPayouts = async (
-  client: SupabaseClient
+  client: SupabaseClient,
+  limit: number,
+  offset: number
 ): Promise<PostgrestSingleResponse<Payout[]>> => {
-  return await client.from('payouts').select('*');
+  return client
+    .from('payouts')
+    .select('*')
+    .order('id', { ascending: true })
+    .range(offset, offset + limit - 1);
 };
 
 export const getPayoutById = async (

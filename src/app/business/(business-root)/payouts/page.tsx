@@ -3,25 +3,23 @@ import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
-import React, { Suspense } from 'react';
-import PayoutDetailsPage from './payout-details';
-import { getAllPayoutAction } from './action';
-import { CommunityConfig } from '@citizenwallet/sdk';
 import Config from '@/cw/community.json';
-
-// Force dynamic rendering
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+import { getServiceRoleClient } from '@/db';
+import { CommunityConfig } from '@citizenwallet/sdk';
+import { Suspense } from 'react';
+import { getAllPayoutAction } from './action';
+import PayoutDetailsPage from './payout-details';
 
 interface PayoutsPageProps {
   searchParams: Promise<{
+    offset?: string;
+    limit?: string;
     search?: string;
   }>;
 }
 
 export default async function PayoutsPage({ searchParams }: PayoutsPageProps) {
-  const resolvedSearchParams = await searchParams;
-  const { search } = resolvedSearchParams;
+  const { search, offset, limit } = await searchParams;
 
   return (
     <PageContainer>
@@ -33,25 +31,49 @@ export default async function PayoutsPage({ searchParams }: PayoutsPageProps) {
         <Suspense
           fallback={<DataTableSkeleton columnCount={5} rowCount={10} />}
         >
-          <AsyncPayoutsLoader search={search} />
+          <AsyncPayoutsLoader
+            search={search}
+            offset={offset ?? '0'}
+            limit={limit ?? '10'}
+          />
         </Suspense>
       </div>
     </PageContainer>
   );
 }
 
-async function AsyncPayoutsLoader({ search }: { search?: string }) {
+async function AsyncPayoutsLoader({
+  search,
+  offset,
+  limit
+}: {
+  search?: string;
+  offset: string;
+  limit: string;
+}) {
+  const client = getServiceRoleClient();
+
   const admin = await isUserAdminAction();
   if (!admin) {
     return <div>You are not authorized to view this page</div>;
   }
-  const payouts = await getAllPayoutAction();
+  const payouts = await getAllPayoutAction(
+    Number(limit),
+    Number(offset),
+    search
+  );
+  const { count, error } = await client
+    .from('payouts')
+    .select('*', { count: 'exact' });
   const community = new CommunityConfig(Config);
+
   return (
     <PayoutDetailsPage
       payouts={payouts}
       currencyLogo={community.community.logo}
-      search={search}
+      count={count ?? 0}
+      limit={Number(limit)}
+      offset={Number(offset)}
     />
   );
 }
