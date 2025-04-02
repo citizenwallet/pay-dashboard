@@ -28,13 +28,19 @@ export default function PayoutDetailsPage({
   orders,
   currencyLogo,
   payout,
-  totalAmount
+  totalAmount,
+  count,
+  limit,
+  offset
 }: {
   payout_id: string;
   orders: Order[];
   currencyLogo: string;
   payout: Payout;
   totalAmount: number;
+  count: number;
+  limit?: string;
+  offset?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [action, setAction] = useState('');
@@ -270,7 +276,13 @@ export default function PayoutDetailsPage({
         </div>
       </div>
 
-      <OrderViewTable orders={orders} currencyLogo={currencyLogo} />
+      <OrderViewTable
+        orders={orders}
+        currencyLogo={currencyLogo}
+        count={count}
+        limit={limit ?? '10'}
+        offset={offset ?? '0'}
+      />
     </>
   );
 }
