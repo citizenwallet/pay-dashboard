@@ -9,6 +9,7 @@ import Config from '@/cw/community.json';
 import { CommunityConfig } from '@citizenwallet/sdk';
 import { getServiceRoleClient } from '@/db';
 import { getPlaceDisplay } from '@/db/places';
+import { getTranslations } from 'next-intl/server';
 
 export default async function itempage({
   params
@@ -16,12 +17,14 @@ export default async function itempage({
   params: Promise<{ placeId: string }>;
 }) {
   const { placeId } = await params;
+  const t = await getTranslations('checkout');
+
   return (
     <div>
       <PageContainer>
         <div className="space-y-4">
           <div className="flex items-start justify-between">
-            <Heading title="Items" description="Item of the place" />
+            <Heading title={t('items')} description={t('itemoftheplace')} />
           </div>
           <Separator />
           <Suspense
