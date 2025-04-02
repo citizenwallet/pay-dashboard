@@ -3,9 +3,10 @@ import CurrencyLogo from '@/components/currency-logo';
 import { DataTable } from '@/components/ui/data-table';
 import { Order } from '@/db/orders';
 import { formatCurrencyNumber } from '@/lib/currency';
-import { ColumnDef, PaginationState } from '@tanstack/react-table';
+import { Column, ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useCallback } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 
 export default function OrderViewTable({
   orders,
@@ -24,14 +25,61 @@ export default function OrderViewTable({
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
+  const handleSorting = (column: Column<Order>, order: 'asc' | 'desc') => {
+    const params = new URLSearchParams(searchParams);
+    params.set('column', column.id);
+    params.set('order', order);
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
   const columns: ColumnDef<Order>[] = [
     {
       accessorKey: 'id',
-      header: 'ID'
+      header: ({ column }: { column: Column<Order> }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              handleSorting(
+                column,
+                column.getIsSorted() === 'asc' ? 'asc' : 'desc'
+              );
+              column.toggleSorting(column.getIsSorted() === 'asc');
+            }}
+          >
+            ID
+            {column.getIsSorted() === 'asc'
+              ? ' ↑'
+              : column.getIsSorted() === 'desc'
+              ? ' ↓'
+              : ''}
+          </Button>
+        );
+      }
     },
     {
       accessorKey: 'created_at',
-      header: 'Date',
+      header: ({ column }: { column: Column<Order> }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              handleSorting(
+                column,
+                column.getIsSorted() === 'asc' ? 'asc' : 'desc'
+              );
+              column.toggleSorting(column.getIsSorted() === 'asc');
+            }}
+          >
+            Date
+            {column.getIsSorted() === 'asc'
+              ? ' ↑'
+              : column.getIsSorted() === 'desc'
+              ? ' ↓'
+              : ''}
+          </Button>
+        );
+      },
       cell: ({ row }) => {
         const date = new Date(row.original.created_at);
         return `${date.toLocaleDateString('en-GB')} ${date.toLocaleTimeString(
@@ -45,7 +93,27 @@ export default function OrderViewTable({
     },
     {
       accessorKey: 'total',
-      header: 'Total',
+      header: ({ column }: { column: Column<Order> }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              handleSorting(
+                column,
+                column.getIsSorted() === 'asc' ? 'asc' : 'desc'
+              );
+              column.toggleSorting(column.getIsSorted() === 'asc');
+            }}
+          >
+            Total
+            {column.getIsSorted() === 'asc'
+              ? ' ↑'
+              : column.getIsSorted() === 'desc'
+              ? ' ↓'
+              : ''}
+          </Button>
+        );
+      },
       cell: ({ row }) => {
         return (
           <p className="flex w-8 items-center gap-1">

@@ -68,7 +68,6 @@ const AsyncPayoutOrderPage = async (
   );
   const client = getServiceRoleClient();
 
-  const totalAmount = orders.data?.reduce((acc, order) => acc + order.total, 0);
   const community = new CommunityConfig(Config);
   const { payout } = await getPayoutStatusAction(payout_id);
   if (!payout?.data) {
@@ -77,6 +76,8 @@ const AsyncPayoutOrderPage = async (
 
   const { data } = await getPayoutOrders(client, Number(payout_id));
   const count = data?.length;
+
+  const totalAmount = data?.reduce((acc, order) => acc + order.total, 0);
 
   return (
     <PayoutDetailsPage
