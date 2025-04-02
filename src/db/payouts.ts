@@ -1,7 +1,6 @@
 import 'server-only';
 
 import { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
-import { da } from 'date-fns/locale';
 
 export interface Payout {
   actionDate: string | undefined;
@@ -35,8 +34,8 @@ export const getPayouts = async (
         `*, 
       places!inner(name), 
       businesses!inner(name),
-      payout_burn!inner(created_at), 
-      payout_transfer!inner(created_at)`
+      payout_burn(created_at), 
+      payout_transfer(created_at)`
       )
       .filter('places.name', 'ilike', `%${search}%`)
       .filter('businesses.name', 'ilike', `%${search}%`)
@@ -50,8 +49,8 @@ export const getPayouts = async (
       `*, 
       places!inner(name), 
       businesses!inner(name), 
-      payout_burn!inner(created_at), 
-      payout_transfer!inner(created_at)`
+      payout_burn(created_at), 
+      payout_transfer(created_at)`
     )
     .order(column ?? 'id', { ascending: order === 'asc' })
     .range(offset, offset + limit - 1);

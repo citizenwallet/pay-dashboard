@@ -24,8 +24,8 @@ interface FullPayout {
   user_id: number;
   from: string;
   to: string;
-  burn: number;
-  transfer: number;
+  burn: number | null;
+  transfer: number | null;
   total: number;
   place_id: number;
   business_id: number;
@@ -36,10 +36,10 @@ interface FullPayout {
     name: string;
   };
   payout_burn: {
-    created_at: string;
+    created_at: string | null;
   };
   payout_transfer: {
-    created_at: string;
+    created_at: string | null;
   };
 }
 
@@ -387,14 +387,14 @@ export default function PayoutDetailsPage({
               <span
                 className="cursor-pointer hover:text-blue-500 hover:underline"
                 onClick={() =>
-                  row.original.payout_burn.created_at &&
+                  row.original.payout_burn?.created_at &&
                   handleBurnEditClick(
                     row.original.id,
                     new Date(row.original.payout_burn.created_at)
                   )
                 }
               >
-                {row.original.payout_burn.created_at
+                {row.original.payout_burn?.created_at
                   ? new Date(
                       row.original.payout_burn.created_at
                     ).toLocaleDateString('en-US', {
@@ -464,14 +464,14 @@ export default function PayoutDetailsPage({
               <span
                 className="cursor-pointer hover:text-blue-500 hover:underline"
                 onClick={() =>
-                  row.original.payout_transfer.created_at &&
+                  row.original.payout_transfer?.created_at &&
                   handleTransferEditClick(
                     row.original.id,
                     new Date(row.original.payout_transfer.created_at)
                   )
                 }
               >
-                {row.original.payout_transfer.created_at
+                {row.original.payout_transfer?.created_at
                   ? new Date(
                       row.original.payout_transfer.created_at
                     ).toLocaleDateString('en-US', {

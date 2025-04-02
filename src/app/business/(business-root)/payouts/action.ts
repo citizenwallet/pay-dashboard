@@ -21,8 +21,8 @@ interface FullPayout {
   user_id: number;
   from: string;
   to: string;
-  burn: number;
-  transfer: number;
+  burn: number | null;
+  transfer: number | null;
   total: number;
   place_id: number;
   business_id: number;
@@ -33,10 +33,10 @@ interface FullPayout {
     name: string;
   };
   payout_burn: {
-    created_at: string;
+    created_at: string | null;
   };
   payout_transfer: {
-    created_at: string;
+    created_at: string | null;
   };
 }
 
