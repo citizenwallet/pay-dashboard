@@ -15,11 +15,13 @@ interface PayoutsPageProps {
     offset?: string;
     limit?: string;
     search?: string;
+    column?: string;
+    order?: string;
   }>;
 }
 
 export default async function PayoutsPage({ searchParams }: PayoutsPageProps) {
-  const { search, offset, limit } = await searchParams;
+  const { search, offset, limit, column, order } = await searchParams;
 
   return (
     <PageContainer>
@@ -35,6 +37,8 @@ export default async function PayoutsPage({ searchParams }: PayoutsPageProps) {
             search={search}
             offset={offset ?? '0'}
             limit={limit ?? '10'}
+            column={column}
+            order={order}
           />
         </Suspense>
       </div>
@@ -45,11 +49,15 @@ export default async function PayoutsPage({ searchParams }: PayoutsPageProps) {
 async function AsyncPayoutsLoader({
   search,
   offset,
-  limit
+  limit,
+  column,
+  order
 }: {
   search?: string;
   offset: string;
   limit: string;
+  column?: string;
+  order?: string;
 }) {
   const client = getServiceRoleClient();
 
@@ -60,7 +68,9 @@ async function AsyncPayoutsLoader({
   const payouts = await getAllPayoutAction(
     Number(limit),
     Number(offset),
-    search
+    search,
+    column,
+    order
   );
   const { count, error } = await client
     .from('payouts')

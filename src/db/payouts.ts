@@ -22,12 +22,14 @@ export interface Payout {
 export const getPayouts = async (
   client: SupabaseClient,
   limit: number,
-  offset: number
+  offset: number,
+  column?: string,
+  order?: string
 ): Promise<PostgrestSingleResponse<Payout[]>> => {
   return client
     .from('payouts')
     .select('*')
-    .order('id', { ascending: true })
+    .order(column ?? 'id', { ascending: order === 'asc' })
     .range(offset, offset + limit - 1);
 };
 

@@ -17,10 +17,12 @@ import { getTransferById } from '@/db/transfer';
 export async function getAllPayoutAction(
   limit: number,
   offset: number,
-  search?: string
+  search?: string,
+  column?: string,
+  order?: string
 ) {
   const client = getServiceRoleClient();
-  const payoutResponse = await getPayouts(client, limit, offset);
+  const payoutResponse = await getPayouts(client, limit, offset, column, order);
   let payouts: Payout[] = payoutResponse.data ?? [];
 
   //assign place and business name to payout

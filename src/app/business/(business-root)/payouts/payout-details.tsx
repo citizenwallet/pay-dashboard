@@ -7,7 +7,7 @@ import { DataTable } from '@/components/ui/data-table';
 import { Input } from '@/components/ui/input';
 import { Payout } from '@/db/payouts';
 import { formatCurrencyNumber } from '@/lib/currency';
-import { PaginationState, Row } from '@tanstack/react-table';
+import { Column, PaginationState, Row } from '@tanstack/react-table';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -140,10 +140,37 @@ export default function PayoutDetailsPage({
     [pathname, router, searchParams, offset, limit]
   );
 
+  const handleSorting = (column: Column<Payout>, order: 'asc' | 'desc') => {
+    const params = new URLSearchParams(searchParams);
+    params.set('column', column.id);
+    params.set('order', order);
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
   const columns = [
     {
       accessorKey: 'id',
-      header: 'Id',
+      header: ({ column }: { column: Column<Payout> }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              handleSorting(
+                column,
+                column.getIsSorted() === 'asc' ? 'asc' : 'desc'
+              );
+              column.toggleSorting(column.getIsSorted() === 'asc');
+            }}
+          >
+            Id
+            {column.getIsSorted() === 'asc'
+              ? ' ↑'
+              : column.getIsSorted() === 'desc'
+              ? ' ↓'
+              : ''}
+          </Button>
+        );
+      },
       cell: ({ row }: { row: Row<Payout> }) => (
         <Link
           href={`/business/payouts/${row.original.id}`}
@@ -169,7 +196,27 @@ export default function PayoutDetailsPage({
     },
     {
       accessorKey: 'created_at',
-      header: 'Created At',
+      header: ({ column }: { column: Column<Payout> }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              handleSorting(
+                column,
+                column.getIsSorted() === 'asc' ? 'asc' : 'desc'
+              );
+              column.toggleSorting(column.getIsSorted() === 'asc');
+            }}
+          >
+            Created At
+            {column.getIsSorted() === 'asc'
+              ? ' ↑'
+              : column.getIsSorted() === 'desc'
+              ? ' ↓'
+              : ''}
+          </Button>
+        );
+      },
       cell: ({ row }: { row: Row<Payout> }) => (
         <div className="flex h-16 items-center">
           {row.original.created_at
@@ -184,7 +231,27 @@ export default function PayoutDetailsPage({
     },
     {
       accessorKey: 'total',
-      header: 'Total',
+      header: ({ column }: { column: Column<Payout> }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              handleSorting(
+                column,
+                column.getIsSorted() === 'asc' ? 'asc' : 'desc'
+              );
+              column.toggleSorting(column.getIsSorted() === 'asc');
+            }}
+          >
+            Total
+            {column.getIsSorted() === 'asc'
+              ? ' ↑'
+              : column.getIsSorted() === 'desc'
+              ? ' ↓'
+              : ''}
+          </Button>
+        );
+      },
       cell: ({ row }: { row: Row<Payout> }) => {
         return (
           <p className="flex h-16 w-8 items-center gap-1">
