@@ -59,7 +59,9 @@ export default function OrderView({
 
   useEffect(() => {
     const calculatedTotal = orders.reduce((acc, order) => acc + order.total, 0);
-    setTotal(calculatedTotal);
+    const calculatedFees = orders.reduce((acc, order) => acc + order.fees, 0);
+
+    setTotal(calculatedTotal - calculatedFees);
   }, [orders]);
 
   // Pagination logic
