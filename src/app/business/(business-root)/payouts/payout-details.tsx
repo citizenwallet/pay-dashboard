@@ -18,6 +18,32 @@ import {
   updatePayoutTransferDateAction
 } from './action';
 
+interface FullPayout {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  user_id: number;
+  from: string;
+  to: string;
+  burn: number;
+  transfer: number;
+  total: number;
+  place_id: number;
+  business_id: number;
+  places: {
+    name: string;
+  };
+  businesses: {
+    name: string;
+  };
+  payout_burn: {
+    created_at: string;
+  };
+  payout_transfer: {
+    created_at: string;
+  };
+}
+
 export default function PayoutDetailsPage({
   payouts,
   currencyLogo,
@@ -25,13 +51,13 @@ export default function PayoutDetailsPage({
   limit,
   offset
 }: {
-  payouts: Payout[];
+  payouts: FullPayout[];
   currencyLogo: string;
   count: number;
   limit: number;
   offset: number;
 }) {
-  const [payoutData, setPayoutData] = useState<Payout[]>(payouts);
+  const [payoutData, setPayoutData] = useState<FullPayout[]>(payouts);
   const [editingIdBurnDate, setEditingIdBurnDate] = useState<string | null>(
     null
   );
@@ -62,7 +88,12 @@ export default function PayoutDetailsPage({
   const handleSaveEditBurnDate = async (id: string, date: string) => {
     try {
       setPayoutData(
-        payouts.map((p) => (p.id === id ? { ...p, burnDate: date } : p))
+        payouts.map((p) => {
+          if (p.id === id) {
+            return { ...p, payout_burn: { created_at: date } };
+          }
+          return p;
+        })
       );
       setEditingIdBurnDate(null);
       await updatePayoutBurnDateAction(id, date);
@@ -84,7 +115,12 @@ export default function PayoutDetailsPage({
   const handleSaveEditTransferDate = async (id: string, date: string) => {
     try {
       setPayoutData(
-        payouts.map((p) => (p.id === id ? { ...p, transferDate: date } : p))
+        payouts.map((p) => {
+          if (p.id === id) {
+            return { ...p, payout_transfer: { created_at: date } };
+          }
+          return p;
+        })
       );
       setEditingIdTransferDate(null);
       await updatePayoutTransferDateAction(id, date);
@@ -140,7 +176,7 @@ export default function PayoutDetailsPage({
     [pathname, router, searchParams, offset, limit]
   );
 
-  const handleSorting = (column: Column<Payout>, order: 'asc' | 'desc') => {
+  const handleSorting = (column: Column<FullPayout>, order: 'asc' | 'desc') => {
     const params = new URLSearchParams(searchParams);
     params.set('column', column.id);
     params.set('order', order);
@@ -150,7 +186,7 @@ export default function PayoutDetailsPage({
   const columns = [
     {
       accessorKey: 'id',
-      header: ({ column }: { column: Column<Payout> }) => {
+      header: ({ column }: { column: Column<FullPayout> }) => {
         return (
           <Button
             variant="ghost"
@@ -171,7 +207,7 @@ export default function PayoutDetailsPage({
           </Button>
         );
       },
-      cell: ({ row }: { row: Row<Payout> }) => (
+      cell: ({ row }: { row: Row<FullPayout> }) => (
         <Link
           href={`/business/payouts/${row.original.id}`}
           className="flex h-16 items-center"
@@ -183,20 +219,22 @@ export default function PayoutDetailsPage({
     {
       accessorKey: 'business_id',
       header: 'Business Name',
-      cell: ({ row }: { row: Row<Payout> }) => (
-        <div className="flex h-16 items-center">{row.original.business_id}</div>
+      cell: ({ row }: { row: Row<FullPayout> }) => (
+        <div className="flex h-16 items-center">
+          {row.original.businesses.name}
+        </div>
       )
     },
     {
       accessorKey: 'place_id',
       header: 'Place Name',
-      cell: ({ row }: { row: Row<Payout> }) => (
-        <div className="flex h-16 items-center">{row.original.place_id}</div>
+      cell: ({ row }: { row: Row<FullPayout> }) => (
+        <div className="flex h-16 items-center">{row.original.places.name}</div>
       )
     },
     {
       accessorKey: 'created_at',
-      header: ({ column }: { column: Column<Payout> }) => {
+      header: ({ column }: { column: Column<FullPayout> }) => {
         return (
           <Button
             variant="ghost"
@@ -217,7 +255,7 @@ export default function PayoutDetailsPage({
           </Button>
         );
       },
-      cell: ({ row }: { row: Row<Payout> }) => (
+      cell: ({ row }: { row: Row<FullPayout> }) => (
         <div className="flex h-16 items-center">
           {row.original.created_at
             ? new Date(row.original.created_at).toLocaleString('en-US', {
@@ -231,7 +269,7 @@ export default function PayoutDetailsPage({
     },
     {
       accessorKey: 'total',
-      header: ({ column }: { column: Column<Payout> }) => {
+      header: ({ column }: { column: Column<FullPayout> }) => {
         return (
           <Button
             variant="ghost"
@@ -252,7 +290,7 @@ export default function PayoutDetailsPage({
           </Button>
         );
       },
-      cell: ({ row }: { row: Row<Payout> }) => {
+      cell: ({ row }: { row: Row<FullPayout> }) => {
         return (
           <p className="flex h-16 w-8 items-center gap-1">
             <CurrencyLogo logo={currencyLogo} size={18} />
@@ -264,7 +302,7 @@ export default function PayoutDetailsPage({
     {
       accessorKey: 'burn',
       header: 'Burn',
-      cell: ({ row }: { row: Row<Payout> }) => (
+      cell: ({ row }: { row: Row<FullPayout> }) => (
         <div className="flex h-16 items-center space-x-2">
           <span className="text-red-500">{row.original.burn ? '🔥' : '-'}</span>
           {editingIdBurnDate === row.original.id ? (
@@ -290,22 +328,21 @@ export default function PayoutDetailsPage({
               <span
                 className="cursor-pointer hover:text-blue-500 hover:underline"
                 onClick={() =>
-                  row.original.burnDate &&
+                  row.original.payout_burn.created_at &&
                   handleBurnEditClick(
                     row.original.id,
-                    new Date(row.original.burnDate)
+                    new Date(row.original.payout_burn.created_at)
                   )
                 }
               >
-                {row.original.burnDate
-                  ? new Date(row.original.burnDate).toLocaleDateString(
-                      'en-US',
-                      {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric'
-                      }
-                    )
+                {row.original.payout_burn.created_at
+                  ? new Date(
+                      row.original.payout_burn.created_at
+                    ).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    })
                   : '-'}
               </span>
             </div>
@@ -317,7 +354,7 @@ export default function PayoutDetailsPage({
     {
       accessorKey: 'transfer',
       header: 'Transfer',
-      cell: ({ row }: { row: Row<Payout> }) => (
+      cell: ({ row }: { row: Row<FullPayout> }) => (
         <div className="flex h-16 items-center space-x-2">
           <span className="text-blue-500">
             {row.original.transfer ? '🏛️' : '-'}
@@ -348,22 +385,21 @@ export default function PayoutDetailsPage({
               <span
                 className="cursor-pointer hover:text-blue-500 hover:underline"
                 onClick={() =>
-                  row.original.transferDate &&
+                  row.original.payout_transfer.created_at &&
                   handleTransferEditClick(
                     row.original.id,
-                    new Date(row.original.transferDate)
+                    new Date(row.original.payout_transfer.created_at)
                   )
                 }
               >
-                {row.original.transferDate
-                  ? new Date(row.original.transferDate).toLocaleDateString(
-                      'en-US',
-                      {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric'
-                      }
-                    )
+                {row.original.payout_transfer.created_at
+                  ? new Date(
+                      row.original.payout_transfer.created_at
+                    ).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    })
                   : '-'}
               </span>
             </div>

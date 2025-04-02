@@ -24,11 +24,34 @@ export const getPayouts = async (
   limit: number,
   offset: number,
   column?: string,
-  order?: string
-): Promise<PostgrestSingleResponse<Payout[]>> => {
-  return client
+  order?: string,
+  search?: string
+) => {
+  if (search) {
+    return await client
+      .from('payouts')
+      .select(
+        `*, 
+      places!inner(name), 
+      businesses!inner(name),
+      payout_burn!inner(created_at), 
+      payout_transfer!inner(created_at)`
+      )
+      .filter('places.name', 'ilike', `%${search}%`)
+      .filter('businesses.name', 'ilike', `%${search}%`)
+      .order(column ?? 'id', { ascending: order === 'asc' })
+      .range(offset, offset + limit - 1);
+  }
+
+  return await client
     .from('payouts')
-    .select('*')
+    .select(
+      `*, 
+      places!inner(name), 
+      businesses!inner(name), 
+      payout_burn!inner(created_at), 
+      payout_transfer!inner(created_at)`
+    )
     .order(column ?? 'id', { ascending: order === 'asc' })
     .range(offset, offset + limit - 1);
 };

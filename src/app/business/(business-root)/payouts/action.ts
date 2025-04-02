@@ -14,6 +14,32 @@ import {
 import { getPlaceById } from '@/db/places';
 import { getTransferById } from '@/db/transfer';
 
+interface FullPayout {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  user_id: number;
+  from: string;
+  to: string;
+  burn: number;
+  transfer: number;
+  total: number;
+  place_id: number;
+  business_id: number;
+  places: {
+    name: string;
+  };
+  businesses: {
+    name: string;
+  };
+  payout_burn: {
+    created_at: string;
+  };
+  payout_transfer: {
+    created_at: string;
+  };
+}
+
 export async function getAllPayoutAction(
   limit: number,
   offset: number,
@@ -22,51 +48,15 @@ export async function getAllPayoutAction(
   order?: string
 ) {
   const client = getServiceRoleClient();
-  const payoutResponse = await getPayouts(client, limit, offset, column, order);
-  let payouts: Payout[] = payoutResponse.data ?? [];
-
-  //assign place and business name to payout
-  for (const payout of payouts) {
-    const placeData = await client
-      .from('places')
-      .select('*')
-      .eq('id', payout.place_id)
-      .maybeSingle();
-    payout.place_id = placeData.data?.name ?? '';
-
-    const businessData = await client
-      .from('businesses')
-      .select('*')
-      .eq('id', payout.business_id)
-      .maybeSingle();
-    payout.business_id = businessData.data?.name ?? '';
-  }
-
-  //when have search then show only that payout
-  if (search) {
-    //fiter business and place name,search like %search%
-    payouts = payouts.filter(
-      (payout) =>
-        payout.business_id.toLowerCase().includes(search.toLowerCase()) ||
-        payout.place_id.toLowerCase().includes(search.toLowerCase())
-    );
-  }
-
-  //assign burn and transfer name to payout
-  for (const payout of payouts) {
-    if (payout.burn) {
-      const burnData = await getBurnById(client, Number(payout.burn));
-      payout.burnDate = burnData.data?.created_at ?? null;
-    }
-
-    if (payout.transfer) {
-      const transferData = await getTransferById(
-        client,
-        Number(payout.transfer)
-      );
-      payout.transferDate = transferData.data?.created_at ?? null;
-    }
-  }
+  const payoutResponse = await getPayouts(
+    client,
+    limit,
+    offset,
+    column,
+    order,
+    search
+  );
+  const payouts: FullPayout[] = payoutResponse.data ?? [];
   return payouts;
 }
 
