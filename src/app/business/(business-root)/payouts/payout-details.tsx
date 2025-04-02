@@ -218,7 +218,27 @@ export default function PayoutDetailsPage({
     },
     {
       accessorKey: 'business_id',
-      header: 'Business Name',
+      header: ({ column }: { column: Column<FullPayout> }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              handleSorting(
+                column,
+                column.getIsSorted() === 'asc' ? 'asc' : 'desc'
+              );
+              column.toggleSorting(column.getIsSorted() === 'asc');
+            }}
+          >
+            Business Name
+            {column.getIsSorted() === 'asc'
+              ? ' ↑'
+              : column.getIsSorted() === 'desc'
+              ? ' ↓'
+              : ''}
+          </Button>
+        );
+      },
       cell: ({ row }: { row: Row<FullPayout> }) => (
         <div className="flex h-16 items-center">
           {row.original.businesses.name}
@@ -227,7 +247,27 @@ export default function PayoutDetailsPage({
     },
     {
       accessorKey: 'place_id',
-      header: 'Place Name',
+      header: ({ column }: { column: Column<FullPayout> }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              handleSorting(
+                column,
+                column.getIsSorted() === 'asc' ? 'asc' : 'desc'
+              );
+              column.toggleSorting(column.getIsSorted() === 'asc');
+            }}
+          >
+            Place Name
+            {column.getIsSorted() === 'asc'
+              ? ' ↑'
+              : column.getIsSorted() === 'desc'
+              ? ' ↓'
+              : ''}
+          </Button>
+        );
+      },
       cell: ({ row }: { row: Row<FullPayout> }) => (
         <div className="flex h-16 items-center">{row.original.places.name}</div>
       )
@@ -301,7 +341,27 @@ export default function PayoutDetailsPage({
     },
     {
       accessorKey: 'burn',
-      header: 'Burn',
+      header: ({ column }: { column: Column<FullPayout> }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              handleSorting(
+                column,
+                column.getIsSorted() === 'asc' ? 'asc' : 'desc'
+              );
+              column.toggleSorting(column.getIsSorted() === 'asc');
+            }}
+          >
+            Burn
+            {column.getIsSorted() === 'asc'
+              ? ' ↑'
+              : column.getIsSorted() === 'desc'
+              ? ' ↓'
+              : ''}
+          </Button>
+        );
+      },
       cell: ({ row }: { row: Row<FullPayout> }) => (
         <div className="flex h-16 items-center space-x-2">
           <span className="text-red-500">{row.original.burn ? '🔥' : '-'}</span>
@@ -353,7 +413,27 @@ export default function PayoutDetailsPage({
 
     {
       accessorKey: 'transfer',
-      header: 'Transfer',
+      header: ({ column }: { column: Column<FullPayout> }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              handleSorting(
+                column,
+                column.getIsSorted() === 'asc' ? 'asc' : 'desc'
+              );
+              column.toggleSorting(column.getIsSorted() === 'asc');
+            }}
+          >
+            Transfer
+            {column.getIsSorted() === 'asc'
+              ? ' ↑'
+              : column.getIsSorted() === 'desc'
+              ? ' ↓'
+              : ''}
+          </Button>
+        );
+      },
       cell: ({ row }: { row: Row<FullPayout> }) => (
         <div className="flex h-16 items-center space-x-2">
           <span className="text-blue-500">

@@ -44,10 +44,20 @@ export async function getAllPayoutAction(
   limit: number,
   offset: number,
   search?: string,
-  column?: string,
+  column: string = 'payout_transfer(created_at)',
   order?: string
 ) {
   const client = getServiceRoleClient();
+
+  if (column === 'business_id') {
+    column = 'businesses(name)';
+  } else if (column === 'place_id') {
+    column = 'places(name)';
+  } else if (column === 'burn') {
+    column = 'payout_burn(created_at)';
+  } else if (column === 'transfer') {
+    column = 'payout_transfer(created_at)';
+  }
   const payoutResponse = await getPayouts(
     client,
     limit,
