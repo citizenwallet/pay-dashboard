@@ -108,5 +108,19 @@
     "imageupdate": "Imagen de artículo actualizada correctamente",
     "imageupdateerror": "Error al actualizar la imagen del artículo",
     "displaymodeupdate": "Modo de visualización del lugar actualizado correctamente"
+  },
+  "profile": {
+    "Profile": "Perfil",
+    "Placedetails": "Gestionar los detalles del lugar",
+    "Name": "Nombre",
+    "nameplaceholder": "Nombre del perfil",
+    "Description": "Descripción",
+    "descriptionplaceholder": "Descripción del perfil",
+    "Slug": "Slug",
+    "slugplaceholder": "slug-del-perfil",
+    "Image": "Imagen",
+    "Updateprofile": "Actualizar Perfil",
+    "updating": "Actualizando...",
+    "updatesuccess": "Lugar actualizado correctamente"
   }
 }

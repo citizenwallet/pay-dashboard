@@ -108,5 +108,19 @@
     "imageupdate": "Item image updated successfully",
     "imageupdateerror": "Failed to update item image",
     "displaymodeupdate": "Place display mode updated successfully"
+  },
+  "profile": {
+    "Profile": "Profile",
+    "Placedetails": "Manage your Place details",
+    "Name": "Name",
+    "nameplaceholder": "Profile name",
+    "Description": "Description",
+    "descriptionplaceholder": "Profile description",
+    "Slug": "Slug",
+    "slugplaceholder": "profile-slug",
+    "Image": "Image",
+    "Updateprofile": "Update Profile",
+    "updating": "Updating...",
+    "updatesuccess": "Place updated successfully"
   }
 }
