@@ -156,5 +156,19 @@
     "errorArchiveToggle": "Error with Archive button clicked the place",
     "placedeletedsuccessfully": "Place deleted successfully",
     "errorplacedelete": "Error deleting the place"
+  },
+  "payouts": {
+    "Payouts": "Payouts",
+    "Payoutsdescription": "Manage your Place payouts",
+    "id": "ID",
+    "from": "From",
+    "to": "To",
+    "total": "Total",
+    "burn": "Burn",
+    "transfer": "Transfer",
+    "payoutDetails": "Payout Details",
+    "payoutDetailsdescription": "Payout details and the orders",
+    "ExportCSV": "Export as CSV",
+    "date": "Date"
   }
 }

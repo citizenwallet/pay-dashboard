@@ -156,5 +156,19 @@
     "errorArchiveToggle": "Error al manejar el cambio de archivado del lugar",
     "placedeletedsuccessfully": "Lugar eliminado correctamente",
     "errorplacedelete": "Error al eliminar el lugar"
+  },
+  "payouts": {
+    "Payouts": "Pagos",
+    "Payoutsdescription": "Gestionar tus pagos de lugar",
+    "id": "ID",
+    "from": "Desde",
+    "to": "Hasta",
+    "total": "Total",
+    "burn": "Quemar",
+    "transfer": "Transferir",
+    "payoutDetails": "Detalles de pago",
+    "payoutDetailsdescription": "Detalles de pago y los pedidos",
+    "ExportCSV": "Exportar como CSV",
+    "date": "Fecha"
   }
 }
