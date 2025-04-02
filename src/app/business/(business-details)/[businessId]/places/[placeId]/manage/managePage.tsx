@@ -20,6 +20,7 @@ import {
 } from './action';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function ManagePage({
   place,
@@ -33,17 +34,20 @@ export default function ManagePage({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const t = useTranslations('manage');
 
   const handleHide = async (lastplace: Place) => {
     try {
       const data = await handleVisibilityToggleAction(lastplace.id);
       toast.success(
-        `Place ${lastplace.hidden ? 'public' : 'hidden'} successfully`
+        `${t('place')} ${lastplace.hidden ? t('public') : t('hidden')} ${t(
+          'successfully'
+        )}`
       );
       setIsHideDialogOpen(false);
       router.refresh();
     } catch (error) {
-      toast.error(`Error with handle Visibility Toggle the place`);
+      toast.error(`${t('errorVisibilityToggle')}`);
     }
   };
 
@@ -52,12 +56,12 @@ export default function ManagePage({
       const data = await handleArchiveToggleAction(place.id);
       const actionMessage = place.hidden ? 'Hidden' : 'Unhidden';
       toast.success(
-        `Place has been ${actionMessage} and archived successfully`
+        `${t('Placehasbeen')} ${actionMessage} ${t('andarchivedsuccessfully')}`
       );
       setIsArchiveDialogOpen(false);
       router.refresh();
     } catch (error) {
-      toast.error(`Error with Archive button clicked the place`);
+      toast.error(`${t('errorArchiveToggle')}`);
     }
   };
 
@@ -65,43 +69,40 @@ export default function ManagePage({
     try {
       await deletePlaceAction(place.id);
 
-      toast.success(`Place deleted successfully`);
+      toast.success(`${t('placedeletedsuccessfully')}`);
 
       setIsDeleteDialogOpen(false);
       router.push('/');
     } catch (error) {
-      toast.error(`Error deleting the place`);
+      toast.error(`${t('errorplacedelete')}`);
     }
   };
 
   return (
     <div className="space-y-6">
       <div>
-        <p className="mb-2 text-gray-600">
-          Hide this place from the app and all public listings while keeping it
-          accessible via direct link.
-        </p>
+        <p className="mb-2 text-gray-600">{t('hideDescription')}</p>
         <Dialog open={isHideDialogOpen} onOpenChange={setIsHideDialogOpen}>
           <DialogTrigger asChild>
             {place?.hidden ? (
               <Button variant="outline" disabled={loading}>
                 <Eye className="mr-2 h-4 w-4" />
-                Make Public
+                {t('makePublic')}
               </Button>
             ) : (
               <Button variant="outline" disabled={loading}>
                 <EyeOff className="mr-2 h-4 w-4" />
-                Hide
+                {t('hide')}
               </Button>
             )}
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Confirm Hide</DialogTitle>
+              <DialogTitle>{t('confirmHide')}</DialogTitle>
               <DialogDescription>
                 {place?.hidden
-                  ? 'This place is hidden from the app and all public listings. It remains active through its direct link.'
-                  : 'Hide this place from the app and all public listings. The place will remain active directly through its link.'}
+                  ? t('confirmHideDescription')
+                  : t('notconfirmHideDescription')}
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
@@ -109,14 +110,14 @@ export default function ManagePage({
                 variant="outline"
                 onClick={() => setIsHideDialogOpen(false)}
               >
-                Cancel
+                {t('cancel')}
               </Button>
               <Button
                 className="mb-2 md:mb-0"
                 disabled={loading}
                 onClick={() => handleHide(place!)}
               >
-                {loading ? 'Hiding...' : 'Confirm'}
+                {loading ? t('hidding') : t('confirm')}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -124,10 +125,7 @@ export default function ManagePage({
       </div>
 
       <div>
-        <p className="mb-2 text-gray-600">
-          Archive this place to disable checkout flow and remove it from public
-          listings entirely.
-        </p>
+        <p className="mb-2 text-gray-600">{t('archiveDescription')}</p>
         <Dialog
           open={isArchiveDialogOpen}
           onOpenChange={setIsArchiveDialogOpen}
@@ -137,12 +135,12 @@ export default function ManagePage({
               {place?.archived ? (
                 <>
                   <Archive className="mr-2 h-4 w-4" />
-                  Unarchive
+                  {t('Unarchive')}
                 </>
               ) : (
                 <>
                   <Archive className="mr-2 h-4 w-4" />
-                  Archive
+                  {t('Archive')}
                 </>
               )}
             </Button>
@@ -150,10 +148,9 @@ export default function ManagePage({
 
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Confirm Archive</DialogTitle>
+              <DialogTitle>{t('confirmArchive')}</DialogTitle>
               <DialogDescription>
-                This will disable the checkout flow and hide this place from all
-                public listings.
+                {t('confirmArchiveDescription')}
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
@@ -161,14 +158,14 @@ export default function ManagePage({
                 variant="outline"
                 onClick={() => setIsArchiveDialogOpen(false)}
               >
-                Cancel
+                {t('cancel')}
               </Button>
               <Button
                 className="mb-2 md:mb-0"
                 disabled={loading}
                 onClick={() => handleArchive(place!)}
               >
-                {loading ? 'Archiving...' : 'Confirm'}
+                {loading ? t('Archiving') : t('confirm')}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -177,10 +174,7 @@ export default function ManagePage({
 
       {!hasOrders && (
         <div>
-          <p className="mb-2 text-gray-600">
-            Permanently remove this place. This action cannot be undone and is
-            only available if there are no associated orders.
-          </p>
+          <p className="mb-2 text-gray-600">{t('deleteDescription')}</p>
           <Dialog
             open={isDeleteDialogOpen}
             onOpenChange={setIsDeleteDialogOpen}
@@ -188,14 +182,14 @@ export default function ManagePage({
             <DialogTrigger asChild>
               <Button variant="destructive" disabled={loading}>
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete
+                {t('delete')}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Confirm Delete</DialogTitle>
+                <DialogTitle>{t('confirmDelete')}</DialogTitle>
                 <DialogDescription>
-                  Permanently delete this place. This cannot be reversed.
+                  {t('confirmDeleteDescription')}
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
@@ -203,14 +197,14 @@ export default function ManagePage({
                   variant="outline"
                   onClick={() => setIsDeleteDialogOpen(false)}
                 >
-                  Cancel
+                  {t('cancel')}
                 </Button>
                 <Button
                   variant="destructive"
                   disabled={loading}
                   onClick={() => handleDelete(place!)}
                 >
-                  {loading ? 'Deleting...' : 'Confirm'}
+                  {loading ? t('deleting') : t('confirm')}
                 </Button>
               </DialogFooter>
             </DialogContent>
