@@ -20,17 +20,27 @@ import {
   updatePayoutBurnDateAction,
   updatePayoutTransferDateAction
 } from '../action';
+import { formatCurrencyNumber } from '@/lib/currency';
+import CurrencyLogo from '@/components/currency-logo';
 
 export default function PayoutDetailsPage({
   payout_id,
   orders,
   currencyLogo,
-  payout
+  payout,
+  totalAmount,
+  count,
+  limit,
+  offset
 }: {
   payout_id: string;
   orders: Order[];
   currencyLogo: string;
   payout: Payout;
+  totalAmount: number;
+  count: number;
+  limit?: string;
+  offset?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [action, setAction] = useState('');
@@ -112,10 +122,10 @@ export default function PayoutDetailsPage({
       await setPayoutStatusAction(payout_id, action);
       setOpen(false);
       toast.success(`Payout ${action} successfully`);
-      router.push(`/business/payouts`);
+      router.push(`/business/payouts/${payout_id}`);
     } catch (error) {
       toast.error(`Payout ${action} failed`);
-      router.push(`/business/payouts`);
+      router.push(`/business/payouts/${payout_id}`);
     }
   };
 
@@ -256,7 +266,23 @@ export default function PayoutDetailsPage({
         </button>
       </div>
 
-      <OrderViewTable orders={orders} currencyLogo={currencyLogo} />
+      <div className="mt-6 flex items-center justify-between pt-6">
+        <div className="flex items-center gap-7">
+          <p className="flex items-center gap-2">
+            Total Amount:
+            <CurrencyLogo logo={currencyLogo} size={18} />
+            {formatCurrencyNumber(totalAmount)}
+          </p>
+        </div>
+      </div>
+
+      <OrderViewTable
+        orders={orders}
+        currencyLogo={currencyLogo}
+        count={count}
+        limit={limit ?? '10'}
+        offset={offset ?? '0'}
+      />
     </>
   );
 }

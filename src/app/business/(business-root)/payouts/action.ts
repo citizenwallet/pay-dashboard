@@ -14,39 +14,59 @@ import {
 import { getPlaceById } from '@/db/places';
 import { getTransferById } from '@/db/transfer';
 
-export async function getAllPayoutAction() {
+interface FullPayout {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  user_id: number;
+  from: string;
+  to: string;
+  burn: number | null;
+  transfer: number | null;
+  total: number;
+  place_id: number;
+  business_id: number;
+  places: {
+    name: string;
+  };
+  businesses: {
+    name: string;
+  };
+  payout_burn: {
+    created_at: string | null;
+  };
+  payout_transfer: {
+    created_at: string | null;
+  };
+}
+
+export async function getAllPayoutAction(
+  limit: number,
+  offset: number,
+  search?: string,
+  column: string = 'payout_transfer(created_at)',
+  order?: string
+) {
   const client = getServiceRoleClient();
-  const payoutResponse = await getPayouts(client);
 
-  const payouts: Payout[] = payoutResponse.data ?? [];
-
-  //assign place and business name to payout
-  for (const payout of payouts) {
-    const placeData = await getPlaceById(client, Number(payout.place_id));
-    payout.place_id = placeData.data?.name ?? '';
-
-    const businessData = await getBusinessById(
-      client,
-      Number(payout.business_id)
-    );
-    payout.business_id = businessData.data?.name ?? '';
+  if (column === 'business_id') {
+    column = 'businesses(name)';
+  } else if (column === 'place_id') {
+    column = 'places(name)';
+  } else if (column === 'burn') {
+    column = 'payout_burn(created_at)';
+  } else if (column === 'transfer') {
+    column = 'payout_transfer(created_at)';
   }
-
-  //assign burn and transfer name to payout
-  for (const payout of payouts) {
-    if (payout.burn) {
-      const burnData = await getBurnById(client, Number(payout.burn));
-      payout.burnDate = burnData.data?.created_at ?? null;
-    }
-
-    if (payout.transfer) {
-      const transferData = await getTransferById(
-        client,
-        Number(payout.transfer)
-      );
-      payout.transferDate = transferData.data?.created_at ?? null;
-    }
-  }
+  const payoutResponse = await getPayouts(
+    client,
+    limit,
+    offset,
+    column,
+    order,
+    search
+  );
+  const payouts: FullPayout[] = payoutResponse.data ?? [];
   return payouts;
 }
 
