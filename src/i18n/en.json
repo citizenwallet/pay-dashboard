@@ -227,5 +227,11 @@
     "name": "Name",
     "description": "Description",
     "pleaseUploadAValidCsvFile": "Please upload a valid CSV file"
+  },
+  "rootsidebar": {
+    "systemAdmin": "SYSTEM ADMIN",
+    "Business": "Business",
+    "Payouts": "Payouts",
+    "Logout": "Log out"
   }
 }

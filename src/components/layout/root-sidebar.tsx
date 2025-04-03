@@ -50,6 +50,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import LanguageSwitcher from './language-switcher';
+import { useTranslations } from 'next-intl';
 
 export default function RootAppSidebar({
   isAdmin,
@@ -64,6 +65,7 @@ export default function RootAppSidebar({
 
   const session = useSession();
   const pathname = usePathname();
+  const t = useTranslations('rootsidebar');
 
   useEffect(() => {
     if (session.status === 'authenticated' && !user) {
@@ -78,7 +80,7 @@ export default function RootAppSidebar({
       <Sidebar collapsible="icon">
         {isAdmin && (
           <div className="align-center flex w-full justify-center bg-orange-500 text-sm font-normal">
-            SYSTEM ADMIN
+            {t('systemAdmin')}
           </div>
         )}
         <SidebarHeader>
@@ -104,7 +106,7 @@ export default function RootAppSidebar({
                   >
                     <Link href="/business">
                       <LayoutDashboard className="h-4 w-4" />
-                      <span>Business</span>
+                      <span>{t('Business')}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -117,7 +119,7 @@ export default function RootAppSidebar({
                     >
                       <Link href="/business/payouts">
                         <CreditCard className="h-4 w-4" />
-                        <span>Payouts</span>
+                        <span>{t('Payouts')}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -188,7 +190,7 @@ export default function RootAppSidebar({
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => signOut()}>
                     <LogOut />
-                    Log out
+                    {t('Logout')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
