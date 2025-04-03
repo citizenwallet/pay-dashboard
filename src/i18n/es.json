@@ -336,5 +336,12 @@
     "errorresendingotp": "Error al reenviar OTP: ",
     "emailnotfound": "Email no encontrado. Por favor, intenta iniciar sesión nuevamente.",
     "otpWrong": "Código OTP inválido o expirado. Por favor, intenta nuevamente."
+  },
+  "onboardingVat": {
+    "welcome": "Bienvenido a Brussels.pay!",
+    "description": "Para completar tu registro, por favor proporciona tu número de IVA:",
+    "Next": "Siguiente",
+    "invaildOTP": "Código OTP inválido",
+    "vatRequired": "El número de IVA es requerido"
   }
 }

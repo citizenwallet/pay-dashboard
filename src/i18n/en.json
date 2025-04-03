@@ -336,5 +336,12 @@
     "errorresendingotp": "Error resending OTP: ",
     "emailnotfound": "Email not found. Please try logging in again.",
     "otpWrong": "Invalid or expired OTP. Please try again."
+  },
+  "onboardingVat": {
+    "welcome": "Welcome to Brussels.pay!",
+    "description": "In order to complete your registration, please provide us with your VAT number:",
+    "Next": "Next",
+    "invaildOTP": "Invalid OTP",
+    "vatRequired": "VAT number is required"
   }
 }
