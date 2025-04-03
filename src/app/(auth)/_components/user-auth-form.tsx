@@ -18,6 +18,7 @@ import * as z from 'zod';
 import { createClient } from '@/lib/supabase/client';
 import { checkIsUseraction, sendOtpAction } from '../action';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' })
@@ -26,6 +27,7 @@ const formSchema = z.object({
 type UserFormValue = z.infer<typeof formSchema>;
 
 export default function UserAuthForm() {
+  const t = useTranslations('onboardingLogin');
   const searchParams = useSearchParams();
   const [mailSent, setMailSent] = useState(false);
   const callbackUrl = searchParams.get('callbackUrl');
@@ -54,10 +56,10 @@ export default function UserAuthForm() {
             router.push('/otp');
           }
         } catch (error) {
-          toast.error('Something went wrong, please try again later.');
+          toast.error(t('errorloggingin'));
         }
       } else {
-        toast.error('Your email is not registered, please sign up');
+        toast.error(t('emailnotregistered'));
       }
     });
   };
@@ -79,7 +81,7 @@ export default function UserAuthForm() {
                   <Input
                     className="text-base"
                     type="email"
-                    placeholder="Enter your email..."
+                    placeholder={t('emailplaceholder')}
                     disabled={loading}
                     {...field}
                   />
@@ -89,12 +91,12 @@ export default function UserAuthForm() {
             )}
           />
           <Button disabled={loading} className="ml-auto w-full" type="submit">
-            Sign in
+            {t('signin')}
           </Button>
 
           <div className="flex justify-center">
             <a href="/onboarding" className="text-sm text-primary">
-              Don&nbsp;t have an account? Sign up here
+              {t('havenotaccount')}
             </a>
           </div>
         </form>

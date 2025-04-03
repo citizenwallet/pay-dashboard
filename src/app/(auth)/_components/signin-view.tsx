@@ -5,14 +5,15 @@ import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
+import { getTranslations } from 'next-intl/server';
 
 export const metadata: Metadata = {
   title: 'Authentication',
   description: 'Authentication forms built using the components.'
 };
 
-export default function SignInViewPage() {
-  const t = useTranslations();
+export default async function SignInViewPage() {
+  const t = await getTranslations('onboardingLogin');
 
   return (
     <div className="relative h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
@@ -30,14 +31,8 @@ export default function SignInViewPage() {
         </div>
         <div className="relative z-20 mt-auto">
           <blockquote className="space-y-2">
-            <p className="text-lg">
-              &ldquo;Money is not the only currency. Your time, your energy,
-              your heart are also currencies. Neighborhoods and communities can
-              create new sources of capital: respect, trust, reciprocity.&rdquo;
-            </p>
-            <footer className="text-sm">
-              Edgar Cahn - Creator of the TimeBanking
-            </footer>
+            <p className="text-lg">&ldquo;{t('onboardingText')}&rdquo;</p>
+            <footer className="text-sm">{t('onboardingAuthor')}</footer>
           </blockquote>
         </div>
       </div>
@@ -45,11 +40,9 @@ export default function SignInViewPage() {
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
           <div className="flex flex-col space-y-2 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">
-              Sign in to your account
+              {t('signintext')}
             </h1>
-            <p className="text-sm text-muted-foreground">
-              Enter your email below to continue
-            </p>
+            <p className="text-sm text-muted-foreground">{t('enterbelow')}</p>
           </div>
           <UserAuthForm />
         </div>
