@@ -8,17 +8,19 @@ import PayoutDetailsPage from './payout-details';
 import { getAllPayoutAction } from './action';
 import { CommunityConfig } from '@citizenwallet/sdk';
 import Config from '@/cw/community.json';
+import { getTranslations } from 'next-intl/server';
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export default function PayoutsPage() {
+export default async function PayoutsPage() {
+  const t = await getTranslations('rootpayouts');
   return (
     <PageContainer>
       <div className="space-y-4">
         <div className="flex items-start justify-between">
-          <Heading title="Payouts" description="Payouts of the business" />
+          <Heading title={t('Payouts')} description={t('Payoutsdescription')} />
         </div>
         <Separator />
         <Suspense

@@ -16,6 +16,7 @@ import {
   getAllPayoutAction
 } from './action';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function PayoutDetailsPage({
   payouts,
@@ -36,6 +37,7 @@ export default function PayoutDetailsPage({
   const [editTransferDate, setEditTransferDate] = useState<string>('');
   const dateInputRefTransferDate = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const t = useTranslations('rootpayouts');
 
   // Fetch fresh data when component mounts or when router changes
   useEffect(() => {
@@ -66,9 +68,9 @@ export default function PayoutDetailsPage({
       );
       setEditingIdBurnDate(null);
       await updatePayoutBurnDateAction(id, date);
-      toast.success('Burn date updated successfully');
+      toast.success(t('burndateupdatedsuccessfully'));
     } catch (error) {
-      toast.error('Failed to update burn date');
+      toast.error(t('failedtoupdateburndate'));
     }
   };
 
@@ -88,9 +90,9 @@ export default function PayoutDetailsPage({
       );
       setEditingIdTransferDate(null);
       await updatePayoutTransferDateAction(id, date);
-      toast.success('Transfer date updated successfully');
+      toast.success(t('transferdateupdatedsuccessfully'));
     } catch (error) {
-      toast.error('Failed to update transfer date');
+      toast.error(t('failedtotransferdate'));
     }
   };
 
@@ -123,7 +125,7 @@ export default function PayoutDetailsPage({
       <Link href="/business/payouts/new">
         <Button className="flex items-center gap-2">
           <Plus size={16} />
-          New Payout
+          {t('newpayout')}
         </Button>
       </Link>
       <div className="w-[90vw] overflow-x-auto md:w-full">
@@ -131,7 +133,7 @@ export default function PayoutDetailsPage({
           columns={[
             {
               accessorKey: 'id',
-              header: 'Id',
+              header: t('Id'),
               cell: ({ row }) => (
                 <Link
                   href={`/business/payouts/${row.original.id}`}
@@ -143,7 +145,7 @@ export default function PayoutDetailsPage({
             },
             {
               accessorKey: 'business_id',
-              header: 'Business Name',
+              header: t('businessname'),
               cell: ({ row }) => (
                 <div className="flex h-16 items-center">
                   {row.original.business_id}
@@ -152,7 +154,7 @@ export default function PayoutDetailsPage({
             },
             {
               accessorKey: 'place_id',
-              header: 'Place Name',
+              header: t('placename'),
               cell: ({ row }) => (
                 <div className="flex h-16 items-center">
                   {row.original.place_id}
@@ -161,7 +163,7 @@ export default function PayoutDetailsPage({
             },
             {
               accessorKey: 'created_at',
-              header: 'Created At',
+              header: t('createdat'),
               cell: ({ row }) => (
                 <div className="flex h-16 items-center">
                   {row.original.created_at
@@ -175,7 +177,7 @@ export default function PayoutDetailsPage({
             },
             {
               accessorKey: 'total',
-              header: 'Total',
+              header: t('total'),
               cell: ({ row }) => {
                 return (
                   <p className="flex h-16 w-8 items-center gap-1">
@@ -187,7 +189,7 @@ export default function PayoutDetailsPage({
             },
             {
               accessorKey: 'burn',
-              header: 'Burn',
+              header: t('burn'),
               cell: ({ row }) => (
                 <div className="flex h-16 items-center space-x-2">
                   <span className="text-red-500">
@@ -245,7 +247,7 @@ export default function PayoutDetailsPage({
 
             {
               accessorKey: 'transfer',
-              header: 'Transfer',
+              header: t('transfer'),
               cell: ({ row }) => (
                 <div className="flex h-16 items-center space-x-2">
                   <span className="text-blue-500">

@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Order } from '@/db/orders';
 import CurrencyLogo from '@/components/currency-logo';
 import { formatCurrencyNumber } from '@/lib/currency';
+import { useTranslations } from 'next-intl';
 
 export default function OrderViewTable({
   orders,
@@ -15,6 +16,7 @@ export default function OrderViewTable({
   currencyLogo: string;
 }) {
   const [page, setPage] = useState(1);
+  const t = useTranslations('rootpayouts');
 
   const itemsPerPage = 5; // Define how many items per page
 
@@ -37,10 +39,10 @@ export default function OrderViewTable({
     <div>
       <DataTable
         columns={[
-          { accessorKey: 'id', header: 'ID' },
+          { accessorKey: 'id', header: t('Id') },
           {
             accessorKey: 'created_at',
-            header: 'Date',
+            header: t('createdat'),
             cell: ({ row }) => {
               const date = new Date(row.original.created_at);
               return `${date.toLocaleDateString(
@@ -53,7 +55,7 @@ export default function OrderViewTable({
           },
           {
             accessorKey: 'total',
-            header: 'Total',
+            header: t('total'),
             cell: ({ row }) => {
               return (
                 <p className="flex w-8 items-center gap-1">
@@ -81,15 +83,17 @@ export default function OrderViewTable({
           aria-label="Previous page"
         >
           <ChevronLeft className="mr-1 h-4 w-4" />
-          <span>Previous</span>
+          <span>{t('Previous')}</span>
         </button>
 
         <div className="flex items-center gap-1 px-2">
-          <span className="text-sm font-medium">Page</span>
+          <span className="text-sm font-medium">{t('page')}</span>
           <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary text-sm font-medium text-primary-foreground">
             {page}
           </span>
-          <span className="text-sm font-medium">of {totalPages}</span>
+          <span className="text-sm font-medium">
+            {t('of')} {totalPages}
+          </span>
         </div>
 
         <button
@@ -104,7 +108,7 @@ export default function OrderViewTable({
           )}
           aria-label="Next page"
         >
-          <span>Next</span>
+          <span>{t('next')}</span>
           <ChevronRight className="ml-1 h-4 w-4" />
         </button>
       </div>

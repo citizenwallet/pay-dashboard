@@ -8,6 +8,7 @@ import Config from '@/cw/community.json';
 import PayoutDetailsPage from './page-details';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
 import { CommunityConfig } from '@citizenwallet/sdk';
+import { getTranslations } from 'next-intl/server';
 
 export default async function PayoutOrderPage({
   params
@@ -15,6 +16,7 @@ export default async function PayoutOrderPage({
   params: Promise<{ payout_id: string }>;
 }) {
   const { payout_id } = await params;
+  const t = await getTranslations('rootpayouts');
 
   return (
     <>
@@ -22,15 +24,15 @@ export default async function PayoutOrderPage({
         <div className="space-y-4">
           <div className="flex items-start justify-between">
             <Heading
-              title="Payout Details"
-              description="Payout details and the orders "
+              title={t('payoutdetails')}
+              description={t('payoutdetailsdescription')}
             />
           </div>
           <Separator />
           <Suspense
             fallback={<DataTableSkeleton columnCount={5} rowCount={10} />}
           >
-            {AsyncPayoutOrderPage(payout_id)}
+            {AsyncPayoutOrderPage(payout_id, t)}
           </Suspense>
         </div>
       </PageContainer>
@@ -38,16 +40,19 @@ export default async function PayoutOrderPage({
   );
 }
 
-const AsyncPayoutOrderPage = async (payout_id: string) => {
+const AsyncPayoutOrderPage = async (
+  payout_id: string,
+  t: Awaited<ReturnType<typeof getTranslations>>
+) => {
   const admin = await isUserAdminAction();
   if (!admin) {
-    return <div>You are not authorized to view this page</div>;
+    return <div>{t('youarenotauthorized')}</div>;
   }
   const orders = await getPayoutAction(payout_id);
   const community = new CommunityConfig(Config);
   const { payout } = await getPayoutStatusAction(payout_id);
   if (!payout?.data) {
-    return <div>Payout not found</div>;
+    return <div>{t('payoutnotfound')}</div>;
   }
 
   return (

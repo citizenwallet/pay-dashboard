@@ -20,6 +20,7 @@ import {
   updatePayoutBurnDateAction,
   updatePayoutTransferDateAction
 } from '../action';
+import { useTranslations } from 'next-intl';
 
 export default function PayoutDetailsPage({
   payout_id,
@@ -35,6 +36,7 @@ export default function PayoutDetailsPage({
   const [open, setOpen] = useState(false);
   const [action, setAction] = useState('');
   const router = useRouter();
+  const t = useTranslations('rootpayouts');
   const handleOpenModal = (type: 'burn' | 'transferred') => {
     setAction(type);
     setOpen(true);
@@ -66,13 +68,13 @@ export default function PayoutDetailsPage({
 
       if (editingBurnDate) {
         await updatePayoutBurnDateAction(payout_id, editingBurnDate);
-        toast.success(`Payout burn date updated successfully`);
+        toast.success(t('payoutburndateupdatedsuccessfully'));
       } else {
-        toast.error(`Payout burn date is Empty,You can't update Empty Date`);
+        toast.error(t('payoutburndataEmpty'));
         setEditingBurnDate(payout.burnDate || '');
       }
     } catch (error) {
-      toast.error(`Payout burn date update failed`);
+      toast.error(t('payoutburndateupdatefailed'));
     }
   };
 
@@ -95,15 +97,13 @@ export default function PayoutDetailsPage({
 
       if (editingTransferDate) {
         await updatePayoutTransferDateAction(payout_id, editingTransferDate);
-        toast.success(`Payout transfer date updated successfully`);
+        toast.success(t('payouttransferdateupdatedsuccessfully'));
       } else {
-        toast.error(
-          `Payout transfer date is Empty,You can't update Empty Date`
-        );
+        toast.error(t('payouttransferdateEmpty'));
         setEditingTransferDate(payout.transferDate || '');
       }
     } catch (error) {
-      toast.error(`Payout transfer date update failed`);
+      toast.error(t('payouttransferdateupdatefailed'));
     }
   };
 
@@ -111,10 +111,10 @@ export default function PayoutDetailsPage({
     try {
       await setPayoutStatusAction(payout_id, action);
       setOpen(false);
-      toast.success(`Payout ${action} successfully`);
+      toast.success(`${t('payout')} ${action} ${t('successfully')}`);
       router.push(`/business/payouts`);
     } catch (error) {
-      toast.error(`Payout ${action} failed`);
+      toast.error(`${t('payout')} ${action} ${t('failed')}`);
       router.push(`/business/payouts`);
     }
   };
@@ -123,7 +123,7 @@ export default function PayoutDetailsPage({
     const csvData = await getPayoutCSVAction(payout_id);
 
     if (!csvData.trim()) {
-      toast.error('No orders found for the given place and date range.');
+      toast.error(t('noOrdersFound'));
       return;
     }
 
@@ -148,7 +148,7 @@ export default function PayoutDetailsPage({
           <>
             {!payout.burn && (
               <Button className="mt-10" onClick={() => handleOpenModal('burn')}>
-                Set As Burn
+                {t('setAsBurn')}
               </Button>
             )}
             {payout.burn && (
@@ -179,7 +179,7 @@ export default function PayoutDetailsPage({
                   </div>
                 )}
                 <Button variant="outline" disabled>
-                  Already Burn
+                  {t('alreadyBurn')}
                 </Button>
               </div>
             )}
@@ -189,8 +189,7 @@ export default function PayoutDetailsPage({
                 className="mt-10"
                 onClick={() => handleOpenModal('transferred')}
               >
-                {' '}
-                Set As Transferred{' '}
+                {t('setAsTransferred')}
               </Button>
             )}
             {payout.transfer && (
@@ -221,7 +220,7 @@ export default function PayoutDetailsPage({
                   </div>
                 )}
                 <Button variant="outline" disabled>
-                  Already Transferred
+                  {t('alreadyTransferred')}
                 </Button>
               </div>
             )}
@@ -231,17 +230,17 @@ export default function PayoutDetailsPage({
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Cannot Reverse This Action!</DialogTitle>
+                <DialogTitle>{t('cannotReverseThisAction')}</DialogTitle>
               </DialogHeader>
               <p>
-                Are you sure you want to set this as <strong>{action}</strong>?
+                {t('areYouSureYouWantToSetAs')} <strong>{action}</strong>?
               </p>
               <DialogFooter>
                 <Button variant="destructive" onClick={() => setOpen(false)}>
-                  Cancel
+                  {t('cancel')}
                 </Button>
                 <Button variant="outline" onClick={handleConfirm}>
-                  Confirm
+                  {t('confirm')}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -252,7 +251,7 @@ export default function PayoutDetailsPage({
           onClick={handleCSVDownload}
           className={cn(buttonVariants({ variant: 'outline' }), 'ml-auto')}
         >
-          Export as CSV
+          {t('exportAsCSV')}
         </button>
       </div>
 
