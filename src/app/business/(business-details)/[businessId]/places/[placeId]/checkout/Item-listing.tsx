@@ -107,16 +107,16 @@ export default function ItemListing({
       );
 
       if (item.error) {
-        toast.error(t('failmoveupdate'));
+        toast.error(t('failmoveUpdate'));
         // Revert to the original order on failure
         setItems(items);
       } else {
-        toast.success(t('movesuccessfully'));
+        toast.success(t('moveSuccessfully'));
       }
     } catch (error) {
       console.error('Failed to update item order:', error);
       setItems(items); // Revert on error
-      toast.error(t('errormoveorder'));
+      toast.error(t('errorMoveorder'));
     }
   };
 
@@ -151,16 +151,16 @@ export default function ItemListing({
       );
 
       if (item.error) {
-        toast.error(t('failmoveupdate'));
+        toast.error(t('failmoveUpdate'));
         // Revert to the original order on failure
         setItems(items);
       } else {
-        toast.success(t('movedownsuccess'));
+        toast.success(t('movedownSuccess'));
       }
     } catch (error) {
       console.error('Failed to update item order:', error);
       setItems(items); // Revert on error
-      toast.error(t('errormoveorder'));
+      toast.error(t('errorMoveorder'));
     }
   };
 
@@ -226,9 +226,9 @@ export default function ItemListing({
       );
 
       if (item.error) {
-        toast.error(t('failmoveupdate'));
+        toast.error(t('failmoveUpdate'));
       } else {
-        toast.success(t('itemorderupdatesuccess'));
+        toast.success(t('itemOrderUpdateSuccess'));
 
         const newItems = [...updatedItems];
         newItems[draggedItemIndex] = item.data;
@@ -238,7 +238,7 @@ export default function ItemListing({
       console.error('Failed to update item order:', error);
       // Revert the UI change if the database update fails
       setItems(initialItems);
-      toast.error(t('failmoveupdate'));
+      toast.error(t('failmoveUpdate'));
     }
   };
 
@@ -316,9 +316,9 @@ export default function ItemListing({
       );
 
       if (response.error) {
-        toast.error(t('nameupdateerror'));
+        toast.error(t('nameUpdateError'));
       } else {
-        toast.success(t('nameupdate'));
+        toast.success(t('nameUpdate'));
 
         // Update the local state
         const updatedItems = items.map((i) =>
@@ -376,9 +376,9 @@ export default function ItemListing({
       );
 
       if (response.error) {
-        toast.error(t('descriptionupdateerror'));
+        toast.error(t('descriptionUpdateError'));
       } else {
-        toast.success(t('descriptionupdate'));
+        toast.success(t('descriptionUpdate'));
 
         // Update the local state
         const updatedItems = items.map((i) =>
@@ -388,7 +388,7 @@ export default function ItemListing({
       }
     } catch (error) {
       console.error('Failed to update item description:', error);
-      toast.error(t('descriptionupdateerror'));
+      toast.error(t('descriptionUpdateError'));
     } finally {
       setEditingItemId(null);
       setEditingField(null);
@@ -455,9 +455,9 @@ export default function ItemListing({
       );
 
       if (response.error) {
-        toast.error(t('priceupdateerror'));
+        toast.error(t('priceUpdateError'));
       } else {
-        toast.success(t('priceupdate'));
+        toast.success(t('priceUpdate'));
 
         // Update the local state
         const updatedItems = items.map((i) =>
@@ -467,7 +467,7 @@ export default function ItemListing({
       }
     } catch (error) {
       console.error('Failed to update item price:', error);
-      toast.error(t('priceupdateerror'));
+      toast.error(t('priceUpdateError'));
     } finally {
       setEditingItemId(null);
       setEditingField(null);
@@ -513,9 +513,9 @@ export default function ItemListing({
       );
 
       if (response.error) {
-        toast.error(t('categoryupdateerror'));
+        toast.error(t('categoryUpdateError'));
       } else {
-        toast.success(t('categoryupdate'));
+        toast.success(t('categoryUpdate'));
 
         // Update the local state
         const updatedItems = items.map((i) =>
@@ -525,7 +525,7 @@ export default function ItemListing({
       }
     } catch (error) {
       console.error('Failed to update item category:', error);
-      toast.error(t('categoryupdateerror'));
+      toast.error(t('categoryUpdateError'));
     } finally {
       setEditingItemId(null);
       setEditingField(null);
@@ -589,9 +589,9 @@ export default function ItemListing({
       );
 
       if (response.error) {
-        toast.error(t('vatupdateerror'));
+        toast.error(t('vatUpdateError'));
       } else {
-        toast.success(t('vatupdate'));
+        toast.success(t('vatUpdate'));
 
         // Update the local state
         const updatedItems = items.map((i) =>
@@ -601,7 +601,7 @@ export default function ItemListing({
       }
     } catch (error) {
       console.error('Failed to update item VAT:', error);
-      toast.error(t('vatupdateerror'));
+      toast.error(t('vatUpdateError'));
     } finally {
       setEditingItemId(null);
       setEditingField(null);
@@ -659,9 +659,9 @@ export default function ItemListing({
       const response = await uploadItemImageAction(formData);
 
       if (response.error) {
-        toast.error(t('imageupdateerror'));
+        toast.error(t('imageUpdateError'));
       } else {
-        toast.success(t('imageupdate'));
+        toast.success(t('imageUpdate'));
 
         // Update the local state with the new image URL
         const updatedItems = items.map((i) =>
@@ -671,7 +671,7 @@ export default function ItemListing({
       }
     } catch (error) {
       console.error('Failed to update item image:', error);
-      toast.error(t('imageupdateerror'));
+      toast.error(t('imageUpdateError'));
     } finally {
       setEditingItemId(null);
       setEditingField(null);
@@ -758,7 +758,7 @@ export default function ItemListing({
 
     try {
       await updatePlaceDisplayAction(placeId, value as DisplayMode);
-      toast.success(t('displaymodeupdate'));
+      toast.success(t('displayModeUpdate'));
     } catch (error) {
       console.error('Failed to update place display:', error);
       toast.error('Failed to update place display');
@@ -806,16 +806,16 @@ export default function ItemListing({
           ) : (
             <>
               <icons.Plus size={16} />
-              {t('AddItem')}
+              {t('additem')}
             </>
           )}
         </Button>
 
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600">{t('displaymode')}:</span>
+          <span className="text-sm text-gray-600">{t('displayMode')}:</span>
           <Select value={displayMode} onValueChange={handleDisplayModeChange}>
             <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder={t('displaymode')} />
+              <SelectValue placeholder={t('displayMode')} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="menu">{t('menu')}</SelectItem>

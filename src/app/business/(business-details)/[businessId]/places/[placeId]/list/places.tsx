@@ -175,7 +175,7 @@ export default function PlacesPage({
       await updatePlaceDescriptionAction(place.id, editingDescription);
       setEditingItemId(null);
       setEditingField(null);
-      toast.success(t('placeDescriptionupdatedsuccessfully'));
+      toast.success(t('placeDescriptionUpdatedSuccessfully'));
 
       const updatedPlaces = places.map((p) =>
         p.id === place.id ? { ...p, description: editingDescription } : p
@@ -275,7 +275,7 @@ export default function PlacesPage({
 
       try {
         await updatePlaceHiddenAction(place.id, hidden);
-        toast.success(t('placevisibilityupdatedsuccessfully'));
+        toast.success(t('placeVisibilityUpdatedSuccessfully'));
 
         const updatedPlaces = places.map((p) =>
           p.id === place.id ? { ...p, hidden: hidden } : p
@@ -338,9 +338,9 @@ export default function PlacesPage({
       const { response, imageUrl } = await updatePlaceImageAction(formData);
 
       if (response.error) {
-        toast.error(t('failimageupload'));
+        toast.error(t('failImageUpload'));
       } else {
-        toast.success(t('imageuploadedsuccessfully'));
+        toast.success(t('imageUploadedSuccessfully'));
 
         // Update the local state with the new image URL
         const updatedPlaces = places.map((p) =>
@@ -350,7 +350,7 @@ export default function PlacesPage({
       }
     } catch (error) {
       console.error('Failed to update item image:', error);
-      toast.error(t('failimageupload'));
+      toast.error(t('failImageUpload'));
     } finally {
       setEditingItemId(null);
       setEditingField(null);
@@ -389,12 +389,12 @@ export default function PlacesPage({
     // Validate form
 
     if (!newPlaceName.trim()) {
-      toast.error(t('placenamerequired'));
+      toast.error(t('placeNameRequired'));
       return;
     }
 
     if (slugTouched && !newPlaceSlug.trim()) {
-      setSlugError(t('slugrequired'));
+      setSlugError(t('slugRequired'));
       return;
     }
     setIsAddLoading(true);
@@ -418,7 +418,7 @@ export default function PlacesPage({
         image
       );
 
-      toast.success(t('placeaddedsuccessfully'));
+      toast.success(t('placeAddedSuccessfully'));
 
       setNewPlaceName('');
       setNewPlacedescription('');
@@ -432,7 +432,7 @@ export default function PlacesPage({
       setPlaces([...places, newPlace]);
     } catch (error) {
       console.error('Failed to add place:', error);
-      toast.error(t('failedtoaddplace'));
+      toast.error(t('failedToAddPlace'));
     } finally {
       setIsAddLoading(false);
     }
@@ -458,7 +458,7 @@ export default function PlacesPage({
       }
     },
     {
-      header: t('Image'),
+      header: t('image'),
       accessorKey: 'image',
       cell: ({ row }: { row: Row<Place> }) => {
         return (
@@ -644,9 +644,9 @@ export default function PlacesPage({
 
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>{t('AddaNewPlace')}</DialogTitle>
+                <DialogTitle>{t('addNewPlace')}</DialogTitle>
                 <DialogDescription>
-                  {t('AddPlaceDescription')}
+                  {t('addPlaceDescription')}
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
@@ -661,13 +661,13 @@ export default function PlacesPage({
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       setNewPlaceName(e.target.value)
                     }
-                    placeholder={t('NamePlaceholder')}
+                    placeholder={t('namePlaceholder')}
                   />
                 </div>
 
                 <div className="grid gap-2">
                   <label htmlFor="description" className="text-sm font-medium">
-                    {t('Description')}
+                    {t('description')}
                   </label>
                   <Input
                     className="text-base"
@@ -676,13 +676,13 @@ export default function PlacesPage({
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       setNewPlacedescription(e.target.value)
                     }
-                    placeholder={t('DescriptionPlaceholder')}
+                    placeholder={t('descriptionPlaceholder')}
                   />
                 </div>
 
                 <div className="grid gap-2">
                   <label htmlFor="slug" className="text-sm font-medium">
-                    {t('Slug')}
+                    {t('slug')}
                   </label>
                   <Input
                     className="text-base"
@@ -692,7 +692,7 @@ export default function PlacesPage({
                       setNewPlaceSlug(e.target.value);
                       setSlugTouched(true);
                     }}
-                    placeholder={t('SlugPlaceholder')}
+                    placeholder={t('slugPlaceholder')}
                   />
                   {slugError && (
                     <p className="text-sm text-red-500">{slugError}</p>
@@ -700,7 +700,7 @@ export default function PlacesPage({
                 </div>
                 <div className="grid gap-2">
                   <label htmlFor="image" className="text-sm font-medium">
-                    {t('Image')}
+                    {t('image')}
                   </label>
                   <input
                     id="image"
@@ -730,14 +730,14 @@ export default function PlacesPage({
                   variant="outline"
                   onClick={() => setIsAddDialogOpen(false)}
                 >
-                  {t('Cancel')}
+                  {t('cancel')}
                 </Button>
                 <Button
                   className="mb-2 md:mb-0"
                   onClick={handleAddPlace}
                   disabled={isAddLoading}
                 >
-                  {isAddLoading ? t('Adding') : t('Add')}
+                  {isAddLoading ? t('adding') : t('add')}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -751,7 +751,7 @@ export default function PlacesPage({
             }
           >
             <Upload size={16} />
-            {t('UpdatePlace')}
+            {t('updatePlace')}
           </Button>
         </div>
 

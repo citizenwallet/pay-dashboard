@@ -56,7 +56,7 @@ export default function ManagePage({
       const data = await handleArchiveToggleAction(place.id);
       const actionMessage = place.hidden ? 'Hidden' : 'Unhidden';
       toast.success(
-        `${t('Placehasbeen')} ${actionMessage} ${t('andarchivedsuccessfully')}`
+        `${t('placeHasBeen')} ${actionMessage} ${t('andArchivedSuccessfully')}`
       );
       setIsArchiveDialogOpen(false);
       router.refresh();
@@ -69,12 +69,12 @@ export default function ManagePage({
     try {
       await deletePlaceAction(place.id);
 
-      toast.success(`${t('placedeletedsuccessfully')}`);
+      toast.success(`${t('placeDeletedSuccessfully')}`);
 
       setIsDeleteDialogOpen(false);
       router.push('/');
     } catch (error) {
-      toast.error(`${t('errorplacedelete')}`);
+      toast.error(`${t('errorPlaceDelete')}`);
     }
   };
 
@@ -135,12 +135,12 @@ export default function ManagePage({
               {place?.archived ? (
                 <>
                   <Archive className="mr-2 h-4 w-4" />
-                  {t('Unarchive')}
+                  {t('unarchive')}
                 </>
               ) : (
                 <>
                   <Archive className="mr-2 h-4 w-4" />
-                  {t('Archive')}
+                  {t('archive')}
                 </>
               )}
             </Button>
@@ -165,7 +165,7 @@ export default function ManagePage({
                 disabled={loading}
                 onClick={() => handleArchive(place!)}
               >
-                {loading ? t('Archiving') : t('confirm')}
+                {loading ? t('archiving') : t('confirm')}
               </Button>
             </DialogFooter>
           </DialogContent>

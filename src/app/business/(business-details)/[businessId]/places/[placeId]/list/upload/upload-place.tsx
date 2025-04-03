@@ -312,8 +312,8 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
   const cancelUpload = () => {
     toast.custom((x) => (
       <div>
-        <h3>{t('AreYouSureOnThisWantToCancel')}</h3>
-        <p>{t('AllYourWorkOnThisPageWillBeLost')}</p>
+        <h3>{t('areYouSureOnThisWantToCancel')}</h3>
+        <p>{t('allYourWorkOnThisPageWillBeLost')}</p>
         <div className="mt-4 flex justify-end gap-3">
           <Button
             className="ml-4 bg-red-600 text-white hover:bg-red-700"
@@ -321,7 +321,7 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
               toast.dismiss(x);
             }}
           >
-            {t('Cancel')}
+            {t('cancel')}
           </Button>
 
           <Button
@@ -332,7 +332,7 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
               setPaginatedData([]);
             }}
           >
-            {t('Confirm')}
+            {t('confirm')}
           </Button>
         </div>
       </div>
@@ -343,9 +343,9 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
   const confirmUpload = () => {
     toast.custom((x) => (
       <div>
-        <h3>{t('AreYouSureYouWantToConfirm')}</h3>
+        <h3>{t('areYouSureYouWantToConfirm')}</h3>
         <p>
-          {t('ThisWillUpload')} {data.length} {t('placesToYourBusiness')}
+          {t('thisWillUpload')} {data.length} {t('placesToYourBusiness')}
         </p>
         <div className="mt-4 flex justify-end gap-3">
           <Button
@@ -354,7 +354,7 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
               toast.dismiss(x);
             }}
           >
-            {t('Cancel')}
+            {t('cancel')}
           </Button>
 
           <Button
@@ -364,7 +364,7 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
               uploadData();
             }}
           >
-            {t('Confirm')}
+            {t('confirm')}
           </Button>
         </div>
       </div>
@@ -393,9 +393,9 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
             await new Promise<void>((resolve) => {
               toast.custom((x) => (
                 <div>
-                  <h3>{t('DoYouWantToContinueUploadingTheRemainingPlaces')}</h3>
+                  <h3>{t('doYouWantToContinueUploadingTheRemainingPlaces')}</h3>
                   <p>
-                    {t('AnUnexpectedErrorOccurredWhileUploading', {
+                    {t('anUnexpectedErrorOccurredWhileUploading', {
                       place: place.name
                     })}
                   </p>
@@ -407,7 +407,7 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
                         resolve();
                       }}
                     >
-                      {t('No')}
+                      {t('no')}
                     </Button>
 
                     <Button
@@ -417,7 +417,7 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
                         resolve();
                       }}
                     >
-                      {t('Continue')}
+                      {t('continue')}
                     </Button>
                   </div>
                 </div>
@@ -432,9 +432,9 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
           await new Promise<void>((resolve) => {
             toast.custom((x) => (
               <div>
-                <h3>{t('DoYouWantToContinueUploadingTheRemainingPlaces')}</h3>
+                <h3>{t('doYouWantToContinueUploadingTheRemainingPlaces')}</h3>
                 <p>
-                  {t('AnUnexpectedErrorOccurredWhileUploading', {
+                  {t('anUnexpectedErrorOccurredWhileUploading', {
                     place: place.name
                   })}
                 </p>
@@ -446,7 +446,7 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
                       resolve();
                     }}
                   >
-                    {t('No')}
+                    {t('no')}
                   </Button>
 
                   <Button
@@ -456,7 +456,7 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
                       resolve();
                     }}
                   >
-                    {t('Continue')}
+                    {t('continue')}
                   </Button>
                 </div>
               </div>
@@ -586,7 +586,7 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
                     onClick={cancelUpload}
                     className="w-[150]"
                   >
-                    {t('Cancel')}
+                    {t('cancel')}
                   </Button>
 
                   <Button
@@ -594,7 +594,7 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
                     variant="default"
                     onClick={confirmUpload}
                   >
-                    {t('Confirm')}
+                    {t('confirm')}
                   </Button>
                 </>
               )}

@@ -76,7 +76,7 @@ export default function ProfileEdit({ place }: { place: Place | null }) {
         oldimage: previewUrl || ''
       });
 
-      toast.success(t('updatesuccess'));
+      toast.success(t('updateSuccess'));
     } catch (error) {
       console.error('Error submitting form:', error);
     } finally {
@@ -95,11 +95,11 @@ export default function ProfileEdit({ place }: { place: Place | null }) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('Name')}</FormLabel>
+                <FormLabel>{t('name')}</FormLabel>
                 <FormControl>
                   <Input
                     disabled={loading}
-                    placeholder={t('nameplaceholder')}
+                    placeholder={t('namePlaceholder')}
                     {...field}
                   />
                 </FormControl>
@@ -113,11 +113,11 @@ export default function ProfileEdit({ place }: { place: Place | null }) {
             name="slug"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('Slug')}</FormLabel>
+                <FormLabel>{t('slug')}</FormLabel>
                 <FormControl>
                   <Input
                     disabled={loading}
-                    placeholder={t('slugplaceholder')}
+                    placeholder={t('slugPlaceholder')}
                     {...field}
                   />
                 </FormControl>
@@ -127,7 +127,7 @@ export default function ProfileEdit({ place }: { place: Place | null }) {
           />
 
           <FormItem>
-            <FormLabel>{t('Image')}</FormLabel>
+            <FormLabel>{t('image')}</FormLabel>
             <FormControl>
               <Input
                 type="file"
@@ -163,11 +163,11 @@ export default function ProfileEdit({ place }: { place: Place | null }) {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('Description')}</FormLabel>
+                <FormLabel>{t('description')}</FormLabel>
                 <FormControl>
                   <Textarea
                     disabled={loading}
-                    placeholder={t('descriptionplaceholder')}
+                    placeholder={t('descriptionPlaceholder')}
                     {...field}
                   />
                 </FormControl>
@@ -178,7 +178,7 @@ export default function ProfileEdit({ place }: { place: Place | null }) {
         </div>
 
         <Button disabled={loading} type="submit">
-          {loading ? t('updating') : t('Updateprofile')}
+          {loading ? t('updating') : t('updateProfile')}
         </Button>
       </form>
     </Form>

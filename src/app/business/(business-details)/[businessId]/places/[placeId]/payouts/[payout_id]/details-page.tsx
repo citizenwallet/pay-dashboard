@@ -46,7 +46,7 @@ export default function PayoutDetailsPage({
           onClick={handleCSVDownload}
           className={cn(buttonVariants({ variant: 'outline' }), 'ml-auto')}
         >
-          {t('ExportCSV')}
+          {t('exportCSV')}
         </button>
       </div>
 

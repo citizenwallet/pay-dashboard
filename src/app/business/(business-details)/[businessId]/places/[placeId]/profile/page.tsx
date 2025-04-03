@@ -19,7 +19,7 @@ export default async function page({
         <PageContainer>
           <div className="space-y-4">
             <div className="flex items-start justify-between">
-              <Heading title={t('Profile')} description={t('Placedetails')} />
+              <Heading title={t('profile')} description={t('placeDetails')} />
             </div>
             <Separator />
             <Suspense fallback={<div>Loading...</div>}>

@@ -29,8 +29,8 @@ export default async function PayoutsPage({
         <div className="space-y-4">
           <div className="flex items-start justify-between">
             <Heading
-              title={t('Payouts')}
-              description={t('Payoutsdescription')}
+              title={t('payouts')}
+              description={t('payoutsDescription')}
             />
           </div>
           <Separator />

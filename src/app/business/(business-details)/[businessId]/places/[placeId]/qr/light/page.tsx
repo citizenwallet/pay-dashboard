@@ -24,7 +24,7 @@ export default async function QRPage({
     <PageContainer scrollable>
       <div className="flex h-full min-h-svh flex-1 flex-col space-y-4">
         <div className="flex items-start justify-between">
-          <Heading title={t('QrCode')} description={t('qrDescription')} />
+          <Heading title={t('qrCode')} description={t('qrDescription')} />
         </div>
         <Separator />
         <Suspense
