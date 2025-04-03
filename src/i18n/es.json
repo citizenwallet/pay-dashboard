@@ -343,5 +343,19 @@
     "Next": "Siguiente",
     "invaildOTP": "Código OTP inválido",
     "vatRequired": "El número de IVA es requerido"
+  },
+  "onboardingDetails": {
+    "description": "Necesitas más información para completar la creación de tu cuenta",
+    "legalName": "Nombre legal",
+    "address": "Dirección",
+    "iban": "IBAN",
+    "Previous": "Anterior",
+    "Submit": "Enviar",
+    "Submitting": "Enviando...",
+    "legalNameRequired": "El nombre legal es requerido",
+    "addressRequired": "La dirección es requerida",
+    "ibanRequired": "El IBAN es requerido",
+    "yourBusinessHasBeen": "Tu negocio ha sido validado correctamente !",
+    "errorUpdatingBusiness": "Oops, hay un error durante la validación de tu negocio"
   }
 }

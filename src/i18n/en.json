@@ -343,5 +343,19 @@
     "Next": "Next",
     "invaildOTP": "Invalid OTP",
     "vatRequired": "VAT number is required"
+  },
+  "onboardingDetails": {
+    "description": "Need more infos to complete the account creation",
+    "legalName": "Legal name",
+    "address": "Address",
+    "iban": "IBAN",
+    "Previous": "Previous",
+    "Submit": "Submit",
+    "Submitting": "Submitting...",
+    "legalNameRequired": "Legal name is required",
+    "addressRequired": "Address is required",
+    "ibanRequired": "IBAN is required",
+    "yourBusinessHasBeen": "Your business has been successfully validated !",
+    "errorUpdatingBusiness": "Oops, there is an error during the validation of your company"
   }
 }
