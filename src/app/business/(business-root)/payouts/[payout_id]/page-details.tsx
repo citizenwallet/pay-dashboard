@@ -268,7 +268,7 @@ export default function PayoutDetailsPage({
       <div className="mt-6 flex items-center justify-between pt-6">
         <div className="flex items-center gap-7">
           <p className="flex items-center gap-2">
-            Total Amount:
+            {t('totalAmount')}:
             <CurrencyLogo logo={currencyLogo} size={18} />
             {formatCurrencyNumber(totalAmount)}
           </p>

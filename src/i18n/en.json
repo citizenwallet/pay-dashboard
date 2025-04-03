@@ -274,7 +274,8 @@
     "of": "of",
     "next": "Next",
     "page": "Page",
-    "date": "Date"
+    "date": "Date",
+    "totalAmount": "Total Amount"
   },
   "addingpayout": {
     "newPayout": "New Payout",

@@ -274,7 +274,8 @@
     "of": "de",
     "next": "Siguiente",
     "page": "Página",
-    "date": "Fecha"
+    "date": "Fecha",
+    "totalAmount": "Cantidad total"
   },
   "addingpayout": {
     "newPayout": "Nuevo Pago",
