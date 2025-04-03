@@ -7,14 +7,19 @@ import SelectPlace from './select-place';
 import { getAllPlacesAction } from './action';
 import { CommunityConfig } from '@citizenwallet/sdk';
 import Config from '@/cw/community.json';
+import { getTranslations } from 'next-intl/server';
 
-export default function PayoutNewPage() {
+export default async function PayoutNewPage() {
+  const t = await getTranslations('addingpayout');
   return (
     <>
       <PageContainer>
         <div className="space-y-4">
           <div className="flex items-start justify-between">
-            <Heading title="New Payout" description="Create a new payout" />
+            <Heading
+              title={t('newPayout')}
+              description={t('newPayoutDescription')}
+            />
           </div>
           <Separator />
           <Suspense fallback={<>Loading...</>}>{AsyncPayoutNewPage()}</Suspense>

@@ -55,8 +55,7 @@ export function DataTable<TData, TValue>({
     manualPagination: true
   });
 
-  const tMissing = useTranslations('Missing');
-
+  const t = useTranslations('order');
   return (
     <div className="space-y-4">
       <div className="flex-1 overflow-auto whitespace-nowrap rounded-md border">
@@ -102,7 +101,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  {tMissing('noResults')}
+                  {t('noResults')}
                 </TableCell>
               </TableRow>
             )}
@@ -124,7 +123,7 @@ export function DataTable<TData, TValue>({
             <div className="font-medium">
               {table.getState().pagination.pageIndex + 1}
             </div>
-            <div>of</div>
+            <div>{t('of')}</div>
             <div className="font-medium">{pageCount}</div>
           </div>
           <Button

@@ -18,7 +18,6 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
-import { useTranslations } from 'next-intl';
 import { Button } from './button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -59,8 +58,6 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true
   });
-
-  const tMissing = useTranslations('Missing');
 
   return (
     <div className="space-y-4">
@@ -109,7 +106,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  {tMissing('noResults')}
+                  No results.
                 </TableCell>
               </TableRow>
             )}

@@ -1,39 +1,12 @@
-import {getRequestConfig} from 'next-intl/server';
-import {Formats} from 'next-intl';
-import {routing} from './routing';
+import { getRequestConfig } from 'next-intl/server';
+import { cookies } from 'next/headers';
 
-export default getRequestConfig(async ({requestLocale}) => {
-  // This typically corresponds to the `[locale]` segment
-  let locale = await requestLocale;
-
-  // Ensure that a valid locale is used
-  if (!locale || !routing.locales.includes(locale as any)) {
-    locale = routing.defaultLocale;
-  }
+export default getRequestConfig(async () => {
+  const cookieStore = await cookies();
+  const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en';
 
   return {
-    locale,
-    messages: (await import(`./${locale}.json`)).default
+    messages: (await import(`./${locale}.json`)).default,
+    locale
   };
 });
-
-export const formats = {
-  dateTime: {
-    short: {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    }
-  },
-  number: {
-    precise: {
-      maximumFractionDigits: 5
-    }
-  },
-  list: {
-    enumeration: {
-      style: 'long',
-      type: 'conjunction'
-    }
-  }
-} satisfies Formats;

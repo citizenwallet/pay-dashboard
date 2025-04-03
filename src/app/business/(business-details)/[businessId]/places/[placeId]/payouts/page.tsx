@@ -13,6 +13,7 @@ import { getServiceRoleClient } from '@/db';
 import { getPayoutsbyPaceIdAction } from './action';
 import Config from '@/cw/community.json';
 import { CommunityConfig } from '@citizenwallet/sdk';
+import { getTranslations } from 'next-intl/server';
 
 export default async function PayoutsPage({
   params
@@ -20,13 +21,17 @@ export default async function PayoutsPage({
   params: Promise<{ businessId: string; placeId: string }>;
 }) {
   const resolvedParams = await params;
+  const t = await getTranslations('payouts');
 
   return (
     <>
       <PageContainer>
         <div className="space-y-4">
           <div className="flex items-start justify-between">
-            <Heading title="Payouts" description="Manage your Place payouts" />
+            <Heading
+              title={t('payouts')}
+              description={t('payoutsDescription')}
+            />
           </div>
           <Separator />
           <Suspense

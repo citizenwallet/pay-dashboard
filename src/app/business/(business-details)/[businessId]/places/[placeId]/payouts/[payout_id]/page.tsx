@@ -13,6 +13,7 @@ import PayoutDetailsPage from './details-page';
 import { getPayoutAction } from './action';
 import { CommunityConfig } from '@citizenwallet/sdk';
 import Config from '@/cw/community.json';
+import { getTranslations } from 'next-intl/server';
 
 export default async function PayoutOrderPage({
   params
@@ -20,14 +21,15 @@ export default async function PayoutOrderPage({
   params: Promise<{ businessId: string; placeId: string; payout_id: string }>;
 }) {
   const resolvedParams = await params;
+  const t = await getTranslations('payouts');
   return (
     <>
       <PageContainer>
         <div className="space-y-4">
           <div className="flex items-start justify-between">
             <Heading
-              title="Payout Details"
-              description="Payout details and the orders "
+              title={t('payoutDetails')}
+              description={t('payoutDetailsdescription')}
             />
           </div>
           <Separator />

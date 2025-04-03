@@ -3,14 +3,15 @@ import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
 import { Suspense } from 'react';
 
-import QrPage from './qr-page';
-import { getServiceRoleClient } from '@/db';
 import {
   getUserIdFromSessionAction,
   isUserAdminAction
 } from '@/actions/session';
-import { checkUserPlaceAccess, getPlaceById } from '@/db/places';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getServiceRoleClient } from '@/db';
+import { checkUserPlaceAccess, getPlaceById } from '@/db/places';
+import QrPage from './qr-page';
+import { getTranslations } from 'next-intl/server';
 
 export default async function QRPage({
   params
@@ -18,11 +19,13 @@ export default async function QRPage({
   params: Promise<{ businessId: string; placeId: string }>;
 }) {
   const resolvedParams = await params;
+  const t = await getTranslations('qr');
+
   return (
     <PageContainer scrollable>
       <div className="flex h-full min-h-svh flex-1 flex-col space-y-4">
         <div className="flex items-start justify-between">
-          <Heading title="QR Code" description="Manage your Place QR Code" />
+          <Heading title={t('qrCode')} description={t('qrDescription')} />
         </div>
         <Separator />
         <Suspense

@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { getPayoutCSVAction } from './action';
 import { toast } from 'sonner';
 import { Order } from '@/db/orders';
+import { useTranslations } from 'next-intl';
 
 export default function PayoutDetailsPage({
   payout_id,
@@ -15,6 +16,7 @@ export default function PayoutDetailsPage({
   orders: Order[];
   currencyLogo: string;
 }) {
+  const t = useTranslations('payouts');
   const handleCSVDownload = async () => {
     const csvData = await getPayoutCSVAction(payout_id);
 
@@ -44,7 +46,7 @@ export default function PayoutDetailsPage({
           onClick={handleCSVDownload}
           className={cn(buttonVariants({ variant: 'outline' }), 'ml-auto')}
         >
-          Export as CSV
+          {t('exportCSV')}
         </button>
       </div>
 

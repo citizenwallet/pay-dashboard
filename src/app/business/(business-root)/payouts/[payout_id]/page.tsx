@@ -10,6 +10,7 @@ import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
 import { CommunityConfig } from '@citizenwallet/sdk';
 import { getPayoutOrders } from '@/db/orders';
 import { getServiceRoleClient } from '@/db';
+import { getTranslations } from 'next-intl/server';
 
 export default async function PayoutOrderPage({
   params,
@@ -25,15 +26,15 @@ export default async function PayoutOrderPage({
 }) {
   const { payout_id } = await params;
   const { column, order, offset, limit } = await searchParams;
-
+  const t = await getTranslations('rootpayouts');
   return (
     <>
       <PageContainer>
         <div className="space-y-4">
           <div className="flex items-start justify-between">
             <Heading
-              title="Payout Details"
-              description="Payout details and the orders "
+              title={t('payoutDetails')}
+              description={t('payoutDetailsDescription')}
             />
           </div>
           <Separator />

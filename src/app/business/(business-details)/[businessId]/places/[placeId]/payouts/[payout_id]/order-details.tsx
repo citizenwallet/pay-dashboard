@@ -3,6 +3,7 @@ import CurrencyLogo from '@/components/currency-logo';
 import { DataTable } from '@/components/ui/data-table';
 import { Order } from '@/db/orders';
 import { formatCurrencyNumber } from '@/lib/currency';
+import { useTranslations } from 'next-intl';
 
 export default function OrderViewTable({
   orders,
@@ -11,14 +12,15 @@ export default function OrderViewTable({
   orders: Order[];
   currencyLogo: string;
 }) {
+  const t = useTranslations('payouts');
   return (
     <>
       <DataTable
         columns={[
-          { accessorKey: 'id', header: 'ID' },
+          { accessorKey: 'id', header: t('id') },
           {
             accessorKey: 'created_at',
-            header: 'Date',
+            header: t('date'),
             cell: ({ row }) => {
               const date = new Date(row.original.created_at);
               return `${date.toLocaleDateString(
@@ -31,7 +33,7 @@ export default function OrderViewTable({
           },
           {
             accessorKey: 'total',
-            header: 'Total',
+            header: t('total'),
             cell: ({ row }) => {
               return (
                 <p className="flex w-8 items-center gap-1">

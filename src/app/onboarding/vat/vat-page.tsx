@@ -7,6 +7,7 @@ import { Business } from '@/db/business';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { signAction } from '@/app/(auth)/action';
+import { useTranslations } from 'next-intl';
 
 export default function VatPage({
   business,
@@ -15,6 +16,7 @@ export default function VatPage({
   business: Business;
   decoded: { email: string; otp: string; iat: number; exp: number } | null;
 }) {
+  const t = useTranslations('onboardingVat');
   const [vatNumber, setVatNumber] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -29,13 +31,13 @@ export default function VatPage({
     if (decoded) {
       const success = await signAction(decoded?.email, decoded?.otp);
       if (!success) {
-        setError('Invalid OTP');
+        setError(t('invaildOtp'));
         return;
       }
     }
 
     if (!vatNumber) {
-      setError('VAT number is required');
+      setError(t('vatRequired'));
       return;
     }
     try {
@@ -51,10 +53,7 @@ export default function VatPage({
   return (
     <div className="mt-8 space-y-6">
       <div className="space-y-2">
-        <p className="text-left text-sm text-gray-700">
-          In order to complete your registration, please provide us with your
-          VAT number:
-        </p>
+        <p className="text-left text-sm text-gray-700">{t('description')}</p>
         <Input
           type="text"
           placeholder="EX: BE0790756234"
@@ -71,7 +70,7 @@ export default function VatPage({
           onClick={handleSubmit}
           disabled={loading}
         >
-          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Next'}
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('next')}
         </Button>
       </div>
     </div>
