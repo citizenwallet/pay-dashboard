@@ -297,5 +297,18 @@
     "dataRange": "Data Range",
     "pickadate": "Pick a date",
     "places": "Places"
+  },
+  "onboardingRegister": {
+    "onboardingText": "Money is not the only currency. Your time, your energy, your heart are also currencies. Neighborhoods and communities can create new sources of capital: respect, trust, reciprocity.",
+    "onboardingAuthor": "Edgar Cahn - Creator of the TimeBanking",
+    "createaccount": "Create your account",
+    "enterbelow": "Enter your email below to register",
+    "name": "Name",
+    "nameplaceholder": "Enter your name...",
+    "phone": "Phone",
+    "email": "Email",
+    "emailplaceholder": "Enter your email...",
+    "signup": "Sign Up",
+    "alreadyhaveaccount": "Already have an account? Login"
   }
 }

@@ -297,5 +297,18 @@
     "dataRange": "Rango de fechas",
     "pickadate": "Seleccionar una fecha",
     "places": "Lugares"
+  },
+  "onboardingRegister": {
+    "onboardingText": "El dinero no es la única moneda. Tu tiempo, tu energía y tu corazón también son monedas. Los vecindarios y las comunidades pueden crear nuevas fuentes de capital: respeto, confianza y reciprocidad.",
+    "onboardingAuthor": "Edgar Cahn - Creator of the TimeBanking",
+    "createaccount": "Crea tu cuenta",
+    "enterbelow": "Ingresa tu email abajo para registrarte",
+    "name": "Nombre",
+    "nameplaceholder": "Ingresa tu nombre...",
+    "phone": "Teléfono",
+    "email": "Email",
+    "emailplaceholder": "Ingresa tu email...",
+    "signup": "Registrarse",
+    "alreadyhaveaccount": "¿Ya tienes una cuenta?"
   }
 }
