@@ -479,7 +479,7 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
       console.error(error);
     } finally {
       setUploading(false);
-      toast.success(t('placesuploadedsuccessfully'));
+      toast.success(t('placesUploadedSuccessfully'));
       setUploadCsv(false);
       setData([]);
       setPaginatedData([]);

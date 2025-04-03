@@ -24,7 +24,7 @@ export default async function itempage({
       <PageContainer>
         <div className="space-y-4">
           <div className="flex items-start justify-between">
-            <Heading title={t('items')} description={t('itemoftheplace')} />
+            <Heading title={t('items')} description={t('itemOfThePlace')} />
           </div>
           <Separator />
           <Suspense

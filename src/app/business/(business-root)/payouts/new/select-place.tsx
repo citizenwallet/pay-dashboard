@@ -115,7 +115,7 @@ export default function SelectPlace({
                     format(date.from, 'LLL dd, y')
                   )
                 ) : (
-                  <span>Pick a date</span>
+                  <span>{t('pickADate')}</span>
                 )}
               </Button>
             </PopoverTrigger>

@@ -107,16 +107,16 @@ export default function ItemListing({
       );
 
       if (item.error) {
-        toast.error(t('failmoveUpdate'));
+        toast.error(t('failOrderUpdate'));
         // Revert to the original order on failure
         setItems(items);
       } else {
-        toast.success(t('moveSuccessfully'));
+        toast.success(t('moveUpSuccessfully'));
       }
     } catch (error) {
       console.error('Failed to update item order:', error);
       setItems(items); // Revert on error
-      toast.error(t('errorMoveorder'));
+      toast.error(t('errorMoveOrder'));
     }
   };
 
@@ -151,16 +151,16 @@ export default function ItemListing({
       );
 
       if (item.error) {
-        toast.error(t('failmoveUpdate'));
+        toast.error(t('failOrderUpdate'));
         // Revert to the original order on failure
         setItems(items);
       } else {
-        toast.success(t('movedownSuccess'));
+        toast.success(t('moveDownSuccess'));
       }
     } catch (error) {
       console.error('Failed to update item order:', error);
       setItems(items); // Revert on error
-      toast.error(t('errorMoveorder'));
+      toast.error(t('errorMoveOrder'));
     }
   };
 
@@ -226,7 +226,7 @@ export default function ItemListing({
       );
 
       if (item.error) {
-        toast.error(t('failmoveUpdate'));
+        toast.error(t('failOrderUpdate'));
       } else {
         toast.success(t('itemOrderUpdateSuccess'));
 
@@ -238,7 +238,7 @@ export default function ItemListing({
       console.error('Failed to update item order:', error);
       // Revert the UI change if the database update fails
       setItems(initialItems);
-      toast.error(t('failmoveUpdate'));
+      toast.error(t('failOrderUpdate'));
     }
   };
 
@@ -806,7 +806,7 @@ export default function ItemListing({
           ) : (
             <>
               <icons.Plus size={16} />
-              {t('additem')}
+              {t('addItem')}
             </>
           )}
         </Button>
@@ -821,7 +821,7 @@ export default function ItemListing({
               <SelectItem value="menu">{t('menu')}</SelectItem>
               <SelectItem value="amount">{t('amount')}</SelectItem>
               <SelectItem value="amountAndMenu">
-                {t('amountAndmenu')}
+                {t('amountAndMenu')}
               </SelectItem>
             </SelectContent>
           </Select>

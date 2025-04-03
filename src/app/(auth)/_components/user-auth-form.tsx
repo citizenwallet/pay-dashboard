@@ -96,7 +96,7 @@ export default function UserAuthForm() {
 
           <div className="flex justify-center">
             <a href="/onboarding" className="text-sm text-primary">
-              {t('havenotAccount')}
+              {t('haveNotAccount')}
             </a>
           </div>
         </form>
