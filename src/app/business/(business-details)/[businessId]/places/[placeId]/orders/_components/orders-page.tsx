@@ -31,7 +31,7 @@ interface Props {
 
 const createColumns = (
   currencyLogo: string,
-  t: Function
+  t: (key: string) => string
 ): ColumnDef<Order>[] => [
   {
     accessorKey: 'id',

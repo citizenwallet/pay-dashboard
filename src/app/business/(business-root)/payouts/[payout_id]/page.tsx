@@ -42,7 +42,7 @@ export default async function PayoutOrderPage({
 
 const AsyncPayoutOrderPage = async (
   payout_id: string,
-  t: Awaited<ReturnType<typeof getTranslations>>
+  t: (key: string) => string
 ) => {
   const admin = await isUserAdminAction();
   if (!admin) {
