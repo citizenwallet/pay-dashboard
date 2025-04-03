@@ -56,10 +56,10 @@ export default function UserAuthForm() {
             router.push('/otp');
           }
         } catch (error) {
-          toast.error(t('errorloggingin'));
+          toast.error(t('errorLoggingIn'));
         }
       } else {
-        toast.error(t('emailnotregistered'));
+        toast.error(t('emailNotRegistered'));
       }
     });
   };
@@ -81,7 +81,7 @@ export default function UserAuthForm() {
                   <Input
                     className="text-base"
                     type="email"
-                    placeholder={t('emailplaceholder')}
+                    placeholder={t('emailPlaceholder')}
                     disabled={loading}
                     {...field}
                   />
@@ -96,7 +96,7 @@ export default function UserAuthForm() {
 
           <div className="flex justify-center">
             <a href="/onboarding" className="text-sm text-primary">
-              {t('havenotaccount')}
+              {t('havenotAccount')}
             </a>
           </div>
         </form>

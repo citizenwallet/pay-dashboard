@@ -31,7 +31,7 @@ export default function VatPage({
     if (decoded) {
       const success = await signAction(decoded?.email, decoded?.otp);
       if (!success) {
-        setError(t('invaildOTP'));
+        setError(t('invaildOtp'));
         return;
       }
     }
@@ -70,7 +70,7 @@ export default function VatPage({
           onClick={handleSubmit}
           disabled={loading}
         >
-          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('Next')}
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('next')}
         </Button>
       </div>
     </div>

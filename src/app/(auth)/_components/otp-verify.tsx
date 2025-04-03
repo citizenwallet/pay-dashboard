@@ -52,7 +52,7 @@ export default function OtpEntry() {
       setCountdown(60);
       setIsCounting(true);
     } catch (error) {
-      setErrorMessage(t('errorresendingotp') + error);
+      setErrorMessage(t('errorResendingOtp') + error);
     }
   };
 
@@ -65,7 +65,7 @@ export default function OtpEntry() {
     let redirectLocation = '';
 
     if (!email) {
-      setErrorMessage(t('emailnotfound'));
+      setErrorMessage(t('emailNotFound'));
       return;
     }
 
@@ -118,7 +118,7 @@ export default function OtpEntry() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-center text-2xl font-bold">
-            {t('EnterCode')}
+            {t('enterCode')}
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col items-center space-y-4">
@@ -126,7 +126,7 @@ export default function OtpEntry() {
             <Mail className="h-8 w-8 text-green-600" />
           </div>
           <p className="text-center text-gray-600">
-            {t('otpdescription')} ({email}). {t('pleaseEnter')}
+            {t('otpDescription')} ({email}). {t('pleaseEnter')}
           </p>
 
           {/* OTP Input Form */}
@@ -148,7 +148,7 @@ export default function OtpEntry() {
           {/* Countdown Timer */}
           {isCounting ? (
             <p className="text-sm text-gray-500">
-              {t('resendavailablein')} {countdown} {t('seconds')}
+              {t('resendAvailableIn')} {countdown} {t('seconds')}
             </p>
           ) : (
             <Button

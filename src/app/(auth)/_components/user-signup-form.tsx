@@ -71,7 +71,7 @@ export default function UserSignupForm() {
                   <Input
                     className="text-base"
                     type="text"
-                    placeholder={t('nameplaceholder')}
+                    placeholder={t('namePlaceholder')}
                     disabled={loading}
                     {...field}
                   />
@@ -105,7 +105,7 @@ export default function UserSignupForm() {
                   <Input
                     className="text-base"
                     type="email"
-                    placeholder={t('emailplaceholder')}
+                    placeholder={t('emailPlaceholder')}
                     disabled={loading}
                     {...field}
                   />
@@ -120,7 +120,7 @@ export default function UserSignupForm() {
           </Button>
 
           <div className="mt-2 flex justify-center">
-            <Link href="/login">{t('alreadyhaveaccount')}</Link>
+            <Link href="/login">{t('alreadyHaveAccount')}</Link>
           </div>
         </form>
       </Form>

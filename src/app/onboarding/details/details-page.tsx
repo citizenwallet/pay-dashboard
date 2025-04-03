@@ -134,7 +134,7 @@ export default function DetailsPage({
           disabled={loading}
           onClick={handlePrevious}
         >
-          {t('Previous')}
+          {t('previous')}
         </Button>
 
         <Button
@@ -142,7 +142,7 @@ export default function DetailsPage({
           onClick={handleSubmit}
           disabled={loading}
         >
-          {loading ? t('Submitting') : t('Submit')}
+          {loading ? t('submitting') : t('submit')}
         </Button>
       </div>
     </div>
