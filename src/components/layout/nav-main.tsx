@@ -32,6 +32,7 @@ import {
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { Place } from '@/db/places';
+import { useTranslations } from 'next-intl';
 
 export function NavMain({
   businessId,
@@ -40,49 +41,51 @@ export function NavMain({
   businessId: number;
   lastPlace: Place;
 }) {
+  const t = useTranslations('sidebar');
+
   const data = [
     {
-      title: 'Orders',
+      title: t('orders'),
       url: `/business/${businessId}/places/${lastPlace.id}/orders`,
       icon: BoxesIcon,
       isActive: true,
       items: []
     },
     {
-      title: 'Checkout',
+      title: t('checkout'),
       url: `/business/${businessId}/places/${lastPlace.id}/checkout`,
       icon: ShoppingCartIcon,
       items: []
     },
     {
-      title: 'Profile',
+      title: t('profile'),
       url: `/business/${businessId}/places/${lastPlace.id}/profile`,
       icon: User,
       items: []
     },
     {
-      title: 'Manage',
+      title: t('manage'),
       url: `/business/${businessId}/places/${lastPlace.id}/manage`,
       icon: Settings2,
       items: []
     },
     {
-      title: 'QR Code',
+      title: t('qrcode'),
       url: `#`,
       icon: QrCode,
       items: [
         {
-          title: 'Light',
+          title: t('light'),
           url: `/business/${businessId}/places/${lastPlace.id}/qr/light`
         },
         {
-          title: 'Dark',
+          title: t('dark'),
           url: `/business/${businessId}/places/${lastPlace.id}/qr/dark`
         }
       ]
     },
     {
-      title: 'Payouts',
+      title: t('payouts'),
       url: `/business/${businessId}/places/${lastPlace.id}/payouts`,
       icon: PanelBottomClose,
       items: []
@@ -90,7 +93,7 @@ export function NavMain({
   ];
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Place</SidebarGroupLabel>
+      <SidebarGroupLabel>{t('place')}</SidebarGroupLabel>
       <SidebarMenu>
         {data.map((item) => (
           <Collapsible

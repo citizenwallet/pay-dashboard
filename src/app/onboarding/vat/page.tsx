@@ -7,12 +7,14 @@ import Image from 'next/image';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import jwt from 'jsonwebtoken';
+import { getTranslations } from 'next-intl/server';
 
 export default async function VatMainPage({
   searchParams
 }: {
   searchParams: Promise<{ invite_code?: string; otpToken?: string }>;
 }) {
+  const t = await getTranslations('onboardingVat');
   const otpToken = (await searchParams)?.otpToken;
   const inviteCode = (await searchParams)?.invite_code;
   const client = getServiceRoleClient();
@@ -65,7 +67,7 @@ export default async function VatMainPage({
           </div>
 
           <h1 className="text-center text-2xl font-semibold text-gray-900">
-            Welcome to Brussels.pay!
+            {t('welcome')}
           </h1>
         </div>
 

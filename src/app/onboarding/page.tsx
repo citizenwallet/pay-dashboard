@@ -1,7 +1,9 @@
 import Image from 'next/image';
 import UserSignupForm from '../(auth)/_components/user-signup-form';
+import { getTranslations } from 'next-intl/server';
 
-export default function OnboardingPage() {
+export default async function OnboardingPage() {
+  const t = await getTranslations('onboardingRegister');
   return (
     <>
       <div className="relative h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
@@ -18,15 +20,8 @@ export default function OnboardingPage() {
           </div>
           <div className="relative z-20 mt-auto">
             <blockquote className="space-y-2">
-              <p className="text-lg">
-                &ldquo;Money is not the only currency. Your time, your energy,
-                your heart are also currencies. Neighborhoods and communities
-                can create new sources of capital: respect, trust,
-                reciprocity.&rdquo;
-              </p>
-              <footer className="text-sm">
-                Edgar Cahn - Creator of the TimeBanking
-              </footer>
+              <p className="text-lg">&ldquo;{t('onboardingText')}&rdquo;</p>
+              <footer className="text-sm">{t('onboardingAuthor')}</footer>
             </blockquote>
           </div>
         </div>
@@ -34,11 +29,9 @@ export default function OnboardingPage() {
           <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
             <div className="flex flex-col space-y-2 text-center">
               <h1 className="text-2xl font-semibold tracking-tight">
-                Create your account
+                {t('createAccount')}
               </h1>
-              <p className="text-sm text-muted-foreground">
-                Enter your email below to register
-              </p>
+              <p className="text-sm text-muted-foreground">{t('enterBelow')}</p>
             </div>
             <UserSignupForm />
           </div>

@@ -6,7 +6,8 @@ import {
   getCoreRowModel,
   useReactTable,
   PaginationState,
-  OnChangeFn
+  OnChangeFn,
+  Row
 } from '@tanstack/react-table';
 
 import {
@@ -17,7 +18,6 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
-import { useTranslations } from 'next-intl';
 import { Button } from './button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -28,6 +28,8 @@ interface DataTableProps<TData, TValue> {
   pageSize?: number;
   pageIndex?: number;
   onPaginationChange?: OnChangeFn<PaginationState>;
+  onRowClick?: (row: Row<TData>) => void;
+  rowClassName?: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -36,7 +38,9 @@ export function DataTable<TData, TValue>({
   pageCount,
   pageSize = 10,
   pageIndex = 0,
-  onPaginationChange
+  onPaginationChange,
+  onRowClick,
+  rowClassName
 }: DataTableProps<TData, TValue>) {
   const pagination = {
     pageIndex,
@@ -55,7 +59,6 @@ export function DataTable<TData, TValue>({
     manualPagination: true
   });
 
-  const t = useTranslations('order');
   return (
     <div className="space-y-4">
       <div className="flex-1 overflow-auto whitespace-nowrap rounded-md border">
@@ -84,6 +87,8 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
+                  onClick={() => onRowClick?.(row)}
+                  className={rowClassName}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -101,7 +106,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  {t('noResults')}
+                  No results.
                 </TableCell>
               </TableRow>
             )}
@@ -123,7 +128,7 @@ export function DataTable<TData, TValue>({
             <div className="font-medium">
               {table.getState().pagination.pageIndex + 1}
             </div>
-            <div>{t('of')}</div>
+            <div>of</div>
             <div className="font-medium">{pageCount}</div>
           </div>
           <Button

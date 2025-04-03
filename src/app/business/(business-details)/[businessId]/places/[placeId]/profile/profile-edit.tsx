@@ -20,6 +20,7 @@ import { Place } from '@/db/places';
 import { updatePlaceAction } from './action';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 // Define the form schema
 const formSchema = z.object({
@@ -35,6 +36,7 @@ export default function ProfileEdit({ place }: { place: Place | null }) {
   );
   const [imageFile, setImageFile] = useState<File | null>(null);
   const router = useRouter();
+  const t = useTranslations('profile');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -74,7 +76,7 @@ export default function ProfileEdit({ place }: { place: Place | null }) {
         oldimage: previewUrl || ''
       });
 
-      toast.success('Place updated successfully');
+      toast.success(t('updateSuccess'));
     } catch (error) {
       console.error('Error submitting form:', error);
     } finally {
@@ -93,11 +95,11 @@ export default function ProfileEdit({ place }: { place: Place | null }) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>{t('name')}</FormLabel>
                 <FormControl>
                   <Input
                     disabled={loading}
-                    placeholder="Profile name"
+                    placeholder={t('namePlaceholder')}
                     {...field}
                   />
                 </FormControl>
@@ -111,11 +113,11 @@ export default function ProfileEdit({ place }: { place: Place | null }) {
             name="slug"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Slug</FormLabel>
+                <FormLabel>{t('slug')}</FormLabel>
                 <FormControl>
                   <Input
                     disabled={loading}
-                    placeholder="profile-slug"
+                    placeholder={t('slugPlaceholder')}
                     {...field}
                   />
                 </FormControl>
@@ -125,7 +127,7 @@ export default function ProfileEdit({ place }: { place: Place | null }) {
           />
 
           <FormItem>
-            <FormLabel>Image</FormLabel>
+            <FormLabel>{t('image')}</FormLabel>
             <FormControl>
               <Input
                 type="file"
@@ -161,11 +163,11 @@ export default function ProfileEdit({ place }: { place: Place | null }) {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Description</FormLabel>
+                <FormLabel>{t('description')}</FormLabel>
                 <FormControl>
                   <Textarea
                     disabled={loading}
-                    placeholder="Profile description"
+                    placeholder={t('descriptionPlaceholder')}
                     {...field}
                   />
                 </FormControl>
@@ -176,7 +178,7 @@ export default function ProfileEdit({ place }: { place: Place | null }) {
         </div>
 
         <Button disabled={loading} type="submit">
-          {loading ? 'Updating...' : 'Update Profile'}
+          {loading ? t('updating') : t('updateProfile')}
         </Button>
       </form>
     </Form>

@@ -20,9 +20,40 @@ export interface Payout {
 }
 
 export const getPayouts = async (
-  client: SupabaseClient
-): Promise<PostgrestSingleResponse<Payout[]>> => {
-  return await client.from('payouts').select('*');
+  client: SupabaseClient,
+  limit: number,
+  offset: number,
+  column?: string,
+  order?: string,
+  search?: string
+) => {
+  if (search) {
+    return await client
+      .from('payouts')
+      .select(
+        `*, 
+      places!inner(name), 
+      businesses!inner(name),
+      payout_burn(created_at), 
+      payout_transfer(created_at)`
+      )
+      .filter('places.name', 'ilike', `%${search}%`)
+      .filter('businesses.name', 'ilike', `%${search}%`)
+      .order(column ?? 'id', { ascending: order === 'asc' })
+      .range(offset, offset + limit - 1);
+  }
+
+  return await client
+    .from('payouts')
+    .select(
+      `*, 
+      places!inner(name), 
+      businesses!inner(name), 
+      payout_burn(created_at), 
+      payout_transfer(created_at)`
+    )
+    .order(column ?? 'id', { ascending: order === 'asc' })
+    .range(offset, offset + limit - 1);
 };
 
 export const getPayoutById = async (

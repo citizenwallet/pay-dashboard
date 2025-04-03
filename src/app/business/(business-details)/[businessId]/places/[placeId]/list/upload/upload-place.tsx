@@ -13,6 +13,7 @@ import {
   downloadCsvTemplateAction
 } from './action';
 import { Progress } from '@/components/ui/progress';
+import { useTranslations } from 'next-intl';
 
 interface CsvPlace {
   id: number;
@@ -44,6 +45,7 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
   const [shouldContinueUpload, setShouldContinueUpload] =
     useState<boolean>(true);
   const [progress, setProgress] = useState<number>(0);
+  const t = useTranslations('placeUpload');
 
   //search for places and handle pagination
   useEffect(() => {
@@ -75,7 +77,7 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
 
     //check if the file is a csv file
     if (file.type !== 'text/csv') {
-      toast.error('Please upload a valid CSV file');
+      toast.error(t('pleaseUploadAValidCsvFile'));
       setIsLoading(false);
       return;
     }
@@ -244,7 +246,7 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
 
   const columns = [
     {
-      header: 'Name',
+      header: t('name'),
       accessorKey: 'name',
       cell: ({ row }: { row: Row<CsvPlace> }) => {
         return (
@@ -274,7 +276,7 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
       }
     },
     {
-      header: 'Description',
+      header: t('description'),
       accessorKey: 'description',
       cell: ({ row }: { row: Row<CsvPlace> }) => {
         return (
@@ -308,31 +310,29 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
 
   //cancel upload
   const cancelUpload = () => {
-    toast.custom((t) => (
+    toast.custom((x) => (
       <div>
-        <h3>Are you sure you want to cancel?</h3>
-        <p>
-          All your work on this page will be lost. Existing data is not changed.
-        </p>
+        <h3>{t('areYouSureOnThisWantToCancel')}</h3>
+        <p>{t('allYourWorkOnThisPageWillBeLost')}</p>
         <div className="mt-4 flex justify-end gap-3">
           <Button
             className="ml-4 bg-red-600 text-white hover:bg-red-700"
             onClick={() => {
-              toast.dismiss(t);
+              toast.dismiss(x);
             }}
           >
-            Cancel
+            {t('cancel')}
           </Button>
 
           <Button
             onClick={() => {
-              toast.dismiss(t);
+              toast.dismiss(x);
               setUploadCsv(false);
               setData([]);
               setPaginatedData([]);
             }}
           >
-            Confirm
+            {t('confirm')}
           </Button>
         </div>
       </div>
@@ -341,28 +341,30 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
 
   //confirm upload
   const confirmUpload = () => {
-    toast.custom((t) => (
+    toast.custom((x) => (
       <div>
-        <h3>Are you sure you want to confirm?</h3>
-        <p>This will upload {data.length} places to your business.</p>
+        <h3>{t('areYouSureYouWantToConfirm')}</h3>
+        <p>
+          {t('thisWillUpload')} {data.length} {t('placesToYourBusiness')}
+        </p>
         <div className="mt-4 flex justify-end gap-3">
           <Button
             className="ml-4 bg-red-600 text-white hover:bg-red-700"
             onClick={() => {
-              toast.dismiss(t);
+              toast.dismiss(x);
             }}
           >
-            Cancel
+            {t('cancel')}
           </Button>
 
           <Button
             onClick={() => {
-              toast.dismiss(t);
+              toast.dismiss(x);
               setUploading(true);
               uploadData();
             }}
           >
-            Confirm
+            {t('confirm')}
           </Button>
         </div>
       </div>
@@ -389,33 +391,33 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
             console.error('Error creating place:', result.message);
 
             await new Promise<void>((resolve) => {
-              toast.custom((t) => (
+              toast.custom((x) => (
                 <div>
-                  <h3>
-                    Do you want to continue uploading the remaining places?
-                  </h3>
+                  <h3>{t('doYouWantToContinueUploadingTheRemainingPlaces')}</h3>
                   <p>
-                    An unexpected error occurred while uploading {place.name}
+                    {t('anUnexpectedErrorOccurredWhileUploading', {
+                      place: place.name
+                    })}
                   </p>
                   <div className="mt-4 flex justify-end gap-3">
                     <Button
                       onClick={() => {
                         setShouldContinueUpload(false);
-                        toast.dismiss(t);
+                        toast.dismiss(x);
                         resolve();
                       }}
                     >
-                      No
+                      {t('no')}
                     </Button>
 
                     <Button
                       className="ml-4 bg-red-600 text-white hover:bg-red-700"
                       onClick={() => {
-                        toast.dismiss(t);
+                        toast.dismiss(x);
                         resolve();
                       }}
                     >
-                      Continue
+                      {t('continue')}
                     </Button>
                   </div>
                 </div>
@@ -428,29 +430,33 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
           console.error('Unexpected error:', error);
 
           await new Promise<void>((resolve) => {
-            toast.custom((t) => (
+            toast.custom((x) => (
               <div>
-                <h3>Do you want to continue uploading the remaining places?</h3>
-                <p>An unexpected error occurred while uploading {place.name}</p>
+                <h3>{t('doYouWantToContinueUploadingTheRemainingPlaces')}</h3>
+                <p>
+                  {t('anUnexpectedErrorOccurredWhileUploading', {
+                    place: place.name
+                  })}
+                </p>
                 <div className="mt-4 flex justify-end gap-3">
                   <Button
                     onClick={() => {
                       setShouldContinueUpload(false);
-                      toast.dismiss(t);
+                      toast.dismiss(x);
                       resolve();
                     }}
                   >
-                    No
+                    {t('no')}
                   </Button>
 
                   <Button
                     className="ml-4 bg-red-600 text-white hover:bg-red-700"
                     onClick={() => {
-                      toast.dismiss(t);
+                      toast.dismiss(x);
                       resolve();
                     }}
                   >
-                    Continue
+                    {t('continue')}
                   </Button>
                 </div>
               </div>
@@ -473,7 +479,7 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
       console.error(error);
     } finally {
       setUploading(false);
-      toast.success('Places uploaded successfully');
+      toast.success(t('placesUploadedSuccessfully'));
       setUploadCsv(false);
       setData([]);
       setPaginatedData([]);
@@ -494,20 +500,18 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
 
       {!uploadCsv && (
         <div className="flex flex-col gap-2">
-          <p className="mb-2 text-gray-600">
-            Download the CSV template and upload your places.
-          </p>
+          <p className="mb-2 text-gray-600">{t('csvDescription')}</p>
           <Button
             variant="outline"
             onClick={downloadCsvTemplate}
             className="flex w-[300px] items-center gap-2"
           >
             <Download size={16} />
-            Download CSV Template
+            {t('downloadCsvTemplate')}
           </Button>
 
           <p className="mb-2 mt-6 text-gray-600">
-            Upload your places as CSV file.
+            {t('uploadYourPlacesAsCsvFile')}
           </p>
 
           <Button
@@ -515,7 +519,7 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
             className="flex w-[300px] items-center gap-2"
           >
             <Upload size={16} />
-            Import Places CSV
+            {t('importPlacesCsv')}
           </Button>
 
           {isLoading && (
@@ -582,7 +586,7 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
                     onClick={cancelUpload}
                     className="w-[150]"
                   >
-                    Cancel
+                    {t('cancel')}
                   </Button>
 
                   <Button
@@ -590,7 +594,7 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
                     variant="default"
                     onClick={confirmUpload}
                   >
-                    Confirm
+                    {t('confirm')}
                   </Button>
                 </>
               )}

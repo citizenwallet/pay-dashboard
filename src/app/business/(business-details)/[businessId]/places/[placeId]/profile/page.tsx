@@ -4,6 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import { Suspense } from 'react';
 import ProfileEdit from './profile-edit';
 import { getPlaceDataAction } from './action';
+import { getTranslations } from 'next-intl/server';
 
 export default async function page({
   params
@@ -11,16 +12,14 @@ export default async function page({
   params: Promise<{ businessId: string; placeId: string }>;
 }) {
   const resolvedParams = await params;
+  const t = await getTranslations('profile');
   return (
     <>
       <div>
         <PageContainer>
           <div className="space-y-4">
             <div className="flex items-start justify-between">
-              <Heading
-                title="Profile"
-                description="Manage your Place details"
-              />
+              <Heading title={t('profile')} description={t('placeDetails')} />
             </div>
             <Separator />
             <Suspense fallback={<div>Loading...</div>}>

@@ -9,9 +9,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
+import { useTranslations } from 'next-intl';
 interface CompProps {}
 export default function ThemeToggle({}: CompProps) {
   const { setTheme } = useTheme();
+  const t = useTranslations('userNav');
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -23,13 +25,13 @@ export default function ThemeToggle({}: CompProps) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => setTheme('light')}>
-          Light
+          {t('light')}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme('dark')}>
-          Dark
+          {t('dark')}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme('system')}>
-          System
+          {t('system')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
