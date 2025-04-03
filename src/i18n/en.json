@@ -276,5 +276,26 @@
     "of": "of",
     "next": "Next",
     "page": "Page"
+  },
+  "addingpayout": {
+    "NewPayout": "New Payout",
+    "NewPayoutDescription": "Create a new payout",
+    "Younotauthorizedspage": "You are not authorized to view this page",
+    "payoutcreatedsuccessfully": "Payout created successfully",
+    "errorcreatingpayout": "Error creating payout",
+    "noordersfound": "No have orders to create payout",
+    "totalpayout": "Total Payout",
+    "id": "ID",
+    "createdat": "Created At",
+    "total": "Total",
+    "Previous": "Previous",
+    "page": "Page",
+    "next": "Next",
+    "of": "of",
+    "createpayout": "Create Payout",
+    "selectplace": "Select Place",
+    "dataRange": "Data Range",
+    "pickadate": "Pick a date",
+    "places": "Places"
   }
 }

@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { formatCurrencyNumber } from '@/lib/currency';
 import CurrencyLogo from '@/components/currency-logo';
+import { useTranslations } from 'next-intl';
 
 export default function OrderView({
   place,
@@ -26,6 +27,7 @@ export default function OrderView({
   dateRange: DateRange | undefined;
   currencyLogo: string;
 }) {
+  const t = useTranslations('addingpayout');
   const [isLoading, setIsLoading] = useState(true);
   const [orders, setOrders] = useState<Order[]>([]);
   const [page, setPage] = useState(1);
@@ -91,7 +93,7 @@ export default function OrderView({
       try {
         const admin = await isUserAdminAction();
         if (!admin) {
-          return <div>You are not authorized to view this page</div>;
+          return <div>{t('Younotauthorizedspage')}</div>;
         }
         const userId = await getUserIdFromSessionAction();
         const payoutResponse = await createPayoutAction(
@@ -102,23 +104,23 @@ export default function OrderView({
           total
         );
 
-        toast.success('Payout created successfully', {
+        toast.success(t('payoutcreatedsuccessfully'), {
           onAutoClose: () => {
             router.push('/business/payouts');
           }
         });
       } catch (error) {
-        toast.error('Error creating payout');
+        toast.error(t('errorcreatingpayout'));
       }
     } else {
-      toast.error('No have orders to create payout');
+      toast.error(t('noordersfound'));
     }
   };
 
   return (
     <div>
       <div className="mb-4 space-y-2">
-        <label className="text-sm font-medium">Total Payout</label>
+        <label className="text-sm font-medium">{t('totalpayout')}</label>
         <div className="flex items-center gap-2 rounded-md border border-gray-300 p-2">
           <span className="flex gap-1 text-sm font-medium">
             <CurrencyLogo logo={currencyLogo} size={18} />
@@ -129,10 +131,10 @@ export default function OrderView({
 
       <DataTable
         columns={[
-          { accessorKey: 'id', header: 'ID' },
+          { accessorKey: 'id', header: t('id') },
           {
             accessorKey: 'created_at',
-            header: 'Date',
+            header: t('createdat'),
             cell: ({ row }) => {
               const date = new Date(row.original.created_at);
               return `${date.toLocaleDateString(
@@ -145,7 +147,7 @@ export default function OrderView({
           },
           {
             accessorKey: 'total',
-            header: 'Total',
+            header: t('total'),
             cell: ({ row }) => {
               return (
                 <p className="flex w-8 items-center gap-1">
@@ -174,15 +176,17 @@ export default function OrderView({
           aria-label="Previous page"
         >
           <ChevronLeft className="mr-1 h-4 w-4" />
-          <span>Previous</span>
+          <span>{t('Previous')}</span>
         </button>
 
         <div className="flex items-center gap-1 px-2">
-          <span className="text-sm font-medium">Page</span>
+          <span className="text-sm font-medium">{t('page')}</span>
           <span className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-primary text-sm font-medium text-primary-foreground">
             {page}
           </span>
-          <span className="text-sm font-medium">of {totalPages}</span>
+          <span className="text-sm font-medium">
+            {t('of')} {totalPages}
+          </span>
         </div>
 
         <button
@@ -197,12 +201,12 @@ export default function OrderView({
           )}
           aria-label="Next page"
         >
-          <span>Next</span>
+          <span>{t('next')}</span>
           <ChevronRight className="ml-1 h-4 w-4" />
         </button>
       </div>
 
-      <Button onClick={handleSubmit}>Create Payout</Button>
+      <Button onClick={handleSubmit}>{t('createpayout')}</Button>
     </div>
   );
 }

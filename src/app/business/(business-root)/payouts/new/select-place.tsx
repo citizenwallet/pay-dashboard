@@ -27,6 +27,7 @@ import {
 } from '@/actions/session';
 import { toast } from 'sonner';
 import { createPayoutAction } from './action';
+import { useTranslations } from 'next-intl';
 
 export default function SelectPlace({
   places,
@@ -35,6 +36,7 @@ export default function SelectPlace({
   places: Place[] | null;
   currencyLogo: string;
 }) {
+  const t = useTranslations('addingpayout');
   const selectedPlaceRef = useRef<string | null>(null);
   const [placeid, setPlaceid] = useState<number | null>(null);
   const [date, setDate] = useState<DateRange | undefined>({
@@ -62,7 +64,7 @@ export default function SelectPlace({
     <>
       {/* place Selector */}
       <div className="space-y-2">
-        <label className="text-md font-medium">Places</label>
+        <label className="text-md font-medium">{t('places')}</label>
         <div className="flex w-full flex-col gap-2">
           <Select
             onValueChange={(value) => {
@@ -73,7 +75,7 @@ export default function SelectPlace({
             value={selectedPlaceRef.current || undefined}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select a place" />
+              <SelectValue placeholder={t('selectplace')} />
             </SelectTrigger>
             <SelectContent className="max-h-[250px] overflow-y-auto">
               <SelectGroup>
@@ -90,7 +92,7 @@ export default function SelectPlace({
 
       {/* Date Range Picker */}
       <div className="space-y-2">
-        <label className="text-sm font-medium">Date Range</label>
+        <label className="text-sm font-medium">{t('dataRange')}</label>
         <div className="grid gap-2">
           <Popover>
             <PopoverTrigger asChild>

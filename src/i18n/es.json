@@ -276,5 +276,26 @@
     "of": "de",
     "next": "Siguiente",
     "page": "Página"
+  },
+  "addingpayout": {
+    "NewPayout": "Nuevo Pago",
+    "NewPayoutDescription": "Crear un nuevo pago",
+    "Younotauthorizedspage": "No estás autorizado para ver esta página",
+    "payoutcreatedsuccessfully": "Pago creado correctamente",
+    "errorcreatingpayout": "Error al crear el pago",
+    "noordersfound": "No hay pedidos para crear un pago",
+    "totalpayout": "Total de pago",
+    "id": "ID",
+    "createdat": "Fecha de creación",
+    "total": "Total",
+    "Previous": "Anterior",
+    "page": "Página",
+    "next": "Siguiente",
+    "of": "de",
+    "createpayout": "Crear Pago",
+    "selectplace": "Seleccionar Lugar",
+    "dataRange": "Rango de fechas",
+    "pickadate": "Seleccionar una fecha",
+    "places": "Lugares"
   }
 }
