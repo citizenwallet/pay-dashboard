@@ -321,5 +321,20 @@
     "havenotaccount": "¿No tienes una cuenta? Regístrate aquí",
     "emailnotregistered": "Tu email no está registrado, por favor regístrate",
     "errorloggingin": "Algo salió mal, por favor intenta nuevamente más tarde."
+  },
+  "otpentry": {
+    "EnterCode": "Ingresa el código de inicio de sesión",
+    "otpdescription": "Te hemos enviado un código de inicio de sesión de 6 dígitos a tu email",
+    "pleaseEnter": "Por favor, ingresa el código abajo.",
+    "otpPlaceholder": "Ingresa el código de inicio de sesión de 6 dígitos",
+    "login": "Iniciar sesión",
+    "loggingin": "Iniciando sesión...",
+    "resendavailablein": "Reenviar disponible en",
+    "seconds": "segundos",
+    "resend": "Reenviar OTP",
+    "newOtpSent": "Nuevo código OTP enviado a tu email!",
+    "errorresendingotp": "Error al reenviar OTP: ",
+    "emailnotfound": "Email no encontrado. Por favor, intenta iniciar sesión nuevamente.",
+    "otpWrong": "Código OTP inválido o expirado. Por favor, intenta nuevamente."
   }
 }

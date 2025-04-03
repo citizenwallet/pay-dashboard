@@ -321,5 +321,20 @@
     "havenotaccount": "Don't have an account? Sign up here",
     "emailnotregistered": "Your email is not registered, please sign up",
     "errorloggingin": "Something went wrong, please try again later."
+  },
+  "otpentry": {
+    "EnterCode": "Enter Login Code",
+    "otpdescription": "We’ve sent a 6-digit login code to your email",
+    "pleaseEnter": "Please enter it below.",
+    "otpPlaceholder": "Enter 6-digit login code",
+    "login": "Login",
+    "loggingin": "Logging in...",
+    "resendavailablein": "Resend available in",
+    "seconds": "seconds",
+    "resend": "Resend OTP",
+    "newOtpSent": "New OTP sent to your email!",
+    "errorresendingotp": "Error resending OTP: ",
+    "emailnotfound": "Email not found. Please try logging in again.",
+    "otpWrong": "Invalid or expired OTP. Please try again."
   }
 }
