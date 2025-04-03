@@ -95,7 +95,7 @@ export default function OrderView({
       try {
         const admin = await isUserAdminAction();
         if (!admin) {
-          return <div>{t('Younotauthorizedspage')}</div>;
+          return <div>{t('youNotAuthorizedPage')}</div>;
         }
         const userId = await getUserIdFromSessionAction();
         const payoutResponse = await createPayoutAction(
@@ -106,23 +106,23 @@ export default function OrderView({
           total
         );
 
-        toast.success(t('payoutcreatedsuccessfully'), {
+        toast.success(t('payoutCreatedSuccessfully'), {
           onAutoClose: () => {
             router.push('/business/payouts');
           }
         });
       } catch (error) {
-        toast.error(t('errorcreatingpayout'));
+        toast.error(t('errorCreatingPayout'));
       }
     } else {
-      toast.error(t('noordersfound'));
+      toast.error(t('noOrdersFound'));
     }
   };
 
   return (
     <div>
       <div className="mb-4 space-y-2">
-        <label className="text-sm font-medium">{t('totalpayout')}</label>
+        <label className="text-sm font-medium">{t('totalPayout')}</label>
         <div className="flex items-center gap-2 rounded-md border border-gray-300 p-2">
           <span className="flex gap-1 text-sm font-medium">
             <CurrencyLogo logo={currencyLogo} size={18} />
@@ -136,7 +136,7 @@ export default function OrderView({
           { accessorKey: 'id', header: t('id') },
           {
             accessorKey: 'created_at',
-            header: t('createdat'),
+            header: t('createdAt'),
             cell: ({ row }) => {
               const date = new Date(row.original.created_at);
               return `${date.toLocaleDateString(
@@ -178,7 +178,7 @@ export default function OrderView({
           aria-label="Previous page"
         >
           <ChevronLeft className="mr-1 h-4 w-4" />
-          <span>{t('Previous')}</span>
+          <span>{t('previous')}</span>
         </button>
 
         <div className="flex items-center gap-1 px-2">
@@ -208,7 +208,7 @@ export default function OrderView({
         </button>
       </div>
 
-      <Button onClick={handleSubmit}>{t('createpayout')}</Button>
+      <Button onClick={handleSubmit}>{t('createPayout')}</Button>
     </div>
   );
 }

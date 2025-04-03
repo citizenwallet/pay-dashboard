@@ -9,6 +9,7 @@ import { CommunityConfig } from '@citizenwallet/sdk';
 import { Suspense } from 'react';
 import { getAllPayoutAction } from './action';
 import PayoutDetailsPage from './payout-details';
+import { getTranslations } from 'next-intl/server';
 
 interface PayoutsPageProps {
   searchParams: Promise<{
@@ -22,12 +23,12 @@ interface PayoutsPageProps {
 
 export default async function PayoutsPage({ searchParams }: PayoutsPageProps) {
   const { search, offset, limit, column, order } = await searchParams;
-
+  const t = await getTranslations('rootpayouts');
   return (
     <PageContainer>
       <div className="space-y-4">
         <div className="flex items-start justify-between">
-          <Heading title="Payouts" description="Payouts of the business" />
+          <Heading title={t('payouts')} description={t('payoutsDescription')} />
         </div>
         <Separator />
         <Suspense

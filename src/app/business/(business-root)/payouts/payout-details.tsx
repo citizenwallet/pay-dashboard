@@ -98,9 +98,9 @@ export default function PayoutDetailsPage({
       );
       setEditingIdBurnDate(null);
       await updatePayoutBurnDateAction(id, date);
-      toast.success(t('burndateupdatedsuccessfully'));
+      toast.success(t('burnDateUpdatedSuccessfully'));
     } catch (error) {
-      toast.error(t('failedtoupdateburndate'));
+      toast.error(t('failedToUpdateBurnDate'));
     }
   };
 
@@ -125,9 +125,9 @@ export default function PayoutDetailsPage({
       );
       setEditingIdTransferDate(null);
       await updatePayoutTransferDateAction(id, date);
-      toast.success(t('transferdateupdatedsuccessfully'));
+      toast.success(t('payoutTransferDateUpdatedSuccessfully'));
     } catch (error) {
-      toast.error(t('failedtotransferdate'));
+      toast.error(t('payoutTransferDateUpdateFailed'));
     }
   };
 
@@ -199,7 +199,7 @@ export default function PayoutDetailsPage({
               column.toggleSorting(column.getIsSorted() === 'asc');
             }}
           >
-            Id
+            {t('id')}
             {column.getIsSorted() === 'asc'
               ? ' ↑'
               : column.getIsSorted() === 'desc'
@@ -231,7 +231,7 @@ export default function PayoutDetailsPage({
               column.toggleSorting(column.getIsSorted() === 'asc');
             }}
           >
-            Business Name
+            {t('businessName')}
             {column.getIsSorted() === 'asc'
               ? ' ↑'
               : column.getIsSorted() === 'desc'
@@ -260,7 +260,7 @@ export default function PayoutDetailsPage({
               column.toggleSorting(column.getIsSorted() === 'asc');
             }}
           >
-            Place Name
+            {t('placeName')}
             {column.getIsSorted() === 'asc'
               ? ' ↑'
               : column.getIsSorted() === 'desc'
@@ -287,7 +287,7 @@ export default function PayoutDetailsPage({
               column.toggleSorting(column.getIsSorted() === 'asc');
             }}
           >
-            Created At
+            {t('createdAt')}
             {column.getIsSorted() === 'asc'
               ? ' ↑'
               : column.getIsSorted() === 'desc'
@@ -322,7 +322,7 @@ export default function PayoutDetailsPage({
               column.toggleSorting(column.getIsSorted() === 'asc');
             }}
           >
-            Total
+            {t('total')}
             {column.getIsSorted() === 'asc'
               ? ' ↑'
               : column.getIsSorted() === 'desc'
@@ -354,7 +354,7 @@ export default function PayoutDetailsPage({
               column.toggleSorting(column.getIsSorted() === 'asc');
             }}
           >
-            Burn
+            {t('burn')}
             {column.getIsSorted() === 'asc'
               ? ' ↑'
               : column.getIsSorted() === 'desc'
@@ -426,7 +426,7 @@ export default function PayoutDetailsPage({
               column.toggleSorting(column.getIsSorted() === 'asc');
             }}
           >
-            Transfer
+            {t('transfer')}
             {column.getIsSorted() === 'asc'
               ? ' ↑'
               : column.getIsSorted() === 'desc'
@@ -496,7 +496,7 @@ export default function PayoutDetailsPage({
         <Link href="/business/payouts/new">
           <Button className="flex items-center gap-2">
             <Plus size={16} />
-            New Payout
+            {t('newPayout')}
           </Button>
         </Link>
 

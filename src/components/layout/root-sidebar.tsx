@@ -106,7 +106,7 @@ export default function RootAppSidebar({
                   >
                     <Link href="/business">
                       <LayoutDashboard className="h-4 w-4" />
-                      <span>{t('Business')}</span>
+                      <span>{t('business')}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -119,7 +119,7 @@ export default function RootAppSidebar({
                     >
                       <Link href="/business/payouts">
                         <CreditCard className="h-4 w-4" />
-                        <span>{t('Payouts')}</span>
+                        <span>{t('payouts')}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -190,7 +190,7 @@ export default function RootAppSidebar({
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => signOut()}>
                     <LogOut />
-                    {t('Logout')}
+                    {t('logout')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

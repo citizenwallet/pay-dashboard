@@ -7,6 +7,7 @@ import { Column, ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useCallback } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { useTranslations } from 'next-intl';
 
 export default function OrderViewTable({
   orders,
@@ -24,6 +25,7 @@ export default function OrderViewTable({
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const t = useTranslations('rootpayouts');
 
   const handleSorting = (column: Column<Order>, order: 'asc' | 'desc') => {
     const params = new URLSearchParams(searchParams);
@@ -47,7 +49,7 @@ export default function OrderViewTable({
               column.toggleSorting(column.getIsSorted() === 'asc');
             }}
           >
-            ID
+            {t('id')}
             {column.getIsSorted() === 'asc'
               ? ' ↑'
               : column.getIsSorted() === 'desc'
@@ -71,7 +73,7 @@ export default function OrderViewTable({
               column.toggleSorting(column.getIsSorted() === 'asc');
             }}
           >
-            Date
+            {t('date')}
             {column.getIsSorted() === 'asc'
               ? ' ↑'
               : column.getIsSorted() === 'desc'
@@ -105,7 +107,7 @@ export default function OrderViewTable({
               column.toggleSorting(column.getIsSorted() === 'asc');
             }}
           >
-            Total
+            {t('total')}
             {column.getIsSorted() === 'asc'
               ? ' ↑'
               : column.getIsSorted() === 'desc'

@@ -17,8 +17,8 @@ export default async function PayoutNewPage() {
         <div className="space-y-4">
           <div className="flex items-start justify-between">
             <Heading
-              title={t('NewPayout')}
-              description={t('NewPayoutDescription')}
+              title={t('newPayout')}
+              description={t('newPayoutDescription')}
             />
           </div>
           <Separator />

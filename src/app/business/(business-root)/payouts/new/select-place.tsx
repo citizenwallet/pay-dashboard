@@ -75,7 +75,7 @@ export default function SelectPlace({
             value={selectedPlaceRef.current || undefined}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder={t('selectplace')} />
+              <SelectValue placeholder={t('selectPlace')} />
             </SelectTrigger>
             <SelectContent className="max-h-[250px] overflow-y-auto">
               <SelectGroup>

@@ -78,13 +78,13 @@ export default function PayoutDetailsPage({
 
       if (editingBurnDate) {
         await updatePayoutBurnDateAction(payout_id, editingBurnDate);
-        toast.success(t('payoutburndateupdatedsuccessfully'));
+        toast.success(t('payoutBurnDateUpdatedSuccessfully'));
       } else {
-        toast.error(t('payoutburndataEmpty'));
+        toast.error(t('payoutBurnDateEmpty'));
         setEditingBurnDate(payout.burnDate || '');
       }
     } catch (error) {
-      toast.error(t('payoutburndateupdatefailed'));
+      toast.error(t('payoutBurnDateUpdateFailed'));
     }
   };
 
@@ -107,13 +107,13 @@ export default function PayoutDetailsPage({
 
       if (editingTransferDate) {
         await updatePayoutTransferDateAction(payout_id, editingTransferDate);
-        toast.success(t('payouttransferdateupdatedsuccessfully'));
+        toast.success(t('payoutTransferDateUpdatedSuccessfully'));
       } else {
-        toast.error(t('payouttransferdateEmpty'));
+        toast.error(t('payoutTransferDateEmpty'));
         setEditingTransferDate(payout.transferDate || '');
       }
     } catch (error) {
-      toast.error(t('payouttransferdateupdatefailed'));
+      toast.error(t('payoutTransferDateUpdateFailed'));
     }
   };
 
@@ -121,10 +121,10 @@ export default function PayoutDetailsPage({
     try {
       await setPayoutStatusAction(payout_id, action);
       setOpen(false);
-      toast.success(`Payout ${action} successfully`);
+      toast.success(`${t('payout')} ${action} ${t('successfully')}`);
       router.push(`/business/payouts/${payout_id}`);
     } catch (error) {
-      toast.error(`Payout ${action} failed`);
+      toast.error(`${t('payout')} ${action} ${t('failed')}`);
       router.push(`/business/payouts/${payout_id}`);
     }
   };
