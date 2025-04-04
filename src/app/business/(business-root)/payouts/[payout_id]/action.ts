@@ -65,6 +65,11 @@ export async function getPayoutCSVAction(payout_id: string) {
 }
 
 export async function setPayoutStatusAction(payout_id: string, status: string) {
+  const admin = await isUserAdminAction();
+  if (!admin) {
+    return { error: 'You are not authorized to update payout transfer date' };
+  }
+
   const client = getServiceRoleClient();
   try {
     if (status == 'burn') {
