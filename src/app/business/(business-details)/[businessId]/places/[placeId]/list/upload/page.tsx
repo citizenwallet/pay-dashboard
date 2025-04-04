@@ -10,6 +10,7 @@ import {
 import { checkUserPlaceAccess } from '@/db/places';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
 import UploadPlace from './upload-place';
+import { getTranslations } from 'next-intl/server';
 
 interface Props {
   params: Promise<{
@@ -20,12 +21,13 @@ interface Props {
 
 export default async function ListPage({ params }: Props) {
   const resolvedParams = await params;
+  const t = await getTranslations('placeUpload');
   return (
     <div>
       <PageContainer>
         <div className="space-y-4">
           <div className="flex items-start justify-between">
-            <Heading title="Upload" description="Upload your Place List" />
+            <Heading title={t('upload')} description={t('uploadDescription')} />
           </div>
           <Separator />
           <Suspense

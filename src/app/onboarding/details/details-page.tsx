@@ -9,6 +9,7 @@ import { updateBusinessDetailsAction } from '../action';
 import { toast } from 'sonner';
 import { Checkbox } from '@/components/ui/checkbox';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 export default function DetailsPage({
   company,
@@ -31,6 +32,7 @@ export default function DetailsPage({
   const [isMembershipAccepted, setIsMembershipAccepted] = useState(false);
 
   const router = useRouter();
+  const t = useTranslations('onboardingDetails');
 
   useEffect(() => {
     if (company?.isValid) {
@@ -45,15 +47,15 @@ export default function DetailsPage({
     const newErrors = { legalName: '', address: '', iban: '', terms: '' };
 
     if (!legalName.trim()) {
-      newErrors.legalName = 'Legal name is required';
+      newErrors.legalName = t('legalNameRequired');
       hasError = true;
     }
     if (!address.trim()) {
-      newErrors.address = 'Address is required';
+      newErrors.address = t('addressRequired');
       hasError = true;
     }
     if (!iban.trim()) {
-      newErrors.iban = 'IBAN is required';
+      newErrors.iban = t('ibanRequired');
       hasError = true;
     }
 
@@ -77,15 +79,13 @@ export default function DetailsPage({
         isTermsAccepted,
         isMembershipAccepted
       );
-      toast.success('Your business has been successfully validated !', {
+      toast.success(t('yourBusinessHasBeen'), {
         onAutoClose: () => {
           router.push(`/`);
         }
       });
     } catch (error) {
-      toast.error(
-        'Oops, there is an error during the validation of your company'
-      );
+      toast.error(t('errorUpdatingBusiness'));
     } finally {
       setLoading(false);
     }
@@ -96,9 +96,11 @@ export default function DetailsPage({
   };
 
   return (
-    <div className="mt-8">
-      <div className="space-y-3">
-        <Label className="text-sm font-medium text-gray-900">Legal name</Label>
+    <div className="mt-8 space-y-6">
+      <div className="space-y-1">
+        <Label className="text-sm font-medium text-gray-900">
+          {t('legalName')}
+        </Label>
         <Input
           type="text"
           className="h-8 rounded-md border border-black px-4 text-base text-black"
@@ -111,8 +113,10 @@ export default function DetailsPage({
         )}
       </div>
 
-      <div className="mt-4 space-y-2">
-        <Label className="text-sm font-medium text-gray-900">Address</Label>
+      <div className="space-y-1">
+        <Label className="text-sm font-medium text-gray-900">
+          {t('address')}
+        </Label>
         <Input
           type="text"
           className="h-8 rounded-md border border-black px-4 text-base text-black"
@@ -125,8 +129,8 @@ export default function DetailsPage({
         )}
       </div>
 
-      <div className="mt-4 space-y-2">
-        <Label className="text-sm font-medium text-gray-900">IBAN</Label>
+      <div className="space-y-1">
+        <Label className="text-sm font-medium text-gray-900">{t('iban')}</Label>
         <Input
           type="text"
           className="h-8 rounded-md border border-black px-4 text-base text-black"
@@ -189,7 +193,7 @@ export default function DetailsPage({
           disabled={loading}
           onClick={handlePrevious}
         >
-          Previous
+          {t('previous')}
         </Button>
 
         <Button
@@ -197,7 +201,7 @@ export default function DetailsPage({
           onClick={handleSubmit}
           disabled={loading}
         >
-          {loading ? 'Submitting...' : 'Submit'}
+          {loading ? t('submitting') : t('submit')}
         </Button>
       </div>
     </div>

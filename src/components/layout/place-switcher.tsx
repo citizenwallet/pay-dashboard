@@ -12,6 +12,7 @@ import {
 import { Business } from '@/db/business';
 import { Place } from '@/db/places';
 import { ChevronsUpDown } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -27,6 +28,7 @@ export function PlaceSwitcher({
   const [activePlace, setActivePlace] = useState<Place | null>(lastPlace);
 
   const router = useRouter();
+  const t = useTranslations('navButton');
 
   const changePlace = async (place: Place) => {
     try {
@@ -60,9 +62,9 @@ export function PlaceSwitcher({
                 </span>
               </div>
               {activePlace?.hidden == true ? (
-                <Badge variant="destructive">Private</Badge>
+                <Badge variant="destructive">{t('private')}</Badge>
               ) : (
-                <Badge variant="secondary">Public</Badge>
+                <Badge variant="secondary">{t('public')}</Badge>
               )}
 
               <ChevronsUpDown className="ml-auto" />

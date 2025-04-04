@@ -329,3 +329,19 @@ export const getPayoutOrders = async (
 ): Promise<PostgrestResponse<Order>> => {
   return client.from('orders').select().eq('payout_id', payoutId);
 };
+
+export const getPayoutOrdersForTable = async (
+  client: SupabaseClient,
+  payoutId: number,
+  limit: number,
+  offset: number,
+  column?: string,
+  order?: string
+): Promise<PostgrestResponse<Order>> => {
+  return client
+    .from('orders')
+    .select()
+    .eq('payout_id', payoutId)
+    .order(column ?? 'id', { ascending: order === 'asc' })
+    .range(offset, offset + limit - 1);
+};

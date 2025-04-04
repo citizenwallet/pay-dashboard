@@ -15,6 +15,7 @@ import {
 } from '@/db/places';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
 import PlacesPage from './places';
+import { getTranslations } from 'next-intl/server';
 
 interface Props {
   params: Promise<{
@@ -31,11 +32,12 @@ interface Props {
 export default async function ListPage({ params, searchParams }: Props) {
   const resolvedParams = await params;
   const resolvedSearchParams = await searchParams;
+  const t = await getTranslations('placelist');
   return (
     <PageContainer scrollable>
       <div className="flex h-full min-h-svh flex-1 flex-col space-y-4">
         <div className="flex items-start justify-between">
-          <Heading title="List" description="Manage your Place List" />
+          <Heading title={t('list')} description={t('listDescription')} />
         </div>
         <Separator />
         <Suspense fallback={<DataTableSkeleton columnCount={5} rowCount={5} />}>

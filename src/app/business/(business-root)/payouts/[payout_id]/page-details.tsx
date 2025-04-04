@@ -20,21 +20,33 @@ import {
   updatePayoutBurnDateAction,
   updatePayoutTransferDateAction
 } from '../action';
+import { useTranslations } from 'next-intl';
+import { formatCurrencyNumber } from '@/lib/currency';
+import CurrencyLogo from '@/components/currency-logo';
 
 export default function PayoutDetailsPage({
   payout_id,
   orders,
   currencyLogo,
-  payout
+  payout,
+  totalAmount,
+  count,
+  limit,
+  offset
 }: {
   payout_id: string;
   orders: Order[];
   currencyLogo: string;
   payout: Payout;
+  totalAmount: number;
+  count: number;
+  limit?: string;
+  offset?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [action, setAction] = useState('');
   const router = useRouter();
+  const t = useTranslations('rootpayouts');
   const handleOpenModal = (type: 'burn' | 'transferred') => {
     setAction(type);
     setOpen(true);
@@ -59,10 +71,20 @@ export default function PayoutDetailsPage({
   const handleBurnSave = async () => {
     try {
       setIsBurnEditing(false);
-      await updatePayoutBurnDateAction(payout_id, editingBurnDate);
-      toast.success(`Payout burn date updated successfully`);
+
+      if (editingBurnDate == payout.burnDate) {
+        return;
+      }
+
+      if (editingBurnDate) {
+        await updatePayoutBurnDateAction(payout_id, editingBurnDate);
+        toast.success(t('payoutBurnDateUpdatedSuccessfully'));
+      } else {
+        toast.error(t('payoutBurnDateEmpty'));
+        setEditingBurnDate(payout.burnDate || '');
+      }
     } catch (error) {
-      toast.error(`Payout burn date update failed`);
+      toast.error(t('payoutBurnDateUpdateFailed'));
     }
   };
 
@@ -78,10 +100,20 @@ export default function PayoutDetailsPage({
   const handleTransferSave = async () => {
     try {
       setIsTransferEditing(false);
-      await updatePayoutTransferDateAction(payout_id, editingTransferDate);
-      toast.success(`Payout transfer date updated successfully`);
+
+      if (editingTransferDate == payout.transferDate) {
+        return;
+      }
+
+      if (editingTransferDate) {
+        await updatePayoutTransferDateAction(payout_id, editingTransferDate);
+        toast.success(t('payoutTransferDateUpdatedSuccessfully'));
+      } else {
+        toast.error(t('payoutTransferDateEmpty'));
+        setEditingTransferDate(payout.transferDate || '');
+      }
     } catch (error) {
-      toast.error(`Payout transfer date update failed`);
+      toast.error(t('payoutTransferDateUpdateFailed'));
     }
   };
 
@@ -89,11 +121,11 @@ export default function PayoutDetailsPage({
     try {
       await setPayoutStatusAction(payout_id, action);
       setOpen(false);
-      toast.success(`Payout ${action} successfully`);
-      router.push(`/business/payouts`);
+      toast.success(`${t('payout')} ${action} ${t('successfully')}`);
+      router.push(`/business/payouts/${payout_id}`);
     } catch (error) {
-      toast.error(`Payout ${action} failed`);
-      router.push(`/business/payouts`);
+      toast.error(`${t('payout')} ${action} ${t('failed')}`);
+      router.push(`/business/payouts/${payout_id}`);
     }
   };
 
@@ -101,7 +133,7 @@ export default function PayoutDetailsPage({
     const csvData = await getPayoutCSVAction(payout_id);
 
     if (!csvData.trim()) {
-      toast.error('No orders found for the given place and date range.');
+      toast.error(t('noOrdersFound'));
       return;
     }
 
@@ -125,8 +157,8 @@ export default function PayoutDetailsPage({
         <div className="flex items-center gap-7">
           <>
             {!payout.burn && (
-              <Button className="mt-7" onClick={() => handleOpenModal('burn')}>
-                Set As Burn
+              <Button className="mt-10" onClick={() => handleOpenModal('burn')}>
+                {t('setAsBurn')}
               </Button>
             )}
             {payout.burn && (
@@ -144,7 +176,7 @@ export default function PayoutDetailsPage({
                   />
                 ) : (
                   <div
-                    className="flex items-center"
+                    className="flex cursor-pointer items-center"
                     onClick={() => setIsBurnEditing(true)}
                   >
                     {editingBurnDate
@@ -157,18 +189,17 @@ export default function PayoutDetailsPage({
                   </div>
                 )}
                 <Button variant="outline" disabled>
-                  Already Burn
+                  {t('alreadyBurn')}
                 </Button>
               </div>
             )}
 
             {!payout.transfer && (
               <Button
-                className="mt-7"
+                className="mt-10"
                 onClick={() => handleOpenModal('transferred')}
               >
-                {' '}
-                Set As Transferred{' '}
+                {t('setAsTransferred')}
               </Button>
             )}
             {payout.transfer && (
@@ -186,7 +217,7 @@ export default function PayoutDetailsPage({
                   />
                 ) : (
                   <div
-                    className="flex items-center"
+                    className="flex cursor-pointer items-center"
                     onClick={() => setIsTransferEditing(true)}
                   >
                     {editingTransferDate
@@ -199,7 +230,7 @@ export default function PayoutDetailsPage({
                   </div>
                 )}
                 <Button variant="outline" disabled>
-                  Already Transferred
+                  {t('alreadyTransferred')}
                 </Button>
               </div>
             )}
@@ -209,17 +240,17 @@ export default function PayoutDetailsPage({
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Cannot Reverse This Action!</DialogTitle>
+                <DialogTitle>{t('cannotReverseThisAction')}</DialogTitle>
               </DialogHeader>
               <p>
-                Are you sure you want to set this as <strong>{action}</strong>?
+                {t('areYouSureYouWantToSetAs')} <strong>{action}</strong>?
               </p>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setOpen(false)}>
-                  Cancel
+                <Button variant="destructive" onClick={() => setOpen(false)}>
+                  {t('cancel')}
                 </Button>
-                <Button variant="destructive" onClick={handleConfirm}>
-                  Confirm
+                <Button variant="outline" onClick={handleConfirm}>
+                  {t('confirm')}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -230,11 +261,27 @@ export default function PayoutDetailsPage({
           onClick={handleCSVDownload}
           className={cn(buttonVariants({ variant: 'outline' }), 'ml-auto')}
         >
-          Export as CSV
+          {t('exportAsCSV')}
         </button>
       </div>
 
-      <OrderViewTable orders={orders} currencyLogo={currencyLogo} />
+      <div className="mt-6 flex items-center justify-between pt-6">
+        <div className="flex items-center gap-7">
+          <p className="flex items-center gap-2">
+            {t('totalAmount')}:
+            <CurrencyLogo logo={currencyLogo} size={18} />
+            {formatCurrencyNumber(totalAmount)}
+          </p>
+        </div>
+      </div>
+
+      <OrderViewTable
+        orders={orders}
+        currencyLogo={currencyLogo}
+        count={count}
+        limit={limit ?? '10'}
+        offset={offset ?? '0'}
+      />
     </>
   );
 }
