@@ -19,6 +19,7 @@ import { generateRandomString } from '@/lib/utils';
 import { PhoneInput } from '@/components/ui/phone-input';
 import Link from 'next/link';
 import { sendOtpAction } from '../action';
+import { useTranslations } from 'next-intl';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
@@ -29,6 +30,7 @@ const formSchema = z.object({
 type UserFormValue = z.infer<typeof formSchema>;
 
 export default function UserSignupForm() {
+  const t = useTranslations('onboardingRegister');
   const [loading, startTransition] = useTransition();
   const defaultValues = {};
   const form = useForm<UserFormValue>({
@@ -64,11 +66,12 @@ export default function UserSignupForm() {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>{t('name')}</FormLabel>
                 <FormControl>
                   <Input
+                    className="text-base"
                     type="text"
-                    placeholder="Enter your name..."
+                    placeholder={t('namePlaceholder')}
                     disabled={loading}
                     {...field}
                   />
@@ -82,7 +85,7 @@ export default function UserSignupForm() {
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Phone</FormLabel>
+                <FormLabel>{t('phone')}</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <PhoneInput defaultCountry="BE" {...field} />
@@ -97,11 +100,12 @@ export default function UserSignupForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>{t('email')}</FormLabel>
                 <FormControl>
                   <Input
+                    className="text-base"
                     type="email"
-                    placeholder="Enter your email..."
+                    placeholder={t('emailPlaceholder')}
                     disabled={loading}
                     {...field}
                   />
@@ -112,11 +116,11 @@ export default function UserSignupForm() {
           />
 
           <Button disabled={loading} className="ml-auto w-full" type="submit">
-            Sign Up
+            {t('signup')}
           </Button>
 
           <div className="mt-2 flex justify-center">
-            <Link href="/login">Already have an account? Login</Link>
+            <Link href="/login">{t('alreadyHaveAccount')}</Link>
           </div>
         </form>
       </Form>

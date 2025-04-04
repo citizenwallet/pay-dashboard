@@ -34,7 +34,6 @@ export default function KBar({ children }: { children: React.ReactNode }) {
     let searchData: Action[] = [];
 
     if (data?.results) {
-      console.log('data', data.results);
       searchData = data?.results?.map((result: Result) => ({
         id: `${result.guideid}Action`,
         name: result.title,

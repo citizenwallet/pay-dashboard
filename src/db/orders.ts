@@ -188,6 +188,19 @@ export const getOrderStatus = async (
   return client.from('orders').select('status').eq('id', orderId).single();
 };
 
+export const placeHasOrders = async (
+  client: SupabaseClient,
+  placeId: number
+): Promise<boolean> => {
+  const { count } = await client
+    .from('orders')
+    .select('*', { count: 'exact', head: true })
+    .eq('place_id', placeId)
+    .limit(1);
+
+  return (count ?? 0) > 0;
+};
+
 export const getOrdersByPlace = async (
   client: SupabaseClient,
   placeId: number,
@@ -267,4 +280,68 @@ export const getOrdersByPlaceWithOutLimit = async (
     .gte('created_at', range.start)
     .lte('created_at', range.end)
     .order('created_at', { ascending: false });
+};
+
+export const getOrdersNotPayoutBy = async (
+  client: SupabaseClient,
+  placeId: number,
+  dateRange: string = 'today',
+  customStartDate?: string,
+  customEndDate?: string
+): Promise<PostgrestResponse<Order>> => {
+  const range = getDateRangeFilter(dateRange, customStartDate, customEndDate);
+  if (!range) {
+    return client
+      .from('orders')
+      .select()
+      .eq('place_id', placeId)
+      .is('payout_id', null)
+      .eq('status', 'paid')
+      .order('created_at', { ascending: false });
+  }
+
+  return client
+    .from('orders')
+    .select()
+    .eq('place_id', placeId)
+    .is('payout_id', null)
+    .eq('status', 'paid')
+    .gte('created_at', range.start)
+    .lte('created_at', range.end)
+    .order('created_at', { ascending: false });
+};
+
+export const updateOrdersPayout = async (
+  client: SupabaseClient,
+  payoutId: number,
+  orderIds: number[]
+): Promise<PostgrestSingleResponse<Order[]>> => {
+  return client
+    .from('orders')
+    .update({ payout_id: payoutId })
+    .in('id', orderIds)
+    .select();
+};
+
+export const getPayoutOrders = async (
+  client: SupabaseClient,
+  payoutId: number
+): Promise<PostgrestResponse<Order>> => {
+  return client.from('orders').select().eq('payout_id', payoutId);
+};
+
+export const getPayoutOrdersForTable = async (
+  client: SupabaseClient,
+  payoutId: number,
+  limit: number,
+  offset: number,
+  column?: string,
+  order?: string
+): Promise<PostgrestResponse<Order>> => {
+  return client
+    .from('orders')
+    .select()
+    .eq('payout_id', payoutId)
+    .order(column ?? 'id', { ascending: order === 'asc' })
+    .range(offset, offset + limit - 1);
 };

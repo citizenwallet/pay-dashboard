@@ -6,8 +6,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
-import { getUserByEmailAction, sendOtpAction, signAction } from '../action';
+import {
+  getBusinessByIdAction,
+  getUserByEmailAction,
+  sendOtpAction,
+  signAction
+} from '../action';
 import { generateRandomString } from '@/lib/utils';
+import { joinAction } from '@/actions/joinAction';
+import { useTranslations } from 'next-intl';
 
 export default function OtpEntry() {
   const [otpCode, setOtpCode] = useState('');
@@ -16,7 +23,9 @@ export default function OtpEntry() {
   const [isCounting, setIsCounting] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const t = useTranslations('otpentry');
 
   useEffect(() => {
     //get the local storage value
@@ -39,15 +48,16 @@ export default function OtpEntry() {
 
     try {
       await sendOtpAction(email);
-      setSuccessMessage('New OTP sent to your email!');
+      setSuccessMessage(t('newOtpSent'));
       setCountdown(60);
       setIsCounting(true);
     } catch (error) {
-      setErrorMessage('Error resending OTP: ' + error);
+      setErrorMessage(t('errorResendingOtp') + error);
     }
   };
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
+    setIsLoading(true);
     e.preventDefault();
     setErrorMessage('');
     setSuccessMessage('');
@@ -55,7 +65,7 @@ export default function OtpEntry() {
     let redirectLocation = '';
 
     if (!email) {
-      setErrorMessage('Email not found. Please try logging in again.');
+      setErrorMessage(t('emailNotFound'));
       return;
     }
 
@@ -68,37 +78,46 @@ export default function OtpEntry() {
         name: localStorage.getItem('regName') || '',
         phone: localStorage.getItem('regPhone') || ''
       };
-      const res = await fetch('/api/auth/join', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          ...credentials,
-          invite_code: invitationCode
-        })
+
+      const res = await joinAction(invitationCode, {
+        ...credentials,
+        description: ''
       });
 
       redirectLocation =
         process.env.NEXT_PUBLIC_URL +
-        '/onboarding?invite_code=' +
+        '/onboarding/vat?invite_code=' +
         invitationCode;
     } else {
-
       const redirectUrl = localStorage.getItem('redirectUrl') || null;
 
       if (redirectUrl) {
         redirectLocation = process.env.NEXT_PUBLIC_URL + `${redirectUrl}`;
-      }else{
+      } else {
         redirectLocation = process.env.NEXT_PUBLIC_URL + '/dashboard';
       }
 
+      //check the user registation complete or not
+      const business = await getBusinessByIdAction(
+        user.data?.linked_business_id
+      );
+
+      if (business.data?.status == 'Registered') {
+        redirectLocation = process.env.NEXT_PUBLIC_URL + '/';
+      } else {
+        redirectLocation =
+          process.env.NEXT_PUBLIC_URL +
+          '/onboarding/vat?invite_code=' +
+          business.data?.invite_code;
+      }
     }
     try {
       const success = await signAction(email, otpCode);
       router.push(redirectLocation);
     } catch (error) {
-      setErrorMessage('Invalid or expired OTP. Please try again.');
+      setErrorMessage(t('otpWrong'));
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -107,7 +126,7 @@ export default function OtpEntry() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-center text-2xl font-bold">
-            Enter Login Code
+            {t('enterCode')}
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col items-center space-y-4">
@@ -115,8 +134,7 @@ export default function OtpEntry() {
             <Mail className="h-8 w-8 text-green-600" />
           </div>
           <p className="text-center text-gray-600">
-            We’ve sent a 6-digit login code to your email ({email}). Please
-            enter it below.
+            {t('otpDescription')} ({email}). {t('pleaseEnter')}
           </p>
 
           {/* OTP Input Form */}
@@ -126,19 +144,19 @@ export default function OtpEntry() {
               value={otpCode}
               onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))} // Allow only digits
               maxLength={6}
-              placeholder="Enter 6-digit login code"
+              placeholder={t('otpPlaceholder')}
               className="text-center"
               required
             />
-            <Button type="submit" className="w-full">
-              Login
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? t('loggingin') : t('login')}
             </Button>
           </form>
 
           {/* Countdown Timer */}
           {isCounting ? (
             <p className="text-sm text-gray-500">
-              Resend available in {countdown} seconds
+              {t('resendAvailableIn')} {countdown} {t('seconds')}
             </p>
           ) : (
             <Button
@@ -146,7 +164,7 @@ export default function OtpEntry() {
               onClick={handleResendOtp}
               className="w-full"
             >
-              Resend OTP
+              {t('resend')}
             </Button>
           )}
 
