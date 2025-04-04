@@ -154,15 +154,15 @@ export default function PayoutDetailsPage({
   return (
     <>
       <div className="mt-4 flex items-center justify-between">
-        <div className="flex items-center gap-7">
+        <div className="flex items-center gap-4">
           <>
             {!payout.burn && (
-              <Button className="mt-10" onClick={() => handleOpenModal('burn')}>
+              <Button className="mt-11" onClick={() => handleOpenModal('burn')}>
                 {t('setAsBurn')}
               </Button>
             )}
             {payout.burn && (
-              <div className="flex flex-col items-center gap-4">
+              <div className="flex h-full flex-col items-center">
                 {isBurnEditing ? (
                   <input
                     type="date"
@@ -171,12 +171,12 @@ export default function PayoutDetailsPage({
                     onKeyDown={(e) => handleBurnKeyDown(e)}
                     onBlur={() => handleBurnSave()}
                     autoFocus
-                    className="w-full rounded border border-gray-300 p-1"
+                    className="mb-3 w-[120] rounded border border-gray-300 p-0.5"
                     placeholder="Enter date"
                   />
                 ) : (
                   <div
-                    className="flex cursor-pointer items-center"
+                    className="mb-5 flex cursor-pointer items-center"
                     onClick={() => setIsBurnEditing(true)}
                   >
                     {editingBurnDate
@@ -196,14 +196,14 @@ export default function PayoutDetailsPage({
 
             {!payout.transfer && (
               <Button
-                className="mt-10"
+                className="mt-11"
                 onClick={() => handleOpenModal('transferred')}
               >
                 {t('setAsTransferred')}
               </Button>
             )}
             {payout.transfer && (
-              <div className="flex flex-col items-center gap-4">
+              <div className="flex h-full flex-col items-center">
                 {isTransferEditing ? (
                   <input
                     type="date"
@@ -212,12 +212,12 @@ export default function PayoutDetailsPage({
                     onKeyDown={(e) => handleTransferKeyDown(e)}
                     onBlur={() => handleTransferSave()}
                     autoFocus
-                    className="w-full rounded border border-gray-300 p-1"
+                    className="mb-3 w-[120] rounded border border-gray-300 p-0.5"
                     placeholder="Enter date"
                   />
                 ) : (
                   <div
-                    className="flex cursor-pointer items-center"
+                    className="mb-5 flex cursor-pointer items-center"
                     onClick={() => setIsTransferEditing(true)}
                   >
                     {editingTransferDate
