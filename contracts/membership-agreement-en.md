@@ -40,14 +40,14 @@ Members agree to support Brussels Pay ASBL through one or both of the following 
 - [ ] **Active Participation**: Commits to actively participating in the project by sharing knowledge, resources, and contributing to the development of the payment network.
 - [ ] **Monthly Fee**: Commits to paying a monthly membership fee based on transaction volume, as follows:
 
-| Number of Transactions | Monthly Fee     |
-|-----------------------|-----------------|
-| 1–1,000              | €20/month       |
-| 1,001–2,000          | €30/month       |
-| 2,001–3,000          | €40/month       |
-| And so on            | +€10/month per additional 1,000 transactions |
+| Number of Transactions | Monthly Fee                                  |
+| ---------------------- | -------------------------------------------- |
+| 1–1,000                | €20/month                                    |
+| 1,001–2,000            | €30/month                                    |
+| 2,001–3,000            | €40/month                                    |
+| And so on              | +€10/month per additional 1,000 transactions |
 
-*The maximum fee is capped at €10,000 per the ASBL statutes.*
+_The maximum fee is capped at €10,000 per the ASBL statutes._
 
 ### Payment Method
 
@@ -82,6 +82,7 @@ The Association’s purpose is:
 - The establishment and management of an electronic payment network for the Brussels region.
 
 To achieve these objectives, the Association may undertake any initiative, directly or indirectly, related to or likely to promote these goals, including but not limited to:
+
 - Developing and maintaining software to ensure the payment network’s functionality.
 - Promoting and training potential users of the network.
 
@@ -94,6 +95,7 @@ The Association consists of Full Members (Membres Effectifs) and, where applicab
 
 **Article 7**
 Full Members include:
+
 - The founding members; and
 - Any Supporting Member nominated by at least two Full Members and admitted as a Full Member by a General Assembly decision with a three-quarters majority of votes present or represented.
 

@@ -59,15 +59,11 @@ export const deleteVerifyOtp = async (
   client: SupabaseClient,
   email: string
 ): Promise<{ valid: boolean; error?: string }> => {
-  const { error } = await client
-    .from('otp')
-    .delete()
-    .eq('source', email);
+  const { error } = await client.from('otp').delete().eq('source', email);
 
   if (error) {
     return { valid: false, error: error.message };
   }
-  
+
   return { valid: true };
 };
-

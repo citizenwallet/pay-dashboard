@@ -89,6 +89,14 @@ export default function OtpEntry() {
         '/onboarding/vat?invite_code=' +
         invitationCode;
     } else {
+      const redirectUrl = localStorage.getItem('redirectUrl') || null;
+
+      if (redirectUrl) {
+        redirectLocation = process.env.NEXT_PUBLIC_URL + `${redirectUrl}`;
+      } else {
+        redirectLocation = process.env.NEXT_PUBLIC_URL + '/dashboard';
+      }
+
       //check the user registation complete or not
       const business = await getBusinessByIdAction(
         user.data?.linked_business_id
