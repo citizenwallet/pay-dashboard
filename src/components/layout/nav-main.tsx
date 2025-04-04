@@ -89,6 +89,13 @@ export function NavMain({
       url: `/business/${businessId}/places/${lastPlace.id}/payouts`,
       icon: PanelBottomClose,
       items: []
+    },
+    {
+      title: 'Point of Sales',
+      url: `/business/${businessId}/places/${lastPlace.id}/pos`,
+      icon: SquareTerminal,
+      isActive: false,
+      items: []
     }
   ];
   return (
