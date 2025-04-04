@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { businessOnboardAction, jwtVerifyAction } from './action';
 import { signAction } from '@/app/(auth)/action';
+import Image from 'next/image';
 
 const initialState: OnboardingState = {
   step: 1,
@@ -159,10 +160,12 @@ export function CompanyOnboarding({
       }}
     >
       <div className="mx-auto mt-10 max-w-md p-6 text-black">
-        <img
+        <Image
           src="/assets/img/logo.svg"
           alt="Company Logo"
           className="mx-auto mb-6 h-16 w-16"
+          width={64}
+          height={64}
         />
         {state.step === 1 && (
           <CompanyVATStep onNext={handleNext} initialData={state.data} />

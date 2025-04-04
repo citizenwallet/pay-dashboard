@@ -9,11 +9,17 @@ import { updateBusinessDetailsAction } from '../action';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 
+interface Company {
+  isValid?: boolean;
+  name?: string;
+  address?: string;
+}
+
 export default function DetailsPage({
   company,
   business
 }: {
-  company: any;
+  company: Company | null;
   business: Business;
 }) {
   const [legalName, setLegalName] = useState(business.legal_name || '');

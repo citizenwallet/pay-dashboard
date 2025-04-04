@@ -9,11 +9,11 @@ interface DataTableSearchProps {
   searchQuery: string;
   setSearchQuery: (
     value: string | ((old: string) => string | null) | null,
-    options?: any | undefined
+    options?: Record<string, unknown> | undefined
   ) => Promise<URLSearchParams>;
   setPage: <Shallow>(
     value: number | ((old: number) => number | null) | null,
-    options?: any | undefined
+    options?: Record<string, unknown> | undefined
   ) => Promise<URLSearchParams>;
 }
 

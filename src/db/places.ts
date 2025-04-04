@@ -177,7 +177,9 @@ export const checkUserPlaceAccess = async (
 export const uniqueSlugPlace = async (
   client: SupabaseClient,
   slug: string
-): Promise<PostgrestSingleResponse<{ data: Place | null; error: any }>> => {
+): Promise<
+  PostgrestSingleResponse<{ data: Place | null; error: Error | null }>
+> => {
   return await client.from('places').select('id').eq('slug', slug).single();
 };
 

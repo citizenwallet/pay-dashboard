@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import Image from 'next/image';
 
 const initialState: OnboardingState = {
   step: 1,
@@ -141,10 +142,12 @@ export const CompanyEdit = () => {
       }}
     >
       <div className="mx-auto mt-10 max-w-md p-6 text-black">
-        <img
+        <Image
           src="/assets/img/logo.svg"
           alt="Company Logo"
           className="mx-auto mb-6 h-16 w-16"
+          width={64}
+          height={64}
         />
         {JSON.stringify(state)}
         {state.step === 1 && (

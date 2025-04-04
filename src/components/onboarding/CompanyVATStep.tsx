@@ -67,10 +67,7 @@ export function CompanyVATStep({ onNext, initialData }: VATStepProps) {
   }, [initialData, setValue]);
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit as any)}
-      className="space-y-4 text-black"
-    >
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-black">
       <h1 className="mb-6 text-2xl font-bold">{t('Welcome')}</h1>
       <div>{t('VAT mandatory message')}</div>
       <div>
@@ -81,7 +78,7 @@ export function CompanyVATStep({ onNext, initialData }: VATStepProps) {
         />
         {errors.vat_number && (
           <p className="mt-1 text-sm text-red-500">
-            {errors.vat_number.message as any}
+            {errors.vat_number.message}
           </p>
         )}
       </div>
