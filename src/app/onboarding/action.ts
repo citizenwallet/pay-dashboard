@@ -22,7 +22,9 @@ export async function updateBusinessDetailsAction(
   businessId: number,
   legalName: string,
   address: string,
-  iban: string
+  iban: string,
+  terms: boolean,
+  membership: boolean
 ) {
   const client = getServiceRoleClient();
 
@@ -31,7 +33,9 @@ export async function updateBusinessDetailsAction(
     legal_name: legalName,
     address_legal: address,
     iban_number: iban,
-    status: 'Registered'
+    status: 'Registered',
+    accepted_terms_and_conditions: new Date().toISOString(),
+    accepted_membership_agreement: new Date().toISOString()
   });
 
   //get user id by business id

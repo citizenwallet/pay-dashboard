@@ -61,7 +61,9 @@ export async function joinAction(
       invite_code: inviteCode,
       iban_number: '',
       address_legal: '',
-      legal_name: ''
+      legal_name: '',
+      accepted_membership_agreement: null,
+      accepted_terms_and_conditions: null
     }
   );
 
