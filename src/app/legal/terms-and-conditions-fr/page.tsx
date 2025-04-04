@@ -9,7 +9,7 @@ export default function TermsAndConditions() {
     process.cwd(),
     'public',
     'agreement',
-    'Businesses general conditions.md'
+    'Businesses general conditions_fr.md'
   );
   const content = fs.readFileSync(filePath, 'utf-8');
 

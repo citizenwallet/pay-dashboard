@@ -4,14 +4,13 @@ import remarkGfm from 'remark-gfm';
 import fs from 'fs';
 import path from 'path';
 
-export default function MembershipAgreement() {
+export default function TermsAndConditions() {
   const filePath = path.join(
     process.cwd(),
     'public',
     'agreement',
-    'membership agreement_fr.md'
+    'Businesses general conditions_nl.md'
   );
-
   const content = fs.readFileSync(filePath, 'utf-8');
 
   return (

@@ -9,7 +9,7 @@ export default function MembershipAgreement() {
     process.cwd(),
     'public',
     'agreement',
-    'membership agreement_fr.md'
+    'membership agreement_nl.md'
   );
 
   const content = fs.readFileSync(filePath, 'utf-8');
