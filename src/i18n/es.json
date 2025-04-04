@@ -357,5 +357,17 @@
     "ibanRequired": "El IBAN es requerido",
     "yourBusinessHasBeen": "Tu negocio ha sido validado correctamente !",
     "errorUpdatingBusiness": "Oops, hay un error durante la validación de tu negocio"
+  },
+  "legalPage": {
+    "title": "Términos y Condiciones",
+    "legalDescription": "Al usar Brussels Pay, aceptas convertirte en miembro de Brussels Pay VZW/ASBL. Por favor, lee el acuerdo de membresía así como los términos y condiciones.",
+    "condition1": "La membresía es gratuita",
+    "condition2": "El uso del sistema tiene un pequeño costo fijo que está detallado en los términos y condiciones",
+    "successAgreeWithTerms": "Tu acuerdo con los términos y condiciones ha sido validado correctamente !",
+    "errorAgreeWithTerms": "Ocurrió un error al validar tu acuerdo con los términos y condiciones",
+    "cancelAndLogout": "Cancelar y cerrar sesión",
+    "confirm": "Confirmar",
+    "membershipAgreement": "Acepto convertirme en miembro de Brussels Pay VZW/ASBL.",
+    "termsAndConditions": "Acepto los términos y condiciones."
   }
 }
