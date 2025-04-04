@@ -9,6 +9,14 @@ import {
   updatePayoutTransfer
 } from '@/db/payouts';
 import { createTransfer, getTransferById } from '@/db/transfer';
+import {
+  getAccountAddress,
+  CommunityConfig,
+  BundlerService
+} from '@citizenwallet/sdk';
+import Config from '@/cw/community.json';
+import { Wallet } from 'ethers';
+import { getPlaceById } from '@/db/places';
 
 export async function getPayoutAction(payout_id: string) {
   const client = getServiceRoleClient();
@@ -60,12 +68,31 @@ export async function setPayoutStatusAction(payout_id: string, status: string) {
   const client = getServiceRoleClient();
   try {
     if (status == 'burn') {
-      const burn = await createBurn(client);
-      const burnId = burn.data?.id;
-      if (!burnId) {
-        throw new Error('Failed to create burn');
+      const { data: payoutData } = await getPayoutById(client, payout_id);
+      const placeId = payoutData?.place_id;
+      const payoutAmount = payoutData?.total;
+
+      if (!placeId) {
+        throw new Error('Place ID not found');
       }
-      const payout = await updatePayoutBurn(client, payout_id, burnId);
+
+      const { data: placeData } = await getPlaceById(client, Number(placeId));
+
+      if (!placeData) {
+        throw new Error('Place not found');
+      }
+
+      const placeAccounts = placeData.accounts[0];
+
+      console.log(placeAccounts);
+      console.log(payoutAmount);
+
+      // const burn = await createBurn(client);
+      // const burnId = burn.data?.id;
+      // if (!burnId) {
+      //   throw new Error('Failed to create burn');
+      // }
+      // const payout = await updatePayoutBurn(client, payout_id, burnId);
     } else if (status == 'transferred') {
       const transfer = await createTransfer(client);
       const transferId = transfer.data?.id;
