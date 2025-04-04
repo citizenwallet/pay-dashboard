@@ -152,14 +152,26 @@ export default function DetailsPage({
           htmlFor="terms2"
           className="text-sm font-medium leading-none text-black peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
         >
-          <Link
-            href="/legal/membership-agreement-fr"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:underline"
-          >
-            Accept Membership Agreement
-          </Link>
+          {t('membershipAgreement')}{' '}
+          <>
+            <Link
+              href="/legal/membership-agreement-fr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              (French)
+            </Link>
+            {'  |  '}
+            <Link
+              href="/legal/membership-agreement-nl"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              (Dutch)
+            </Link>
+          </>
         </label>
       </div>
 
@@ -174,14 +186,28 @@ export default function DetailsPage({
           htmlFor="terms2"
           className="text-sm font-medium leading-none text-black peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
         >
-          <Link
-            href="/legal/terms-and-conditions-fr"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:underline"
-          >
-            Accept Terms and Conditions
-          </Link>
+          {t('termsAndConditions')}
+          {'  '}
+
+          <>
+            <Link
+              href="/legal/terms-and-conditions-fr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              (French)
+            </Link>
+            {'  |  '}
+            <Link
+              href="/legal/terms-and-conditions-nl"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              (Dutch)
+            </Link>
+          </>
         </label>
       </div>
 

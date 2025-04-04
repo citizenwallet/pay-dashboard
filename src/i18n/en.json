@@ -356,7 +356,9 @@
     "addressRequired": "Address is required",
     "ibanRequired": "IBAN is required",
     "yourBusinessHasBeen": "Your business has been successfully validated !",
-    "errorUpdatingBusiness": "Oops, there is an error during the validation of your company"
+    "errorUpdatingBusiness": "Oops, there is an error during the validation of your company",
+    "membershipAgreement": "I agree to become a member of Brussels Pay VZW/ASBL.",
+    "termsAndConditions": "I agree to the terms and conditions."
   },
   "legalPage": {
     "title": "Terms and Conditions",
