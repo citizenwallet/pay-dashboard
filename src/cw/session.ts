@@ -104,7 +104,7 @@ export const requestSession = async (
   signedSessionHash: string,
   sessionExpiry: number
 ): Promise<string> => {
-  const sessionManagerAddress = '0x1D36C0DAd15B82D482Fd02f6f6e8c9def8B5b63b';
+  const sessionManagerAddress = '0xaE892E3111f7caF8E7A1f9F8A6e3dF919FE19125';
 
   const bundler = new BundlerService(community);
 
@@ -147,7 +147,7 @@ export const verifyIncomingSessionRequest = async (
 ): Promise<boolean> => {
   try {
     // Get the session manager contract address
-    const sessionManagerAddress = '0x1D36C0DAd15B82D482Fd02f6f6e8c9def8B5b63b';
+    const sessionManagerAddress = '0xaE892E3111f7caF8E7A1f9F8A6e3dF919FE19125';
 
     const rpcProvider = new JsonRpcProvider(community.primaryRPCUrl);
 
@@ -199,7 +199,7 @@ export const confirmSession = async (
   sessionHash: string,
   signedSessionHash: string
 ) => {
-  const sessionManagerAddress = '0x1D36C0DAd15B82D482Fd02f6f6e8c9def8B5b63b';
+  const sessionManagerAddress = '0xaE892E3111f7caF8E7A1f9F8A6e3dF919FE19125';
 
   const bundler = new BundlerService(community);
 
