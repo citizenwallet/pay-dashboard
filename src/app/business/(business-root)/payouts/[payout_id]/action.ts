@@ -72,6 +72,10 @@ export async function setPayoutStatusAction(payout_id: string, status: string) {
       const placeId = payoutData?.place_id;
       const payoutAmount = payoutData?.total;
 
+      if (!payoutAmount) {
+        throw new Error('Payout amount not found');
+      }
+
       if (!placeId) {
         throw new Error('Place ID not found');
       }
@@ -84,15 +88,18 @@ export async function setPayoutStatusAction(payout_id: string, status: string) {
 
       const placeAccounts = placeData.accounts[0];
 
-      console.log(placeAccounts);
-      console.log(payoutAmount);
+      await burnTokenFromPlaceAccountAction(
+        payoutAmount.toString(),
+        placeAccounts,
+        'Payout'
+      );
 
-      // const burn = await createBurn(client);
-      // const burnId = burn.data?.id;
-      // if (!burnId) {
-      //   throw new Error('Failed to create burn');
-      // }
-      // const payout = await updatePayoutBurn(client, payout_id, burnId);
+      const burn = await createBurn(client);
+      const burnId = burn.data?.id;
+      if (!burnId) {
+        throw new Error('Failed to create burn');
+      }
+      const payout = await updatePayoutBurn(client, payout_id, burnId);
     } else if (status == 'transferred') {
       const transfer = await createTransfer(client);
       const transferId = transfer.data?.id;
@@ -130,3 +137,47 @@ export async function getPayoutStatusAction(payout_id: string) {
   }
   return { payout };
 }
+
+export const burnTokenFromPlaceAccountAction = async (
+  amount: string,
+  to: string,
+  description: string
+) => {
+  const { address: tokenAddress } = Config.community.primary_token;
+  const communityConfig = new CommunityConfig(Config);
+  const bundlerService = new BundlerService(communityConfig);
+
+  const serverWalletPrivateKey =
+    process.env['SERVER_GNOSIS_WALLET_PRIVATE_KEY'] ?? '';
+
+  if (!serverWalletPrivateKey) {
+    throw new Error('Signer cannot be found');
+  }
+
+  const signer = new Wallet(serverWalletPrivateKey);
+  const signerAccountAddress = await getAccountAddress(
+    new CommunityConfig(Config),
+    signer.address
+  );
+
+  if (!signerAccountAddress) {
+    throw new Error('Signer account address cannot be found');
+  }
+
+  try {
+    await bundlerService.burnFromERC20Token(
+      signer,
+      tokenAddress,
+      signerAccountAddress,
+      to,
+      amount,
+      description
+    );
+  } catch (error) {
+    console.error(error);
+    if (error instanceof Error) {
+      throw error; // Rethrow the original error object
+    }
+    throw new Error('Failed to burn tokens'); // Fallback error message for non-Error objects
+  }
+};
