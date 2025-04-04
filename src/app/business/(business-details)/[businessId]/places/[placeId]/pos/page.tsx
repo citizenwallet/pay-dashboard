@@ -17,7 +17,10 @@ export default async function PosPage({
       <PageContainer>
         <div className="space-y-4">
           <div className="flex items-start justify-between">
-            <Heading title="Point of Sales" description="Point of Sales of the place" />
+            <Heading
+              title="Point of Sales"
+              description="Point of Sales of the place"
+            />
           </div>
           <Separator />
           <Suspense
@@ -32,14 +35,7 @@ export default async function PosPage({
 }
 
 async function PosLoader(place_id: string) {
-
   const pos = await getPosAction(parseInt(place_id));
 
-  return (
-    <PosListing
-      placeId={parseInt(place_id)}
-      items={pos.data ?? []}
-    />
-  );
+  return <PosListing placeId={parseInt(place_id)} items={pos.data ?? []} />;
 }
-
