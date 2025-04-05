@@ -34,7 +34,6 @@ import { useEffect, useState } from 'react';
 import { NavButton } from './nav-button';
 import { NavMain } from './nav-main';
 import { PlaceSwitcher } from './place-switcher';
-import ThemeToggle from './ThemeToggle/theme-toggle';
 import { UserNav } from './user-nav';
 import LanguageSwitcher from './language-switcher';
 import { useTranslations } from 'next-intl';
@@ -179,7 +178,6 @@ export default function AppSidebar({
           <div className="flex items-center gap-2 px-4">
             <UserNav />
             <LanguageSwitcher />
-            <ThemeToggle />
           </div>
         </header>
         {/* page main content */}

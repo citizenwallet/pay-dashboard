@@ -44,7 +44,6 @@ import { usePathname } from 'next/navigation';
 import * as React from 'react';
 import { Breadcrumbs } from '../breadcrumbs';
 import { Icons } from '../icons';
-import ThemeToggle from './ThemeToggle/theme-toggle';
 import { UserNav } from './user-nav';
 import { Logo } from '@/components/logo';
 import { signOut } from 'next-auth/react';
@@ -57,19 +56,16 @@ export const company = {
   plan: 'Business'
 };
 
-
 const navItems: NavItem[] = [
+  {
+    title: 'Point of Sales',
+    url: '/#',
+    icon: 'billing',
+    isActive: false,
+    items: []
+  }
+];
 
-    {
-      title: 'Point of Sales',
-      url: '/#',
-      icon: 'billing',
-      isActive: false,
-      items: [] 
-    },
-   
-  ];
-  
 export default function PosSidebar({
   isAdmin,
   user,
@@ -240,7 +236,6 @@ export default function PosSidebar({
 
           <div className="flex items-center gap-2 px-4">
             <UserNav />
-            <ThemeToggle />
           </div>
         </header>
         {/* page main content */}
