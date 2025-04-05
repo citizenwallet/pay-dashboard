@@ -29,7 +29,7 @@ interface Props {
     offset: number;
     totalItems: number;
   };
-  balance: number;
+  total: string;
 }
 
 const createColumns = (
@@ -154,7 +154,7 @@ export const OrdersPage: React.FC<Props> = ({
   orders,
   currencyLogo,
   pagination,
-  balance
+  total
 }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -281,8 +281,7 @@ export const OrdersPage: React.FC<Props> = ({
               description={`${t('ordersFor')} ${place.name}`}
             />
             <p className="flex items-center gap-1 text-2xl font-bold">
-              <CurrencyLogo logo={currencyLogo} size={32} />{' '}
-              {formatCurrencyNumber(balance, 0)}
+              <CurrencyLogo logo={currencyLogo} size={32} /> {total}
             </p>
           </div>
           {/* Export CSV Button  */}

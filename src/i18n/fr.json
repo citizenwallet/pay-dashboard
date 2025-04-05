@@ -180,7 +180,8 @@
     "payoutDetails": "Détails du paiement",
     "payoutDetailsdescription": "Détails du paiement et les commandes",
     "exportCSV": "Exporter en CSV",
-    "date": "Date"
+    "date": "Date",
+    "accountBalance": "Solde du compte"
   },
   "placelist": {
     "list": "Liste",

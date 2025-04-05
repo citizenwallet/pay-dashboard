@@ -180,7 +180,8 @@
     "payoutDetails": "Payout Details",
     "payoutDetailsdescription": "Payout details and the orders",
     "exportCSV": "Export as CSV",
-    "date": "Date"
+    "date": "Date",
+    "accountBalance": "Account Balance"
   },
   "placelist": {
     "list": "List",

@@ -180,7 +180,8 @@
     "payoutDetails": "Uitbetalingsdetails",
     "payoutDetailsdescription": "Uitbetalingsdetails en de bestellingen",
     "exportCSV": "Exporteren als CSV",
-    "date": "Datum"
+    "date": "Datum",
+    "accountBalance": "Account Balans"
   },
   "placelist": {
     "list": "Lijst",
