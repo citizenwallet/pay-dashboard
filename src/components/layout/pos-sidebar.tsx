@@ -1,6 +1,11 @@
 'use client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger
+} from '@/components/ui/collapsible';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -14,63 +19,70 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   SidebarProvider,
   SidebarRail,
   SidebarTrigger
 } from '@/components/ui/sidebar';
+
 import {
+  ChevronRight,
   ChevronsUpDown,
-  CreditCard,
-  LayoutDashboard,
+  GalleryVerticalEnd,
   LogOut
 } from 'lucide-react';
-import { useSession } from 'next-auth/react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import * as React from 'react';
+import { Breadcrumbs } from '../breadcrumbs';
+import { Icons } from '../icons';
 import { UserNav } from './user-nav';
 import { Logo } from '@/components/logo';
 import { signOut } from 'next-auth/react';
 import { User } from '@/db/users';
-import { getUserFromSessionAction } from '@/actions/session';
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import LanguageSwitcher from './language-switcher';
-import { useTranslations } from 'next-intl';
+import { NavItem } from '@/types';
 
-export default function RootAppSidebar({
+export const company = {
+  name: 'Brussels Pay',
+  logo: GalleryVerticalEnd,
+  plan: 'Business'
+};
+
+const navItems: NavItem[] = [
+  {
+    title: 'Point of Sales',
+    url: '/#',
+    icon: 'billing',
+    isActive: false,
+    items: []
+  }
+];
+
+export default function PosSidebar({
   isAdmin,
-  user: initialUser,
+  user,
   children
 }: {
   isAdmin?: boolean;
-  user?: User | null;
+  user?: User;
   children: React.ReactNode;
 }) {
-  const [user, setUser] = useState<User | null | undefined>(initialUser);
-
-  const session = useSession();
   const pathname = usePathname();
-  const t = useTranslations('rootsidebar');
-
-  useEffect(() => {
-    if (session.status === 'authenticated' && !user) {
-      getUserFromSessionAction().then((user) => {
-        setUser(user);
-      });
-    }
-  }, [session, user]);
 
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon">
         {isAdmin && (
           <div className="align-center flex w-full justify-center bg-orange-500 text-sm font-normal">
-            {t('systemAdmin')}
+            SYSTEM ADMIN
           </div>
         )}
         <SidebarHeader>
@@ -79,46 +91,71 @@ export default function RootAppSidebar({
               <Logo />
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">{user?.name}</span>
-              <span className="truncate text-xs">{user?.email}</span>
+              <span className="truncate font-semibold">{company.name}</span>
+              <span className="truncate text-xs">{company.plan}</span>
             </div>
           </div>
         </SidebarHeader>
-
-        <SidebarContent>
+        <SidebarContent className="overflow-x-hidden">
           <SidebarGroup>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
+            <SidebarGroupLabel>Overview</SidebarGroupLabel>
+            <SidebarMenu>
+              {navItems.map((item) => {
+                const Icon = item.icon ? Icons[item.icon] : Icons.logo;
+                return item?.items && item?.items?.length > 0 ? (
+                  <Collapsible
+                    key={item.title}
                     asChild
-                    isActive={pathname === '/business'}
+                    defaultOpen={item.isActive}
+                    className="group/collapsible"
                   >
-                    <Link href="/business">
-                      <LayoutDashboard className="h-4 w-4" />
-                      <span>{t('business')}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-
-                {isAdmin && (
-                  <SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <CollapsibleTrigger asChild>
+                        <SidebarMenuButton
+                          tooltip={item.title}
+                          isActive={pathname === item.url}
+                        >
+                          {item.icon && <Icon />}
+                          <span>{item.title}</span>
+                          <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                        </SidebarMenuButton>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <SidebarMenuSub>
+                          {item.items?.map((subItem) => (
+                            <SidebarMenuSubItem key={subItem.title}>
+                              <SidebarMenuSubButton
+                                asChild
+                                isActive={pathname === subItem.url}
+                              >
+                                <Link href={subItem.url}>
+                                  <span>{subItem.title}</span>
+                                </Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          ))}
+                        </SidebarMenuSub>
+                      </CollapsibleContent>
+                    </SidebarMenuItem>
+                  </Collapsible>
+                ) : (
+                  <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
                       asChild
-                      isActive={pathname === '/business/payouts'}
+                      tooltip={item.title}
+                      isActive={pathname === item.url}
                     >
-                      <Link href="/business/payouts">
-                        <CreditCard className="h-4 w-4" />
-                        <span>{t('payouts')}</span>
+                      <Link href={item.url}>
+                        <Icon />
+                        <span>{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-                )}
-              </SidebarMenu>
-            </SidebarGroupContent>
+                );
+              })}
+            </SidebarMenu>
           </SidebarGroup>
         </SidebarContent>
-
         <SidebarFooter>
           <SidebarMenu>
             <SidebarMenuItem>
@@ -180,27 +217,25 @@ export default function RootAppSidebar({
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => signOut()}>
                     <LogOut />
-                    {t('logout')}
+                    Log out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>
-
         <SidebarRail />
       </Sidebar>
-
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
+            <Breadcrumbs />
           </div>
 
           <div className="flex items-center gap-2 px-4">
             <UserNav />
-            <LanguageSwitcher />
           </div>
         </header>
         {/* page main content */}

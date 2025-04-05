@@ -19,41 +19,49 @@ The Association provides the following systems and features to participating bus
 - **Viva Wallet Terminal Integration**: For businesses preferring a single device for all payments, integration with Viva Wallet terminals allows acceptance of traditional card payments, which are converted into EURb for the network.
 
 ### How the EURb Token Works
+
 - EURb is a digital token used within the Brussels Pay network. Customers can acquire EURb through the mobile app or NFC cards and use it for transactions at participating businesses.
 - Businesses receive EURb payments, which can be tracked and managed via the Brussels Pay dashboard.
 
 ### How Payouts Work
+
 - Payments received in EURb are recorded in the Business’s account. Payouts to the Business’s bank account (in EUR) are processed periodically, subject to the Association’s operational schedule and any applicable fees.
 
 ### Ensuring Legality
+
 - The Association ensures all transactions comply with Belgian and European laws, including data protection regulations (e.g., GDPR). Businesses must also adhere to these legal standards when using the network.
 
 ### Setting Expectations
+
 - The systems are designed for ease of use and accessibility, adapting to various business needs. However, availability may depend on technical maintenance or third-party services, for which the Association is not liable.
 
 ### Fees
+
 - A monthly fee is charged based on transaction volume to sustain the network:
-  | Number of Transactions | Monthly Fee     |
+  | Number of Transactions | Monthly Fee |
   |-----------------------|-----------------|
-  | 1–1,000              | €20/month       |
-  | 1,001–2,000          | €30/month       |
-  | 2,001–3,000          | €40/month       |
-  | And so on            | +€10/month per additional 1,000 transactions |
+  | 1–1,000 | €20/month |
+  | 1,001–2,000 | €30/month |
+  | 2,001–3,000 | €40/month |
+  | And so on | +€10/month per additional 1,000 transactions |
 - Fees may evolve over time, with prior notification to businesses, allowing withdrawal if desired.
 - Additional transaction fees may apply depending on the payment method (e.g., Viva Wallet processing fees).
 
 ### Administrative Dashboard
+
 - Businesses gain access to a dynamic dashboard (my.pay.brussels) to manage transactions, integrate EURb payments into accounting systems, and generate payment reports.
 
 ## 3. Obligations of the Parties
 
 ### 3.1 Obligations of the Business
+
 - Add the Brussels Pay network as an accepted payment method alongside existing options.
 - Promote the network to customers, encouraging its adoption and use.
 - Provide feedback on the network’s performance to aid its improvement.
 - Where feasible, encourage other businesses to join the project.
 
 ### 3.2 Obligations of the Association
+
 - Provide technical information and specifications for implementing and using the payment network.
 - Monitor network performance and notify the Business of any issues.
 - Ensure transaction security and legal compliance.
@@ -66,6 +74,7 @@ Participation begins upon acceptance of these General Conditions and continues f
 ## 5. Fees and Payment Terms
 
 As outlined in Section 2, the Business agrees to pay a monthly fee based on transaction volume. Payment can be made via:
+
 - Direct Debit
 - Bank Transfer (to an account specified upon registration)
 
@@ -87,6 +96,7 @@ The Business and the Association agree to keep confidential any sensitive inform
 ## 9. Termination
 
 Participation may be terminated by either party with written notice under the following conditions:
+
 - Voluntary withdrawal by the Business.
 - Breach of obligations by either party.
 - Bankruptcy or dissolution of the Business.
@@ -106,4 +116,4 @@ Disputes arising from these General Conditions will be resolved by the French-sp
 
 By joining Brussels Pay ASBL, the Business acknowledges and agrees to these General Conditions.
 
-*Last Updated: March 26, 2025*
+_Last Updated: March 26, 2025_

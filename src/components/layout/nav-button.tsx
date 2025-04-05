@@ -43,11 +43,11 @@ export function NavButton({ lastPlace }: { lastPlace: Place }) {
     navigator.clipboard
       .writeText(checkoutUrl)
       .then(() => {
-        toast.success(`${t('copyToClipboard')} ${checkoutUrl}`);
+        toast.success(t('linkCopied'));
       })
       .catch((err) => {
         console.error('Failed to copy: ', err);
-        toast.error(`${t('failedToCopy')} ${checkoutUrl}`);
+        toast.error(t('failedToCopy'));
       });
   };
 
@@ -61,11 +61,11 @@ export function NavButton({ lastPlace }: { lastPlace: Place }) {
     navigator.clipboard
       .writeText(ordersFeedUrl)
       .then(() => {
-        toast.success(`${t('copyToClipboard')} ${ordersFeedUrl}`);
+        toast.success(t('linkCopied'));
       })
       .catch((err) => {
         console.error('Failed to copy: ', err);
-        toast.error(`${t('failedToCopy')} ${ordersFeedUrl}`);
+        toast.error(t('failedToCopy'));
       });
   };
 

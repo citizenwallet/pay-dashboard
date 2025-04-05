@@ -11,6 +11,8 @@ import {
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+const LANGUAGE_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
+
 export default function LanguageSwitcher() {
   const [language, setLanguage] = useState('en');
   const router = useRouter();
@@ -25,14 +27,14 @@ export default function LanguageSwitcher() {
     } else {
       const browserLocale = navigator.language.split('-')[0];
       setLanguage(browserLocale);
-      document.cookie = `NEXT_LOCALE=${browserLocale};`;
+      document.cookie = `NEXT_LOCALE=${browserLocale}; path=/; max-age=${LANGUAGE_COOKIE_MAX_AGE};`;
       router.refresh();
     }
   }, [router]);
 
   const handleLanguageChange = (newLanguage: string) => {
     setLanguage(newLanguage);
-    document.cookie = `NEXT_LOCALE=${newLanguage};`;
+    document.cookie = `NEXT_LOCALE=${newLanguage}; path=/; max-age=${LANGUAGE_COOKIE_MAX_AGE};`;
     router.refresh();
   };
 
@@ -57,13 +59,23 @@ export default function LanguageSwitcher() {
         </DropdownMenuItem>
         <DropdownMenuItem
           className={`${
-            language === 'es' ? 'bg-primary text-primary-foreground' : ''
+            language === 'fr' ? 'bg-primary text-primary-foreground' : ''
           }`}
           onClick={() => {
-            handleLanguageChange('es');
+            handleLanguageChange('fr');
           }}
         >
-          Spanish
+          Français
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className={`${
+            language === 'nl' ? 'bg-primary text-primary-foreground' : ''
+          }`}
+          onClick={() => {
+            handleLanguageChange('nl');
+          }}
+        >
+          Nederlands
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
