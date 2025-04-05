@@ -36,6 +36,7 @@ describe('HomePage', () => {
 
   it('redirects to login when user is not authenticated', async () => {
     // Override the auth mock for this test
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const authMock = require('@/auth').auth;
     authMock.mockResolvedValueOnce(null);
 
