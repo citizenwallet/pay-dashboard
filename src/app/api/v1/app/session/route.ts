@@ -122,8 +122,7 @@ export async function POST(req: NextRequest) {
     sessionRequest.expiry
   );
 
-  // await sendOtpSMS(sessionRequest.source, challenge);
-  console.log('challenge', challenge);
+  await sendOtpSMS(sessionRequest.source, challenge);
 
   return NextResponse.json({
     sessionRequestTxHash: txHash,
