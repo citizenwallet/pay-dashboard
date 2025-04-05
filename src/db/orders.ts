@@ -6,7 +6,7 @@ import {
   SupabaseClient
 } from '@supabase/supabase-js';
 
-export type OrderStatus = 'pending' | 'paid' | 'cancelled';
+export type OrderStatus = 'pending' | 'paid' | 'cancelled' | 'needs_minting';
 
 export interface Order {
   id: number;
@@ -24,6 +24,7 @@ export interface Order {
   description: string;
   tx_hash: string | null;
   type: 'web' | 'app' | 'terminal' | null;
+  pos: string | null;
 }
 
 // Helper function to calculate date range filters

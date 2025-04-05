@@ -54,7 +54,7 @@ async function AsyncPage({ params, searchParams }: Props) {
   const {
     limit: rawLimit = '20',
     offset: rawOffset = '0',
-    dateRange = 'today',
+    dateRange = 'last7days',
     startDate,
     endDate
   } = await searchParams;

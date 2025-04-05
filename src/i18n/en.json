@@ -61,7 +61,15 @@
     "fees": "Fees",
     "net": "Net",
     "status": "Status",
-    "description": "Description"
+    "type": "Type",
+    "description": "Description",
+    "pending": "Pending",
+    "paid": "Paid",
+    "cancelled": "Cancelled",
+    "needs_minting": "Needs Minting",
+    "terminal": "Terminal",
+    "qr": "QR Code",
+    "app": "App"
   },
   "qr": {
     "qrCode": "QR Code",

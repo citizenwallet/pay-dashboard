@@ -61,7 +61,15 @@
     "fees": "Frais",
     "net": "Net",
     "status": "Statut",
-    "description": "Description"
+    "type": "Type",
+    "description": "Description",
+    "pending": "En attente",
+    "paid": "Payé",
+    "cancelled": "Annulé",
+    "needs_minting": "Nécessite d'être émis",
+    "terminal": "Terminal",
+    "qr": "Code QR",
+    "app": "App"
   },
   "qr": {
     "qrCode": "Code QR",

@@ -16,6 +16,9 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
 import { toast } from 'sonner';
 import { exportCsvAction } from '../action';
+import Link from 'next/link';
+import { QrCodeIcon, SmartphoneIcon, SmartphoneNfcIcon } from 'lucide-react';
+import { formatAddress } from '@/lib/address';
 
 interface Props {
   place: Place;
@@ -95,8 +98,48 @@ const createColumns = (
             'bg-red-100 text-red-800': row.original.status === 'cancelled'
           })}
         >
-          {row.original.status}
+          {t(row.original.status) || row.original.status}
         </span>
+      );
+    }
+  },
+  {
+    accessorKey: 'type',
+    header: t('type'),
+    cell: ({ row }) => {
+      const isTerminal = row.original.type === 'terminal' && row.original.pos;
+      if (isTerminal) {
+        return (
+          <div className="flex items-center">
+            <span className="flex gap-1 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium">
+              <SmartphoneNfcIcon className="h-4 w-4" />
+              {`${t('terminal')}: ${
+                row.original.pos?.startsWith('0x')
+                  ? formatAddress(row.original.pos)
+                  : row.original.pos
+              }`}
+            </span>
+          </div>
+        );
+      }
+
+      if (row.original.type === 'web' || !row.original.type) {
+        return (
+          <div className="flex items-center">
+            <span className="flex gap-1 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium">
+              <QrCodeIcon className="h-4 w-4" />
+              {t('qr')}
+            </span>
+          </div>
+        );
+      }
+      return (
+        <div className="flex items-center">
+          <span className="flex gap-1 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium">
+            <SmartphoneIcon className="h-4 w-4" />
+            {`${t('app')}`}
+          </span>
+        </div>
       );
     }
   },
@@ -118,7 +161,7 @@ export const OrdersPage: React.FC<Props> = ({
   const searchParams = useSearchParams();
   const t = useTranslations('order');
   // Initialize state from searchParams
-  const initialDateRange = searchParams.get('dateRange') || 'today';
+  const initialDateRange = searchParams.get('dateRange') || 'last7days';
   const initialStartDate = searchParams.get('startDate') || '';
   const initialEndDate = searchParams.get('endDate') || '';
 

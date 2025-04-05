@@ -61,7 +61,15 @@
     "fees": "Kosten",
     "net": "Netto",
     "status": "Status",
-    "description": "Beschrijving"
+    "type": "Type",
+    "description": "Beschrijving",
+    "pending": "In behandeling",
+    "paid": "Betaald",
+    "cancelled": "Geannuleerd",
+    "needs_minting": "Needs Minting",
+    "terminal": "Terminal",
+    "qr": "QR-code",
+    "app": "App"
   },
   "qr": {
     "qrCode": "QR-code",
