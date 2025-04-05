@@ -8,6 +8,7 @@ export interface Pos {
   place_id: string;
   type: string;
   name: string;
+  is_active?: boolean;
 }
 
 export const getPosById = async (
@@ -50,14 +51,14 @@ export const createPos = async (
 
 export const deletePos = async (
   client: SupabaseClient,
-  id: number
+  id: string
 ): Promise<PostgrestSingleResponse<Pos | null>> => {
   return client.from('pos').delete().eq('id', id).maybeSingle();
 };
 
 export const updatePos = async (
   client: SupabaseClient,
-  id: number,
+  id: string,
   name: string,
   type: string
 ): Promise<PostgrestSingleResponse<Pos | null>> => {

@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  BanknoteIcon,
   BookOpen,
   Bot,
   BoxesIcon,
@@ -10,6 +11,7 @@ import {
   QrCode,
   Settings2,
   ShoppingCartIcon,
+  SmartphoneNfcIcon,
   SquareTerminal,
   User,
   type LucideIcon
@@ -87,13 +89,13 @@ export function NavMain({
     {
       title: t('payouts'),
       url: `/business/${businessId}/places/${lastPlace.id}/payouts`,
-      icon: PanelBottomClose,
+      icon: BanknoteIcon,
       items: []
     },
     {
-      title: 'Point of Sales',
+      title: t('terminal'),
       url: `/business/${businessId}/places/${lastPlace.id}/pos`,
-      icon: SquareTerminal,
+      icon: SmartphoneNfcIcon,
       isActive: false,
       items: []
     }
