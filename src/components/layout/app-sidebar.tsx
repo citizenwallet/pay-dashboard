@@ -53,7 +53,7 @@ export default function AppSidebar({
   children: React.ReactNode;
 }) {
   const [user, setUser] = useState<User | null | undefined>(initialUser);
-  const [Place, setPlace] = useState<Place>(lastPlace);
+  const [place, setPlace] = useState<Place>(lastPlace);
   const session = useSession();
   const t = useTranslations('sidebar');
 
@@ -89,12 +89,12 @@ export default function AppSidebar({
             </div>
           </div>
 
-          {business && <PlaceSwitcher business={business} lastPlace={Place} />}
+          {business && <PlaceSwitcher business={business} lastPlace={place} />}
         </SidebarHeader>
 
         <SidebarContent>
-          <NavButton lastPlace={Place} />
-          {business && <NavMain businessId={business.id} lastPlace={Place} />}
+          <NavButton lastPlace={place} />
+          {business && <NavMain businessId={business.id} lastPlace={place} />}
         </SidebarContent>
 
         <SidebarFooter>

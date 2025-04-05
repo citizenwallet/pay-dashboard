@@ -8,6 +8,8 @@
     "payouts": "Payouts",
     "terminal": "Terminals",
     "place": "Place",
+    "sales": "Sales",
+    "admin": "Admin",
     "light": "Light",
     "dark": "Dark",
     "systemAdmin": "SYSTEM ADMIN",
