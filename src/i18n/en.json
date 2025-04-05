@@ -14,7 +14,7 @@
     "logout": "Logout"
   },
   "navButton": {
-    "copyToClipboard": "Copy to clipboard",
+    "linkCopied": "Link copied",
     "failedToCopy": "Failed to copy the link. Please try again.",
     "copyCheckoutLink": "Copy checkout link",
     "copyOrdersFeedLink": "Copy orders feed link",

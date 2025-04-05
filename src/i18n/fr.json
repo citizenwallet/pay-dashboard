@@ -14,7 +14,7 @@
     "logout": "Déconnexion"
   },
   "navButton": {
-    "copyToClipboard": "Copier dans le presse-papiers",
+    "linkCopied": "Lien copié",
     "failedToCopy": "Échec de la copie du lien. Veuillez réessayer.",
     "copyCheckoutLink": "Lien de paiement",
     "copyOrdersFeedLink": "Lien du flux de commandes",

@@ -14,7 +14,7 @@
     "logout": "Uitloggen"
   },
   "navButton": {
-    "copyToClipboard": "Kopiëren naar klembord",
+    "linkCopied": "Link gekopieerd",
     "failedToCopy": "Link kopiëren mislukt. Probeer het opnieuw.",
     "copyCheckoutLink": "Afrekenlink kopiëren",
     "copyOrdersFeedLink": "Bestellingen feed link kopiëren",
