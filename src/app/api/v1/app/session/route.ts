@@ -45,17 +45,13 @@ export async function POST(req: NextRequest) {
 
   const signer = new Wallet(providerPrivateKey);
 
-  const providerAccountAddress = process.env.PROVIDER_ACCOUNT_ADDRESS;
-  if (!providerAccountAddress) {
-    return NextResponse.json({
-      status: StatusCodes.INTERNAL_SERVER_ERROR, // 500
-      message: ReasonPhrases.INTERNAL_SERVER_ERROR // "Internal Server Error" message
-    });
-  }
+  const community = new CommunityConfig(communityJson);
+
+  const sessionManager = community.primarySessionConfig;
 
   const sessionRequest: SessionRequest = await req.json();
 
-  if (sessionRequest.provider !== providerAccountAddress) {
+  if (sessionRequest.provider !== sessionManager.provider_address) {
     return NextResponse.json({
       status: StatusCodes.BAD_REQUEST, // 400
       message: ReasonPhrases.BAD_REQUEST // "Bad Request" message
@@ -108,13 +104,10 @@ export async function POST(req: NextRequest) {
 
   const signedSessionHash = await signer.signMessage(getBytes(sessionHash));
 
-  // TODO: add 2fa provider to community config
-  const community = new CommunityConfig(communityJson);
-
   const txHash = await requestSession(
     community,
     signer,
-    providerAccountAddress,
+    sessionManager.provider_address,
     sessionSalt,
     sessionRequestHash,
     sessionRequest.signature,
@@ -155,7 +148,11 @@ export async function PATCH(req: NextRequest) {
 
   const signer = new Wallet(providerPrivateKey);
 
-  const providerAccountAddress = process.env.PROVIDER_ACCOUNT_ADDRESS;
+  const community = new CommunityConfig(communityJson);
+
+  const sessionManager = community.primarySessionConfig;
+
+  const providerAccountAddress = sessionManager.provider_address;
   if (!providerAccountAddress) {
     return NextResponse.json(
       {
@@ -193,9 +190,6 @@ export async function PATCH(req: NextRequest) {
       }
     );
   }
-
-  // TODO: add 2fa provider to community config
-  const community = new CommunityConfig(communityJson);
 
   const isSessionHashValid = await verifyIncomingSessionRequest(
     community,
