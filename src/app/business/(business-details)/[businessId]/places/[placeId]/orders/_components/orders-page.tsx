@@ -13,12 +13,18 @@ import { cn, humanizeDate } from '@/lib/utils';
 import { ColumnDef, PaginationState } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import React from 'react';
+import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { exportCsvAction } from '../action';
 import Link from 'next/link';
-import { QrCodeIcon, SmartphoneIcon, SmartphoneNfcIcon } from 'lucide-react';
+import {
+  Loader2,
+  QrCodeIcon,
+  SmartphoneIcon,
+  SmartphoneNfcIcon
+} from 'lucide-react';
 import { formatAddress } from '@/lib/address';
+import { DatePicker } from '@/components/ui/DatePicker';
 
 interface Props {
   place: Place;
@@ -165,12 +171,12 @@ export const OrdersPage: React.FC<Props> = ({
   const initialStartDate = searchParams.get('startDate') || '';
   const initialEndDate = searchParams.get('endDate') || '';
 
-  const [dateRange, setDateRange] = React.useState(initialDateRange);
-  const [customStartDate, setCustomStartDate] =
-    React.useState(initialStartDate);
-  const [customEndDate, setCustomEndDate] = React.useState(initialEndDate);
+  const [dateRange, setDateRange] = useState(initialDateRange);
+  const [customStartDate, setCustomStartDate] = useState(initialStartDate);
+  const [customEndDate, setCustomEndDate] = useState(initialEndDate);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const onPaginationChange = React.useCallback(
+  const onPaginationChange = useCallback(
     (
       updaterOrValue:
         | PaginationState
@@ -222,13 +228,22 @@ export const OrdersPage: React.FC<Props> = ({
   };
 
   // Handle custom date changes
-  const handleCustomDateChange = () => {
-    if (dateRange === 'custom' && customStartDate && customEndDate) {
+  const handleCustomDateChange = (
+    startDate: Date | undefined,
+    endDate: Date | undefined
+  ) => {
+    if (
+      dateRange === 'custom' &&
+      (startDate || customStartDate) &&
+      (endDate || customEndDate)
+    ) {
+      setIsLoading(true);
       const params = new URLSearchParams(searchParams);
       params.set('dateRange', 'custom');
-      params.set('startDate', customStartDate);
-      params.set('endDate', customEndDate);
+      params.set('startDate', startDate?.toISOString() || customStartDate);
+      params.set('endDate', endDate?.toISOString() || customEndDate);
       params.set('offset', '0');
+      setIsLoading(false);
       router.push(`${pathname}?${params.toString()}`);
     }
   };
@@ -315,33 +330,42 @@ export const OrdersPage: React.FC<Props> = ({
 
           {/* Custom Date Range Inputs */}
           {dateRange === 'custom' && (
-            <div className="flex items-center gap-4">
+            <div className="flex items-center  gap-4">
               <div className="flex flex-col gap-1">
                 <label htmlFor="startDate" className="text-sm font-medium">
                   {t('startDate')}
                 </label>
-                <input
-                  type="date"
-                  id="startDate"
-                  value={customStartDate}
-                  onChange={(e) => setCustomStartDate(e.target.value)}
-                  onBlur={handleCustomDateChange}
-                  className="rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+
+                <DatePicker
+                  id="customStartDate"
+                  value={
+                    customStartDate ? new Date(customStartDate) : undefined
+                  }
+                  onChange={(date) => {
+                    setCustomStartDate(date?.toISOString() ?? '');
+                    handleCustomDateChange(date, undefined);
+                  }}
+                  placeholder="Select your date"
+                  className="w-full"
                 />
               </div>
               <div className="flex flex-col gap-1">
                 <label htmlFor="endDate" className="text-sm font-medium">
                   {t('endDate')}
                 </label>
-                <input
-                  type="date"
-                  id="endDate"
-                  value={customEndDate}
-                  onChange={(e) => setCustomEndDate(e.target.value)}
-                  onBlur={handleCustomDateChange}
-                  className="rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+
+                <DatePicker
+                  id="customEndDate"
+                  value={customEndDate ? new Date(customEndDate) : undefined}
+                  onChange={(date) => {
+                    setCustomEndDate(date?.toISOString() ?? '');
+                    handleCustomDateChange(undefined, date);
+                  }}
+                  placeholder="Select your date"
+                  className="w-full"
                 />
               </div>
+              {isLoading && <Loader2 className="mt-5 h-4 w-4 animate-spin" />}
             </div>
           )}
         </div>
