@@ -28,6 +28,9 @@ interface SessionRequest {
   signature: string;
 }
 
+const demoSalt =
+  '0xd6e1d3bc4b24de2d3b22e2be6a0fd377657b338064a0e8fc21690c160d9999cd';
+
 export async function POST(req: NextRequest) {
   const providerPrivateKey = process.env.PROVIDER_PRIVATE_KEY;
 
@@ -45,17 +48,13 @@ export async function POST(req: NextRequest) {
 
   const signer = new Wallet(providerPrivateKey);
 
-  const providerAccountAddress = process.env.PROVIDER_ACCOUNT_ADDRESS;
-  if (!providerAccountAddress) {
-    return NextResponse.json({
-      status: StatusCodes.INTERNAL_SERVER_ERROR, // 500
-      message: ReasonPhrases.INTERNAL_SERVER_ERROR // "Internal Server Error" message
-    });
-  }
+  const community = new CommunityConfig(communityJson);
+
+  const sessionManager = community.primarySessionConfig;
 
   const sessionRequest: SessionRequest = await req.json();
 
-  if (sessionRequest.provider !== providerAccountAddress) {
+  if (sessionRequest.provider !== sessionManager.provider_address) {
     return NextResponse.json({
       status: StatusCodes.BAD_REQUEST, // 400
       message: ReasonPhrases.BAD_REQUEST // "Bad Request" message
@@ -102,19 +101,19 @@ export async function POST(req: NextRequest) {
     sessionRequest.expiry
   );
 
-  const challenge = await generateSessionChallenge();
+  let challenge = await generateSessionChallenge();
+  if (sessionSalt === demoSalt) {
+    challenge = 123456;
+  }
 
   const sessionHash = generateSessionHash(sessionRequestHash, challenge);
 
   const signedSessionHash = await signer.signMessage(getBytes(sessionHash));
 
-  // TODO: add 2fa provider to community config
-  const community = new CommunityConfig(communityJson);
-
   const txHash = await requestSession(
     community,
     signer,
-    providerAccountAddress,
+    sessionManager.provider_address,
     sessionSalt,
     sessionRequestHash,
     sessionRequest.signature,
@@ -122,7 +121,9 @@ export async function POST(req: NextRequest) {
     sessionRequest.expiry
   );
 
-  await sendOtpSMS(sessionRequest.source, challenge);
+  if (sessionSalt !== demoSalt) {
+    await sendOtpSMS(sessionRequest.source, challenge);
+  }
 
   return NextResponse.json({
     sessionRequestTxHash: txHash,
@@ -155,7 +156,11 @@ export async function PATCH(req: NextRequest) {
 
   const signer = new Wallet(providerPrivateKey);
 
-  const providerAccountAddress = process.env.PROVIDER_ACCOUNT_ADDRESS;
+  const community = new CommunityConfig(communityJson);
+
+  const sessionManager = community.primarySessionConfig;
+
+  const providerAccountAddress = sessionManager.provider_address;
   if (!providerAccountAddress) {
     return NextResponse.json(
       {
@@ -193,9 +198,6 @@ export async function PATCH(req: NextRequest) {
       }
     );
   }
-
-  // TODO: add 2fa provider to community config
-  const community = new CommunityConfig(communityJson);
 
   const isSessionHashValid = await verifyIncomingSessionRequest(
     community,
