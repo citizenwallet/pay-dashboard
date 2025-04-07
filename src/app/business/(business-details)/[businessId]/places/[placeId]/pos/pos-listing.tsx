@@ -19,9 +19,12 @@ import {
   addVivaPosAction,
   checkPlaceIdAlreadyExistsAction,
   deletePosAction,
-  updatePosAction
+  updatePosAction,
+  setPosActiveAction
 } from './action';
 import { useDebounce } from 'use-debounce';
+import { useTranslations } from 'next-intl';
+import { Switch } from '@/components/ui/switch';
 
 export default function PosListing({
   placeId,
@@ -30,8 +33,15 @@ export default function PosListing({
   placeId: number;
   items?: Pos[];
 }) {
+  const t = useTranslations('pos');
   const [posItems, setPosItems] = useState(items);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeactivateDialogOpen, setIsDeactivateDialogOpen] = useState(false);
+  const [terminalToDelete, setTerminalToDelete] = useState<string | null>(null);
+  const [terminalToDeactivate, setTerminalToDeactivate] = useState<
+    string | null
+  >(null);
 
   const [posName, setPosName] = useState('');
   const [posId, setPosId] = useState('');
@@ -69,7 +79,7 @@ export default function PosListing({
       };
 
       const res = await updatePosAction(
-        Number(item.id),
+        item.id,
         updatedPos.name,
         placeId,
         updatedPos.type
@@ -85,9 +95,9 @@ export default function PosListing({
           pos.id === item.id ? { ...pos, ...updatedPos } : pos
         )
       );
-      toast.success('POS terminal updated successfully');
+      toast.success(t('terminalUpdatedSuccessfully'));
     } catch (error) {
-      toast.error('Error updating POS terminal');
+      toast.error(t('errorUpdatingTerminal'));
     } finally {
       setLoading(null);
       setEditingItemId(null);
@@ -97,19 +107,90 @@ export default function PosListing({
 
   // Delete a POS terminal
   const handleDelete = async (id: string) => {
-    setLoading(id);
+    setTerminalToDelete(id);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!terminalToDelete) return;
+
+    setLoading(terminalToDelete);
     try {
-      const res = await deletePosAction(Number(id), placeId);
+      const res = await deletePosAction(terminalToDelete, placeId);
       if (res.error) {
         toast.error(res.error.message);
         return;
       }
-      toast.success('POS terminal deleted successfully');
-      setPosItems((prev) => prev.filter((item) => item.id !== id));
+      toast.success(t('terminalDeletedSuccessfully'));
+      setPosItems((prev) =>
+        prev.filter((item) => item.id !== terminalToDelete)
+      );
     } catch (error) {
-      toast.error('Error deleting POS terminal');
+      toast.error(t('errorDeletingTerminal'));
     } finally {
       setLoading(null);
+      setIsDeleteDialogOpen(false);
+      setTerminalToDelete(null);
+    }
+  };
+
+  // Toggle terminal active status
+  const handleToggleActive = async (id: string, currentStatus: boolean) => {
+    if (currentStatus) {
+      // If currently active, show deactivation confirmation
+      setTerminalToDeactivate(id);
+      setIsDeactivateDialogOpen(true);
+    } else {
+      // If currently inactive, activate immediately
+      setLoading(id);
+      try {
+        const res = await setPosActiveAction(id, placeId, true);
+
+        if (res.error) {
+          toast.error(res.error.message);
+          return;
+        }
+
+        setPosItems((prev) =>
+          prev.map((pos) => (pos.id === id ? { ...pos, is_active: true } : pos))
+        );
+        toast.success(t('terminalActivatedSuccessfully'));
+      } catch (error) {
+        toast.error(t('errorUpdatingTerminalStatus'));
+      } finally {
+        setLoading(null);
+      }
+    }
+  };
+
+  const confirmDeactivate = async () => {
+    if (!terminalToDeactivate) return;
+
+    setLoading(terminalToDeactivate);
+    try {
+      const res = await setPosActiveAction(
+        terminalToDeactivate,
+        placeId,
+        false
+      );
+
+      if (res.error) {
+        toast.error(res.error.message);
+        return;
+      }
+
+      setPosItems((prev) =>
+        prev.map((pos) =>
+          pos.id === terminalToDeactivate ? { ...pos, is_active: false } : pos
+        )
+      );
+      toast.success(t('terminalDeactivatedSuccessfully'));
+    } catch (error) {
+      toast.error(t('errorUpdatingTerminalStatus'));
+    } finally {
+      setLoading(null);
+      setIsDeactivateDialogOpen(false);
+      setTerminalToDeactivate(null);
     }
   };
 
@@ -117,10 +198,10 @@ export default function PosListing({
   const handleAddPlace = async () => {
     try {
       if (!posId || !posName) {
-        toast.error('Please enter the details');
+        toast.error(t('pleaseEnterDetails'));
         return;
       }
-      const res = await addVivaPosAction(Number(posId), posName, placeId);
+      const res = await addVivaPosAction(posId, posName, placeId);
 
       setPosId('');
       setPosName('');
@@ -130,7 +211,7 @@ export default function PosListing({
         toast.error(res.error.message);
         return;
       }
-      toast.success('POS terminal added successfully');
+      toast.success(t('terminalAddedSuccessfully'));
       setPosItems((prev) => [...prev, res.data as Pos]);
     } catch (error) {
       toast.error(error as string);
@@ -148,7 +229,7 @@ export default function PosListing({
           setHandleAddButton(false);
         } else {
           setHandleAddButton(true);
-          toast.error('POS terminal Id already exists');
+          toast.error(t('terminalIdAlreadyExists'));
         }
       } catch (error) {
         console.error('Error checking place ID:', error);
@@ -156,7 +237,7 @@ export default function PosListing({
     };
 
     checkPlaceIdAlreadyExists();
-  }, [debouncedPlaceId]);
+  }, [debouncedPlaceId, t]);
 
   return (
     <div className="w-full">
@@ -164,51 +245,114 @@ export default function PosListing({
         <DialogTrigger asChild>
           <Button className="mb-4 flex items-center gap-2">
             <icons.Plus size={16} />
-            Add Viva Terminal
+            {t('addTerminal')}
           </Button>
         </DialogTrigger>
 
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add Viva Terminal</DialogTitle>
-            <DialogDescription>
-              Add a new Viva Terminal to your place.
-            </DialogDescription>
+            <DialogTitle>{t('addTerminal')}</DialogTitle>
+            <DialogDescription>{t('addTerminalDescription')}</DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <label htmlFor="id" className="text-sm font-medium">
-                ID
+                {t('id')}
               </label>
               <Input
                 id="id"
                 type="text" // Changed to text since id is a string
                 value={posId}
                 onChange={(e) => setPosId(e.target.value)}
-                placeholder="Enter POS ID"
+                placeholder={t('enterTerminalId')}
               />
             </div>
 
             <div className="grid gap-2">
               <label htmlFor="name" className="text-sm font-medium">
-                Name
+                {t('name')}
               </label>
               <Input
                 id="name"
                 value={posName}
                 onChange={(e) => setPosName(e.target.value)}
-                placeholder="Enter POS name"
+                placeholder={t('enterTerminalName')}
               />
             </div>
           </div>
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
-              Cancel
+              {t('cancel')}
             </Button>
             <Button disabled={handleAddButton} onClick={handleAddPlace}>
-              Add
+              {t('add')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('deleteTerminal')}</DialogTitle>
+            <DialogDescription>
+              {t('deleteTerminalDescription')}
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsDeleteDialogOpen(false)}
+            >
+              {t('cancel')}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              disabled={loading === terminalToDelete}
+            >
+              {loading === terminalToDelete ? (
+                <Loader className="h-5 w-5 animate-spin" />
+              ) : (
+                t('delete')
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={isDeactivateDialogOpen}
+        onOpenChange={setIsDeactivateDialogOpen}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('deactivateTerminal')}</DialogTitle>
+            <DialogDescription>
+              {t('deactivateTerminalDescription')}
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsDeactivateDialogOpen(false)}
+            >
+              {t('cancel')}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDeactivate}
+              disabled={loading === terminalToDeactivate}
+            >
+              {loading === terminalToDeactivate ? (
+                <Loader className="h-5 w-5 animate-spin" />
+              ) : (
+                t('deactivate')
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -217,11 +361,12 @@ export default function PosListing({
       <table className="w-full border-collapse">
         <thead>
           <tr>
-            <th className="border p-2 text-left">ID</th>
-            <th className="border p-2 text-left">Name</th>
-            <th className="border p-2 text-left">Type</th>
-            <th className="border p-2 text-left">Created At</th>
-            <th className="border p-2 text-left">Action</th>
+            <th className="border p-2 text-left">{t('id')}</th>
+            <th className="border p-2 text-left">{t('name')}</th>
+            <th className="border p-2 text-left">{t('type')}</th>
+            <th className="border p-2 text-left">{t('createdAt')}</th>
+            <th className="border p-2 text-left">{t('active')}</th>
+            <th className="border p-2 text-left">{t('action')}</th>
           </tr>
         </thead>
 
@@ -268,7 +413,9 @@ export default function PosListing({
                     className="cursor-pointer rounded p-1 hover:bg-gray-100"
                   >
                     {item.type || (
-                      <span className="italic text-gray-400">No type</span>
+                      <span className="italic text-gray-400">
+                        {t('noType')}
+                      </span>
                     )}
                   </div>
                 )}
@@ -277,6 +424,16 @@ export default function PosListing({
               <td className="border p-2">
                 {new Date(item.created_at).toLocaleDateString()}{' '}
                 {new Date(item.created_at).toLocaleTimeString()}
+              </td>
+
+              <td className="border p-2">
+                <Switch
+                  checked={item.is_active !== false}
+                  onCheckedChange={() =>
+                    handleToggleActive(item.id, item.is_active !== false)
+                  }
+                  disabled={loading === item.id}
+                />
               </td>
 
               <td className="border p-2">
@@ -292,7 +449,7 @@ export default function PosListing({
                   ) : (
                     <Trash className="h-5 w-5" />
                   )}
-                  <span className="sr-only">Delete</span>
+                  <span className="sr-only">{t('delete')}</span>
                 </Button>
               </td>
             </tr>

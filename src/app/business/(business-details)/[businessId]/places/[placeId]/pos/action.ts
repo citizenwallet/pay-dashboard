@@ -8,7 +8,8 @@ import {
   deletePos,
   getPosById,
   getPosByPlaceId,
-  updatePos
+  updatePos,
+  updatePosStatus
 } from '@/db/pos';
 
 export async function getPosAction(place_id: number) {
@@ -25,7 +26,7 @@ export async function getPosAction(place_id: number) {
 }
 
 export async function addVivaPosAction(
-  id: number,
+  id: string,
   name: string,
   place_id: number
 ) {
@@ -36,18 +37,11 @@ export async function addVivaPosAction(
     throw new Error('User does not have access to this place');
   }
 
-  const pos = await createPos(
-    client,
-    id.toString(),
-    name,
-    place_id,
-    'viva',
-    true
-  );
+  const pos = await createPos(client, id, name, place_id, 'viva', true);
   return pos;
 }
 
-export async function deletePosAction(id: number, place_id: number) {
+export async function deletePosAction(id: string, place_id: number) {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
   const res = await isUserLinkedToPlaceAction(client, userId, place_id);
@@ -58,8 +52,24 @@ export async function deletePosAction(id: number, place_id: number) {
   return pos;
 }
 
+export async function setPosActiveAction(
+  id: string,
+  place_id: number,
+  is_active: boolean
+) {
+  const client = getServiceRoleClient();
+  const userId = await getUserIdFromSessionAction();
+  const res = await isUserLinkedToPlaceAction(client, userId, place_id);
+  if (!res) {
+    throw new Error('User does not have access to this place');
+  }
+
+  const pos = await updatePosStatus(client, id.toString(), is_active);
+  return pos;
+}
+
 export async function updatePosAction(
-  id: number,
+  id: string,
   name: string,
   place_id: number,
   type: string

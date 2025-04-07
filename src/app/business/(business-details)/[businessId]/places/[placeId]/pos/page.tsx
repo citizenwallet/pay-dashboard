@@ -5,6 +5,7 @@ import React, { Suspense } from 'react';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
 import PosListing from './pos-listing';
 import { getPosAction } from './action';
+import { getTranslations } from 'next-intl/server';
 
 export default async function PosPage({
   params
@@ -12,15 +13,14 @@ export default async function PosPage({
   params: Promise<{ placeId: string }>;
 }) {
   const { placeId } = await params;
+  const t = await getTranslations('pos');
+
   return (
     <div>
       <PageContainer>
         <div className="space-y-4">
           <div className="flex items-start justify-between">
-            <Heading
-              title="Point of Sales"
-              description="Point of Sales of the place"
-            />
+            <Heading title={t('title')} description={t('description')} />
           </div>
           <Separator />
           <Suspense

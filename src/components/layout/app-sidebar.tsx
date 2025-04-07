@@ -34,7 +34,6 @@ import { useEffect, useState } from 'react';
 import { NavButton } from './nav-button';
 import { NavMain } from './nav-main';
 import { PlaceSwitcher } from './place-switcher';
-import ThemeToggle from './ThemeToggle/theme-toggle';
 import { UserNav } from './user-nav';
 import LanguageSwitcher from './language-switcher';
 import { useTranslations } from 'next-intl';
@@ -53,7 +52,7 @@ export default function AppSidebar({
   children: React.ReactNode;
 }) {
   const [user, setUser] = useState<User | null | undefined>(initialUser);
-  const [Place, setPlace] = useState<Place>(lastPlace);
+  const [place, setPlace] = useState<Place>(lastPlace);
   const session = useSession();
   const t = useTranslations('sidebar');
 
@@ -89,12 +88,12 @@ export default function AppSidebar({
             </div>
           </div>
 
-          {business && <PlaceSwitcher business={business} lastPlace={Place} />}
+          {business && <PlaceSwitcher business={business} lastPlace={place} />}
         </SidebarHeader>
 
         <SidebarContent>
-          <NavButton lastPlace={Place} />
-          {business && <NavMain businessId={business.id} lastPlace={Place} />}
+          <NavButton lastPlace={place} />
+          {business && <NavMain businessId={business.id} lastPlace={place} />}
         </SidebarContent>
 
         <SidebarFooter>
@@ -179,7 +178,6 @@ export default function AppSidebar({
           <div className="flex items-center gap-2 px-4">
             <UserNav />
             <LanguageSwitcher />
-            <ThemeToggle />
           </div>
         </header>
         {/* page main content */}

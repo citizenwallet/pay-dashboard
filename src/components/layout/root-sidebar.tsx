@@ -15,7 +15,6 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
@@ -26,20 +25,12 @@ import {
   SidebarTrigger
 } from '@/components/ui/sidebar';
 import {
-  AppWindow,
-  ArrowLeft,
-  BellDot,
   ChevronsUpDown,
   CreditCard,
-  Inbox,
-  Languages,
   LayoutDashboard,
-  LogOut,
-  MoonIcon,
-  SunIcon
+  LogOut
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import ThemeToggle from './ThemeToggle/theme-toggle';
 import { UserNav } from './user-nav';
 import { Logo } from '@/components/logo';
 import { signOut } from 'next-auth/react';
@@ -48,7 +39,6 @@ import { getUserFromSessionAction } from '@/actions/session';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Button } from '@/components/ui/button';
 import LanguageSwitcher from './language-switcher';
 import { useTranslations } from 'next-intl';
 
@@ -211,7 +201,6 @@ export default function RootAppSidebar({
           <div className="flex items-center gap-2 px-4">
             <UserNav />
             <LanguageSwitcher />
-            <ThemeToggle />
           </div>
         </header>
         {/* page main content */}

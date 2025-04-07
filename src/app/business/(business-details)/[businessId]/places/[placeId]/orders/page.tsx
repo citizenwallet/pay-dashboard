@@ -7,7 +7,12 @@ import Config from '@/cw/community.json';
 import { CommunityConfig, getAccountBalance } from '@citizenwallet/sdk';
 import { isAdmin } from '@/db/users';
 import { getUserIdFromSessionAction } from '@/actions/session';
+import { formatCurrencyNumber } from '@/lib/currency';
+import PageContainer from '@/components/layout/page-container';
 import { getTranslations } from 'next-intl/server';
+import { Heading } from '@/components/ui/heading';
+import { Skeleton } from '@/components/ui/skeleton';
+import CurrencyLogo from '@/components/currency-logo';
 
 export const metadata = {
   title: 'Place Orders'
@@ -28,8 +33,37 @@ interface Props {
 }
 
 export default async function Page(props: Props) {
+  const t = await getTranslations('order');
+
+  const community = new CommunityConfig(Config);
+  const currencyLogo = community.community.logo;
+
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense
+      fallback={
+        <PageContainer>
+          <div className="space-y-4">
+            <div className="flex items-start justify-between">
+              <div className="flex flex-col gap-2">
+                <Heading title={''} description={t('ordersFor')} />
+                <div className="flex items-center gap-1 text-2xl font-bold">
+                  <CurrencyLogo logo={currencyLogo} size={32} />{' '}
+                  <Skeleton className="h-6 w-40" />
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-4">
+                <label htmlFor="dateRange" className="text-sm font-medium">
+                  {t('dateRange')}
+                </label>
+                <Skeleton className="h-6 w-40" />
+              </div>
+            </div>
+          </div>
+        </PageContainer>
+      }
+    >
       <AsyncPage {...props} />
     </Suspense>
   );
@@ -54,7 +88,7 @@ async function AsyncPage({ params, searchParams }: Props) {
   const {
     limit: rawLimit = '20',
     offset: rawOffset = '0',
-    dateRange = 'today',
+    dateRange = 'last7days',
     startDate,
     endDate
   } = await searchParams;
@@ -62,7 +96,7 @@ async function AsyncPage({ params, searchParams }: Props) {
   const limit = parseInt(rawLimit);
   const offset = parseInt(rawOffset);
 
-  const [place, ordersResponse, ordersCount] = await Promise.all([
+  const [place, { data: orders }, ordersCount] = await Promise.all([
     getPlaceById(client, placeid),
     getOrdersByPlace(
       client,
@@ -81,26 +115,24 @@ async function AsyncPage({ params, searchParams }: Props) {
   }
 
   const community = new CommunityConfig(Config);
+  const currencyLogo = community.community.logo;
 
-  const balance = await getAccountBalance(
-    community,
-    place.data.accounts[0] ?? ''
+  const total = (orders || []).reduce(
+    (acc, order) => acc + (order.total - order.fees),
+    0
   );
 
-  const balanceWithDecimals = balance
-    ? Number(balance) / 10 ** community.primaryToken.decimals
-    : 0;
   return (
     <OrdersPage
       place={place.data}
-      orders={ordersResponse.data || []}
-      currencyLogo={community.community.logo}
+      orders={orders || []}
+      currencyLogo={currencyLogo}
       pagination={{
         limit,
         offset,
         totalItems: ordersCount.count || 0
       }}
-      balance={balanceWithDecimals}
+      total={formatCurrencyNumber(total, 2)}
     />
   );
 }

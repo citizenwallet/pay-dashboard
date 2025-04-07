@@ -1,0 +1,83 @@
+{
+  "community": {
+    "name": "Brussels Pay",
+    "description": "A community for the city of Brussels",
+    "url": "https://pay.brussels",
+    "alias": "wallet.pay.brussels",
+    "logo": "https://assets.citizenwallet.xyz/wallet-config/_images/wallet.pay.brussels.png",
+    "custom_domain": "wallet.pay.brussels",
+    "hidden": false,
+    "theme": {
+      "primary": "#4a90e2"
+    },
+    "profile": {
+      "address": "0x56Cc38bDa01bE6eC6D854513C995f6621Ee71229",
+      "chain_id": 31337
+    },
+    "primary_token": {
+      "address": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
+      "chain_id": 31337
+    },
+    "primary_account_factory": {
+      "address": "0x5542e6dfBba02E7b682A9eb6b4d04cae3F214dD3",
+      "chain_id": 31337
+    },
+    "primary_card_manager": {
+      "address": "0x1EaF6B6A6967608aF6c77224f087b042095891EB",
+      "chain_id": 31337
+    }
+  },
+  "tokens": {
+    "31337:0x610178dA211FEF7D417bC0e6FeD39F05609AD788": {
+      "standard": "erc20",
+      "name": "pay.brussels",
+      "address": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
+      "symbol": "EURb",
+      "decimals": 6,
+      "chain_id": 31337
+    }
+  },
+  "scan": {
+    "url": "https://gnosisscan.io",
+    "name": "Gnosis Explorer"
+  },
+  "accounts": {
+    "31337:0x5542e6dfBba02E7b682A9eb6b4d04cae3F214dD3": {
+      "chain_id": 31337,
+      "entrypoint_address": "0xe18Fd812c6e07DD3F31256A73b6752Ee24D69114",
+      "paymaster_address": "0x0B306BF915C4d645ff596e518fAf3F9669b97016",
+      "account_factory_address": "0x5542e6dfBba02E7b682A9eb6b4d04cae3F214dD3",
+      "paymaster_type": "cw-safe"
+    }
+  },
+  "cards": {
+    "31337:0x1EaF6B6A6967608aF6c77224f087b042095891EB": {
+      "chain_id": 31337,
+      "address": "0x1EaF6B6A6967608aF6c77224f087b042095891EB",
+      "type": "classic"
+    }
+  },
+  "chains": {
+    "31337": {
+      "id": 31337,
+      "node": {
+        "url": "http://localhost:3001",
+        "ws_url": "ws://localhost:3001"
+      }
+    }
+  },
+  "ipfs": {
+    "url": "https://ipfs.internal.citizenwallet.xyz"
+  },
+  "plugins": [
+    {
+      "name": "Top Up",
+      "icon": "https://assets.citizenwallet.xyz/wallet-config/_images/wallet.pay.brussels.png",
+      "url": "https://checkout.pay.brussels/topup",
+      "action": "topup",
+      "signature": true
+    }
+  ],
+  "config_location": "https://wallet.pay.brussels/config/community.json",
+  "version": 4
+}
