@@ -62,7 +62,7 @@ const AsyncPayoutOrderPage = async (
   }
   const orders = await getPayoutAction(
     payout_id,
-    Number(limit ?? '10'),
+    Number(limit ?? '25'),
     Number(offset ?? '0'),
     column ?? 'id',
     order

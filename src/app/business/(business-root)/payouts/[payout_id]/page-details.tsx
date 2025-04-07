@@ -265,12 +265,31 @@ export default function PayoutDetailsPage({
         </button>
       </div>
 
-      <div className="mt-6 flex items-center justify-between pt-6">
+      <div className="mt-6 flex flex-col  justify-between pt-6">
         <div className="flex items-center gap-7">
           <p className="flex items-center gap-2">
-            {t('totalAmount')}:
+            <b>{t('totalAmount')}:</b>
             <CurrencyLogo logo={currencyLogo} size={18} />
             {formatCurrencyNumber(totalAmount)}
+          </p>
+        </div>
+
+        <div className="mt-2 flex items-center gap-7">
+          <p className="flex items-center gap-2">
+            <b>Period of payout:</b>
+            <span>
+              {new Date(payout.from).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              })}{' '}
+              -{' '}
+              {new Date(payout.to).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              })}
+            </span>
           </p>
         </div>
       </div>
@@ -279,7 +298,7 @@ export default function PayoutDetailsPage({
         orders={orders}
         currencyLogo={currencyLogo}
         count={count}
-        limit={limit ?? '10'}
+        limit={limit ?? '25'}
         offset={offset ?? '0'}
       />
     </>
