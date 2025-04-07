@@ -23,7 +23,9 @@ export default function BusinessCard({
                   <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{business.name}</div>
+                  <div className="overflow-hidden truncate text-2xl font-bold">
+                    {business.name}
+                  </div>
                   <p className="text-xs text-muted-foreground">
                     {new Date(business.created_at).toLocaleDateString()}
                   </p>
