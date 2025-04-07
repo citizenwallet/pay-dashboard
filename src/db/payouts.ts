@@ -165,3 +165,11 @@ export const updatePayoutTransferDate = async (
     .select()
     .single();
 };
+
+export const getPendingPayouts = async (
+  client: SupabaseClient
+): Promise<PostgrestSingleResponse<Payout[]>> => {
+  return await client
+    .from('places')
+    .select('*, businesses(name), payouts(id, created_at)');
+};

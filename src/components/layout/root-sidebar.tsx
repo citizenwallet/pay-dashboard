@@ -141,7 +141,7 @@ export default function RootAppSidebar({
                               <Link href="/business/pending">
                                 <span
                                   className={cn(
-                                    pathname === '/business/payouts/pending'
+                                    pathname === '/business/pending'
                                       ? 'font-bold text-gray-950'
                                       : 'text-gray-700'
                                   )}
