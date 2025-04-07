@@ -1,13 +1,19 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Business } from '@/db/business';
+import { CommunityConfig } from '@citizenwallet/sdk';
 import { Users } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
-
+import CurrencyLogo from '@/components/currency-logo';
+import { formatCurrencyNumber } from '@/lib/currency';
 export default function BusinessCard({
-  business
+  business,
+  currencyLogo,
+  tokenDecimals
 }: {
-  business: Business[] | null;
+  business: (Business & { balance: number })[] | null;
+  currencyLogo: string;
+  tokenDecimals: number;
 }) {
   return (
     <div className="mx-6 mt-6 space-y-4">
@@ -26,8 +32,9 @@ export default function BusinessCard({
                   <div className="overflow-hidden truncate text-2xl font-bold">
                     {business.name}
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    {new Date(business.created_at).toLocaleDateString()}
+                  <p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
+                    <CurrencyLogo logo={currencyLogo} size={20} />
+                    {formatCurrencyNumber(business.balance, tokenDecimals)}
                   </p>
                 </CardContent>
               </Card>
