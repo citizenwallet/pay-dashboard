@@ -291,7 +291,8 @@
     "date": "Datum",
     "totalAmount": "Totaalbedrag",
     "status": "Status",
-    "completed": "Voltooid"
+    "completed": "Voltooid",
+    "periodOfPayout": "Uitbetalingperiode"
   },
   "addingpayout": {
     "newPayout": "Nieuwe uitbetaling",

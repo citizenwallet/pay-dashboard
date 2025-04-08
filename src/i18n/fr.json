@@ -291,7 +291,8 @@
     "date": "Date",
     "totalAmount": "Montant total",
     "status": "Statut",
-    "completed": "Terminé"
+    "completed": "Terminé",
+    "periodOfPayout": "Période de paiement"
   },
   "addingpayout": {
     "newPayout": "Nouveau paiement",

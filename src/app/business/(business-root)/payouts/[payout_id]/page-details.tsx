@@ -288,7 +288,7 @@ export default function PayoutDetailsPage({
 
         <div className="mt-2 flex items-center gap-7">
           <p className="flex items-center gap-2">
-            <b>Period of payout:</b>
+            <b>{t('periodOfPayout')}:</b>
             <span>
               {new Date(payout.from).toLocaleString('en-US', {
                 year: 'numeric',
