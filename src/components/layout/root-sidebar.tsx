@@ -146,7 +146,7 @@ export default function RootAppSidebar({
                                       : 'text-gray-700'
                                   )}
                                 >
-                                  Pending
+                                  {t('pending')}
                                 </span>
                               </Link>
                             </SidebarMenuSubButton>
@@ -162,7 +162,7 @@ export default function RootAppSidebar({
                                       : 'text-gray-700'
                                   )}
                                 >
-                                  History
+                                  {t('history')}
                                 </span>
                               </Link>
                             </SidebarMenuSubButton>

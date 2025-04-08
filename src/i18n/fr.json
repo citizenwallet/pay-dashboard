@@ -242,7 +242,9 @@
     "systemAdmin": "ADMIN SYSTÈME",
     "business": "Entreprise",
     "payouts": "Paiements",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "pending": "En attente",
+    "history": "Historique"
   },
   "rootpayouts": {
     "payouts": "Paiements",

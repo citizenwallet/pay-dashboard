@@ -242,7 +242,9 @@
     "systemAdmin": "SYSTEEMBEHEERDER",
     "business": "Bedrijf",
     "payouts": "Uitbetalingen",
-    "logout": "Uitloggen"
+    "logout": "Uitloggen",
+    "pending": "In behandeling",
+    "history": "Geschiedenis"
   },
   "rootpayouts": {
     "payouts": "Uitbetalingen",

@@ -242,7 +242,9 @@
     "systemAdmin": "SYSTEM ADMIN",
     "business": "Business",
     "payouts": "Payouts",
-    "logout": "Logout"
+    "logout": "Logout",
+    "pending": "Pending",
+    "history": "History"
   },
   "rootpayouts": {
     "payouts": "Payouts",
