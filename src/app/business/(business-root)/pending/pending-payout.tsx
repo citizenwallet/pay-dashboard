@@ -23,7 +23,7 @@ interface UpdatePayout {
   hidden: boolean;
   archived: boolean;
   businesses: { name: string };
-  payouts: { created_at: string }[];
+  payouts: { created_at: string; id: string }[];
   balance: number;
 }
 
@@ -109,7 +109,21 @@ export default function PendingPayout({
     {
       header: 'Actions',
       cell: ({ row }: { row: Row<UpdatePayout> }) => (
-        <Button variant="outline" size="sm">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            const lastPayout =
+              row.original.payouts[row.original.payouts.length - 1];
+            if (lastPayout) {
+              router.push(
+                `/business/payouts/new?placeId=${row.original.id}&lastPayoutId=${lastPayout.id}`
+              );
+            } else {
+              router.push(`/business/payouts/new?placeId=${row.original.id}`);
+            }
+          }}
+        >
           Payout
         </Button>
       )
