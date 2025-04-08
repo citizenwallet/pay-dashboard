@@ -8,6 +8,7 @@ import { isUserAdminAction } from '@/actions/session';
 import { getPendingPayoutsAction } from './action';
 import Config from '@/cw/community.json';
 import { CommunityConfig, getAccountBalance } from '@citizenwallet/sdk';
+import { getTranslations } from 'next-intl/server';
 
 interface PendingPayoutsPageProps {
   searchParams: Promise<{
@@ -19,14 +20,15 @@ interface PendingPayoutsPageProps {
 
 export default async function Page({ searchParams }: PendingPayoutsPageProps) {
   const { offset, limit, search } = await searchParams;
+  const t = await getTranslations('pendingpayout');
   return (
     <>
       <PageContainer>
         <div className="space-y-4">
           <div className="flex items-start justify-between">
             <Heading
-              title="Pending Payouts"
-              description="Available to be paid out"
+              title={t('pendingPayout')}
+              description={t('pendingPayoutDescription')}
             />
           </div>
           <Separator />

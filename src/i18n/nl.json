@@ -407,5 +407,15 @@
     "terminalDeactivatedSuccessfully": "Terminal succesvol gedeactiveerd",
     "terminalActivatedSuccessfully": "Terminal succesvol geactiveerd",
     "errorUpdatingTerminalStatus": "Fout bij het bijwerken van de terminalstatus"
+  },
+  "pendingpayout": {
+    "pendingPayout": "Uitbetaling in behandeling",
+    "pendingPayoutDescription": "Uitbetalingen in behandeling van het bedrijf",
+    "businessName": "Bedrijfsnaam",
+    "placeName": "Locatienaam",
+    "balance": "Balans",
+    "lastPayout": "Laatste uitbetaling",
+    "action": "Actie",
+    "payout": "Uitbetaling"
   }
 }

@@ -407,5 +407,15 @@
     "terminalDeactivatedSuccessfully": "Terminal désactivé avec succès",
     "terminalActivatedSuccessfully": "Terminal activé avec succès",
     "errorUpdatingTerminalStatus": "Erreur lors de la mise à jour du statut du terminal"
+  },
+  "pendingpayout": {
+    "pendingPayout": "Paiement en attente",
+    "pendingPayoutDescription": "Paiements en attente de l'entreprise",
+    "businessName": "Nom de l'entreprise",
+    "placeName": "Nom du lieu",
+    "balance": "Solde",
+    "lastPayout": "Dernier paiement",
+    "action": "Action",
+    "payout": "Paiement"
   }
 }

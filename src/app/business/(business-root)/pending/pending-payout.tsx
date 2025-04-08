@@ -7,6 +7,7 @@ import { PaginationState, Row } from '@tanstack/react-table';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import SearchInput from '@/components/search-input';
 import { useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface UpdatePayout {
   id: number;
@@ -45,6 +46,7 @@ export default function PendingPayout({
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const t = useTranslations('pendingpayout');
 
   const onPaginationChange = useCallback(
     (
@@ -70,15 +72,15 @@ export default function PendingPayout({
 
   const columns = [
     {
-      header: 'Business Name',
+      header: t('businessName'),
       accessorKey: 'businesses.name'
     },
     {
-      header: 'Place Name',
+      header: t('placeName'),
       accessorKey: 'name'
     },
     {
-      header: 'Balance',
+      header: t('balance'),
       accessorKey: 'balance',
       cell: ({ row }: { row: Row<UpdatePayout> }) => (
         <p className="flex items-center gap-2 text-sm font-medium">
@@ -88,7 +90,7 @@ export default function PendingPayout({
       )
     },
     {
-      header: 'Last Payout',
+      header: t('lastPayout'),
       cell: ({ row }: { row: Row<UpdatePayout> }) => {
         const payouts = row.original.payouts;
         const lastPayout = payouts?.[payouts.length - 1];
@@ -107,7 +109,7 @@ export default function PendingPayout({
       }
     },
     {
-      header: 'Actions',
+      header: t('action'),
       cell: ({ row }: { row: Row<UpdatePayout> }) => (
         <Button
           variant="outline"
@@ -124,7 +126,7 @@ export default function PendingPayout({
             }
           }}
         >
-          Payout
+          {t('payout')}
         </Button>
       )
     }
