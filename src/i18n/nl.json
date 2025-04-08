@@ -289,7 +289,9 @@
     "next": "Volgende",
     "page": "Pagina",
     "date": "Datum",
-    "totalAmount": "Totaalbedrag"
+    "totalAmount": "Totaalbedrag",
+    "status": "Status",
+    "completed": "Voltooid"
   },
   "addingpayout": {
     "newPayout": "Nieuwe uitbetaling",

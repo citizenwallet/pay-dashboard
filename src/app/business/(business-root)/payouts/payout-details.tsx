@@ -248,11 +248,11 @@ export default function PayoutDetailsPage({
       }
     },
     {
-      accessorKey: 'status',
+      accessorKey: t('status'),
       cell: ({ row }: { row: Row<FullPayout> }) => (
         <div className="flex h-16 items-center space-x-2">
           {row.original.burn && row.original.transfer ? (
-            <Badge className="bg-green-500">Completed</Badge>
+            <Badge className="bg-green-500"> {t('completed')}</Badge>
           ) : (
             <></>
           )}

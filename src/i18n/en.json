@@ -289,7 +289,9 @@
     "next": "Next",
     "page": "Page",
     "date": "Date",
-    "totalAmount": "Total Amount"
+    "totalAmount": "Total Amount",
+    "status": "Status",
+    "completed": "Completed"
   },
   "addingpayout": {
     "newPayout": "New Payout",
