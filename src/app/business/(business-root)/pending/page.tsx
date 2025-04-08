@@ -9,7 +9,16 @@ import { getPendingPayoutsAction } from './action';
 import Config from '@/cw/community.json';
 import { CommunityConfig, getAccountBalance } from '@citizenwallet/sdk';
 
-export default function page() {
+interface PendingPayoutsPageProps {
+  searchParams: Promise<{
+    offset?: string;
+    limit?: string;
+    search?: string;
+  }>;
+}
+
+export default async function Page({ searchParams }: PendingPayoutsPageProps) {
+  const { offset, limit, search } = await searchParams;
   return (
     <>
       <PageContainer>
@@ -24,7 +33,11 @@ export default function page() {
           <Suspense
             fallback={<DataTableSkeleton columnCount={5} rowCount={10} />}
           >
-            <AsyncPayoutsLoader />
+            <AsyncPayoutsLoader
+              offset={offset ?? '0'}
+              limit={limit ?? '15'}
+              search={search ? search : ''}
+            />
           </Suspense>
         </div>
       </PageContainer>
@@ -32,7 +45,15 @@ export default function page() {
   );
 }
 
-async function AsyncPayoutsLoader() {
+async function AsyncPayoutsLoader({
+  offset,
+  limit,
+  search
+}: {
+  offset: string;
+  limit: string;
+  search: string;
+}) {
   const admin = await isUserAdminAction();
   if (!admin) {
     return null;
@@ -42,22 +63,25 @@ async function AsyncPayoutsLoader() {
   const currencyLogo = community.community.logo;
   const tokenDecimals = community.primaryToken.decimals;
 
-  const payouts = await getPendingPayoutsAction();
+  const payouts = await getPendingPayoutsAction(offset, limit, search);
 
   const payoutsWithBalance = await Promise.all(
-    ('error' in payouts ? [] : payouts).map(async (payout: any) => {
-      const balance = await getAccountBalance(community, payout.accounts[0]);
-      return { ...payout, balance: Number(balance) };
-    })
+    (payouts && 'error' in payouts ? [] : payouts?.data ?? []).map(
+      async (payout: any) => {
+        const balance = await getAccountBalance(community, payout.accounts[0]);
+        return { ...payout, balance: Number(balance) };
+      }
+    )
   );
-
-  console.log(payoutsWithBalance);
 
   return (
     <PendingPayout
       payouts={payoutsWithBalance}
       currencyLogo={currencyLogo}
       tokenDecimals={tokenDecimals}
+      count={payouts?.count ?? 0}
+      limit={Number(limit)}
+      offset={Number(offset)}
     />
   );
 }
