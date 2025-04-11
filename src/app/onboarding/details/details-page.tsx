@@ -7,6 +7,8 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { updateBusinessDetailsAction } from '../action';
 import { toast } from 'sonner';
+import { Checkbox } from '@/components/ui/checkbox';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
 export default function DetailsPage({
@@ -23,8 +25,12 @@ export default function DetailsPage({
   const [errors, setErrors] = useState({
     legalName: '',
     address: '',
-    iban: ''
+    iban: '',
+    terms: ''
   });
+  const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+  const [isMembershipAccepted, setIsMembershipAccepted] = useState(false);
+
   const router = useRouter();
   const t = useTranslations('onboardingDetails');
 
@@ -36,9 +42,9 @@ export default function DetailsPage({
   }, [company]);
 
   const handleSubmit = async () => {
-    setErrors({ legalName: '', address: '', iban: '' });
+    setErrors({ legalName: '', address: '', iban: '', terms: '' });
     let hasError = false;
-    const newErrors = { legalName: '', address: '', iban: '' };
+    const newErrors = { legalName: '', address: '', iban: '', terms: '' };
 
     if (!legalName.trim()) {
       newErrors.legalName = t('legalNameRequired');
@@ -53,6 +59,11 @@ export default function DetailsPage({
       hasError = true;
     }
 
+    if (!isTermsAccepted || !isMembershipAccepted) {
+      newErrors.terms = 'You must accept the agreements';
+      hasError = true;
+    }
+
     if (hasError) {
       setErrors(newErrors);
       return;
@@ -64,7 +75,9 @@ export default function DetailsPage({
         business.id,
         legalName,
         address,
-        iban
+        iban,
+        isTermsAccepted,
+        isMembershipAccepted
       );
       toast.success(t('yourBusinessHasBeen'), {
         onAutoClose: () => {
@@ -128,7 +141,79 @@ export default function DetailsPage({
         {errors.iban && <p className="text-sm text-red-500">{errors.iban}</p>}
       </div>
 
-      <div className="flex justify-between">
+      <div className="mt-6 flex items-center space-x-2">
+        <Checkbox
+          id="terms2"
+          className="border-black text-black"
+          checked={isMembershipAccepted}
+          onCheckedChange={() => setIsMembershipAccepted(!isMembershipAccepted)}
+        />
+        <label
+          htmlFor="terms2"
+          className="text-sm font-medium leading-none text-black peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          {t('membershipAgreement')}{' '}
+          <>
+            <Link
+              href="/legal/membership-agreement-fr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              (French)
+            </Link>
+            {'  |  '}
+            <Link
+              href="/legal/membership-agreement-nl"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              (Dutch)
+            </Link>
+          </>
+        </label>
+      </div>
+
+      <div className="mt-4 flex items-center space-x-2">
+        <Checkbox
+          id="terms2"
+          className="border-black text-black"
+          checked={isTermsAccepted}
+          onCheckedChange={() => setIsTermsAccepted(!isTermsAccepted)}
+        />
+        <label
+          htmlFor="terms2"
+          className="text-sm font-medium leading-none text-black peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          {t('termsAndConditions')}
+          {'  '}
+
+          <>
+            <Link
+              href="/legal/terms-and-conditions-fr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              (French)
+            </Link>
+            {'  |  '}
+            <Link
+              href="/legal/terms-and-conditions-nl"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              (Dutch)
+            </Link>
+          </>
+        </label>
+      </div>
+
+      <p className="mt-4 text-sm text-red-500">{errors.terms}</p>
+
+      <div className="mt-6 flex justify-between">
         <Button
           className="h-10 w-24 rounded-md border border-black bg-gray-100 text-sm font-medium text-gray-900 hover:bg-gray-200"
           disabled={loading}

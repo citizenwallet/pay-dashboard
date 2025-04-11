@@ -375,6 +375,28 @@
     "yourBusinessHasBeen": "Votre entreprise a été validée avec succès !",
     "errorUpdatingBusiness": "Oups, une erreur s'est produite lors de la validation de votre entreprise"
   },
+  "legalPage": {
+    "title": "Accord de membership & Conditions",
+    "between": "Entre",
+    "and": "et",
+    "description": "En utilisant Brussels Pay, vous acceptez de devenir un membre de Brussels Pay ASBL. Veuillez lire l'accord de membership ainsi que les conditions d'utilisation.",
+    "entityName": "Brussels Pay ASBL",
+    "entityAddress": "Cantersteen 47, 1000 Bruxelles, Belgique",
+    "entityVatNumber": "BE 1017.806.251",
+    "aboutLink": "https://www.pay.brussels/for-businesses",
+    "condition1": "Le membership est gratuit",
+    "condition2": "L'utilisation du système a un coût fixe faible (€20 pour 1000 transactions) qui est détaillé dans les conditions d'utilisation",
+    "condition3": "Les paiements de l'application Brussels Pay par les clients sont gratuits",
+    "condition4": "L'utilisation de fournisseurs de paiement tiers a un coût qui est détaillé sur chaque transaction (nous ne prenons aucune commission sur les paiements)",
+    "description2": "Construisons ensemble un système de paiement meilleur !",
+    "successAgreeWithTerms": "Votre accord avec les conditions d'utilisation a été validé avec succès!",
+    "errorAgreeWithTerms": "Une erreur s'est produite lors de la validation de votre accord avec les conditions d'utilisation",
+    "cancelAndLogout": "Annuler et se déconnecter",
+    "confirm": "Confirmer",
+    "membershipAgreement": "Je suis d'accord de devenir un membre de Brussels Pay ASBL.",
+    "termsAndConditions": "Je suis d'accord avec les conditions d'utilisation.",
+    "errorUpdatingBusiness": "Oups, une erreur s'est produite lors de la validation de votre entreprise"
+  },
   "pos": {
     "title": "Terminaux",
     "description": "Terminaux associés à l'établissement",

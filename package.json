@@ -12,18 +12,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier . --write",
-    "prepare": "husky",
     "postinstall": "prisma generate",
     "sync-wallet": "curl https://raw.githubusercontent.com/citizenwallet/pay-checkout/refs/heads/main/src/cw/community.json -o ./src/cw/community.json",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
-  },
-  "lint-staged": {
-    "**/*": [
-      "prettier --write --ignore-unknown"
-    ]
   },
   "dependencies": {
     "@auth/supabase-adapter": "^1.7.3",
@@ -93,11 +86,14 @@
     "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.54.1",
     "react-icons": "^5.4.0",
+    "react-markdown": "^10.1.0",
     "react-phone-input-2": "^2.15.1",
     "react-phone-number-input": "^3.4.11",
     "react-qrcode-logo": "^3.0.0",
     "react-responsive": "^10.0.0",
     "recharts": "^2.12.7",
+    "rehype-starry-night": "^2.2.0",
+    "remark-gfm": "^4.0.1",
     "sharp": "^0.32.5",
     "sonner": "^1.7.3",
     "sort-by": "^1.2.0",
@@ -129,7 +125,6 @@
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "eslint-import-resolver-typescript": "^3.6.3",
     "eslint-plugin-import": "^2.31.0",
-    "husky": "^9.0.11",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "lint-staged": "^15.2.7",
