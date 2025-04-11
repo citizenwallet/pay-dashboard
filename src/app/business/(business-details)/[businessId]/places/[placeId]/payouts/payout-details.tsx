@@ -11,12 +11,14 @@ export default function PayoutDetailsPage({
   payouts,
   placeId,
   businessId,
-  currencyLogo
+  currencyLogo,
+  balance
 }: {
   payouts: Payout[];
   placeId: string;
   businessId: string;
   currencyLogo: string;
+  balance: string;
 }) {
   const t = useTranslations('payouts');
   return (

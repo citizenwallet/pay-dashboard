@@ -6,14 +6,17 @@
     "manage": "Manage",
     "qrcode": "QR Code",
     "payouts": "Payouts",
+    "terminal": "Terminals",
     "place": "Place",
+    "sales": "Sales",
+    "admin": "Admin",
     "light": "Light",
     "dark": "Dark",
     "systemAdmin": "SYSTEM ADMIN",
     "logout": "Logout"
   },
   "navButton": {
-    "copyToClipboard": "Copy to clipboard",
+    "linkCopied": "Link copied",
     "failedToCopy": "Failed to copy the link. Please try again.",
     "copyCheckoutLink": "Copy checkout link",
     "copyOrdersFeedLink": "Copy orders feed link",
@@ -58,7 +61,15 @@
     "fees": "Fees",
     "net": "Net",
     "status": "Status",
-    "description": "Description"
+    "type": "Type",
+    "description": "Description",
+    "pending": "Pending",
+    "paid": "Paid",
+    "cancelled": "Cancelled",
+    "needs_minting": "Needs Minting",
+    "terminal": "Terminal",
+    "qr": "QR Code",
+    "app": "App"
   },
   "qr": {
     "qrCode": "QR Code",
@@ -164,12 +175,13 @@
     "from": "From",
     "to": "To",
     "total": "Total",
-    "burn": "Burn",
-    "transfer": "Transfer",
+    "burn": "Burnt",
+    "transfer": "Transferred",
     "payoutDetails": "Payout Details",
     "payoutDetailsdescription": "Payout details and the orders",
     "exportCSV": "Export as CSV",
-    "date": "Date"
+    "date": "Date",
+    "accountBalance": "Account Balance"
   },
   "placelist": {
     "list": "List",
@@ -230,7 +242,9 @@
     "systemAdmin": "SYSTEM ADMIN",
     "business": "Business",
     "payouts": "Payouts",
-    "logout": "Logout"
+    "logout": "Logout",
+    "pending": "Pending",
+    "history": "History"
   },
   "rootpayouts": {
     "payouts": "Payouts",
@@ -245,8 +259,8 @@
     "placeName": "Place Name",
     "createdAt": "Created At",
     "total": "Total",
-    "burn": "Burn",
-    "transfer": "Transfer",
+    "burn": "Burnt",
+    "transfer": "Transferred",
     "payoutDetails": "Payout Details",
     "payoutDetailsDescription": "Payout details and the orders",
     "youAreNotAuthorized": "You are not authorized to view this page",
@@ -275,7 +289,10 @@
     "next": "Next",
     "page": "Page",
     "date": "Date",
-    "totalAmount": "Total Amount"
+    "totalAmount": "Total Amount",
+    "status": "Status",
+    "completed": "Completed",
+    "periodOfPayout": "Period of payout"
   },
   "addingpayout": {
     "newPayout": "New Payout",
@@ -324,7 +341,7 @@
   },
   "otpentry": {
     "enterCode": "Enter Login Code",
-    "otpDescription": "We’ve sent a 6-digit login code to your email",
+    "otpDescription": "We've sent a 6-digit login code to your email",
     "pleaseEnter": "Please enter it below.",
     "otpPlaceholder": "Enter 6-digit login code",
     "login": "Login",
@@ -370,6 +387,50 @@
     "cancelAndLogout": "Cancel and Logout",
     "confirm": "Confirm",
     "membershipAgreement": "I agree to become a member of Brussels Pay VZW/ASBL.",
-    "termsAndConditions": "I agree to the terms and conditions."
+    "termsAndConditions": "I agree to the terms and conditions.",
+    "errorUpdatingBusiness": "Oops, there is an error during the validation of your company"
+  },
+  "pos": {
+    "title": "Terminals",
+    "description": "Terminals associated with the place",
+    "addTerminal": "Add Terminal",
+    "addTerminalDescription": "Enter the details for the new terminal below.",
+    "enterTerminalId": "Enter Terminal ID",
+    "enterTerminalName": "Enter Terminal Name",
+    "cancel": "Cancel",
+    "add": "Add",
+    "id": "ID",
+    "name": "Name",
+    "type": "Type",
+    "createdAt": "Created At",
+    "action": "Action",
+    "noType": "No type",
+    "delete": "Delete",
+    "terminalUpdatedSuccessfully": "Terminal updated successfully",
+    "errorUpdatingTerminal": "Error updating terminal",
+    "terminalDeletedSuccessfully": "Terminal deleted successfully",
+    "errorDeletingTerminal": "Error deleting terminal",
+    "pleaseEnterDetails": "Please enter terminal details",
+    "terminalAddedSuccessfully": "Terminal added successfully",
+    "terminalIdAlreadyExists": "Terminal ID already exists",
+    "deleteTerminal": "Delete Terminal",
+    "deleteTerminalDescription": "This will permanently delete this terminal.",
+    "active": "Active",
+    "deactivateTerminal": "Deactivate Terminal",
+    "deactivateTerminalDescription": "This will stop this terminal from being able to collect payments for this place.",
+    "deactivate": "Deactivate",
+    "terminalDeactivatedSuccessfully": "Terminal deactivated successfully",
+    "terminalActivatedSuccessfully": "Terminal activated successfully",
+    "errorUpdatingTerminalStatus": "Error updating terminal status"
+  },
+  "pendingpayout": {
+    "pendingPayout": "Pending Payout",
+    "pendingPayoutDescription": "Pending payouts of the business",
+    "businessName": "Business Name",
+    "placeName": "Place Name",
+    "balance": "Balance",
+    "lastPayout": "Last Payout",
+    "action": "Action",
+    "payout": "Payout"
   }
 }

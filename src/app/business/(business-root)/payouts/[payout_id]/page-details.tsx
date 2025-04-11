@@ -1,28 +1,33 @@
 'use client';
+import CurrencyLogo from '@/components/currency-logo';
 import { Button, buttonVariants } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import React from 'react';
-import OrderViewTable from './order-details';
-import { getPayoutCSVAction, setPayoutStatusAction } from './action';
-import { toast } from 'sonner';
-import { Order } from '@/db/orders';
-import { useState } from 'react';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
-  DialogTitle,
-  DialogFooter
+  DialogTitle
 } from '@/components/ui/dialog';
-import { useRouter } from 'next/navigation';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover';
+import { Order } from '@/db/orders';
 import { Payout } from '@/db/payouts';
+import { formatCurrencyNumber } from '@/lib/currency';
+import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { toast } from 'sonner';
 import {
   updatePayoutBurnDateAction,
   updatePayoutTransferDateAction
 } from '../action';
-import { useTranslations } from 'next-intl';
-import { formatCurrencyNumber } from '@/lib/currency';
-import CurrencyLogo from '@/components/currency-logo';
+import { getPayoutCSVAction, setPayoutStatusAction } from './action';
+import OrderViewTable from './order-details';
 
 export default function PayoutDetailsPage({
   payout_id,
@@ -51,33 +56,20 @@ export default function PayoutDetailsPage({
     setAction(type);
     setOpen(true);
   };
-  const [isBurnEditing, setIsBurnEditing] = useState(false);
   const [editingBurnDate, setEditingBurnDate] = useState(payout.burnDate || '');
 
-  const [isTransferEditing, setIsTransferEditing] = useState(false);
   const [editingTransferDate, setEditingTransferDate] = useState(
     payout.transferDate || ''
   );
 
-  const handleBurnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleBurnSave();
-    } else if (e.key === 'Escape') {
-      setIsBurnEditing(false);
-      setEditingBurnDate(payout.burnDate || '');
-    }
-  };
-
-  const handleBurnSave = async () => {
+  const handleBurnSave = async (date?: Date) => {
     try {
-      setIsBurnEditing(false);
-
-      if (editingBurnDate == payout.burnDate) {
+      if (date?.toISOString() == payout.burnDate) {
         return;
       }
 
-      if (editingBurnDate) {
-        await updatePayoutBurnDateAction(payout_id, editingBurnDate);
+      if (date) {
+        await updatePayoutBurnDateAction(payout_id, date.toISOString());
         toast.success(t('payoutBurnDateUpdatedSuccessfully'));
       } else {
         toast.error(t('payoutBurnDateEmpty'));
@@ -88,25 +80,14 @@ export default function PayoutDetailsPage({
     }
   };
 
-  const handleTransferKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleTransferSave();
-    } else if (e.key === 'Escape') {
-      setIsTransferEditing(false);
-      setEditingTransferDate(payout.transferDate || '');
-    }
-  };
-
-  const handleTransferSave = async () => {
+  const handleTransferSave = async (date?: Date) => {
     try {
-      setIsTransferEditing(false);
-
-      if (editingTransferDate == payout.transferDate) {
+      if (date?.toISOString() == payout.transferDate) {
         return;
       }
 
-      if (editingTransferDate) {
-        await updatePayoutTransferDateAction(payout_id, editingTransferDate);
+      if (date) {
+        await updatePayoutTransferDateAction(payout_id, date.toISOString());
         toast.success(t('payoutTransferDateUpdatedSuccessfully'));
       } else {
         toast.error(t('payoutTransferDateEmpty'));
@@ -154,40 +135,53 @@ export default function PayoutDetailsPage({
   return (
     <>
       <div className="mt-4 flex items-center justify-between">
-        <div className="flex items-center gap-7">
+        <div className="flex items-center gap-4">
           <>
             {!payout.burn && (
-              <Button className="mt-10" onClick={() => handleOpenModal('burn')}>
+              <Button className="mt-11" onClick={() => handleOpenModal('burn')}>
                 {t('setAsBurn')}
               </Button>
             )}
             {payout.burn && (
-              <div className="flex flex-col items-center gap-4">
-                {isBurnEditing ? (
-                  <input
-                    type="date"
-                    value={editingBurnDate.split('T')[0]}
-                    onChange={(e) => setEditingBurnDate(e.target.value)}
-                    onKeyDown={(e) => handleBurnKeyDown(e)}
-                    onBlur={() => handleBurnSave()}
-                    autoFocus
-                    className="w-full rounded border border-gray-300 p-1"
-                    placeholder="Enter date"
-                  />
-                ) : (
-                  <div
-                    className="flex cursor-pointer items-center"
-                    onClick={() => setIsBurnEditing(true)}
-                  >
-                    {editingBurnDate
-                      ? new Date(editingBurnDate).toLocaleString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric'
-                        })
-                      : '-'}
-                  </div>
-                )}
+              <div className="flex h-full flex-col items-center">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <div className="mb-5 flex cursor-pointer items-center">
+                      {editingBurnDate
+                        ? new Date(editingBurnDate).toLocaleString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          })
+                        : '-'}
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={
+                        editingBurnDate ? new Date(editingBurnDate) : undefined
+                      }
+                      onSelect={(date) => {
+                        if (date) {
+                          const year = date.getFullYear();
+                          const month = date.getMonth();
+                          const day = date.getDate();
+
+                          const utcMidnightDate = new Date(
+                            Date.UTC(year, month, day)
+                          );
+                          handleBurnSave(utcMidnightDate);
+                          setEditingBurnDate(
+                            utcMidnightDate ? utcMidnightDate.toISOString() : ''
+                          );
+                        }
+                      }}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+
                 <Button variant="outline" disabled>
                   {t('alreadyBurn')}
                 </Button>
@@ -196,39 +190,57 @@ export default function PayoutDetailsPage({
 
             {!payout.transfer && (
               <Button
-                className="mt-10"
+                className="mt-11"
                 onClick={() => handleOpenModal('transferred')}
               >
                 {t('setAsTransferred')}
               </Button>
             )}
             {payout.transfer && (
-              <div className="flex flex-col items-center gap-4">
-                {isTransferEditing ? (
-                  <input
-                    type="date"
-                    value={editingTransferDate.split('T')[0]}
-                    onChange={(e) => setEditingTransferDate(e.target.value)}
-                    onKeyDown={(e) => handleTransferKeyDown(e)}
-                    onBlur={() => handleTransferSave()}
-                    autoFocus
-                    className="w-full rounded border border-gray-300 p-1"
-                    placeholder="Enter date"
-                  />
-                ) : (
-                  <div
-                    className="flex cursor-pointer items-center"
-                    onClick={() => setIsTransferEditing(true)}
-                  >
-                    {editingTransferDate
-                      ? new Date(editingTransferDate).toLocaleString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric'
-                        })
-                      : '-'}
-                  </div>
-                )}
+              <div className="flex h-full flex-col items-center">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <div className="mb-5 flex cursor-pointer items-center">
+                      {editingTransferDate
+                        ? new Date(editingTransferDate).toLocaleString(
+                            'en-US',
+                            {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric'
+                            }
+                          )
+                        : '-'}
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={
+                        editingTransferDate
+                          ? new Date(editingTransferDate)
+                          : undefined
+                      }
+                      onSelect={(date) => {
+                        if (date) {
+                          const year = date.getFullYear();
+                          const month = date.getMonth();
+                          const day = date.getDate();
+
+                          const utcMidnightDate = new Date(
+                            Date.UTC(year, month, day)
+                          );
+                          handleTransferSave(utcMidnightDate);
+                          setEditingTransferDate(
+                            utcMidnightDate ? utcMidnightDate.toISOString() : ''
+                          );
+                        }
+                      }}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+
                 <Button variant="outline" disabled>
                   {t('alreadyTransferred')}
                 </Button>
@@ -265,12 +277,31 @@ export default function PayoutDetailsPage({
         </button>
       </div>
 
-      <div className="mt-6 flex items-center justify-between pt-6">
+      <div className="mt-6 flex flex-col  justify-between pt-6">
         <div className="flex items-center gap-7">
           <p className="flex items-center gap-2">
-            {t('totalAmount')}:
+            <b>{t('totalAmount')}:</b>
             <CurrencyLogo logo={currencyLogo} size={18} />
             {formatCurrencyNumber(totalAmount)}
+          </p>
+        </div>
+
+        <div className="mt-2 flex items-center gap-7">
+          <p className="flex items-center gap-2">
+            <b>{t('periodOfPayout')}:</b>
+            <span>
+              {new Date(payout.from).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              })}{' '}
+              -{' '}
+              {new Date(payout.to).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              })}
+            </span>
           </p>
         </div>
       </div>
@@ -279,7 +310,7 @@ export default function PayoutDetailsPage({
         orders={orders}
         currencyLogo={currencyLogo}
         count={count}
-        limit={limit ?? '10'}
+        limit={limit ?? '25'}
         offset={offset ?? '0'}
       />
     </>

@@ -41,6 +41,10 @@ export default function UserAuthForm() {
   });
   const router = useRouter();
 
+  //set the redirect url and store in local storage
+  const redirectUrl = searchParams.get('redirectUrl');
+  localStorage.setItem('redirectUrl', redirectUrl || '');
+
   const onSubmit = async (userData: UserFormValue) => {
     startTransition(async () => {
       const data = await checkIsUseraction(userData.email);

@@ -11,6 +11,7 @@ import { CommunityConfig } from '@citizenwallet/sdk';
 import { getPayoutOrders } from '@/db/orders';
 import { getServiceRoleClient } from '@/db';
 import { getTranslations } from 'next-intl/server';
+import { totalPayoutAmountAndCount, updatePayoutTotal } from '@/db/payouts';
 
 export default async function PayoutOrderPage({
   params,
@@ -62,7 +63,7 @@ const AsyncPayoutOrderPage = async (
   }
   const orders = await getPayoutAction(
     payout_id,
-    Number(limit ?? '10'),
+    Number(limit ?? '25'),
     Number(offset ?? '0'),
     column ?? 'id',
     order
@@ -75,10 +76,16 @@ const AsyncPayoutOrderPage = async (
     return <div>Payout not found</div>;
   }
 
-  const { data } = await getPayoutOrders(client, Number(payout_id));
-  const count = data?.length;
+  const { totalNet, count } = await totalPayoutAmountAndCount(
+    client,
+    payout_id
+  );
 
-  const totalAmount = data?.reduce((acc, order) => acc + order.total, 0);
+  //check the total net is equal to the payout total
+  if (totalNet !== payout.data?.total) {
+    //then update the payout total
+    await updatePayoutTotal(client, payout_id, totalNet);
+  }
 
   return (
     <PayoutDetailsPage
@@ -86,7 +93,7 @@ const AsyncPayoutOrderPage = async (
       orders={orders.data ?? []}
       currencyLogo={community.community.logo}
       payout={payout.data}
-      totalAmount={totalAmount ?? 0}
+      totalAmount={totalNet ?? 0}
       count={Number(count ?? 0)}
       limit={limit}
       offset={offset}

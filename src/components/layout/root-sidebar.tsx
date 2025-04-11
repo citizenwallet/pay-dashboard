@@ -1,5 +1,12 @@
 'use client';
+import { getUserFromSessionAction } from '@/actions/session';
+import { Logo } from '@/components/logo';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger
+} from '@/components/ui/collapsible';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,42 +22,34 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   SidebarProvider,
   SidebarRail,
   SidebarTrigger
 } from '@/components/ui/sidebar';
+import { User } from '@/db/users';
 import {
-  AppWindow,
-  ArrowLeft,
-  BellDot,
+  ChevronRight,
   ChevronsUpDown,
   CreditCard,
-  Inbox,
-  Languages,
   LayoutDashboard,
-  LogOut,
-  MoonIcon,
-  SunIcon
+  LogOut
 } from 'lucide-react';
-import { useSession } from 'next-auth/react';
-import ThemeToggle from './ThemeToggle/theme-toggle';
-import { UserNav } from './user-nav';
-import { Logo } from '@/components/logo';
-import { signOut } from 'next-auth/react';
-import { User } from '@/db/users';
-import { getUserFromSessionAction } from '@/actions/session';
-import { useState, useEffect } from 'react';
+import { signOut, useSession } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
 import LanguageSwitcher from './language-switcher';
-import { useTranslations } from 'next-intl';
+import { UserNav } from './user-nav';
+import { cn } from '@/lib/utils';
 
 export default function RootAppSidebar({
   isAdmin,
@@ -112,17 +111,66 @@ export default function RootAppSidebar({
                 </SidebarMenuItem>
 
                 {isAdmin && (
-                  <SidebarMenuItem>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname === '/business/payouts'}
-                    >
-                      <Link href="/business/payouts">
-                        <CreditCard className="h-4 w-4" />
-                        <span>{t('payouts')}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                  <Collapsible
+                    key={'/business/payouts'}
+                    asChild
+                    defaultOpen={pathname === '/business/payouts'}
+                    className="group/collapsible"
+                  >
+                    <SidebarMenuItem>
+                      <CollapsibleTrigger asChild>
+                        <SidebarMenuButton tooltip="payouts">
+                          <CreditCard className="h-4 w-4" />
+
+                          <span
+                            className={cn(
+                              pathname === '/business/payouts'
+                                ? 'font-bold text-gray-950'
+                                : 'text-gray-700'
+                            )}
+                          >
+                            {t('payouts')}
+                          </span>
+                          <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                        </SidebarMenuButton>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <SidebarMenuSub>
+                          <SidebarMenuSubItem key="Pending">
+                            <SidebarMenuSubButton asChild>
+                              <Link href="/business/pending">
+                                <span
+                                  className={cn(
+                                    pathname === '/business/pending'
+                                      ? 'font-bold text-gray-950'
+                                      : 'text-gray-700'
+                                  )}
+                                >
+                                  {t('pending')}
+                                </span>
+                              </Link>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+
+                          <SidebarMenuSubItem key="History ">
+                            <SidebarMenuSubButton asChild>
+                              <Link href="/business/payouts">
+                                <span
+                                  className={cn(
+                                    pathname === '/business/payouts'
+                                      ? 'font-bold text-gray-950'
+                                      : 'text-gray-700'
+                                  )}
+                                >
+                                  {t('history')}
+                                </span>
+                              </Link>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                        </SidebarMenuSub>
+                      </CollapsibleContent>
+                    </SidebarMenuItem>
+                  </Collapsible>
                 )}
               </SidebarMenu>
             </SidebarGroupContent>
@@ -211,7 +259,6 @@ export default function RootAppSidebar({
           <div className="flex items-center gap-2 px-4">
             <UserNav />
             <LanguageSwitcher />
-            <ThemeToggle />
           </div>
         </header>
         {/* page main content */}

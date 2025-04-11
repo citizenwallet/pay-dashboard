@@ -31,17 +31,23 @@ import { useTranslations } from 'next-intl';
 
 export default function SelectPlace({
   places,
-  currencyLogo
+  currencyLogo,
+  selectedPlaceId,
+  setSelectedDate
 }: {
   places: Place[] | null;
   currencyLogo: string;
+  selectedPlaceId?: string;
+  setSelectedDate?: Date;
 }) {
   const t = useTranslations('addingpayout');
   const selectedPlaceRef = useRef<string | null>(null);
-  const [placeid, setPlaceid] = useState<number | null>(null);
+  const [placeId, setPlaceId] = useState<number | null>(
+    selectedPlaceId ? Number(selectedPlaceId) : null
+  );
   const [date, setDate] = useState<DateRange | undefined>({
-    from: new Date(),
-    to: addDays(new Date(), 7)
+    from: setSelectedDate ? setSelectedDate : new Date(),
+    to: setSelectedDate ? new Date() : addDays(new Date(), 7)
   });
 
   //for get the date range from the date picker
@@ -51,7 +57,9 @@ export default function SelectPlace({
   });
 
   // State to control when the table should be displayed
-  const [isTableVisible, setIsTableVisible] = useState(false);
+  const [isTableVisible, setIsTableVisible] = useState<boolean>(
+    setSelectedDate ? true : false
+  );
 
   // Function to handle showing order table
   const handleSelectionComplete = () => {
@@ -68,11 +76,11 @@ export default function SelectPlace({
         <div className="flex w-full flex-col gap-2">
           <Select
             onValueChange={(value) => {
-              setPlaceid(Number(value));
+              setPlaceId(Number(value));
               selectedPlaceRef.current = value;
               handleSelectionComplete();
             }}
-            value={selectedPlaceRef.current || undefined}
+            value={selectedPlaceId || selectedPlaceRef.current || undefined}
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder={t('selectPlace')} />
@@ -140,7 +148,7 @@ export default function SelectPlace({
       {isTableVisible && (
         <Suspense fallback={<>Loading...</>}>
           <AsyncOrderTable
-            place={placeid}
+            place={placeId}
             dateRange={date}
             currencyLogo={currencyLogo}
           />
