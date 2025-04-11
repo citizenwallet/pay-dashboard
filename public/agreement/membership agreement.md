@@ -1,118 +1,57 @@
-# membership agreement
+# Membership Agreement – Brussels Pay ASBL
 
-# Membership Agreement for Brussels Pay ASBL
+## 1. Applicant Information
 
-## Company or Organization Details
+This membership agreement is entered into between the undersigned ("the Member") and Brussels Pay ASBL, a non-profit association headquartered at Cantersteen 47, 1000 Brussels, registered under Belgian Moniteur number 1017.806.251.
 
-This agreement applies to any entity or individual wishing to join Brussels Pay ASBL as a member. The entity may be a company, organization, or individual operating in the private or public sector.
+By submitting this agreement, the Member applies to join Brussels Pay ASBL as a **Supporting Member (Membre Adhérent)**, as defined in the Association’s statutes.
 
-- **Legal Form**: Non-profit (ASBL), Corporation (SA), Limited Liability Company (SRL), or Other
-- **Sector**: Private[1] or Public
-- **VAT**: Yes or No
+Only Supporting Members of Brussels Pay ASBL are permitted to accept payments via the Brussels Pay electronic payment network and receive payouts. This agreement is a necessary precondition for activating and maintaining participation in the network.
 
-[1] A private entity is independent of public authorities, meaning more than 50% of its revenue comes from its own activities.
+## 2. Member Status and Conditions
 
-## Membership Application
+As a Supporting Member (Membre Adhérent):
 
-By submitting this agreement, the applicant agrees to become a member of Brussels Pay ASBL, a non-profit organization dedicated to establishing and managing an electronic payment network in the Brussels region.
+- The Member participates in the activities and goals of Brussels Pay ASBL.
+- The Member does not hold voting rights at the General Assembly.
+- The Member agrees to abide by the statutes and decisions of Brussels Pay ASBL.
+- No financial contribution or membership fee is required to become a Supporting Member under the current terms.
 
-### Contact Information
+## 3. Legal Responsibility of the Member
 
-The applicant must provide legal representation and/or a contact person for communication purposes. Changes to contact information must be communicated to Brussels Pay ASBL promptly.
+It is the responsibility of the Member to ensure that their intended business activity is lawful in the Brussels Capital Region. Brussels Pay ASBL assumes no responsibility for verifying the legality of the goods or services offered by the Member.
 
-### Description of Activities
+## 4. Accounting and Financial Reporting
 
-Applicants are encouraged to provide a brief description of their activities to help Brussels Pay ASBL understand their involvement and potential contributions to the network.
+While Brussels Pay ASBL will provide reports and data summaries (e.g., transaction records, payout statements), it remains the Member's sole responsibility to ensure that their accounting and financial reporting are properly maintained and in compliance with local laws.
 
-### Website (Optional)
+## 5. Scope of Usage
 
-Applicants may include a URL for additional information about their organization or activities.
+The Brussels Pay network is intended exclusively for use within the Brussels Capital Region. This means that goods or services paid for via Brussels Pay must be located in or directly linked to Brussels. Use of the network for payments involving activities or services outside of Brussels is not permitted.
 
-## Membership Type
+## 6. Data Protection
 
-Applicants may choose one of the following membership types:
+The Member and Brussels Pay ASBL agree to comply with all applicable data protection laws, including Regulation (EU) 2016/679 (GDPR) and the Belgian law of July 30, 2018. Brussels Pay ASBL, as the data controller, processes the Member’s personal data solely to fulfill its non-profit objectives and legal obligations. Personal data will be accessible to Brussels Pay staff and board members during the membership term. The Member retains rights to access, rectify, or delete their personal data, or object to or restrict processing, by contacting Brussels Pay ASBL via email at admin@pay.brussels.
 
-- [ ] **Full Member**: Wishes to become a full member (Membre Effectif) of Brussels Pay ASBL, with voting rights and full participation in governance as outlined in the statutes.
-- [ ] **Supporting Member**: Wishes to become a supporting member (Membre Adhérent) of Brussels Pay ASBL, contributing to its activities without voting rights.
+## 7. Resignation and Suspension
 
-## Contribution Type
+A Supporting Member may resign or request account deactivation at any time by either:
 
-Members agree to support Brussels Pay ASBL through one or both of the following contributions:
+- Deleting or deactivating their account on the Brussels Pay platform; or
+- Sending an email request to admin@pay.brussels.
 
-- [ ] **Active Participation**: Commits to actively participating in the project by sharing knowledge, resources, and contributing to the development of the payment network.
-- [ ] **Monthly Fee**: Commits to paying a monthly membership fee based on transaction volume, as follows:
+In the event of any breach of legal obligations, the Association’s statutes, or internal rules, the Board of Directors reserves the right to suspend the Member’s access to the payment network until a decision is made at the next General Assembly.
 
-| Number of Transactions | Monthly Fee                                  |
-| ---------------------- | -------------------------------------------- |
-| 1–1,000                | €20/month                                    |
-| 1,001–2,000            | €30/month                                    |
-| 2,001–3,000            | €40/month                                    |
-| And so on              | +€10/month per additional 1,000 transactions |
+## 8. Acceptance
 
-_The maximum fee is capped at €10,000 per the ASBL statutes._
+Acceptance of this agreement is confirmed when the Member checks the acceptance box on the Brussels Pay online platform. This action is recorded in the Association’s membership database and serves as formal confirmation of membership.
 
-### Payment Method
+By accepting this agreement, the Member confirms:
 
-Members paying a fee may select one of the following payment methods:
+- That they wish to become a Supporting Member (Membre Adhérent) of Brussels Pay ASBL.
+- That they understand and accept the conditions outlined in this agreement and the Association’s statutes.
+- That they will use the Brussels Pay system solely within the scope and purposes defined by Brussels Pay ASBL.
 
-- [ ] Direct Debit (Domiciliation)
-- [ ] Bank Transfer
-- [ ] Mobile Application
+*For full details, please refer to the official statutes of Brussels Pay ASBL, available at:*[https://www.ejustice.just.fgov.be/tsv_pdf/2025/01/03/25001588.pdf](https://www.ejustice.just.fgov.be/tsv_pdf/2025/01/03/25001588.pdf)
 
-## Reasons for Joining (Optional)
-
-Applicants may optionally state their reasons for wishing to join Brussels Pay ASBL, such as supporting local payment innovation or contributing to the Brussels community.
-
-## Date and Signature
-
-By signing this agreement, the applicant confirms their commitment to the terms outlined herein and in the Brussels Pay ASBL statutes.
-
----
-
-## Data Protection Regulations
-
-In the context of this membership agreement, both parties commit to complying with applicable data protection regulations, including Regulation (EU) 2016/679 (GDPR) effective from May 25, 2018, and the Belgian Law of July 30, 2018, on the protection of individuals with regard to the processing of personal data. Brussels Pay ASBL, as the data controller, processes members’ personal data to fulfill its legal obligations and public interest mission. This data will be handled by ASBL staff during the membership period. Members have the right to access, rectify, erase, object to, retrieve, or limit the processing of their personal data by contacting Brussels Pay ASBL via email at a designated address.
-
----
-
-# Appendix: Excerpt from Brussels Pay ASBL Statutes
-
-### Article 4: Purpose
-
-The Association’s purpose is:
-
-- The establishment and management of an electronic payment network for the Brussels region.
-
-To achieve these objectives, the Association may undertake any initiative, directly or indirectly, related to or likely to promote these goals, including but not limited to:
-
-- Developing and maintaining software to ensure the payment network’s functionality.
-- Promoting and training potential users of the network.
-
-### Title II: Members
-
-### Section 1: Admission
-
-**Article 6**
-The Association consists of Full Members (Membres Effectifs) and, where applicable, Supporting Members (Membres Adhérents). Full Members and Supporting Members together form the Association’s members. The founders are the initial Full Members. The minimum number of Full Members cannot be less than two. Only Full Members enjoy the full rights granted by law and these statutes.
-
-**Article 7**
-Full Members include:
-
-- The founding members; and
-- Any Supporting Member nominated by at least two Full Members and admitted as a Full Member by a General Assembly decision with a three-quarters majority of votes present or represented.
-
-**Article 8**
-Supporting Members are individuals or entities wishing to assist the Association or participate in its activities, agreeing to abide by its statutes and decisions. Admission as a Supporting Member requires a written request to a Full Member. The Board of Directors or, if necessary, the General Assembly decides on admission at its sole discretion, without obligation to justify or allow appeal.
-
-**Article 9**
-Supporting Members have only the rights and obligations outlined in the statutes and lack voting rights at the General Assembly. Membership is finalized only after payment of a fee, the amount of which is set annually by the Board of Directors.
-
-### Section 2: Resignation, Exclusion, Suspension
-
-**Article 10**
-Members may resign at any time without justification by providing written notice to the Board of Directors. A member is deemed to have resigned if they fail to pay their required fee within one month of a reminder sent by regular mail or email. Exclusion, for reasons other than non-payment, requires a General Assembly decision with at least two-thirds of Full Members present or represented and a two-thirds majority vote. Exclusion must be noted in the meeting notice. The Board of Directors may suspend members for breaches of the law, statutes, or internal rules until the next General Assembly decides on exclusion. Resigned, suspended, or excluded members, and heirs of deceased members, have no claim to the Association’s assets or reimbursement of fees paid.
-
-### Title III: Fees
-
-**Article 11**
-Full Members and Supporting Members may be required to pay an annual fee, capped at €10,000. The fee amount, which may differ between Full and Supporting Members and be set monthly or annually, is determined by the Board of Directors.
+*Last Updated: April 11, 2025*

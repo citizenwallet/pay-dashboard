@@ -1,10 +1,8 @@
-# Businesses general conditions
-
 # General Conditions for Businesses Joining Brussels Pay ASBL
 
 ## Introduction
 
-These General Conditions govern the participation of businesses ("the Business") in the Brussels Pay ASBL ("the Association"), a non-profit organization located at 51 Rue de la Madeleine, 1000 Brussels, registered under Belgian Moniteur number 1017.806.251. The Association aims to establish and manage an electronic payment network for the Brussels region. By joining, the Business agrees to collaborate in the implementation, development, and promotion of this network under the terms outlined below.
+These General Conditions govern the participation of businesses ("the Business") in the Brussels Pay ASBL ("the Association"), a non-profit organization located at Cantersteen 47, 1000 Brussels, registered under Belgian Moniteur number 1017.806.251. The Association aims to establish and manage an electronic payment network for the Brussels region. By joining, the Business agrees to collaborate in the implementation, development, and promotion of this network under the terms outlined below.
 
 ## 1. Purpose
 
@@ -27,7 +25,9 @@ The Association provides the following systems and features to participating bus
 
 ### How Payouts Work
 
-- Payments received in EURb are recorded in the Business’s account. Payouts to the Business’s bank account (in EUR) are processed periodically, subject to the Association’s operational schedule and any applicable fees.
+- Payments received in EURb are recorded in the Business’s account. Payouts to the Business’s registered bank account (provided during sign-up) are made automatically each week, provided the balance exceeds €20. Daily payouts are available upon request and acceptance by the Association.
+- The amount of a payout is determined by the balance of EURb held on the Business's accounts.
+- Payouts are made in EUR.
 
 ### Ensuring Legality
 
@@ -40,14 +40,17 @@ The Association provides the following systems and features to participating bus
 ### Fees
 
 - A monthly fee is charged based on transaction volume to sustain the network:
+
   | Number of Transactions | Monthly Fee                                  |
   | ---------------------- | -------------------------------------------- |
   | 1–1,000                | €20/month                                    |
   | 1,001–2,000            | €30/month                                    |
   | 2,001–3,000            | €40/month                                    |
   | And so on              | +€10/month per additional 1,000 transactions |
-- Fees may evolve over time, with prior notification to businesses, allowing withdrawal if desired.
-- Additional transaction fees may apply depending on the payment method (e.g., Viva Wallet processing fees).
+
+- Fees are automatically withheld from the Business’s balance at the time of payout.
+- Additional transaction fees may apply depending on the payment method (e.g., Viva Wallet or Stripe processing fees).
+- Fees may evolve over time, with prior notification to businesses via email, allowing withdrawal if desired.
 
 ### Administrative Dashboard
 
@@ -57,10 +60,12 @@ The Association provides the following systems and features to participating bus
 
 ### 3.1 Obligations of the Business
 
+- Be a registered member of Brussels Pay ASBL.
 - Add the Brussels Pay network as an accepted payment method alongside existing options.
 - Promote the network to customers, encouraging its adoption and use.
 - Provide feedback on the network’s performance to aid its improvement.
 - Where feasible, encourage other businesses to join the project.
+- Use the system exclusively for its own legal business activities, conducted within the Brussels region.
 
 ### 3.2 Obligations of the Association
 
@@ -71,16 +76,11 @@ The Association provides the following systems and features to participating bus
 
 ## 4. Duration
 
-Participation begins upon acceptance of these General Conditions and continues for an initial period agreed upon registration (e.g., one year), renewable by mutual consent.
+Participation begins upon acceptance of these General Conditions and continues for an initial period agreed upon registration (e.g., one year). The agreement is automatically renewed unless cancellation is triggered by deactivation of the account or by written request for deactivation. The Association reserves the right to deactivate and clean up inactive accounts from time to time.
 
 ## 5. Fees and Payment Terms
 
-As outlined in Section 2, the Business agrees to pay a monthly fee based on transaction volume. Payment can be made via:
-
-- Direct Debit
-- Bank Transfer (to an account specified upon registration)
-
-The Association will provide payment instructions, including communication details and due dates, upon onboarding.
+As outlined in Section 2, the Business agrees to pay a monthly fee based on transaction volume. Fees will be automatically withheld from payout amounts. No separate payment is required.
 
 ## 6. Intellectual Property
 
@@ -107,7 +107,7 @@ Upon termination, outstanding fees remain payable, and access to the network cea
 
 ## 10. General Provisions
 
-- These conditions may be amended with mutual written agreement.
+- These conditions may be amended by the Association, with notification provided to the Business via email. Continued use of the system implies acceptance of changes.
 - Invalidity of one clause does not affect the others.
 
 ## 11. Jurisdiction
@@ -118,4 +118,5 @@ Disputes arising from these General Conditions will be resolved by the French-sp
 
 By joining Brussels Pay ASBL, the Business acknowledges and agrees to these General Conditions.
 
-_Last Updated: March 26, 2025_
+_Last Updated: April 11, 2025_
+

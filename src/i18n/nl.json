@@ -375,6 +375,28 @@
     "yourBusinessHasBeen": "Uw bedrijf is succesvol gevalideerd!",
     "errorUpdatingBusiness": "Oeps, er is een fout opgetreden tijdens de validatie van uw bedrijf"
   },
+  "legalPage": {
+    "title": "Lidmaatschapsovereenkomst & voorwaarden",
+    "between": "Tussen",
+    "and": "en",
+    "description": "Door gebruik te maken van Brussels Pay, gaat u akkoord om lid te worden van Brussels Pay VZW. Lees de lidmaatschapsovereenkomst en de voorwaarden goed door.",
+    "entityName": "Brussels Pay VZW",
+    "entityAddress": "Cantersteen 47, 1000 Brussel, België",
+    "entityVatNumber": "BE 1017.806.251",
+    "aboutLink": "https://www.pay.brussels/for-businesses",
+    "condition1": "Lidmaatschap is gratis",
+    "condition2": "Systeemgebruik heeft een kleine vaste kosten (€20 voor 1000 transacties) die in de voorwaarden worden gedetailleerd",
+    "condition3": "Brussels Pay app betalingen door klanten zijn gratis",
+    "condition4": "Gebruik van 3e partij betalingsproviders heeft een kosten die in de voorwaarden worden gedetailleerd",
+    "description2": "Lat's bouwen een beter betalingssysteem samen!",
+    "successAgreeWithTerms": "Uw overeenkomst met de voorwaarden is succesvol gevalideerd!",
+    "errorAgreeWithTerms": "Er is een fout opgetreden tijdens de validatie van uw overeenkomst met de voorwaarden",
+    "cancelAndLogout": "Annuleren en uitloggen",
+    "confirm": "Bevestigen",
+    "membershipAgreement": "Ik ga akkoord om lid te worden van Brussels Pay VZW.",
+    "termsAndConditions": "Ik ga akkoord met de voorwaarden.",
+    "errorUpdatingBusiness": "Oeps, er is een fout opgetreden tijdens de validatie van uw bedrijf"
+  },
   "pos": {
     "title": "Terminals",
     "description": "Terminals gekoppeld aan de locatie",

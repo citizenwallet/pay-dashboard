@@ -1,121 +1,122 @@
-# Algemene Voorwaarden voor Bedrijven
-
-# Algemene Voorwaarden voor Bedrijven die zich Aansluiten bij Brussels Pay ASBL
+# Algemene Voorwaarden voor Bedrijven die zich Aansluiten bij Brussels Pay VZW
 
 ## Inleiding
 
-Deze Algemene Voorwaarden regelen de deelname van bedrijven ("het Bedrijf") aan Brussels Pay ASBL ("de Vereniging"), een non-profitorganisatie gevestigd op 51 Rue de la Madeleine, 1000 Brussel, geregistreerd onder Belgisch Moniteur-nummer 1017.806.251. De Vereniging heeft als doel een elektronisch betalingsnetwerk voor de regio Brussel op te zetten en te beheren. Door zich aan te sluiten, stemt het Bedrijf ermee in om samen te werken aan de implementatie, ontwikkeling en promotie van dit netwerk onder de hieronder uiteengezette voorwaarden.
+Deze Algemene Voorwaarden regelen de deelname van bedrijven ("het Bedrijf") aan Brussels Pay VZW ("de Vereniging"), een organisatie zonder winstoogmerk gevestigd aan de Cantersteen 47, 1000 Brussel, ingeschreven onder Belgisch Staatsbladnummer 1017.806.251. De Vereniging heeft als doel een elektronisch betalingsnetwerk op te zetten en te beheren voor het Brussels Gewest. Door lid te worden, stemt het Bedrijf ermee in samen te werken aan de implementatie, ontwikkeling en promotie van dit netwerk onder de hierna beschreven voorwaarden.
 
 ## 1. Doel
 
-Het doel van deze Algemene Voorwaarden is om de voorwaarden te bepalen waaronder het Bedrijf samenwerkt met de Vereniging om de uitrol, ontwikkeling en promotie van het Brussels Pay elektronische betalingsnetwerk te ondersteunen, waarbij gebruik wordt gemaakt van de infrastructuur en middelen van het Bedrijf waar van toepassing.
+Het doel van deze Algemene Voorwaarden is het definiëren van de voorwaarden waaronder het Bedrijf samenwerkt met de Vereniging ter ondersteuning van de uitrol, ontwikkeling en promotie van het Brussels Pay elektronische betalingsnetwerk, met gebruik van de infrastructuur en middelen van het Bedrijf waar van toepassing.
 
-## 2. Diensten en Kenmerken Beschikbaar voor Bedrijven
+## 2. Diensten en Functionaliteiten Beschikbaar voor Bedrijven
 
-De Vereniging biedt de volgende systemen en functies aan deelnemende bedrijven om het gebruik van het Brussels Pay betalingsnetwerk te vergemakkelijken:
+De Vereniging stelt de volgende systemen en functionaliteiten beschikbaar aan deelnemende bedrijven ter ondersteuning van het gebruik van het Brussels Pay-netwerk:
 
-- **Brussels Pay QR-Code + Online Betaling**: Een webapplicatie die toegankelijk is door het scannen van een QR-code geplaatst bij de kassa's van bedrijven. Klanten kunnen bestellingen plaatsen en betalen met traditionele betaalmethoden (bijv. creditcards) zonder een wallet vooraf te laden. Bedrijven krijgen toegang tot een duidelijk overzicht van binnenkomende bestellingen en betalingsstatussen via een dashboard. Deze self-service betaalfunctie biedt meer flexibiliteit dan typische betaaloplossingen.
-- **Brussels Pay Mobiele App**: Klanten kunnen een mobiele app downloaden om EURb-tokens aan hun account-saldo toe te voegen, die vervolgens kunnen worden gebruikt voor betalingen bij deelnemende bedrijven.
-- **Brussels Pay Point-of-Sale (POS) App**: Bedrijven kunnen EURb-betalingen accepteren met behulp van een QR-code of kiezen voor een POS-app geïnstalleerd op Android-telefoons of speciale terminals. Dit biedt een gebruikerservaring vergelijkbaar met traditionele elektronische betalingssystemen, met de optie om bonnetjes te printen.
-- **NFC-kaartportefeuilles**: Klanten kunnen NFC-kaarten gebruiken die geladen zijn met EURb-tokens via contact met een telefoon. Deze kaarten ondersteunen de tap-to-pay-functionaliteit bij deelnemende bedrijven.
-- **Integratie met Viva Wallet Terminals**: Voor bedrijven die liever één apparaat voor alle betalingen gebruiken, maakt integratie met Viva Wallet-terminals het mogelijk om traditionele kaartbetalingen te accepteren, die worden omgezet in EURb voor het netwerk.
+- **Brussels Pay QR-code + Online Betaling**: Een webapplicatie toegankelijk via een QR-code aan de toonbank. Klanten kunnen bestellingen plaatsen en betalen met traditionele betaalmethoden (bijv. bankkaarten) zonder vooraf hun portefeuille op te laden. Bedrijven krijgen toegang tot een overzicht van inkomende bestellingen en betalingsstatussen via een dashboard. Deze zelfbedieningsfunctie biedt flexibiliteit buiten de klassieke betaaloplossingen.
+- **Brussels Pay Mobiele App**: Klanten kunnen een mobiele app downloaden om EURb-tokens toe te voegen aan hun saldo, dat vervolgens gebruikt kan worden bij deelnemende bedrijven.
+- **Brussels Pay Kassasysteem (POS-app)**: Bedrijven kunnen EURb-betalingen accepteren via een QR-code of via een POS-app op een Android-toestel of speciale terminal. Dit biedt een gebruikservaring die vergelijkbaar is met traditionele elektronische betalingen, met de mogelijkheid om bonnetjes af te drukken.
+- **NFC-kaarten**: Klanten kunnen NFC-kaarten gebruiken met vooraf geladen EURb-tokens, die via een eenvoudige tik op een telefoon gebruikt kunnen worden. Deze kaarten ondersteunen contactloos betalen.
+- **Viva Wallet Terminalintegratie**: Voor bedrijven die één toestel wensen voor alle betalingen, biedt de integratie met Viva Wallet-terminals de mogelijkheid om traditionele kaartbetalingen te aanvaarden, die worden omgezet in EURb voor het netwerk.
 
-### Hoe Werkt de EURb-Token
+### Hoe de EURb-token werkt
 
-- EURb is een digitale token die wordt gebruikt binnen het Brussels Pay-netwerk. Klanten kunnen EURb aanschaffen via de mobiele app of NFC-kaarten en deze gebruiken voor transacties bij deelnemende bedrijven.
-- Bedrijven ontvangen betalingen in EURb, die kunnen worden gevolgd en beheerd via het Brussels Pay-dashboard.
+- EURb is een digitale token die binnen het Brussels Pay-netwerk wordt gebruikt. Klanten kunnen EURb verkrijgen via de mobiele app of NFC-kaarten en deze gebruiken voor transacties bij aangesloten bedrijven.
+- Bedrijven ontvangen betalingen in EURb, die beheerd kunnen worden via het Brussels Pay-dashboard.
 
-### Hoe Werken Uitbetalingen
+### Hoe uitbetalingen werken
 
-- Betalingen ontvangen in EURb worden geregistreerd in de account van het Bedrijf. Uitbetalingen naar de bankrekening van het Bedrijf (in EUR) worden periodiek verwerkt, afhankelijk van het operationele schema van de Vereniging en eventuele toepasselijke kosten.
+- Ontvangen betalingen in EURb worden geregistreerd op de bedrijfsaccount. Uitbetalingen naar de geregistreerde bankrekening (opgegeven tijdens de registratie) worden wekelijks automatisch uitgevoerd, op voorwaarde dat het saldo hoger is dan €20. Dagelijkse uitbetalingen zijn mogelijk op verzoek en na goedkeuring door de Vereniging.
+- Het uit te betalen bedrag wordt bepaald door het EURb-saldo op de bedrijfsaccount.
+- Uitbetalingen gebeuren in euro (EUR).
 
-### Zekerheid van Legaliteit
+### Wettelijke Naleving
 
-- De Vereniging zorgt ervoor dat alle transacties voldoen aan Belgische en Europese wetten, inclusief regelgeving inzake gegevensbescherming (bijv. GDPR). Bedrijven moeten zich ook aan deze wettelijke normen houden bij het gebruik van het netwerk.
+- De Vereniging zorgt ervoor dat alle transacties voldoen aan de Belgische en Europese wetgeving, inclusief regelgeving inzake gegevensbescherming (GDPR). Bedrijven moeten deze normen ook respecteren.
 
-### Verwachtingen Instellen
+### Verwachtingen en Beschikbaarheid
 
-- De systemen zijn ontworpen voor gebruiksvriendelijkheid en toegankelijkheid, aangepast aan verschillende bedrijfsbehoeften. Beschikbaarheid kan echter afhangen van technisch onderhoud of diensten van derden, waarvoor de Vereniging niet aansprakelijk is.
+- De systemen zijn ontworpen voor gebruiksgemak en toegankelijkheid en passen zich aan verschillende bedrijfsbehoeften aan. Beschikbaarheid kan echter afhangen van technische onderhoudswerken of diensten van derden, waarvoor de Vereniging niet aansprakelijk is.
 
-### Kosten
+### Tarieven
 
-- Er wordt een maandelijkse vergoeding in rekening gebracht op basis van transactievolume om het netwerk in stand te houden:
-  | Aantal Transacties | Maandelijkse Vergoeding |
-  | ------------------- | ------------------------------------------------ |
-  | 1–1.000 | €20/maand |
-  | 1.001–2.000 | €30/maand |
-  | 2.001–3.000 | €40/maand |
-  | Enzovoort | +€10/maand per extra 1.000 transacties |
-- Kosten kunnen in de loop van de tijd veranderen, met voorafgaande kennisgeving aan bedrijven, waardoor zij zich kunnen terugtrekken als gewenst.
-- Er kunnen aanvullende transactiekosten van toepassing zijn afhankelijk van de betaalmethode (bijv. verwerkingskosten van Viva Wallet).
+- Er wordt een maandelijks bedrag aangerekend op basis van het aantal transacties om het netwerk in stand te houden:
 
-### Administratief Dashboard
+  | Aantal transacties     | Maandelijkse kost                          |
+  | ---------------------- | ------------------------------------------ |
+  | 1–1.000                | €20/maand                                 |
+  | 1.001–2.000            | €30/maand                                 |
+  | 2.001–3.000            | €40/maand                                 |
+  | Enzovoort              | +€10/maand per extra 1.000 transacties     |
 
-- Bedrijven krijgen toegang tot een dynamisch dashboard (my.pay.brussels) om transacties te beheren, EURb-betalingen te integreren in boekhoudsystemen en betalingsrapporten te genereren.
+- Kosten worden automatisch afgehouden van het saldo van het Bedrijf bij uitbetaling.
+- Extra transactiekosten kunnen van toepassing zijn afhankelijk van de gebruikte betaalmethode (bijv. Viva Wallet of Stripe).
+- Tarieven kunnen in de toekomst worden aangepast, met voorafgaande melding via e-mail. Bedrijven hebben dan de mogelijkheid om zich terug te trekken.
+
+### Beheerdashboard
+
+- Bedrijven krijgen toegang tot een dynamisch dashboard (my.pay.brussels) om transacties te beheren, betalingen in de boekhouding op te nemen en betalingsrapporten te genereren.
 
 ## 3. Verplichtingen van de Partijen
 
 ### 3.1 Verplichtingen van het Bedrijf
 
-- Voeg het Brussels Pay-netwerk toe als geaccepteerde betaalmethode naast bestaande opties.
-- Promoot het netwerk bij klanten en moedig adoptie en gebruik aan.
-- Geef feedback over de prestaties van het netwerk om verbetering te ondersteunen.
-- Moedig, waar mogelijk, andere bedrijven aan om zich bij het project aan te sluiten.
+- Ingeschreven lid zijn van Brussels Pay VZW.
+- Brussels Pay opnemen als geaccepteerde betaalmethode naast bestaande opties.
+- Het netwerk promoten bij klanten en het gebruik ervan stimuleren.
+- Feedback geven over de prestaties van het netwerk om bij te dragen aan de verbetering ervan.
+- Waar mogelijk, andere bedrijven aanmoedigen om deel te nemen.
+- Het systeem uitsluitend gebruiken voor eigen legale bedrijfsactiviteiten binnen het Brussels Gewest.
 
 ### 3.2 Verplichtingen van de Vereniging
 
-- Bied technische informatie en specificaties voor de implementatie en het gebruik van het betalingsnetwerk.
-- Controleer de netwerkprestaties en meld eventuele problemen aan het Bedrijf.
-- Zorg voor transactiebeveiliging en wettelijke naleving.
-- Lever transactiegegevens indien nodig voor de administratie van het Bedrijf.
+- Technische informatie en specificaties verstrekken voor het gebruik van het netwerk.
+- De netwerkprestaties monitoren en het Bedrijf informeren over eventuele problemen.
+- Zorgen voor transactieveiligheid en naleving van de wet.
+- Transactiegegevens verstrekken ten behoeve van de administratie van het Bedrijf.
 
 ## 4. Duur
 
-Deelname begint bij acceptatie van deze Algemene Voorwaarden en duurt voor een initiële periode zoals overeengekomen bij registratie (bijv. één jaar), verlengbaar bij wederzijdse instemming.
+De deelname begint bij aanvaarding van deze Algemene Voorwaarden en loopt voor een initiële periode zoals overeengekomen bij inschrijving (bijv. één jaar). Het contract wordt automatisch verlengd tenzij het account wordt gedeactiveerd of schriftelijk wordt opgezegd. De Vereniging behoudt zich het recht voor om inactieve accounts periodiek te verwijderen.
 
-## 5. Kosten en Betalingsvoorwaarden
+## 5. Tarieven en Betalingsvoorwaarden
 
-Zoals uiteengezet in Sectie 2, stemt het Bedrijf ermee in om een maandelijkse vergoeding te betalen op basis van transactievolume. Betaling kan worden uitgevoerd via:
+Zoals uiteengezet in sectie 2, stemt het Bedrijf ermee in een maandelijkse vergoeding te betalen op basis van het transactievolume. Deze kosten worden automatisch afgehouden bij uitbetaling. Er is geen aparte betaling vereist.
 
-- Incasso
-- Bankoverschrijving (naar een account dat wordt gespecificeerd bij registratie)
+## 6. Intellectuele Eigendom
 
-De Vereniging zal betalingsinstructies verstrekken, inclusief communicatiedetails en vervaldatums, bij de onboarding.
-
-## 6. Intellectueel Eigendom
-
-Alle intellectuele eigendomsrechten met betrekking tot het Brussels Pay-netwerk, inclusief software en processen, blijven eigendom van de Vereniging tenzij anders schriftelijk overeengekomen.
+Alle intellectuele eigendomsrechten met betrekking tot het Brussels Pay-netwerk, inclusief software en processen, blijven eigendom van de Vereniging, tenzij schriftelijk anders overeengekomen.
 
 ## 7. Vertrouwelijkheid
 
-Het Bedrijf en de Vereniging stemmen ermee in om alle gevoelige informatie die tijdens de deelname wordt uitgewisseld vertrouwelijk te houden, en deze alleen met voorafgaande schriftelijke toestemming te onthullen, behalve wanneer dit wettelijk vereist is.
+Het Bedrijf en de Vereniging komen overeen om alle vertrouwelijke informatie die tijdens de samenwerking wordt uitgewisseld geheim te houden, tenzij wettelijk vereist of schriftelijk toegestaan.
 
 ## 8. Aansprakelijkheid en Garanties
 
-- Het Bedrijf is niet aansprakelijk voor schade als gevolg van het gebruik van het netwerk, tenzij veroorzaakt door grove nalatigheid of schending van deze voorwaarden.
-- De Vereniging zorgt voor wettelijke naleving, maar is niet verantwoordelijk voor schade als gevolg van storingen van derden of onverwachte technische problemen.
+- Het Bedrijf is niet aansprakelijk voor schade veroorzaakt door gebruik van het netwerk, tenzij dit het gevolg is van grove nalatigheid of schending van deze voorwaarden.
+- De Vereniging zorgt voor wettelijke naleving, maar is niet verantwoordelijk voor schade veroorzaakt door externe dienstverleners of onvoorziene technische storingen.
 
 ## 9. Beëindiging
 
-Deelname kan door een van beide partijen worden beëindigd met schriftelijke kennisgeving onder de volgende voorwaarden:
+Deelname kan door elk van beide partijen schriftelijk worden opgezegd onder de volgende voorwaarden:
 
-- Vrijwillig terugtrekken door het Bedrijf.
-- Schending van verplichtingen door een van beide partijen.
+- Vrijwillige terugtrekking door het Bedrijf.
+- Schending van verplichtingen door één van de partijen.
 - Faillissement of ontbinding van het Bedrijf.
 
-Bij beëindiging blijven openstaande kosten betaalbaar en stopt de toegang tot het netwerk.
+Bij beëindiging blijven openstaande kosten verschuldigd en wordt de toegang tot het netwerk stopgezet.
 
 ## 10. Algemene Bepalingen
 
-- Deze voorwaarden kunnen worden gewijzigd met wederzijdse schriftelijke overeenkomst.
-- Ongeldigheid van één clausule heeft geen invloed op de andere.
+- Deze voorwaarden kunnen door de Vereniging worden gewijzigd, met melding per e-mail. Voortgezet gebruik van het systeem impliceert aanvaarding van de wijzigingen.
+- De ongeldigheid van een clausule tast de geldigheid van de overige bepalingen niet aan.
 
-## 11. Bevoegdheid
+## 11. Bevoegde Rechtbank
 
-Geschillen die voortvloeien uit deze Algemene Voorwaarden worden beslecht door de Franstalige Ondernemingsrechtbank van Brussel, waarbij beide partijen afstand doen van andere rechtsgebieden.
+Geschillen over deze Algemene Voorwaarden worden voorgelegd aan de Franstalige Ondernemingsrechtbank van Brussel, waarbij beide partijen afstand doen van andere bevoegde rechtbanken.
 
-## Acceptatie
+## Aanvaarding
 
-Door zich aan te sluiten bij Brussels Pay ASBL, erkent en stemt het Bedrijf in met deze Algemene Voorwaarden.
+Door lid te worden van Brussels Pay VZW erkent het Bedrijf kennis te hebben genomen van en akkoord te gaan met deze Algemene Voorwaarden.
 
-_Laatst Bijgewerkt: 26 maart 2025_
+_Laatst bijgewerkt: 11 april 2025_
+
