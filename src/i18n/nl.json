@@ -242,7 +242,9 @@
     "systemAdmin": "SYSTEEMBEHEERDER",
     "business": "Bedrijf",
     "payouts": "Uitbetalingen",
-    "logout": "Uitloggen"
+    "logout": "Uitloggen",
+    "pending": "In behandeling",
+    "history": "Geschiedenis"
   },
   "rootpayouts": {
     "payouts": "Uitbetalingen",
@@ -287,7 +289,10 @@
     "next": "Volgende",
     "page": "Pagina",
     "date": "Datum",
-    "totalAmount": "Totaalbedrag"
+    "totalAmount": "Totaalbedrag",
+    "status": "Status",
+    "completed": "Voltooid",
+    "periodOfPayout": "Uitbetalingperiode"
   },
   "addingpayout": {
     "newPayout": "Nieuwe uitbetaling",
@@ -402,5 +407,15 @@
     "terminalDeactivatedSuccessfully": "Terminal succesvol gedeactiveerd",
     "terminalActivatedSuccessfully": "Terminal succesvol geactiveerd",
     "errorUpdatingTerminalStatus": "Fout bij het bijwerken van de terminalstatus"
+  },
+  "pendingpayout": {
+    "pendingPayout": "Uitbetaling in behandeling",
+    "pendingPayoutDescription": "Uitbetalingen in behandeling van het bedrijf",
+    "businessName": "Bedrijfsnaam",
+    "placeName": "Locatienaam",
+    "balance": "Balans",
+    "lastPayout": "Laatste uitbetaling",
+    "action": "Actie",
+    "payout": "Uitbetaling"
   }
 }

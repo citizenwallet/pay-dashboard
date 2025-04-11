@@ -190,3 +190,16 @@ export const updatePayoutTotal = async (
     .select()
     .single();
 };
+
+export const getPendingPayouts = async (
+  client: SupabaseClient,
+  offset: number,
+  limit: number,
+  search: string
+) => {
+  return await client
+    .from('places')
+    .select('*, businesses(name), payouts(id, created_at)', { count: 'exact' })
+    .ilike('name', `%${search}%`)
+    .range(offset, offset + limit - 1);
+};

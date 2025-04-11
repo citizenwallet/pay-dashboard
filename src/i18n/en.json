@@ -242,7 +242,9 @@
     "systemAdmin": "SYSTEM ADMIN",
     "business": "Business",
     "payouts": "Payouts",
-    "logout": "Logout"
+    "logout": "Logout",
+    "pending": "Pending",
+    "history": "History"
   },
   "rootpayouts": {
     "payouts": "Payouts",
@@ -287,7 +289,10 @@
     "next": "Next",
     "page": "Page",
     "date": "Date",
-    "totalAmount": "Total Amount"
+    "totalAmount": "Total Amount",
+    "status": "Status",
+    "completed": "Completed",
+    "periodOfPayout": "Period of payout"
   },
   "addingpayout": {
     "newPayout": "New Payout",
@@ -402,5 +407,15 @@
     "terminalDeactivatedSuccessfully": "Terminal deactivated successfully",
     "terminalActivatedSuccessfully": "Terminal activated successfully",
     "errorUpdatingTerminalStatus": "Error updating terminal status"
+  },
+  "pendingpayout": {
+    "pendingPayout": "Pending Payout",
+    "pendingPayoutDescription": "Pending payouts of the business",
+    "businessName": "Business Name",
+    "placeName": "Place Name",
+    "balance": "Balance",
+    "lastPayout": "Last Payout",
+    "action": "Action",
+    "payout": "Payout"
   }
 }
