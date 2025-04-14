@@ -292,7 +292,14 @@
     "totalAmount": "Montant total",
     "status": "Statut",
     "completed": "Terminé",
-    "periodOfPayout": "Période de paiement"
+    "periodOfPayout": "Période de paiement",
+    "paid": "Payé",
+    "needsMinting": "Nécessite d'être émis",
+    "mint": "Mint",
+    "source": "Source",
+    "terminal": "Terminal",
+    "qr": "Code QR",
+    "app": "App"
   },
   "addingpayout": {
     "newPayout": "Nouveau paiement",

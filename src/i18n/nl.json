@@ -292,7 +292,14 @@
     "totalAmount": "Totaalbedrag",
     "status": "Status",
     "completed": "Voltooid",
-    "periodOfPayout": "Uitbetalingperiode"
+    "periodOfPayout": "Uitbetalingperiode",
+    "paid": "Betaald",
+    "needsMinting": "Nodig voor minten",
+    "mint": "Mint",
+    "source": "Bron",
+    "terminal": "Terminal",
+    "qr": "QR-code",
+    "app": "App"
   },
   "addingpayout": {
     "newPayout": "Nieuwe uitbetaling",

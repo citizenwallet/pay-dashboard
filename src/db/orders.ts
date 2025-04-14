@@ -297,7 +297,7 @@ export const getOrdersNotPayoutBy = async (
       .select()
       .eq('place_id', placeId)
       .is('payout_id', null)
-      .eq('status', 'paid')
+      .in('status', ['paid', 'needs_minting'])
       .order('created_at', { ascending: false });
   }
 
@@ -306,7 +306,7 @@ export const getOrdersNotPayoutBy = async (
     .select()
     .eq('place_id', placeId)
     .is('payout_id', null)
-    .eq('status', 'paid')
+    .in('status', ['paid', 'needs_minting'])
     .gte('created_at', range.start)
     .lte('created_at', range.end)
     .order('created_at', { ascending: false });

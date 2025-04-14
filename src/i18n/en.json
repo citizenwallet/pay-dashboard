@@ -292,7 +292,14 @@
     "totalAmount": "Total Amount",
     "status": "Status",
     "completed": "Completed",
-    "periodOfPayout": "Period of payout"
+    "periodOfPayout": "Period of payout",
+    "paid": "Paid",
+    "needsMinting": "Needs Minting",
+    "mint": "Mint",
+    "source": "Source",
+    "terminal": "Terminal",
+    "qr": "QR Code",
+    "app": "App"
   },
   "addingpayout": {
     "newPayout": "New Payout",
