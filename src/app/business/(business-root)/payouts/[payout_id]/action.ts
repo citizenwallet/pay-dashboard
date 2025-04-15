@@ -2,7 +2,7 @@
 import { isUserAdminAction } from '@/actions/session';
 import { getServiceRoleClient } from '@/db';
 import { createBurn, getBurnById } from '@/db/burn';
-import { getPayoutOrders } from '@/db/orders';
+import { getPayoutOrders, getPayoutOrdersForTable } from '@/db/orders';
 import {
   getPayoutById,
   updatePayoutBurn,
@@ -10,9 +10,22 @@ import {
 } from '@/db/payouts';
 import { createTransfer, getTransferById } from '@/db/transfer';
 
-export async function getPayoutAction(payout_id: string) {
+export async function getPayoutAction(
+  payout_id: string,
+  limit: number,
+  offset: number,
+  column: string,
+  order?: string
+) {
   const client = getServiceRoleClient();
-  const payout = await getPayoutOrders(client, Number(payout_id));
+  const payout = await getPayoutOrdersForTable(
+    client,
+    Number(payout_id),
+    limit,
+    offset,
+    column,
+    order
+  );
   return payout;
 }
 

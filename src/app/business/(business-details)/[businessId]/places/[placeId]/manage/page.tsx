@@ -4,6 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import { Suspense } from 'react';
 import ManagePage from './managePage';
 import { getPlaceDataAction, placeHasOrdersAction } from './action';
+import { getTranslations } from 'next-intl/server';
 
 export default async function page({
   params
@@ -11,12 +12,13 @@ export default async function page({
   params: Promise<{ businessId: string; placeId: string }>;
 }) {
   const resolvedParams = await params;
+  const t = await getTranslations('manage');
   return (
     <>
       <PageContainer>
         <div className="space-y-4">
           <div className="flex items-start justify-between">
-            <Heading title="Manage" description="Manage your Place action" />
+            <Heading title={t('manage')} description={t('manageDescription')} />
           </div>
           <Separator />
           <Suspense fallback={<div>Loading...</div>}>

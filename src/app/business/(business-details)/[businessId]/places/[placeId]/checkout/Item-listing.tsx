@@ -31,6 +31,7 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { DisplayMode } from '@/db/places';
+import { useTranslations } from 'next-intl';
 
 export default function ItemListing({
   placeId,
@@ -63,6 +64,7 @@ export default function ItemListing({
   const router = useRouter();
 
   const [isDesktop, setIsDesktop] = useState(false);
+  const t = useTranslations('checkout');
 
   useEffect(() => {
     const checkDevice = () => {
@@ -105,16 +107,16 @@ export default function ItemListing({
       );
 
       if (item.error) {
-        toast.error('Failed to update item order');
+        toast.error(t('failOrderUpdate'));
         // Revert to the original order on failure
         setItems(items);
       } else {
-        toast.success('Item moved up successfully');
+        toast.success(t('moveUpSuccessfully'));
       }
     } catch (error) {
       console.error('Failed to update item order:', error);
       setItems(items); // Revert on error
-      toast.error('Failed to update item order');
+      toast.error(t('errorMoveOrder'));
     }
   };
 
@@ -149,16 +151,16 @@ export default function ItemListing({
       );
 
       if (item.error) {
-        toast.error('Failed to update item order');
+        toast.error(t('failOrderUpdate'));
         // Revert to the original order on failure
         setItems(items);
       } else {
-        toast.success('Item moved down successfully');
+        toast.success(t('moveDownSuccess'));
       }
     } catch (error) {
       console.error('Failed to update item order:', error);
       setItems(items); // Revert on error
-      toast.error('Failed to update item order');
+      toast.error(t('errorMoveOrder'));
     }
   };
 
@@ -224,9 +226,9 @@ export default function ItemListing({
       );
 
       if (item.error) {
-        toast.error('Failed to update item order');
+        toast.error(t('failOrderUpdate'));
       } else {
-        toast.success('Item order updated successfully');
+        toast.success(t('itemOrderUpdateSuccess'));
 
         const newItems = [...updatedItems];
         newItems[draggedItemIndex] = item.data;
@@ -236,7 +238,7 @@ export default function ItemListing({
       console.error('Failed to update item order:', error);
       // Revert the UI change if the database update fails
       setItems(initialItems);
-      toast.error('Failed to update item order');
+      toast.error(t('failOrderUpdate'));
     }
   };
 
@@ -314,9 +316,9 @@ export default function ItemListing({
       );
 
       if (response.error) {
-        toast.error('Failed to update item name');
+        toast.error(t('nameUpdateError'));
       } else {
-        toast.success('Item name updated successfully');
+        toast.success(t('nameUpdate'));
 
         // Update the local state
         const updatedItems = items.map((i) =>
@@ -374,9 +376,9 @@ export default function ItemListing({
       );
 
       if (response.error) {
-        toast.error('Failed to update item description');
+        toast.error(t('descriptionUpdateError'));
       } else {
-        toast.success('Item description updated successfully');
+        toast.success(t('descriptionUpdate'));
 
         // Update the local state
         const updatedItems = items.map((i) =>
@@ -386,7 +388,7 @@ export default function ItemListing({
       }
     } catch (error) {
       console.error('Failed to update item description:', error);
-      toast.error('Failed to update item description');
+      toast.error(t('descriptionUpdateError'));
     } finally {
       setEditingItemId(null);
       setEditingField(null);
@@ -453,9 +455,9 @@ export default function ItemListing({
       );
 
       if (response.error) {
-        toast.error('Failed to update item price');
+        toast.error(t('priceUpdateError'));
       } else {
-        toast.success('Item price updated successfully');
+        toast.success(t('priceUpdate'));
 
         // Update the local state
         const updatedItems = items.map((i) =>
@@ -465,7 +467,7 @@ export default function ItemListing({
       }
     } catch (error) {
       console.error('Failed to update item price:', error);
-      toast.error('Failed to update item price');
+      toast.error(t('priceUpdateError'));
     } finally {
       setEditingItemId(null);
       setEditingField(null);
@@ -511,9 +513,9 @@ export default function ItemListing({
       );
 
       if (response.error) {
-        toast.error('Failed to update item category');
+        toast.error(t('categoryUpdateError'));
       } else {
-        toast.success('Item category updated successfully');
+        toast.success(t('categoryUpdate'));
 
         // Update the local state
         const updatedItems = items.map((i) =>
@@ -523,7 +525,7 @@ export default function ItemListing({
       }
     } catch (error) {
       console.error('Failed to update item category:', error);
-      toast.error('Failed to update item category');
+      toast.error(t('categoryUpdateError'));
     } finally {
       setEditingItemId(null);
       setEditingField(null);
@@ -587,9 +589,9 @@ export default function ItemListing({
       );
 
       if (response.error) {
-        toast.error('Failed to update item VAT');
+        toast.error(t('vatUpdateError'));
       } else {
-        toast.success('Item VAT updated successfully');
+        toast.success(t('vatUpdate'));
 
         // Update the local state
         const updatedItems = items.map((i) =>
@@ -599,7 +601,7 @@ export default function ItemListing({
       }
     } catch (error) {
       console.error('Failed to update item VAT:', error);
-      toast.error('Failed to update item VAT');
+      toast.error(t('vatUpdateError'));
     } finally {
       setEditingItemId(null);
       setEditingField(null);
@@ -657,9 +659,9 @@ export default function ItemListing({
       const response = await uploadItemImageAction(formData);
 
       if (response.error) {
-        toast.error('Failed to update item image');
+        toast.error(t('imageUpdateError'));
       } else {
-        toast.success('Item image updated successfully');
+        toast.success(t('imageUpdate'));
 
         // Update the local state with the new image URL
         const updatedItems = items.map((i) =>
@@ -669,7 +671,7 @@ export default function ItemListing({
       }
     } catch (error) {
       console.error('Failed to update item image:', error);
-      toast.error('Failed to update item image');
+      toast.error(t('imageUpdateError'));
     } finally {
       setEditingItemId(null);
       setEditingField(null);
@@ -756,7 +758,7 @@ export default function ItemListing({
 
     try {
       await updatePlaceDisplayAction(placeId, value as DisplayMode);
-      toast.success('Place display mode updated successfully');
+      toast.success(t('displayModeUpdate'));
     } catch (error) {
       console.error('Failed to update place display:', error);
       toast.error('Failed to update place display');
@@ -804,21 +806,23 @@ export default function ItemListing({
           ) : (
             <>
               <icons.Plus size={16} />
-              Add Item
+              {t('addItem')}
             </>
           )}
         </Button>
 
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600">Display mode:</span>
+          <span className="text-sm text-gray-600">{t('displayMode')}:</span>
           <Select value={displayMode} onValueChange={handleDisplayModeChange}>
             <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder="Display mode" />
+              <SelectValue placeholder={t('displayMode')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="menu">Menu</SelectItem>
-              <SelectItem value="amount">Amount</SelectItem>
-              <SelectItem value="amountAndMenu">Amount and Menu</SelectItem>
+              <SelectItem value="menu">{t('menu')}</SelectItem>
+              <SelectItem value="amount">{t('amount')}</SelectItem>
+              <SelectItem value="amountAndMenu">
+                {t('amountAndMenu')}
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -830,14 +834,14 @@ export default function ItemListing({
             <thead>
               <tr>
                 <th className="border p-2 text-left"></th>
-                <th className="border p-2 text-left">Image</th>
-                <th className="border p-2 text-left">Name</th>
-                <th className="border p-2 text-left">Description</th>
-                <th className="border p-2 text-left">Category</th>
-                <th className="border p-2 text-left">Price</th>
-                <th className="border p-2 text-left">VAT %</th>
-                <th className="border p-2 text-left">Visible</th>
-                <th className="border p-2 text-left">Action</th>
+                <th className="border p-2 text-left">{t('image')}</th>
+                <th className="border p-2 text-left">{t('name')}</th>
+                <th className="border p-2 text-left">{t('description')}</th>
+                <th className="border p-2 text-left">{t('category')}</th>
+                <th className="border p-2 text-left">{t('price')}</th>
+                <th className="border p-2 text-left">{t('vat')}%</th>
+                <th className="border p-2 text-left">{t('visible')}</th>
+                <th className="border p-2 text-left">{t('actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -1061,7 +1065,7 @@ export default function ItemListing({
                         aria-label={`Toggle visibility for ${item.name}`}
                       />
                       <Label className="text-sm text-gray-600">
-                        {item.hidden ? 'Hidden' : 'Visible'}
+                        {item.hidden ? t('hidden') : t('visible')}
                       </Label>
                     </div>
                   </td>
@@ -1090,11 +1094,8 @@ export default function ItemListing({
       {displayMode === 'amount' && (
         <div className="rounded-lg border border-gray-200 p-6 text-center">
           <icons.LayoutGrid className="mx-auto mb-4 text-gray-400" size={48} />
-          <h3 className="mb-2 text-lg font-medium">Amount Display Mode</h3>
-          <p className="text-gray-500">
-            The amount display mode is currently selected. Switch to menu mode
-            to view and edit your items.
-          </p>
+          <h3 className="mb-2 text-lg font-medium">{t('amountDisplayMode')}</h3>
+          <p className="text-gray-500">{t('amountDisplayModeDescription')}</p>
         </div>
       )}
     </div>

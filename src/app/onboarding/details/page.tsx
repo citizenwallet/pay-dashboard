@@ -7,6 +7,7 @@ import { getServiceRoleClient } from '@/db';
 import { getBusinessByVatNumber } from '@/db/business';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getTranslations } from 'next-intl/server';
 
 export default async function CompanyDetailsPage({
   searchParams
@@ -17,6 +18,7 @@ export default async function CompanyDetailsPage({
   if (!vat) {
     return redirect('/onboarding');
   }
+  const t = await getTranslations('onboardingDetails');
 
   return (
     <>
@@ -33,7 +35,7 @@ export default async function CompanyDetailsPage({
             </div>
 
             <h1 className="text-left text-2xl font-semibold text-gray-900">
-              Need more infos to complete the account creation
+              {t('description')}
             </h1>
           </div>
 

@@ -18,6 +18,7 @@ import * as z from 'zod';
 import { createClient } from '@/lib/supabase/client';
 import { checkIsUseraction, sendOtpAction } from '../action';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' })
@@ -26,6 +27,7 @@ const formSchema = z.object({
 type UserFormValue = z.infer<typeof formSchema>;
 
 export default function UserAuthForm() {
+  const t = useTranslations('onboardingLogin');
   const searchParams = useSearchParams();
   const [mailSent, setMailSent] = useState(false);
   const callbackUrl = searchParams.get('callbackUrl');
@@ -38,6 +40,10 @@ export default function UserAuthForm() {
     defaultValues
   });
   const router = useRouter();
+
+  //set the redirect url and store in local storage
+  const redirectUrl = searchParams.get('redirectUrl');
+  localStorage.setItem('redirectUrl', redirectUrl || '');
 
   const onSubmit = async (userData: UserFormValue) => {
     startTransition(async () => {
@@ -54,10 +60,10 @@ export default function UserAuthForm() {
             router.push('/otp');
           }
         } catch (error) {
-          toast.error('Something went wrong, please try again later.');
+          toast.error(t('errorLoggingIn'));
         }
       } else {
-        toast.error('Your email is not registered, please sign up');
+        toast.error(t('emailNotRegistered'));
       }
     });
   };
@@ -79,7 +85,7 @@ export default function UserAuthForm() {
                   <Input
                     className="text-base"
                     type="email"
-                    placeholder="Enter your email..."
+                    placeholder={t('emailPlaceholder')}
                     disabled={loading}
                     {...field}
                   />
@@ -89,12 +95,12 @@ export default function UserAuthForm() {
             )}
           />
           <Button disabled={loading} className="ml-auto w-full" type="submit">
-            Sign in
+            {t('signin')}
           </Button>
 
           <div className="flex justify-center">
             <a href="/onboarding" className="text-sm text-primary">
-              Don&nbsp;t have an account? Sign up here
+              {t('haveNotAccount')}
             </a>
           </div>
         </form>

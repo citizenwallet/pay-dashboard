@@ -27,19 +27,27 @@ import {
 } from '@/actions/session';
 import { toast } from 'sonner';
 import { createPayoutAction } from './action';
+import { useTranslations } from 'next-intl';
 
 export default function SelectPlace({
   places,
-  currencyLogo
+  currencyLogo,
+  selectedPlaceId,
+  setSelectedDate
 }: {
   places: Place[] | null;
   currencyLogo: string;
+  selectedPlaceId?: string;
+  setSelectedDate?: Date;
 }) {
+  const t = useTranslations('addingpayout');
   const selectedPlaceRef = useRef<string | null>(null);
-  const [placeid, setPlaceid] = useState<number | null>(null);
+  const [placeId, setPlaceId] = useState<number | null>(
+    selectedPlaceId ? Number(selectedPlaceId) : null
+  );
   const [date, setDate] = useState<DateRange | undefined>({
-    from: new Date(),
-    to: addDays(new Date(), 7)
+    from: setSelectedDate ? setSelectedDate : new Date(),
+    to: setSelectedDate ? new Date() : addDays(new Date(), 7)
   });
 
   //for get the date range from the date picker
@@ -49,7 +57,9 @@ export default function SelectPlace({
   });
 
   // State to control when the table should be displayed
-  const [isTableVisible, setIsTableVisible] = useState(false);
+  const [isTableVisible, setIsTableVisible] = useState<boolean>(
+    setSelectedDate ? true : false
+  );
 
   // Function to handle showing order table
   const handleSelectionComplete = () => {
@@ -62,18 +72,18 @@ export default function SelectPlace({
     <>
       {/* place Selector */}
       <div className="space-y-2">
-        <label className="text-md font-medium">Places</label>
+        <label className="text-md font-medium">{t('places')}</label>
         <div className="flex w-full flex-col gap-2">
           <Select
             onValueChange={(value) => {
-              setPlaceid(Number(value));
+              setPlaceId(Number(value));
               selectedPlaceRef.current = value;
               handleSelectionComplete();
             }}
-            value={selectedPlaceRef.current || undefined}
+            value={selectedPlaceId || selectedPlaceRef.current || undefined}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select a place" />
+              <SelectValue placeholder={t('selectPlace')} />
             </SelectTrigger>
             <SelectContent className="max-h-[250px] overflow-y-auto">
               <SelectGroup>
@@ -90,7 +100,7 @@ export default function SelectPlace({
 
       {/* Date Range Picker */}
       <div className="space-y-2">
-        <label className="text-sm font-medium">Date Range</label>
+        <label className="text-sm font-medium">{t('dataRange')}</label>
         <div className="grid gap-2">
           <Popover>
             <PopoverTrigger asChild>
@@ -113,7 +123,7 @@ export default function SelectPlace({
                     format(date.from, 'LLL dd, y')
                   )
                 ) : (
-                  <span>Pick a date</span>
+                  <span>{t('pickADate')}</span>
                 )}
               </Button>
             </PopoverTrigger>
@@ -138,7 +148,7 @@ export default function SelectPlace({
       {isTableVisible && (
         <Suspense fallback={<>Loading...</>}>
           <AsyncOrderTable
-            place={placeid}
+            place={placeId}
             dateRange={date}
             currencyLogo={currencyLogo}
           />

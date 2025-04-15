@@ -8,7 +8,7 @@ import {
 import { encodeBase64 } from 'ethers';
 import Stripe from 'stripe';
 
-export type OrderStatus = 'pending' | 'paid' | 'cancelled';
+export type OrderStatus = 'pending' | 'paid' | 'cancelled' | 'needs_minting';
 
 export interface Order {
   id: number;
@@ -26,6 +26,8 @@ export interface Order {
   description: string;
   tx_hash: string | null;
   type: 'web' | 'app' | 'terminal' | null;
+  pos: string | null;
+  processor_tx: string | null;
 }
 
 // Helper function to calculate date range filters
@@ -298,7 +300,7 @@ export const getOrdersNotPayoutBy = async (
       .select()
       .eq('place_id', placeId)
       .is('payout_id', null)
-      .eq('status', 'paid')
+      .in('status', ['paid', 'needs_minting'])
       .order('created_at', { ascending: false });
   }
 
@@ -307,7 +309,7 @@ export const getOrdersNotPayoutBy = async (
     .select()
     .eq('place_id', placeId)
     .is('payout_id', null)
-    .eq('status', 'paid')
+    .in('status', ['paid', 'needs_minting'])
     .gte('created_at', range.start)
     .lte('created_at', range.end)
     .order('created_at', { ascending: false });
@@ -397,3 +399,18 @@ export async function getRefund(
   // Return false if no refundable
   return false;
 }
+export const getPayoutOrdersForTable = async (
+  client: SupabaseClient,
+  payoutId: number,
+  limit: number,
+  offset: number,
+  column?: string,
+  order?: string
+): Promise<PostgrestResponse<Order>> => {
+  return client
+    .from('orders')
+    .select()
+    .eq('payout_id', payoutId)
+    .order(column ?? 'id', { ascending: order === 'asc' })
+    .range(offset, offset + limit - 1);
+};

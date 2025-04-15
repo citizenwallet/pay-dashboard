@@ -24,12 +24,14 @@ import { handleVisibilityToggleAction } from '@/app/business/(business-details)/
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 export function NavButton({ lastPlace }: { lastPlace: Place }) {
   const [copied, setCopied] = useState(false);
   const [copiedOrdersFeed, setCopiedOrdersFeed] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const router = useRouter();
+  const t = useTranslations('navButton');
 
   const handleCopyCheckoutLink = () => {
     setCopied(true);
@@ -41,11 +43,11 @@ export function NavButton({ lastPlace }: { lastPlace: Place }) {
     navigator.clipboard
       .writeText(checkoutUrl)
       .then(() => {
-        toast.success(`Copied to clipboard: ${checkoutUrl}`);
+        toast.success(t('linkCopied'));
       })
       .catch((err) => {
         console.error('Failed to copy: ', err);
-        toast.error('Failed to copy the link. Please try again.');
+        toast.error(t('failedToCopy'));
       });
   };
 
@@ -59,11 +61,11 @@ export function NavButton({ lastPlace }: { lastPlace: Place }) {
     navigator.clipboard
       .writeText(ordersFeedUrl)
       .then(() => {
-        toast.success(`Copied to clipboard: ${ordersFeedUrl}`);
+        toast.success(t('linkCopied'));
       })
       .catch((err) => {
         console.error('Failed to copy: ', err);
-        toast.error('Failed to copy the link. Please try again.');
+        toast.error(t('failedToCopy'));
       });
   };
 
@@ -72,11 +74,13 @@ export function NavButton({ lastPlace }: { lastPlace: Place }) {
       setIsDialogOpen(false);
       await handleVisibilityToggleAction(lastPlace.id);
       toast.success(
-        `Place ${lastPlace.hidden ? 'public' : 'hidden'} successfully`
+        `${t('place')} ${lastPlace.hidden ? t('public') : t('private')} ${t(
+          'successfully'
+        )}`
       );
       router.refresh();
     } catch (error) {
-      toast.error('Error with handle Visibility Toggle the place');
+      toast.error(`${t('errorVisibilityToggle')}`);
     }
   };
 
@@ -88,17 +92,19 @@ export function NavButton({ lastPlace }: { lastPlace: Place }) {
             <DialogTrigger asChild>
               <SidebarMenuButton>
                 {lastPlace.hidden ? <Eye /> : <EyeOff />}
-                <span>{lastPlace.hidden ? 'Make public' : 'Make private'}</span>
+                <span>
+                  {lastPlace.hidden ? t('makePublic') : t('makePrivate')}
+                </span>
               </SidebarMenuButton>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Are you sure?</DialogTitle>
+                <DialogTitle>{t('areYouSure')}</DialogTitle>
                 <DialogDescription>
-                  {`Do you want to ${
+                  {`${t('doYouWantTo')} ${
                     lastPlace.hidden
-                      ? 'making a place public, it will be visible in all public listings'
-                      : 'hiding this place, it is still active but not visible in public listings anymore'
+                      ? t('makePublicDescription')
+                      : t('makePrivateDescription')
                   }?`}
                 </DialogDescription>
               </DialogHeader>
@@ -107,9 +113,9 @@ export function NavButton({ lastPlace }: { lastPlace: Place }) {
                   variant="outline"
                   onClick={() => setIsDialogOpen(false)}
                 >
-                  No
+                  {t('no')}
                 </Button>
-                <Button onClick={handleVisibilityToggle}>Yes</Button>
+                <Button onClick={handleVisibilityToggle}>{t('yes')}</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -123,7 +129,7 @@ export function NavButton({ lastPlace }: { lastPlace: Place }) {
               )}
             >
               {copied ? <Check /> : <Copy />}
-              <span>Copy checkout link</span>
+              <span>{t('copyCheckoutLink')}</span>
             </SidebarMenuButton>
           )}
           {!lastPlace.archived && (
@@ -135,7 +141,7 @@ export function NavButton({ lastPlace }: { lastPlace: Place }) {
               )}
             >
               {copiedOrdersFeed ? <Check /> : <Copy />}
-              <span>Copy orders feed link</span>
+              <span>{t('copyOrdersFeedLink')}</span>
             </SidebarMenuButton>
           )}
         </SidebarMenuItem>

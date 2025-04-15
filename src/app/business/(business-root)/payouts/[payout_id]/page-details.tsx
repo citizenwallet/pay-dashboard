@@ -1,109 +1,100 @@
 'use client';
+import CurrencyLogo from '@/components/currency-logo';
 import { Button, buttonVariants } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import React from 'react';
-import OrderViewTable from './order-details';
-import { getPayoutCSVAction, setPayoutStatusAction } from './action';
-import { toast } from 'sonner';
-import { Order } from '@/db/orders';
-import { useState } from 'react';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
-  DialogTitle,
-  DialogFooter
+  DialogTitle
 } from '@/components/ui/dialog';
-import { useRouter } from 'next/navigation';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover';
+import { Order } from '@/db/orders';
 import { Payout } from '@/db/payouts';
+import { formatCurrencyNumber } from '@/lib/currency';
+import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { toast } from 'sonner';
 import {
   updatePayoutBurnDateAction,
   updatePayoutTransferDateAction
 } from '../action';
+import { getPayoutCSVAction, setPayoutStatusAction } from './action';
+import OrderViewTable from './order-details';
 
 export default function PayoutDetailsPage({
   payout_id,
   orders,
   currencyLogo,
-  payout
+  payout,
+  totalAmount,
+  count,
+  limit,
+  offset
 }: {
   payout_id: string;
   orders: Order[];
   currencyLogo: string;
   payout: Payout;
+  totalAmount: number;
+  count: number;
+  limit?: string;
+  offset?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [action, setAction] = useState('');
   const router = useRouter();
+  const t = useTranslations('rootpayouts');
   const handleOpenModal = (type: 'burn' | 'transferred') => {
     setAction(type);
     setOpen(true);
   };
-  const [isBurnEditing, setIsBurnEditing] = useState(false);
   const [editingBurnDate, setEditingBurnDate] = useState(payout.burnDate || '');
 
-  const [isTransferEditing, setIsTransferEditing] = useState(false);
   const [editingTransferDate, setEditingTransferDate] = useState(
     payout.transferDate || ''
   );
 
-  const handleBurnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleBurnSave();
-    } else if (e.key === 'Escape') {
-      setIsBurnEditing(false);
-      setEditingBurnDate(payout.burnDate || '');
-    }
-  };
-
-  const handleBurnSave = async () => {
+  const handleBurnSave = async (date?: Date) => {
     try {
-      setIsBurnEditing(false);
-
-      if (editingBurnDate == payout.burnDate) {
+      if (date?.toISOString() == payout.burnDate) {
         return;
       }
 
-      if (editingBurnDate) {
-        await updatePayoutBurnDateAction(payout_id, editingBurnDate);
-        toast.success(`Payout burn date updated successfully`);
+      if (date) {
+        await updatePayoutBurnDateAction(payout_id, date.toISOString());
+        toast.success(t('payoutBurnDateUpdatedSuccessfully'));
       } else {
-        toast.error(`Payout burn date is Empty,You can't update Empty Date`);
+        toast.error(t('payoutBurnDateEmpty'));
         setEditingBurnDate(payout.burnDate || '');
       }
     } catch (error) {
-      toast.error(`Payout burn date update failed`);
+      toast.error(t('payoutBurnDateUpdateFailed'));
     }
   };
 
-  const handleTransferKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleTransferSave();
-    } else if (e.key === 'Escape') {
-      setIsTransferEditing(false);
-      setEditingTransferDate(payout.transferDate || '');
-    }
-  };
-
-  const handleTransferSave = async () => {
+  const handleTransferSave = async (date?: Date) => {
     try {
-      setIsTransferEditing(false);
-
-      if (editingTransferDate == payout.transferDate) {
+      if (date?.toISOString() == payout.transferDate) {
         return;
       }
 
-      if (editingTransferDate) {
-        await updatePayoutTransferDateAction(payout_id, editingTransferDate);
-        toast.success(`Payout transfer date updated successfully`);
+      if (date) {
+        await updatePayoutTransferDateAction(payout_id, date.toISOString());
+        toast.success(t('payoutTransferDateUpdatedSuccessfully'));
       } else {
-        toast.error(
-          `Payout transfer date is Empty,You can't update Empty Date`
-        );
+        toast.error(t('payoutTransferDateEmpty'));
         setEditingTransferDate(payout.transferDate || '');
       }
     } catch (error) {
-      toast.error(`Payout transfer date update failed`);
+      toast.error(t('payoutTransferDateUpdateFailed'));
     }
   };
 
@@ -111,11 +102,11 @@ export default function PayoutDetailsPage({
     try {
       await setPayoutStatusAction(payout_id, action);
       setOpen(false);
-      toast.success(`Payout ${action} successfully`);
-      router.push(`/business/payouts`);
+      toast.success(`${t('payout')} ${action} ${t('successfully')}`);
+      router.push(`/business/payouts/${payout_id}`);
     } catch (error) {
-      toast.error(`Payout ${action} failed`);
-      router.push(`/business/payouts`);
+      toast.error(`${t('payout')} ${action} ${t('failed')}`);
+      router.push(`/business/payouts/${payout_id}`);
     }
   };
 
@@ -123,7 +114,7 @@ export default function PayoutDetailsPage({
     const csvData = await getPayoutCSVAction(payout_id);
 
     if (!csvData.trim()) {
-      toast.error('No orders found for the given place and date range.');
+      toast.error(t('noOrdersFound'));
       return;
     }
 
@@ -144,84 +135,114 @@ export default function PayoutDetailsPage({
   return (
     <>
       <div className="mt-4 flex items-center justify-between">
-        <div className="flex items-center gap-7">
+        <div className="flex items-center gap-4">
           <>
             {!payout.burn && (
-              <Button className="mt-10" onClick={() => handleOpenModal('burn')}>
-                Set As Burn
+              <Button className="mt-11" onClick={() => handleOpenModal('burn')}>
+                {t('setAsBurn')}
               </Button>
             )}
             {payout.burn && (
-              <div className="flex flex-col items-center gap-4">
-                {isBurnEditing ? (
-                  <input
-                    type="date"
-                    value={editingBurnDate.split('T')[0]}
-                    onChange={(e) => setEditingBurnDate(e.target.value)}
-                    onKeyDown={(e) => handleBurnKeyDown(e)}
-                    onBlur={() => handleBurnSave()}
-                    autoFocus
-                    className="w-full rounded border border-gray-300 p-1"
-                    placeholder="Enter date"
-                  />
-                ) : (
-                  <div
-                    className="flex cursor-pointer items-center"
-                    onClick={() => setIsBurnEditing(true)}
-                  >
-                    {editingBurnDate
-                      ? new Date(editingBurnDate).toLocaleString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric'
-                        })
-                      : '-'}
-                  </div>
-                )}
+              <div className="flex h-full flex-col items-center">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <div className="mb-5 flex cursor-pointer items-center">
+                      {editingBurnDate
+                        ? new Date(editingBurnDate).toLocaleString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          })
+                        : '-'}
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={
+                        editingBurnDate ? new Date(editingBurnDate) : undefined
+                      }
+                      onSelect={(date) => {
+                        if (date) {
+                          const year = date.getFullYear();
+                          const month = date.getMonth();
+                          const day = date.getDate();
+
+                          const utcMidnightDate = new Date(
+                            Date.UTC(year, month, day)
+                          );
+                          handleBurnSave(utcMidnightDate);
+                          setEditingBurnDate(
+                            utcMidnightDate ? utcMidnightDate.toISOString() : ''
+                          );
+                        }
+                      }}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+
                 <Button variant="outline" disabled>
-                  Already Burn
+                  {t('alreadyBurn')}
                 </Button>
               </div>
             )}
 
             {!payout.transfer && (
               <Button
-                className="mt-10"
+                className="mt-11"
                 onClick={() => handleOpenModal('transferred')}
               >
-                {' '}
-                Set As Transferred{' '}
+                {t('setAsTransferred')}
               </Button>
             )}
             {payout.transfer && (
-              <div className="flex flex-col items-center gap-4">
-                {isTransferEditing ? (
-                  <input
-                    type="date"
-                    value={editingTransferDate.split('T')[0]}
-                    onChange={(e) => setEditingTransferDate(e.target.value)}
-                    onKeyDown={(e) => handleTransferKeyDown(e)}
-                    onBlur={() => handleTransferSave()}
-                    autoFocus
-                    className="w-full rounded border border-gray-300 p-1"
-                    placeholder="Enter date"
-                  />
-                ) : (
-                  <div
-                    className="flex cursor-pointer items-center"
-                    onClick={() => setIsTransferEditing(true)}
-                  >
-                    {editingTransferDate
-                      ? new Date(editingTransferDate).toLocaleString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric'
-                        })
-                      : '-'}
-                  </div>
-                )}
+              <div className="flex h-full flex-col items-center">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <div className="mb-5 flex cursor-pointer items-center">
+                      {editingTransferDate
+                        ? new Date(editingTransferDate).toLocaleString(
+                            'en-US',
+                            {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric'
+                            }
+                          )
+                        : '-'}
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={
+                        editingTransferDate
+                          ? new Date(editingTransferDate)
+                          : undefined
+                      }
+                      onSelect={(date) => {
+                        if (date) {
+                          const year = date.getFullYear();
+                          const month = date.getMonth();
+                          const day = date.getDate();
+
+                          const utcMidnightDate = new Date(
+                            Date.UTC(year, month, day)
+                          );
+                          handleTransferSave(utcMidnightDate);
+                          setEditingTransferDate(
+                            utcMidnightDate ? utcMidnightDate.toISOString() : ''
+                          );
+                        }
+                      }}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+
                 <Button variant="outline" disabled>
-                  Already Transferred
+                  {t('alreadyTransferred')}
                 </Button>
               </div>
             )}
@@ -231,17 +252,17 @@ export default function PayoutDetailsPage({
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Cannot Reverse This Action!</DialogTitle>
+                <DialogTitle>{t('cannotReverseThisAction')}</DialogTitle>
               </DialogHeader>
               <p>
-                Are you sure you want to set this as <strong>{action}</strong>?
+                {t('areYouSureYouWantToSetAs')} <strong>{action}</strong>?
               </p>
               <DialogFooter>
                 <Button variant="destructive" onClick={() => setOpen(false)}>
-                  Cancel
+                  {t('cancel')}
                 </Button>
                 <Button variant="outline" onClick={handleConfirm}>
-                  Confirm
+                  {t('confirm')}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -252,11 +273,46 @@ export default function PayoutDetailsPage({
           onClick={handleCSVDownload}
           className={cn(buttonVariants({ variant: 'outline' }), 'ml-auto')}
         >
-          Export as CSV
+          {t('exportAsCSV')}
         </button>
       </div>
 
-      <OrderViewTable orders={orders} currencyLogo={currencyLogo} />
+      <div className="mt-6 flex flex-col  justify-between pt-6">
+        <div className="flex items-center gap-7">
+          <p className="flex items-center gap-2">
+            <b>{t('totalAmount')}:</b>
+            <CurrencyLogo logo={currencyLogo} size={18} />
+            {formatCurrencyNumber(totalAmount)}
+          </p>
+        </div>
+
+        <div className="mt-2 flex items-center gap-7">
+          <p className="flex items-center gap-2">
+            <b>{t('periodOfPayout')}:</b>
+            <span>
+              {new Date(payout.from).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              })}{' '}
+              -{' '}
+              {new Date(payout.to).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              })}
+            </span>
+          </p>
+        </div>
+      </div>
+
+      <OrderViewTable
+        orders={orders}
+        currencyLogo={currencyLogo}
+        count={count}
+        limit={limit ?? '25'}
+        offset={offset ?? '0'}
+      />
     </>
   );
 }

@@ -8,12 +8,14 @@ import { QRCode } from 'react-qrcode-logo';
 import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
 import QrPdfDocument from './qr-pdf';
 import { Place } from '@/db/places';
+import { useTranslations } from 'next-intl';
 
 export default function QrPage({ place }: { place: Place | null }) {
   const [qrValue, setQrValue] = useState(
     `${process.env.NEXT_PUBLIC_CHECKOUT_BASE_URL}/${place?.slug}`
   );
   const [qrImage, setQrImage] = useState('');
+  const t = useTranslations('qr');
 
   //get the qr image url
   useEffect(() => {
@@ -35,7 +37,7 @@ export default function QrPage({ place }: { place: Place | null }) {
       >
         <Button className="mt-2 flex items-center">
           <Download className="mr-2 h-4 w-4" />
-          Download
+          {t('download')}
         </Button>
       </PDFDownloadLink>
 

@@ -1,20 +1,30 @@
 'use client';
 
-import PageContainer from '@/components/layout/page-container';
-import { Heading } from '@/components/ui/heading';
-import { cn, humanizeDate } from '@/lib/utils';
-import { Button, buttonVariants } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import React from 'react';
-import { DataTable } from '@/components/ui/data-table';
-import { ColumnDef, PaginationState } from '@tanstack/react-table';
-import { Place } from '@/db/places';
-import { Order } from '@/db/orders';
-import { formatCurrencyNumber } from '@/lib/currency';
 import CurrencyLogo from '@/components/currency-logo';
+import PageContainer from '@/components/layout/page-container';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { DataTable } from '@/components/ui/data-table';
+import { Heading } from '@/components/ui/heading';
+import { Separator } from '@/components/ui/separator';
+import { Order } from '@/db/orders';
+import { Place } from '@/db/places';
+import { formatCurrencyNumber } from '@/lib/currency';
+import { cn, humanizeDate } from '@/lib/utils';
+import { ColumnDef, PaginationState } from '@tanstack/react-table';
+import { useTranslations } from 'next-intl';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { exportCsvAction, postRefundAction } from '../action';
+import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
+import { exportCsvAction, postRefundAction } from '../action';
+import Link from 'next/link';
+import {
+  Loader2,
+  QrCodeIcon,
+  SmartphoneIcon,
+  SmartphoneNfcIcon
+} from 'lucide-react';
+import { formatAddress } from '@/lib/address';
+import { DatePicker } from '@/components/ui/DatePicker';
 
 interface Props {
   place: Place;
@@ -25,69 +35,30 @@ interface Props {
     offset: number;
     totalItems: number;
   };
-  balance: number;
+  total: string;
 }
 
 const createColumns = (
-  currencyLogo: string
-): (
-  | {
-      accessorKey: string;
-      header: string;
-      cell: ({ row }: { row: any }) => any;
-    }
-  | {
-      accessorKey: string;
-      header: string;
-      cell: ({ row }: { row: any }) => string;
-    }
-  | {
-      accessorKey: string;
-      header: string;
-      cell: ({ row }: { row: any }) => React.JSX.Element;
-    }
-  | {
-      accessorKey: string;
-      header: string;
-      cell: ({ row }: { row: any }) => React.JSX.Element;
-    }
-  | {
-      accessorKey: string;
-      header: string;
-      cell: ({ row }: { row: any }) => React.JSX.Element;
-    }
-  | {
-      accessorKey: string;
-      header: string;
-      cell: ({ row }: { row: any }) => React.JSX.Element;
-    }
-  | {
-      accessorKey: string;
-      header: string;
-    }
-  | {
-      accessorKey: string;
-      header: string;
-      cell: ({ row }: { row: any }) => React.JSX.Element;
-    }
-)[] => [
+  currencyLogo: string,
+  t: (key: string) => string
+): ColumnDef<Order>[] => [
   {
     accessorKey: 'id',
-    header: 'ID',
+    header: t('id'),
     cell: ({ row }) => {
       return row.original.id;
     }
   },
   {
     accessorKey: 'date',
-    header: 'Date',
+    header: t('date'),
     cell: ({ row }) => {
       return humanizeDate(row.original.created_at);
     }
   },
   {
     accessorKey: 'total',
-    header: 'Total',
+    header: t('total'),
     cell: ({ row }) => {
       return (
         <p className="flex w-8 items-center gap-1">
@@ -99,7 +70,7 @@ const createColumns = (
   },
   {
     accessorKey: 'fees',
-    header: 'Fees',
+    header: t('fees'),
     cell: ({ row }) => {
       return (
         <p className="flex w-8 items-center gap-1">
@@ -111,7 +82,7 @@ const createColumns = (
   },
   {
     accessorKey: 'net',
-    header: 'Net',
+    header: t('net'),
     cell: ({ row }) => {
       return (
         <p className="flex w-8 items-center gap-1">
@@ -123,7 +94,7 @@ const createColumns = (
   },
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: t('status'),
     cell: ({ row }) => {
       return (
         <span
@@ -133,8 +104,48 @@ const createColumns = (
             'bg-red-100 text-red-800': row.original.status === 'cancelled'
           })}
         >
-          {row.original.status}
+          {t(row.original.status) || row.original.status}
         </span>
+      );
+    }
+  },
+  {
+    accessorKey: 'type',
+    header: t('type'),
+    cell: ({ row }) => {
+      const isTerminal = row.original.type === 'terminal' && row.original.pos;
+      if (isTerminal) {
+        return (
+          <div className="flex items-center">
+            <span className="flex gap-1 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium">
+              <SmartphoneNfcIcon className="h-4 w-4" />
+              {`${t('terminal')}: ${
+                row.original.pos?.startsWith('0x')
+                  ? formatAddress(row.original.pos)
+                  : row.original.pos
+              }`}
+            </span>
+          </div>
+        );
+      }
+
+      if (row.original.type === 'web' || !row.original.type) {
+        return (
+          <div className="flex items-center">
+            <span className="flex gap-1 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium">
+              <QrCodeIcon className="h-4 w-4" />
+              {t('qr')}
+            </span>
+          </div>
+        );
+      }
+      return (
+        <div className="flex items-center">
+          <span className="flex gap-1 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium">
+            <SmartphoneIcon className="h-4 w-4" />
+            {`${t('app')}`}
+          </span>
+        </div>
       );
     }
   },
@@ -164,23 +175,23 @@ export const OrdersPage: React.FC<Props> = ({
   orders,
   currencyLogo,
   pagination,
-  balance
+  total
 }) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
+  const t = useTranslations('order');
   // Initialize state from searchParams
-  const initialDateRange = searchParams.get('dateRange') || 'today';
+  const initialDateRange = searchParams.get('dateRange') || 'last7days';
   const initialStartDate = searchParams.get('startDate') || '';
   const initialEndDate = searchParams.get('endDate') || '';
 
-  const [dateRange, setDateRange] = React.useState(initialDateRange);
-  const [customStartDate, setCustomStartDate] =
-    React.useState(initialStartDate);
-  const [customEndDate, setCustomEndDate] = React.useState(initialEndDate);
+  const [dateRange, setDateRange] = useState(initialDateRange);
+  const [customStartDate, setCustomStartDate] = useState(initialStartDate);
+  const [customEndDate, setCustomEndDate] = useState(initialEndDate);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const onPaginationChange = React.useCallback(
+  const onPaginationChange = useCallback(
     (
       updaterOrValue:
         | PaginationState
@@ -232,13 +243,22 @@ export const OrdersPage: React.FC<Props> = ({
   };
 
   // Handle custom date changes
-  const handleCustomDateChange = () => {
-    if (dateRange === 'custom' && customStartDate && customEndDate) {
+  const handleCustomDateChange = (
+    startDate: Date | undefined,
+    endDate: Date | undefined
+  ) => {
+    if (
+      dateRange === 'custom' &&
+      (startDate || customStartDate) &&
+      (endDate || customEndDate)
+    ) {
+      setIsLoading(true);
       const params = new URLSearchParams(searchParams);
       params.set('dateRange', 'custom');
-      params.set('startDate', customStartDate);
-      params.set('endDate', customEndDate);
+      params.set('startDate', startDate?.toISOString() || customStartDate);
+      params.set('endDate', endDate?.toISOString() || customEndDate);
       params.set('offset', '0');
+      setIsLoading(false);
       router.push(`${pathname}?${params.toString()}`);
     }
   };
@@ -273,12 +293,12 @@ export const OrdersPage: React.FC<Props> = ({
 
   // Date range options
   const dateRangeOptions = [
-    { value: 'today', label: 'Today' },
-    { value: 'yesterday', label: 'Yesterday' },
-    { value: 'last7days', label: 'Last 7 Days' },
-    { value: 'thisMonth', label: 'This Month' },
-    { value: 'lastMonth', label: 'Last Month' },
-    { value: 'custom', label: 'Custom Range' }
+    { value: 'today', label: t('today') },
+    { value: 'yesterday', label: t('yesterday') },
+    { value: 'last7days', label: t('last7days') },
+    { value: 'thisMonth', label: t('thisMonth') },
+    { value: 'lastMonth', label: t('lastMonth') },
+    { value: 'custom', label: t('customRange') }
   ];
 
   return (
@@ -288,11 +308,10 @@ export const OrdersPage: React.FC<Props> = ({
           <div className="flex flex-col gap-2">
             <Heading
               title={place.name}
-              description={`Orders for ${place.name}`}
+              description={`${t('ordersFor')} ${place.name}`}
             />
             <p className="flex items-center gap-1 text-2xl font-bold">
-              <CurrencyLogo logo={currencyLogo} size={32} />{' '}
-              {formatCurrencyNumber(balance, 0)}
+              <CurrencyLogo logo={currencyLogo} size={32} /> {total}
             </p>
           </div>
           {/* Export CSV Button  */}
@@ -300,7 +319,7 @@ export const OrdersPage: React.FC<Props> = ({
             onClick={exportToCSV}
             className={cn(buttonVariants({ variant: 'outline' }), 'self-start')}
           >
-            Export as CSV
+            {t('exportAsCSV')}
           </button>
         </div>
         <Separator />
@@ -308,7 +327,7 @@ export const OrdersPage: React.FC<Props> = ({
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-4">
             <label htmlFor="dateRange" className="text-sm font-medium">
-              Date Range:
+              {t('dateRange')}
             </label>
             <select
               id="dateRange"
@@ -326,39 +345,48 @@ export const OrdersPage: React.FC<Props> = ({
 
           {/* Custom Date Range Inputs */}
           {dateRange === 'custom' && (
-            <div className="flex items-center gap-4">
+            <div className="flex items-center  gap-4">
               <div className="flex flex-col gap-1">
                 <label htmlFor="startDate" className="text-sm font-medium">
-                  Start Date:
+                  {t('startDate')}
                 </label>
-                <input
-                  type="date"
-                  id="startDate"
-                  value={customStartDate}
-                  onChange={(e) => setCustomStartDate(e.target.value)}
-                  onBlur={handleCustomDateChange}
-                  className="rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+
+                <DatePicker
+                  id="customStartDate"
+                  value={
+                    customStartDate ? new Date(customStartDate) : undefined
+                  }
+                  onChange={(date) => {
+                    setCustomStartDate(date?.toISOString() ?? '');
+                    handleCustomDateChange(date, undefined);
+                  }}
+                  placeholder="Select your date"
+                  className="w-full"
                 />
               </div>
               <div className="flex flex-col gap-1">
                 <label htmlFor="endDate" className="text-sm font-medium">
-                  End Date:
+                  {t('endDate')}
                 </label>
-                <input
-                  type="date"
-                  id="endDate"
-                  value={customEndDate}
-                  onChange={(e) => setCustomEndDate(e.target.value)}
-                  onBlur={handleCustomDateChange}
-                  className="rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+
+                <DatePicker
+                  id="customEndDate"
+                  value={customEndDate ? new Date(customEndDate) : undefined}
+                  onChange={(date) => {
+                    setCustomEndDate(date?.toISOString() ?? '');
+                    handleCustomDateChange(undefined, date);
+                  }}
+                  placeholder="Select your date"
+                  className="w-full"
                 />
               </div>
+              {isLoading && <Loader2 className="mt-5 h-4 w-4 animate-spin" />}
             </div>
           )}
         </div>
         <div className="w-[92vw] overflow-x-auto md:w-full">
           <DataTable
-            columns={createColumns(currencyLogo)}
+            columns={createColumns(currencyLogo, t)}
             data={orders}
             pageCount={Math.ceil(pagination.totalItems / pagination.limit)}
             pageSize={pagination.limit}

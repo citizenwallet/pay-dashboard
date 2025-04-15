@@ -8,11 +8,15 @@ import {
   getUserIdFromSessionAction,
   isUserAdminAction
 } from '@/actions/session';
-import { checkUserPlaceAccess } from '@/db/places';
+import { checkUserPlaceAccess, getPlaceById } from '@/db/places';
 import { getServiceRoleClient } from '@/db';
 import { getPayoutsbyPaceIdAction } from './action';
 import Config from '@/cw/community.json';
-import { CommunityConfig } from '@citizenwallet/sdk';
+import { CommunityConfig, getAccountBalance } from '@citizenwallet/sdk';
+import { getTranslations } from 'next-intl/server';
+import { formatCurrencyNumber } from '@/lib/currency';
+import CurrencyLogo from '@/components/currency-logo';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default async function PayoutsPage({
   params
@@ -20,13 +24,33 @@ export default async function PayoutsPage({
   params: Promise<{ businessId: string; placeId: string }>;
 }) {
   const resolvedParams = await params;
+  const t = await getTranslations('payouts');
+
+  const community = new CommunityConfig(Config);
+  const currencyLogo = community.community.logo;
 
   return (
     <>
       <PageContainer>
         <div className="space-y-4">
           <div className="flex items-start justify-between">
-            <Heading title="Payouts" description="Manage your Place payouts" />
+            <Suspense
+              fallback={
+                <div className="flex flex-col gap-2">
+                  <Heading
+                    title={t('payouts')}
+                    description={t('payoutsDescription')}
+                  />
+                  <div className="flex items-center gap-1 text-2xl font-bold">
+                    <span className="text-gray-500">{t('accountBalance')}</span>
+                    <CurrencyLogo logo={currencyLogo} size={32} />{' '}
+                    <Skeleton className="h-6 w-40" />
+                  </div>
+                </div>
+              }
+            >
+              <PayoutsHeader placeId={resolvedParams.placeId} />
+            </Suspense>
           </div>
           <Separator />
           <Suspense
@@ -40,6 +64,49 @@ export default async function PayoutsPage({
         </div>
       </PageContainer>
     </>
+  );
+}
+
+async function PayoutsHeader({ placeId }: { placeId: string }) {
+  const client = getServiceRoleClient();
+  const userId = await getUserIdFromSessionAction();
+  const admin = await isUserAdminAction();
+  const t = await getTranslations('payouts');
+
+  if (!admin) {
+    const hasPlaceAccess = await checkUserPlaceAccess(
+      client,
+      userId,
+      Number(placeId)
+    );
+    if (!hasPlaceAccess) {
+      throw new Error('You do not have access to this place');
+    }
+  }
+
+  const place = await getPlaceById(client, Number(placeId));
+  if (!place.data) {
+    throw new Error('Place not found');
+  }
+
+  const community = new CommunityConfig(Config);
+  const currencyLogo = community.community.logo;
+  const tokenDecimals = community.primaryToken.decimals;
+
+  const balance = await getAccountBalance(
+    community,
+    place.data.accounts[0] ?? ''
+  );
+
+  return (
+    <div className="flex flex-col gap-2">
+      <Heading title={t('payouts')} description={t('payoutsDescription')} />
+      <div className="flex items-center gap-1 text-2xl font-bold">
+        <span className="text-gray-500">{t('accountBalance')}</span>
+        <CurrencyLogo logo={currencyLogo} size={32} />
+        {formatCurrencyNumber(Number(balance ?? 0), tokenDecimals)}
+      </div>
+    </div>
   );
 }
 
@@ -65,8 +132,18 @@ async function PayoutsAsyncPage({
     }
   }
 
+  const place = await getPlaceById(client, Number(placeId));
+  if (!place.data) {
+    throw new Error('Place not found');
+  }
+
   const payouts = await getPayoutsbyPaceIdAction(Number(placeId));
   const community = new CommunityConfig(Config);
+
+  const balance = await getAccountBalance(
+    community,
+    place.data.accounts[0] ?? ''
+  );
 
   return (
     <PayoutDetailsPage
@@ -74,6 +151,10 @@ async function PayoutsAsyncPage({
       placeId={placeId}
       businessId={businessId}
       currencyLogo={community.community.logo}
+      balance={formatCurrencyNumber(
+        Number(balance),
+        community.primaryToken.decimals
+      )}
     />
   );
 }
