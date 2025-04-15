@@ -79,10 +79,19 @@ const createColumns = (
     header: t('fees'),
     cell: ({ row }) => {
       return (
-        <p className="flex w-8 items-center gap-1">
-          <CurrencyLogo logo={currencyLogo} size={18} />
-          {formatCurrencyNumber(row.original.fees)}
-        </p>
+        <div className="flex items-center gap-1">
+          <p
+            className={cn('flex items-center gap-1', {
+              'line-through':
+                row.original.status === 'refunded' && row.original.fees === 0,
+              'rounded-full bg-red-100 px-2 py-1 font-medium':
+                row.original.status === 'refunded' && row.original.fees > 0
+            })}
+          >
+            <CurrencyLogo logo={currencyLogo} size={18} />
+            {formatCurrencyNumber(row.original.fees)}
+          </p>
+        </div>
       );
     }
   },
