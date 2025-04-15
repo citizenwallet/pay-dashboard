@@ -5,8 +5,16 @@ import {
   PostgrestSingleResponse,
   SupabaseClient
 } from '@supabase/supabase-js';
+import { encodeBase64 } from 'ethers';
+import Stripe from 'stripe';
 
-export type OrderStatus = 'pending' | 'paid' | 'cancelled' | 'needs_minting';
+export type OrderStatus =
+  | 'pending'
+  | 'paid'
+  | 'cancelled'
+  | 'needs_minting'
+  | 'needs_burning'
+  | 'refunded';
 
 export interface Order {
   id: number;
@@ -25,6 +33,7 @@ export interface Order {
   tx_hash: string | null;
   type: 'web' | 'app' | 'terminal' | null;
   pos: string | null;
+  processor_tx: number | null;
 }
 
 // Helper function to calculate date range filters
@@ -218,7 +227,7 @@ export const getOrdersByPlace = async (
       .from('orders')
       .select()
       .eq('place_id', placeId)
-      .eq('status', 'paid')
+      .in('status', ['paid', 'refunded'])
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
   }
@@ -227,7 +236,7 @@ export const getOrdersByPlace = async (
     .from('orders')
     .select()
     .eq('place_id', placeId)
-    .eq('status', 'paid')
+    .in('status', ['paid', 'refunded'])
     .gte('created_at', range.start)
     .lte('created_at', range.end)
     .order('created_at', { ascending: false })

@@ -66,10 +66,19 @@
     "pending": "In behandeling",
     "paid": "Betaald",
     "cancelled": "Geannuleerd",
-    "needs_minting": "Needs Minting",
+    "needs_minting": "Nodig voor minten",
+    "needs_burning": "Nodig voor verbranden",
+    "refunded": "Terugbetaald",
     "terminal": "Terminal",
     "qr": "QR-code",
-    "app": "App"
+    "app": "App",
+    "refund": "Terugbetalen",
+    "refundTitle": "Deze bestelling terugbetalen",
+    "refundDescription": "Dit zal de klant terugbetalen en kan niet ongedaan worden gemaakt.",
+    "cancel": "Annuleren",
+    "confirm": "Bevestigen",
+    "refundSuccess": "Bestelling succesvol terugbetaald",
+    "refundError": "Terugbetaling van bestelling mislukt"
   },
   "qr": {
     "qrCode": "QR-code",

@@ -170,7 +170,11 @@ export const totalPayoutAmountAndCount = async (
   client: SupabaseClient,
   payoutId: string
 ) => {
-  const data = await client.from('orders').select().eq('payout_id', payoutId);
+  const data = await client
+    .from('orders')
+    .select()
+    .eq('payout_id', payoutId)
+    .in('status', ['paid', 'needs_minting']);
   const totalAmount = data.data?.reduce((acc, order) => acc + order.total, 0);
   const totalFees = data.data?.reduce((acc, order) => acc + order.fees, 0);
   const totalNet = totalAmount - totalFees;
