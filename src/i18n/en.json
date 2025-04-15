@@ -67,9 +67,18 @@
     "paid": "Paid",
     "cancelled": "Cancelled",
     "needs_minting": "Needs Minting",
+    "needs_burning": "Needs Burning",
+    "refunded": "Refunded",
     "terminal": "Terminal",
     "qr": "QR Code",
-    "app": "App"
+    "app": "App",
+    "refund": "Refund",
+    "refundTitle": "Refund this order",
+    "refundDescription": "This will refund the customer and cannot be reversed.",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "refundSuccess": "Order refunded successfully",
+    "refundError": "Failed to refund order"
   },
   "qr": {
     "qrCode": "QR Code",

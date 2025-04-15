@@ -67,9 +67,18 @@
     "paid": "Payé",
     "cancelled": "Annulé",
     "needs_minting": "Nécessite d'être émis",
+    "needs_burning": "Nécessite d'être brûlé",
+    "refunded": "Remboursé",
     "terminal": "Terminal",
     "qr": "Code QR",
-    "app": "App"
+    "app": "App",
+    "refund": "Rembourser",
+    "refundTitle": "Rembourser cette commande",
+    "refundDescription": "Cela remboursera le client et ne pourra pas être annulé.",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "refundSuccess": "Commande remboursée avec succès",
+    "refundError": "Échec du remboursement de la commande"
   },
   "qr": {
     "qrCode": "Code QR",

@@ -1,7 +1,11 @@
 'use server';
+import { getUserIdFromSessionAction } from '@/actions/session';
+import { isUserLinkedToPlaceAction } from '@/actions/session';
 import { getServiceRoleClient } from '@/db';
-import { getOrdersByPlaceWithOutLimit } from '@/db/orders';
-import { getRefund } from '@/db/orders';
+import { getOrder, getOrdersByPlaceWithOutLimit } from '@/db/orders';
+import { getOrderProcessorTx } from '@/db/ordersProcessorTx';
+import { createStripeRefund } from '@/services/stripe';
+import { createVivaRefund } from '@/services/viva';
 
 export async function exportCsvAction(
   place_id: number,
@@ -53,7 +57,61 @@ export async function exportCsvAction(
   return csvData;
 }
 
-export async function postRefundAction(transactionId: number) {
+export async function postRefundAction(orderId: number) {
   const client = getServiceRoleClient();
-  return await getRefund(client, transactionId);
+
+  const userId = await getUserIdFromSessionAction();
+
+  const { data: orderData, error: orderError } = await getOrder(
+    client,
+    orderId
+  );
+  if (orderError) {
+    throw new Error('Order not found');
+  }
+
+  if (orderData.status === 'refunded') {
+    throw new Error('Order already refunded');
+  }
+
+  console.log(orderData);
+
+  if (!orderData.processor_tx) {
+    throw new Error('Order has no processor tx');
+  }
+
+  const place_id = orderData.place_id;
+
+  const res = await isUserLinkedToPlaceAction(client, userId, place_id);
+  if (!res) {
+    throw new Error('User does not have access to this place');
+  }
+
+  const { data: processorTx, error: processorTxError } =
+    await getOrderProcessorTx(client, orderData.processor_tx);
+  if (!processorTx || processorTxError) {
+    throw new Error('Order has no processor tx');
+  }
+
+  switch (processorTx.type) {
+    case 'stripe': {
+      const refunded = await createStripeRefund(processorTx.processor_tx_id);
+      if (!refunded) {
+        throw new Error('Unable to refund this order');
+      }
+      return;
+    }
+    case 'viva': {
+      const refunded = await createVivaRefund(
+        processorTx.processor_tx_id,
+        orderData.total
+      );
+      if (!refunded) {
+        throw new Error('Unable to refund this order');
+      }
+      return;
+    }
+    default:
+      throw new Error('Unable to refund this order');
+  }
 }

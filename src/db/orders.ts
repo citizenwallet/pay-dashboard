@@ -8,7 +8,13 @@ import {
 import { encodeBase64 } from 'ethers';
 import Stripe from 'stripe';
 
-export type OrderStatus = 'pending' | 'paid' | 'cancelled' | 'needs_minting';
+export type OrderStatus =
+  | 'pending'
+  | 'paid'
+  | 'cancelled'
+  | 'needs_minting'
+  | 'needs_burning'
+  | 'refunded';
 
 export interface Order {
   id: number;
@@ -27,7 +33,7 @@ export interface Order {
   tx_hash: string | null;
   type: 'web' | 'app' | 'terminal' | null;
   pos: string | null;
-  processor_tx: string | null;
+  processor_tx: number | null;
 }
 
 // Helper function to calculate date range filters
@@ -221,7 +227,7 @@ export const getOrdersByPlace = async (
       .from('orders')
       .select()
       .eq('place_id', placeId)
-      .eq('status', 'paid')
+      .in('status', ['paid', 'refunded'])
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
   }
@@ -230,7 +236,7 @@ export const getOrdersByPlace = async (
     .from('orders')
     .select()
     .eq('place_id', placeId)
-    .eq('status', 'paid')
+    .in('status', ['paid', 'refunded'])
     .gte('created_at', range.start)
     .lte('created_at', range.end)
     .order('created_at', { ascending: false })
@@ -334,71 +340,6 @@ export const getPayoutOrders = async (
   return client.from('orders').select().eq('payout_id', payoutId);
 };
 
-export async function getRefund(
-  supabase: SupabaseClient,
-  orderId: number
-): Promise<boolean> {
-  const { data, error } = await supabase
-    .from('orders')
-    .select('*')
-    .eq('id', orderId)
-    .limit(1);
-  if (error) throw error;
-
-  const order = data[0];
-
-  if (order.processor_tx) {
-    const { data: processorData, error: processorError } = await supabase
-      .from('orders_processor_tx')
-      .select('*')
-      .eq('id', orderId)
-      .limit(1);
-
-    if (processorError) throw processorError;
-
-    const orderProcess = processorData?.[0];
-
-    if (orderProcess) {
-      switch (orderProcess.type) {
-        case 'viva':
-          const id = orderProcess.processor_tx_id;
-          const amount = order.total;
-          const url = `${process.env.VIVA_API_URL}/api/transactions/${id}?amount=${amount}`;
-
-          const token = encodeBase64(
-            `${process.env.VIVA_API_KEY}:${process.env.VIVA_API_SECRET}`
-          );
-
-          const options = {
-            method: 'DELETE',
-            headers: {
-              Authorization: `Basic ${token}`
-            }
-          };
-          const res = await fetch(url, options);
-          if (res.ok) {
-            return true;
-          }
-          break;
-        case 'stripe':
-          const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-            apiVersion: '2025-02-24.acacia'
-          });
-          const refundRes = await stripe.refunds.create(
-            orderProcess.processor_tx_id
-          );
-
-          if (refundRes.status === 'succeeded') {
-            return true;
-          }
-          break;
-      }
-    }
-  }
-
-  // Return false if no refundable
-  return false;
-}
 export const getPayoutOrdersForTable = async (
   client: SupabaseClient,
   payoutId: number,

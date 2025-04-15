@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { formatAddress } from '@/lib/address';
 import { DatePicker } from '@/components/ui/DatePicker';
+import { AlertModal } from '@/components/modal/alert-modal';
 
 interface Props {
   place: Place;
@@ -40,7 +41,8 @@ interface Props {
 
 const createColumns = (
   currencyLogo: string,
-  t: (key: string) => string
+  t: (key: string) => string,
+  onRefundClick: (orderId: number) => void
 ): ColumnDef<Order>[] => [
   {
     accessorKey: 'id',
@@ -61,7 +63,11 @@ const createColumns = (
     header: t('total'),
     cell: ({ row }) => {
       return (
-        <p className="flex w-8 items-center gap-1">
+        <p
+          className={cn('flex w-8 items-center gap-1', {
+            'line-through': row.original.status === 'refunded'
+          })}
+        >
           <CurrencyLogo logo={currencyLogo} size={18} />
           {formatCurrencyNumber(row.original.total)}
         </p>
@@ -85,7 +91,11 @@ const createColumns = (
     header: t('net'),
     cell: ({ row }) => {
       return (
-        <p className="flex w-8 items-center gap-1">
+        <p
+          className={cn('flex w-8 items-center gap-1', {
+            'line-through': row.original.status === 'refunded'
+          })}
+        >
           <CurrencyLogo logo={currencyLogo} size={18} />
           {formatCurrencyNumber(row.original.total - row.original.fees)}
         </p>
@@ -101,7 +111,8 @@ const createColumns = (
           className={cn('rounded-full px-2 py-1 text-xs font-medium', {
             'bg-green-100 text-green-800': row.original.status === 'paid',
             'bg-yellow-100 text-yellow-800': row.original.status === 'pending',
-            'bg-red-100 text-red-800': row.original.status === 'cancelled'
+            'bg-red-100 text-red-800': row.original.status === 'cancelled',
+            'bg-gray-100 text-gray-800': row.original.status === 'refunded'
           })}
         >
           {t(row.original.status) || row.original.status}
@@ -159,9 +170,9 @@ const createColumns = (
     cell: ({ row }) => {
       return (
         <>
-          {row.original?.processor_tx && (
-            <Button onClick={() => postRefundAction(row.original.id)}>
-              Refund
+          {row.original?.processor_tx && row.original?.status === 'paid' && (
+            <Button onClick={() => onRefundClick(row.original.id)}>
+              {t('refund')}
             </Button>
           )}
         </>
@@ -190,6 +201,9 @@ export const OrdersPage: React.FC<Props> = ({
   const [customStartDate, setCustomStartDate] = useState(initialStartDate);
   const [customEndDate, setCustomEndDate] = useState(initialEndDate);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRefundModalOpen, setIsRefundModalOpen] = useState(false);
+  const [orderToRefund, setOrderToRefund] = useState<number | null>(null);
+  const [refundLoading, setRefundLoading] = useState(false);
 
   const onPaginationChange = useCallback(
     (
@@ -301,6 +315,29 @@ export const OrdersPage: React.FC<Props> = ({
     { value: 'custom', label: t('customRange') }
   ];
 
+  const handleRefundClick = (orderId: number) => {
+    setOrderToRefund(orderId);
+    setIsRefundModalOpen(true);
+  };
+
+  const handleRefundConfirm = async () => {
+    if (!orderToRefund) return;
+
+    try {
+      setRefundLoading(true);
+      await postRefundAction(orderToRefund);
+      toast.success(t('refundSuccess'));
+      router.refresh();
+    } catch (error) {
+      toast.error(t('refundError'));
+      console.error(error);
+    } finally {
+      setRefundLoading(false);
+      setIsRefundModalOpen(false);
+      setOrderToRefund(null);
+    }
+  };
+
   return (
     <PageContainer>
       <div className="space-y-4">
@@ -386,7 +423,7 @@ export const OrdersPage: React.FC<Props> = ({
         </div>
         <div className="w-[92vw] overflow-x-auto md:w-full">
           <DataTable
-            columns={createColumns(currencyLogo, t)}
+            columns={createColumns(currencyLogo, t, handleRefundClick)}
             data={orders}
             pageCount={Math.ceil(pagination.totalItems / pagination.limit)}
             pageSize={pagination.limit}
@@ -395,6 +432,17 @@ export const OrdersPage: React.FC<Props> = ({
           />
         </div>
       </div>
+
+      <AlertModal
+        isOpen={isRefundModalOpen}
+        onClose={() => setIsRefundModalOpen(false)}
+        onConfirm={handleRefundConfirm}
+        loading={refundLoading}
+        title={t('refundTitle')}
+        description={t('refundDescription')}
+        cancelText={t('cancel')}
+        confirmText={t('refund')}
+      />
     </PageContainer>
   );
 };
