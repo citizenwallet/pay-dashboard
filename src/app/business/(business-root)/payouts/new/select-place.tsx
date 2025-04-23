@@ -41,14 +41,24 @@ export default function SelectPlace({
   setSelectedDate?: Date;
 }) {
   const t = useTranslations('addingpayout');
+
+  const normalizeDate = (date: Date): Date => {
+    const normalized = new Date(date);
+    normalized.setHours(0, 0, 0, 0);
+    return normalized;
+  };
+
+
   const selectedPlaceRef = useRef<string | null>(null);
   const [placeId, setPlaceId] = useState<number | null>(
     selectedPlaceId ? Number(selectedPlaceId) : null
   );
   const [date, setDate] = useState<DateRange | undefined>({
-    from: setSelectedDate ? setSelectedDate : new Date(),
-    to: setSelectedDate ? new Date() : addDays(new Date(), 7)
+    from: setSelectedDate ? setSelectedDate : normalizeDate(new Date()),
+    to: setSelectedDate ? new Date() : normalizeDate(addDays(new Date(), 7))
   });
+
+
 
   //for get the date range from the date picker
   const dateRangeRef = useRef<DateRange | undefined>({
