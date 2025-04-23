@@ -82,8 +82,10 @@ const getDateRangeFilter = (
     case 'custom':
       if (!customStartDate || !customEndDate) return null;
       startDate = new Date(customStartDate);
+
+      startDate.setUTCHours(0, 0, 0, 0);
       endDate = new Date(customEndDate);
-      endDate.setHours(23, 59, 59, 999);
+      endDate.setUTCHours(23, 59, 59, 999);
       break;
     default:
       return null; // No filter if dateRange is invalid
