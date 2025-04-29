@@ -31,7 +31,7 @@ export const getRecentSessionRequestCount = async (
     .from('session_request')
     .select('count')
     .eq('salt', salt)
-    .lte('created_at', new Date(Date.now() - 10 * 60 * 1000).toISOString())
+    .gte('created_at', new Date(Date.now() - 10 * 60 * 1000).toISOString())
     .maybeSingle();
   if (error) {
     return 0;
@@ -48,7 +48,7 @@ export const getDailySessionRequestCount = async (
     .from('session_request')
     .select('count')
     .eq('salt', salt)
-    .lte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+    .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
     .maybeSingle();
   if (error) {
     return 0;
@@ -65,7 +65,7 @@ export const getImmediateSessionRequestCount = async (
     .from('session_request')
     .select('count')
     .eq('salt', salt)
-    .lte('created_at', new Date(Date.now() - 30 * 1000).toISOString())
+    .gte('created_at', new Date(Date.now() - 30 * 1000).toISOString())
     .maybeSingle();
   if (error) {
     return 0;
