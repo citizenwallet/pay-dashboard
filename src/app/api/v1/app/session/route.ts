@@ -18,6 +18,13 @@ import { getBytes, Wallet } from 'ethers';
 import communityJson from '@/cw/community.json';
 import { CommunityConfig } from '@citizenwallet/sdk';
 import { sendOtpSMS } from '@/services/brevo';
+import {
+  createSessionRequest,
+  getDailySessionRequestCount,
+  getImmediateSessionRequestCount,
+  getRecentSessionRequestCount
+} from '@/db/sessionRequest';
+import { getServiceRoleClient } from '@/db';
 
 interface SessionRequest {
   provider: string;
@@ -61,14 +68,6 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  // TODO: temporary until we verify endpoint calls
-  if (!sessionRequest.source.startsWith('+32')) {
-    return NextResponse.json({
-      status: StatusCodes.BAD_REQUEST, // 400
-      message: ReasonPhrases.BAD_REQUEST // "Bad Request" message
-    });
-  }
-
   const isValid = await verifySessionRequest(
     sessionRequest.provider,
     sessionRequest.owner,
@@ -102,6 +101,47 @@ export async function POST(req: NextRequest) {
     sessionRequest.type
   );
 
+  const client = getServiceRoleClient();
+
+  // max 1 request per 30 seconds
+  const immediateSessionRequestCount = await getImmediateSessionRequestCount(
+    client,
+    sessionSalt
+  );
+
+  if (immediateSessionRequestCount > 0) {
+    return NextResponse.json({
+      status: StatusCodes.TOO_MANY_REQUESTS, // 429
+      message: ReasonPhrases.TOO_MANY_REQUESTS // "Too Many Requests" message
+    });
+  }
+
+  // max 3 requests per 10 minutes
+  const recentSessionRequestCount = await getRecentSessionRequestCount(
+    client,
+    sessionSalt
+  );
+
+  if (recentSessionRequestCount >= 3) {
+    return NextResponse.json({
+      status: StatusCodes.TOO_MANY_REQUESTS, // 429
+      message: ReasonPhrases.TOO_MANY_REQUESTS // "Too Many Requests" message
+    });
+  }
+
+  // max 20 requests per day
+  const dailySessionRequestCount = await getDailySessionRequestCount(
+    client,
+    sessionSalt
+  );
+
+  if (dailySessionRequestCount >= 20) {
+    return NextResponse.json({
+      status: StatusCodes.TOO_MANY_REQUESTS, // 429
+      message: ReasonPhrases.TOO_MANY_REQUESTS // "Too Many Requests" message
+    });
+  }
+
   const sessionRequestHash = generateSessionRequestHash(
     sessionRequest.provider,
     sessionRequest.owner,
@@ -131,6 +171,8 @@ export async function POST(req: NextRequest) {
 
   if (sessionSalt !== demoSalt) {
     await sendOtpSMS(sessionRequest.source, challenge);
+
+    await createSessionRequest(client, sessionSalt);
   }
 
   return NextResponse.json({
