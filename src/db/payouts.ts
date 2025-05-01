@@ -19,6 +19,15 @@ export interface Payout {
   transferDate: string | null;
 }
 
+export interface PayoutWithBurnAndTransfer extends Payout {
+  payout_burn: {
+    created_at: string;
+  } | null;
+  payout_transfer: {
+    created_at: string;
+  } | null;
+}
+
 export const getPayouts = async (
   client: SupabaseClient,
   limit: number,
@@ -116,8 +125,15 @@ export const updatePayoutTransfer = async (
 export const getPayoutsByPlaceId = async (
   client: SupabaseClient,
   placeId: string
-): Promise<PostgrestSingleResponse<Payout[]>> => {
-  return await client.from('payouts').select('*').eq('place_id', placeId);
+): Promise<PostgrestSingleResponse<PayoutWithBurnAndTransfer[]>> => {
+  return await client
+    .from('payouts')
+    .select(
+      `*,payout_burn(created_at), 
+      payout_transfer(created_at)`
+    )
+    .eq('place_id', placeId)
+    .order('to', { ascending: false });
 };
 
 export const getPayoutBurnId = async (

@@ -2,7 +2,7 @@
 
 import CurrencyLogo from '@/components/currency-logo';
 import { DataTable } from '@/components/ui/data-table';
-import { Payout } from '@/db/payouts';
+import { PayoutWithBurnAndTransfer } from '@/db/payouts';
 import { formatCurrencyNumber } from '@/lib/currency';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -14,7 +14,7 @@ export default function PayoutDetailsPage({
   currencyLogo,
   balance
 }: {
-  payouts: Payout[];
+  payouts: PayoutWithBurnAndTransfer[];
   placeId: string;
   businessId: string;
   currencyLogo: string;
@@ -62,38 +62,14 @@ export default function PayoutDetailsPage({
           },
 
           {
-            accessorKey: 'burn',
-            header: t('burn'),
+            accessorKey: 'completed',
+            header: t('completed'),
             cell: ({ row }) => (
               <div className="flex items-center space-x-2">
-                <span className="text-red-500">
-                  {row.original.burn ? '🔥' : '-'}
-                </span>
                 <span>
-                  {row.original.burnDate
-                    ? new Date(row.original.burnDate).toLocaleDateString(
-                        'en-GB'
-                      )
-                    : '-'}
-                </span>
-              </div>
-            )
-          },
-
-          {
-            accessorKey: 'transfer',
-            header: t('transfer'),
-            cell: ({ row }) => (
-              <div className="flex items-center space-x-2">
-                <span className="text-blue-500">
-                  {row.original.transfer ? '🏛️' : '-'}
-                </span>
-                <span>
-                  {row.original.transferDate
-                    ? new Date(row.original.transferDate).toLocaleDateString(
-                        'en-GB'
-                      )
-                    : '-'}
+                  {row.original.payout_burn?.created_at &&
+                    row.original.payout_transfer?.created_at &&
+                    '✅'}
                 </span>
               </div>
             )
