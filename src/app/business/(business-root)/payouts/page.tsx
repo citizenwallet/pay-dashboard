@@ -73,6 +73,7 @@ async function AsyncPayoutsLoader({
     column,
     order
   );
+
   const { count, error } = await client
     .from('payouts')
     .select('*', { count: 'exact' });

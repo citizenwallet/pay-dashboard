@@ -18,6 +18,9 @@ interface FullPayout {
   created_at: string;
   updated_at: string;
   user_id: number;
+  users: {
+    email: string;
+  };
   from: string;
   to: string;
   burn: number | null;
@@ -207,6 +210,51 @@ export default function PayoutDetailsPage({
         <div className="flex h-16 items-center">
           {row.original.created_at
             ? new Date(row.original.created_at).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              })
+            : '-'}
+        </div>
+      )
+    },
+    {
+      accessorKey: 'users',
+      header: ({ column }: { column: Column<FullPayout> }) => {
+        return <div className="flex h-16 items-center">{t('by')}</div>;
+      },
+      cell: ({ row }: { row: Row<FullPayout> }) => (
+        <div className="flex h-16 items-center">
+          {row.original.users?.email}
+        </div>
+      )
+    },
+    {
+      accessorKey: 'from',
+      header: ({ column }: { column: Column<FullPayout> }) => {
+        return <div className="flex h-16 items-center">{t('from')}</div>;
+      },
+      cell: ({ row }: { row: Row<FullPayout> }) => (
+        <div className="flex h-16 items-center">
+          {row.original.from
+            ? new Date(row.original.from).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              })
+            : '-'}
+        </div>
+      )
+    },
+    {
+      accessorKey: 'to',
+      header: ({ column }: { column: Column<FullPayout> }) => {
+        return <div className="flex h-16 items-center">{t('to')}</div>;
+      },
+      cell: ({ row }: { row: Row<FullPayout> }) => (
+        <div className="flex h-16 items-center">
+          {row.original.to
+            ? new Date(row.original.to).toLocaleString('en-US', {
                 year: 'numeric',
                 month: 'short',
                 day: 'numeric'

@@ -19,6 +19,9 @@ interface FullPayout {
   created_at: string;
   updated_at: string;
   user_id: number;
+  users: {
+    email: string;
+  };
   from: string;
   to: string;
   burn: number | null;
@@ -66,6 +69,7 @@ export async function getAllPayoutAction(
     order,
     search
   );
+  console.log(payoutResponse?.error);
   const payouts: FullPayout[] = payoutResponse.data ?? [];
   return payouts;
 }

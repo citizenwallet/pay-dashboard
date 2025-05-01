@@ -32,6 +32,7 @@ export const getPayouts = async (
       .from('payouts')
       .select(
         `*, 
+      users!inner(email),
       places!inner(name), 
       businesses!inner(name),
       payout_burn(created_at), 
@@ -47,6 +48,7 @@ export const getPayouts = async (
     .from('payouts')
     .select(
       `*, 
+      users!inner(email),
       places!inner(name), 
       businesses!inner(name), 
       payout_burn(created_at), 
