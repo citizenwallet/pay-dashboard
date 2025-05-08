@@ -8,10 +8,11 @@ import { useCallback } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from 'next-intl';
-import { SmartphoneIcon } from 'lucide-react';
+import { DatabaseIcon, SmartphoneIcon } from 'lucide-react';
 import { QrCodeIcon } from 'lucide-react';
 import { SmartphoneNfcIcon } from 'lucide-react';
 import { formatAddress } from '@/lib/address';
+import { cn } from '@/lib/utils';
 
 export default function OrderViewTable({
   orders,
@@ -122,8 +123,58 @@ export default function OrderViewTable({
       },
       cell: ({ row }) => {
         return (
-          <p className="flex w-8 items-center gap-1">
+          <p
+            className={cn('flex w-8 items-center gap-1', {
+              'line-through': row.original.status === 'refunded'
+            })}
+          >
             <CurrencyLogo logo={currencyLogo} size={18} />
+            {row.original.status === 'correction' &&
+              row.original.total > 0 &&
+              '-'}
+            {formatCurrencyNumber(row.original.total)}
+          </p>
+        );
+      }
+    },
+    {
+      accessorKey: 'fees',
+      header: t('fees'),
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center gap-1">
+            <p
+              className={cn('flex items-center gap-1', {
+                'line-through':
+                  row.original.status === 'refunded' && row.original.fees === 0,
+                'rounded-full bg-red-100 px-2 py-1 font-medium':
+                  row.original.status === 'refunded' && row.original.fees > 0
+              })}
+            >
+              <CurrencyLogo logo={currencyLogo} size={18} />
+              {row.original.status === 'correction' &&
+                row.original.fees > 0 &&
+                '-'}
+              {formatCurrencyNumber(row.original.fees)}
+            </p>
+          </div>
+        );
+      }
+    },
+    {
+      accessorKey: 'net',
+      header: t('net'),
+      cell: ({ row }) => {
+        return (
+          <p
+            className={cn('flex w-8 items-center gap-1', {
+              'line-through': row.original.status === 'refunded'
+            })}
+          >
+            <CurrencyLogo logo={currencyLogo} size={18} />
+            {row.original.status === 'correction' &&
+              row.original.total > 0 &&
+              '-'}
             {formatCurrencyNumber(row.original.total - row.original.fees)}
           </p>
         );
@@ -140,6 +191,16 @@ export default function OrderViewTable({
             <div className="flex items-center gap-2">
               <div className="rounded-full bg-yellow-300 px-2 py-1 text-yellow-800">
                 {t('needsMinting')}
+              </div>
+            </div>
+          );
+        }
+
+        if (row.original.status === 'correction') {
+          return (
+            <div className="flex items-center gap-2">
+              <div className="rounded-full bg-gray-300 px-2 py-1 text-gray-800">
+                {t('correction')}
               </div>
             </div>
           );
@@ -189,6 +250,18 @@ export default function OrderViewTable({
             </div>
           );
         }
+
+        if (row.original.type === 'system') {
+          return (
+            <div className="flex items-center">
+              <span className="flex gap-1 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium">
+                <DatabaseIcon className="h-4 w-4" />
+                {`${t('system')}`}
+              </span>
+            </div>
+          );
+        }
+
         return (
           <div className="flex items-center">
             <span className="flex gap-1 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium">
@@ -197,6 +270,12 @@ export default function OrderViewTable({
             </span>
           </div>
         );
+      }
+    },
+    {
+      accessorKey: 'description',
+      header: ({ column }: { column: Column<Order> }) => {
+        return <div>{t('description')}</div>;
       }
     }
   ];

@@ -68,6 +68,9 @@ const createColumns = (
           })}
         >
           <CurrencyLogo logo={currencyLogo} size={18} />
+          {row.original.status === 'correction' &&
+            row.original.total > 0 &&
+            '-'}
           {formatCurrencyNumber(row.original.total)}
         </p>
       );
@@ -88,6 +91,9 @@ const createColumns = (
             })}
           >
             <CurrencyLogo logo={currencyLogo} size={18} />
+            {row.original.status === 'correction' &&
+              row.original.fees > 0 &&
+              '-'}
             {formatCurrencyNumber(row.original.fees)}
           </p>
         </div>
@@ -105,6 +111,9 @@ const createColumns = (
           })}
         >
           <CurrencyLogo logo={currencyLogo} size={18} />
+          {row.original.status === 'correction' &&
+            row.original.total > 0 &&
+            '-'}
           {formatCurrencyNumber(row.original.total - row.original.fees)}
         </p>
       );

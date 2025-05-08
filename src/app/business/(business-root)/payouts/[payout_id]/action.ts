@@ -9,6 +9,8 @@ import {
   updatePayoutTransfer
 } from '@/db/payouts';
 import { createTransfer, getTransferById } from '@/db/transfer';
+import { getFnsLocale } from '@/i18n';
+import { format } from 'date-fns';
 
 export async function getPayoutAction(
   payout_id: string,
@@ -29,7 +31,10 @@ export async function getPayoutAction(
   return payout;
 }
 
-export async function getPayoutCSVAction(payout_id: string) {
+export async function getPayoutCSVAction(
+  payout_id: string,
+  csvHeaders: string[]
+) {
   const client = getServiceRoleClient();
   const payout = await getPayoutOrders(client, Number(payout_id));
 
@@ -39,31 +44,36 @@ export async function getPayoutCSVAction(payout_id: string) {
 
   const orders = payout.data;
 
-  const csvHeaders = [
-    'ID',
-    'Created At',
-    'Total',
-    'Due',
-    'Status',
-    'Type',
-    'Fees',
-    'Place ID'
-  ];
+  const locale = await getFnsLocale();
 
   const csvData = [
     csvHeaders.join(','),
-    ...orders.map((order) =>
-      [
+    ...orders.map((order) => {
+      const net = order.total - order.fees;
+
+      const isCorrection = order.status === 'correction';
+
+      return [
         order.id,
-        order.created_at,
-        order.total,
-        order.due,
+        order.created_at
+          ? format(new Date(order.created_at), 'P', { locale })
+          : '',
+        order.created_at
+          ? format(new Date(order.created_at), 'p', { locale })
+          : '',
+        `${isCorrection && order.total > 0 ? '-' : ''} ${(
+          order.total / 100
+        ).toFixed(2)}`,
+        `${isCorrection && order.fees > 0 ? '-' : ''} ${(
+          order.fees / 100
+        ).toFixed(2)}`,
+        `${isCorrection && net > 0 ? '-' : ''} ${(net / 100).toFixed(2)}`,
         order.status,
         order.type,
-        order.fees,
-        order.place_id
-      ].join(',')
-    )
+        order.pos,
+        order.description
+      ].join(',');
+    })
   ].join('\n');
 
   return csvData;

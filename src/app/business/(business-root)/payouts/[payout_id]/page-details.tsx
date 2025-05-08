@@ -111,7 +111,20 @@ export default function PayoutDetailsPage({
   };
 
   const handleCSVDownload = async () => {
-    const csvData = await getPayoutCSVAction(payout_id);
+    const csvHeaders = [
+      t('id'),
+      t('date'),
+      t('time'),
+      t('total'),
+      t('fees'),
+      t('net'),
+      t('status'),
+      t('type'),
+      t('terminal'),
+      t('description')
+    ];
+
+    const csvData = await getPayoutCSVAction(payout_id, csvHeaders);
 
     if (!csvData.trim()) {
       toast.error(t('noOrdersFound'));
