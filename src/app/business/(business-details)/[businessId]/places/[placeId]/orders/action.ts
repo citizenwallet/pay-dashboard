@@ -4,12 +4,15 @@ import { isUserLinkedToPlaceAction } from '@/actions/session';
 import { getServiceRoleClient } from '@/db';
 import { getOrder, getOrdersByPlaceWithOutLimit } from '@/db/orders';
 import { getOrderProcessorTx } from '@/db/ordersProcessorTx';
+import { getFnsLocale } from '@/i18n';
 import { createStripeRefund } from '@/services/stripe';
 import { createVivaRefund } from '@/services/viva';
+import { format } from 'date-fns';
 
 export async function exportCsvAction(
   place_id: number,
   dateRange: string,
+  csvHeaders: string[],
   customStartDate?: string,
   customEndDate?: string
 ) {
@@ -28,30 +31,36 @@ export async function exportCsvAction(
 
   const orders = orderResponse.data;
 
-  const csvHeaders = [
-    'ID',
-    'Created At',
-    'Total',
-    'Due',
-    'Status',
-    'Type',
-    'Fees',
-    'Place ID'
-  ];
+  const locale = await getFnsLocale();
+
   const csvData = [
     csvHeaders.join(','),
-    ...orders.map((order) =>
-      [
+    ...orders.map((order) => {
+      const net = order.total - order.fees;
+
+      const isCorrection = order.status === 'correction';
+
+      return [
         order.id,
-        order.created_at,
-        order.total,
-        order.due,
+        order.created_at
+          ? format(new Date(order.created_at), 'P', { locale })
+          : '',
+        order.created_at
+          ? format(new Date(order.created_at), 'p', { locale })
+          : '',
+        `${isCorrection && order.total > 0 ? '-' : ''} ${(
+          order.total / 100
+        ).toFixed(2)}`,
+        `${isCorrection && order.fees > 0 ? '-' : ''} ${(
+          order.fees / 100
+        ).toFixed(2)}`,
+        `${isCorrection && net > 0 ? '-' : ''} ${(net / 100).toFixed(2)}`,
         order.status,
         order.type,
-        order.fees,
-        order.place_id
-      ].join(',')
-    )
+        order.pos,
+        order.description
+      ].join(',');
+    })
   ].join('\n');
 
   return csvData;

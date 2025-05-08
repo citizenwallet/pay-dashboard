@@ -16,7 +16,6 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { exportCsvAction, postRefundAction } from '../action';
-import Link from 'next/link';
 import {
   Loader2,
   QrCodeIcon,
@@ -288,9 +287,23 @@ export const OrdersPage: React.FC<Props> = ({
 
   // Export to CSV function
   const exportToCSV = async () => {
+    const csvHeaders = [
+      t('id'),
+      t('date'),
+      t('time'),
+      t('total'),
+      t('fees'),
+      t('net'),
+      t('status'),
+      t('type'),
+      t('terminal'),
+      t('description')
+    ];
+
     const csvData = await exportCsvAction(
       place.id,
       dateRange,
+      csvHeaders,
       customStartDate,
       customEndDate
     );

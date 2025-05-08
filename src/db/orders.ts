@@ -14,7 +14,8 @@ export type OrderStatus =
   | 'cancelled'
   | 'needs_minting'
   | 'needs_burning'
-  | 'refunded';
+  | 'refunded'
+  | 'correction';
 
 export interface Order {
   id: number;
@@ -255,7 +256,7 @@ export const getOrdersByPlaceCount = async (
     .from('orders')
     .select('*', { count: 'exact', head: true })
     .eq('place_id', placeId)
-    .eq('status', 'paid');
+    .in('status', ['paid', 'refunded', 'correction']);
 
   if (range) {
     query = query.gte('created_at', range.start).lte('created_at', range.end);
@@ -278,7 +279,7 @@ export const getOrdersByPlaceWithOutLimit = async (
       .from('orders')
       .select()
       .eq('place_id', placeId)
-      .eq('status', 'paid')
+      .in('status', ['paid', 'refunded', 'correction'])
       .order('created_at', { ascending: false });
   }
 
@@ -286,7 +287,7 @@ export const getOrdersByPlaceWithOutLimit = async (
     .from('orders')
     .select()
     .eq('place_id', placeId)
-    .eq('status', 'paid')
+    .in('status', ['paid', 'refunded', 'correction'])
     .gte('created_at', range.start)
     .lte('created_at', range.end)
     .order('created_at', { ascending: false });
@@ -306,7 +307,7 @@ export const getOrdersNotPayoutBy = async (
       .select()
       .eq('place_id', placeId)
       .is('payout_id', null)
-      .in('status', ['paid', 'needs_minting'])
+      .in('status', ['paid', 'needs_minting', 'correction'])
       .order('created_at', { ascending: false });
   }
 
@@ -315,7 +316,7 @@ export const getOrdersNotPayoutBy = async (
     .select()
     .eq('place_id', placeId)
     .is('payout_id', null)
-    .in('status', ['paid', 'needs_minting'])
+    .in('status', ['paid', 'needs_minting', 'correction'])
     .gte('created_at', range.start)
     .lte('created_at', range.end)
     .order('created_at', { ascending: false });
