@@ -76,15 +76,13 @@ const AsyncPayoutOrderPage = async (
     return <div>Payout not found</div>;
   }
 
-  const { totalNet, count } = await totalPayoutAmountAndCount(
-    client,
-    payout_id
-  );
+  const { totalAmount, totalFees, totalNet, count } =
+    await totalPayoutAmountAndCount(client, payout_id);
 
   //check the total net is equal to the payout total
-  if (totalNet !== payout.data?.total) {
+  if (totalAmount !== payout.data?.total || totalFees !== payout.data?.fees) {
     //then update the payout total
-    await updatePayoutTotal(client, payout_id, totalNet);
+    await updatePayoutTotal(client, payout_id, totalAmount, totalFees);
   }
 
   return (
@@ -93,7 +91,9 @@ const AsyncPayoutOrderPage = async (
       orders={orders.data ?? []}
       currencyLogo={community.community.logo}
       payout={payout.data}
-      totalAmount={totalNet ?? 0}
+      totalAmount={totalAmount ?? 0}
+      totalFees={totalFees ?? 0}
+      totalNet={totalNet ?? 0}
       count={Number(count ?? 0)}
       limit={limit}
       offset={offset}

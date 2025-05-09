@@ -312,6 +312,8 @@
     "next": "Next",
     "page": "Page",
     "totalAmount": "Total Amount",
+    "totalFees": "Total Fees",
+    "totalNet": "Total Net",
     "completed": "Completed",
     "periodOfPayout": "Period of payout",
     "paid": "Paid",

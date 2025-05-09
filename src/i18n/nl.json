@@ -313,6 +313,8 @@
     "next": "Volgende",
     "page": "Pagina",
     "totalAmount": "Totaalbedrag",
+    "totalFees": "Totaal kosten",
+    "totalNet": "Totaal netto",
     "completed": "Voltooid",
     "periodOfPayout": "Uitbetalingperiode",
     "paid": "Betaald",

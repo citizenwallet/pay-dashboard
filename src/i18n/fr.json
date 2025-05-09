@@ -313,6 +313,8 @@
     "next": "Suivant",
     "page": "Page",
     "totalAmount": "Montant total",
+    "totalFees": "Frais total",
+    "totalNet": "Net total",
     "completed": "Terminé",
     "periodOfPayout": "Période de paiement",
     "paid": "Payé",

@@ -35,6 +35,8 @@ export default function PayoutDetailsPage({
   currencyLogo,
   payout,
   totalAmount,
+  totalFees,
+  totalNet,
   count,
   limit,
   offset
@@ -44,6 +46,8 @@ export default function PayoutDetailsPage({
   currencyLogo: string;
   payout: Payout;
   totalAmount: number;
+  totalFees: number;
+  totalNet: number;
   count: number;
   limit?: string;
   offset?: string;
@@ -296,6 +300,20 @@ export default function PayoutDetailsPage({
             <b>{t('totalAmount')}:</b>
             <CurrencyLogo logo={currencyLogo} size={18} />
             {formatCurrencyNumber(totalAmount)}
+          </p>
+        </div>
+        <div className="flex items-center gap-7">
+          <p className="flex items-center gap-2">
+            <b>{t('totalFees')}:</b>
+            <CurrencyLogo logo={currencyLogo} size={18} />
+            {formatCurrencyNumber(totalFees)}
+          </p>
+        </div>
+        <div className="flex items-center gap-7">
+          <p className="flex items-center gap-2">
+            <b>{t('totalNet')}:</b>
+            <CurrencyLogo logo={currencyLogo} size={18} />
+            {formatCurrencyNumber(totalNet)}
           </p>
         </div>
 

@@ -26,6 +26,7 @@ interface FullPayout {
   burn: number | null;
   transfer: number | null;
   total: number;
+  fees: number;
   place_id: number;
   business_id: number;
   places: {
@@ -291,6 +292,71 @@ export default function PayoutDetailsPage({
           <p className="flex h-16 w-8 items-center gap-1">
             <CurrencyLogo logo={currencyLogo} size={18} />
             {formatCurrencyNumber(row.original.total)}
+          </p>
+        );
+      }
+    },
+    {
+      accessorKey: 'fees',
+      header: ({ column }: { column: Column<FullPayout> }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              handleSorting(
+                column,
+                column.getIsSorted() === 'asc' ? 'asc' : 'desc'
+              );
+              column.toggleSorting(column.getIsSorted() === 'asc');
+            }}
+          >
+            {t('fees')}
+            {column.getIsSorted() === 'asc'
+              ? ' ↑'
+              : column.getIsSorted() === 'desc'
+              ? ' ↓'
+              : ''}
+          </Button>
+        );
+      },
+      cell: ({ row }: { row: Row<FullPayout> }) => {
+        return (
+          <p className="flex h-16 w-8 items-center gap-1">
+            <CurrencyLogo logo={currencyLogo} size={18} />
+            {formatCurrencyNumber(row.original.fees)}
+          </p>
+        );
+      }
+    },
+    {
+      accessorKey: 'net',
+      header: ({ column }: { column: Column<FullPayout> }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => {
+              handleSorting(
+                column,
+                column.getIsSorted() === 'asc' ? 'asc' : 'desc'
+              );
+              column.toggleSorting(column.getIsSorted() === 'asc');
+            }}
+          >
+            {t('net')}
+            {column.getIsSorted() === 'asc'
+              ? ' ↑'
+              : column.getIsSorted() === 'desc'
+              ? ' ↓'
+              : ''}
+          </Button>
+        );
+      },
+      cell: ({ row }: { row: Row<FullPayout> }) => {
+        const net = row.original.total - row.original.fees;
+        return (
+          <p className="flex h-16 w-8 items-center gap-1">
+            <CurrencyLogo logo={currencyLogo} size={18} />
+            {formatCurrencyNumber(net)}
           </p>
         );
       }

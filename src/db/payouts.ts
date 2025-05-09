@@ -204,19 +204,21 @@ export const totalPayoutAmountAndCount = async (
       acc + (order.status === 'correction' ? order.fees * -1 : order.fees),
     0
   );
+
   const totalNet = totalAmount - totalFees;
   const count = data.data?.length;
-  return { totalNet, count };
+  return { totalAmount, totalFees, totalNet, count };
 };
 
 export const updatePayoutTotal = async (
   client: SupabaseClient,
   payoutId: string,
-  total: number
+  total: number,
+  fees: number
 ): Promise<PostgrestSingleResponse<Payout>> => {
   return await client
     .from('payouts')
-    .update({ total: total })
+    .update({ total: total, fees: fees })
     .eq('id', payoutId)
     .select()
     .single();
