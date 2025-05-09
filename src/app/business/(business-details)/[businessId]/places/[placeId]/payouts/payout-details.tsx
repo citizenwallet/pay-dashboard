@@ -60,10 +60,34 @@ export default function PayoutDetailsPage({
               );
             }
           },
-
           {
-            accessorKey: 'completed',
-            header: t('completed'),
+            accessorKey: 'fees',
+            header: t('fees'),
+            cell: ({ row }) => {
+              return (
+                <p className="flex w-8 items-center gap-1">
+                  <CurrencyLogo logo={currencyLogo} size={18} />
+                  {formatCurrencyNumber(row.original.fees)}
+                </p>
+              );
+            }
+          },
+          {
+            accessorKey: 'net',
+            header: t('net'),
+            cell: ({ row }) => {
+              const net = row.original.total - row.original.fees;
+              return (
+                <p className="flex w-8 items-center gap-1">
+                  <CurrencyLogo logo={currencyLogo} size={18} />
+                  {formatCurrencyNumber(net)}
+                </p>
+              );
+            }
+          },
+          {
+            accessorKey: 'status',
+            header: t('status'),
             cell: ({ row }) => (
               <div className="flex items-center space-x-2">
                 <span>

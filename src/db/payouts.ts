@@ -13,6 +13,7 @@ export interface Payout {
   burn: number;
   transfer: number;
   total: number;
+  fees: number;
   place_id: string;
   business_id: string;
   burnDate: string | null;

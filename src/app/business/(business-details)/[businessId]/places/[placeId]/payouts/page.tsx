@@ -17,6 +17,7 @@ import { getTranslations } from 'next-intl/server';
 import { formatCurrencyNumber } from '@/lib/currency';
 import CurrencyLogo from '@/components/currency-logo';
 import { Skeleton } from '@/components/ui/skeleton';
+import ExportCSV from './export-csv';
 
 export default async function PayoutsPage({
   params
@@ -99,12 +100,15 @@ async function PayoutsHeader({ placeId }: { placeId: string }) {
   );
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-1 flex-col gap-2">
       <Heading title={t('payouts')} description={t('payoutsDescription')} />
-      <div className="flex items-center gap-1 text-2xl font-bold">
-        <span className="text-gray-500">{t('accountBalance')}</span>
-        <CurrencyLogo logo={currencyLogo} size={32} />
-        {formatCurrencyNumber(Number(balance ?? 0), tokenDecimals)}
+      <div className="flex w-full flex-1 items-center justify-between gap-2">
+        <div className="flex items-center gap-1 text-2xl font-bold">
+          <span className="text-gray-500">{t('accountBalance')}</span>
+          <CurrencyLogo logo={currencyLogo} size={32} />
+          {formatCurrencyNumber(Number(balance ?? 0), tokenDecimals)}
+        </div>
+        <ExportCSV placeId={placeId} />
       </div>
     </div>
   );
@@ -137,7 +141,7 @@ async function PayoutsAsyncPage({
     throw new Error('Place not found');
   }
 
-  const payouts = await getPayoutsbyPaceIdAction(Number(placeId));
+  const payouts = (await getPayoutsbyPaceIdAction(Number(placeId))) ?? [];
   const community = new CommunityConfig(Config);
 
   const balance = await getAccountBalance(
