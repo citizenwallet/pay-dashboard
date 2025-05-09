@@ -13,8 +13,7 @@ import {
 } from '@/db/payouts';
 import { getPlaceById } from '@/db/places';
 import { getTransferById } from '@/db/transfer';
-
-interface FullPayout {
+export interface FullPayout {
   id: string;
   created_at: string;
   updated_at: string;
@@ -27,6 +26,7 @@ interface FullPayout {
   burn: number | null;
   transfer: number | null;
   total: number;
+  fees: number;
   place_id: number;
   business_id: number;
   places: {

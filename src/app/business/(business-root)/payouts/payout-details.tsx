@@ -13,7 +13,7 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
-interface FullPayout {
+export interface FullPayout {
   id: string;
   created_at: string;
   updated_at: string;
