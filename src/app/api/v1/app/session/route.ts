@@ -68,6 +68,14 @@ export async function POST(req: NextRequest) {
     });
   }
 
+  // TODO: temporary until we verify endpoint calls
+  if (!sessionRequest.source.startsWith('+32')) {
+    return NextResponse.json({
+      status: StatusCodes.BAD_REQUEST, // 400
+      message: ReasonPhrases.BAD_REQUEST // "Bad Request" message
+    });
+  }
+
   const isValid = await verifySessionRequest(
     sessionRequest.provider,
     sessionRequest.owner,
