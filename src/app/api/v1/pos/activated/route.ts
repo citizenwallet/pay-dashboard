@@ -16,8 +16,13 @@ export async function GET(req: NextRequest) {
     }
 
     const client = getServiceRoleClient();
-    const res = await getPosById(client, posId);
-    const pos: Pos = res.data as Pos;
+    const { data: pos, error } = await getPosById(client, posId);
+    if (error) {
+      return new Response(JSON.stringify({ error: error.message }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
 
     if (!pos) {
       return new Response(JSON.stringify({ error: 'pos not found' }), {
