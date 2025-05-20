@@ -68,8 +68,10 @@ export async function POST(req: NextRequest) {
     });
   }
 
+  const countryCodes = (process.env.ALLOW_COUNTRY_CODES ?? '').split(',');
+
   // TODO: temporary until we verify endpoint calls
-  if (!sessionRequest.source.startsWith('+32')) {
+  if (!countryCodes.some((code) => sessionRequest.source.startsWith(code))) {
     return NextResponse.json({
       status: StatusCodes.BAD_REQUEST, // 400
       message: ReasonPhrases.BAD_REQUEST // "Bad Request" message
