@@ -166,16 +166,17 @@ export default function OrderViewTable({
       header: t('net'),
       cell: ({ row }) => {
         return (
-          <p
-            className={cn('flex w-8 items-center gap-1', {
-              'line-through': row.original.status === 'refunded'
-            })}
-          >
+          <p className="flex w-8 items-center gap-1">
             <CurrencyLogo logo={currencyLogo} size={18} />
-            {row.original.status === 'correction' &&
+            {(row.original.status === 'correction' ||
+              row.original.status === 'refunded') &&
               row.original.total > 0 &&
               '-'}
-            {formatCurrencyNumber(row.original.total - row.original.fees)}
+            {formatCurrencyNumber(
+              row.original.status === 'refunded'
+                ? row.original.total + row.original.fees
+                : row.original.total - row.original.fees
+            )}
           </p>
         );
       }
@@ -201,6 +202,16 @@ export default function OrderViewTable({
             <div className="flex items-center gap-2">
               <div className="rounded-full bg-gray-300 px-2 py-1 text-gray-800">
                 {t('correction')}
+              </div>
+            </div>
+          );
+        }
+
+        if (row.original.status === 'refunded') {
+          return (
+            <div className="flex items-center gap-2">
+              <div className="rounded-full bg-gray-300 px-2 py-1 text-gray-800">
+                {t('refunded')}
               </div>
             </div>
           );

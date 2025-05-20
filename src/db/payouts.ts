@@ -193,10 +193,13 @@ export const totalPayoutAmountAndCount = async (
     .from('orders')
     .select()
     .eq('payout_id', payoutId)
-    .in('status', ['paid', 'needs_minting', 'correction']);
+    .in('status', ['paid', 'needs_minting', 'correction', 'refunded']);
   const totalAmount = data.data?.reduce(
     (acc, order) =>
-      acc + (order.status === 'correction' ? order.total * -1 : order.total),
+      acc +
+      (order.status === 'correction' || order.status === 'refunded'
+        ? order.total * -1
+        : order.total),
     0
   );
   const totalFees = data.data?.reduce(

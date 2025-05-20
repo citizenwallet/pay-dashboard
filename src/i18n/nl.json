@@ -195,7 +195,17 @@
     "payoutDetailsdescription": "Uitbetalingsdetails en de bestellingen",
     "exportCSV": "Exporteren als CSV",
     "date": "Datum",
-    "accountBalance": "Account Balans"
+    "accountBalance": "Account Balans",
+    "paid": "Betaald",
+    "correction": "Correctie",
+    "needsMinting": "Nodig voor minten",
+    "refunded": "Terugbetaald",
+    "source": "Bron",
+    "terminal": "Terminal",
+    "qr": "QR-code",
+    "app": "App",
+    "system": "Systeem",
+    "description": "Beschrijving"
   },
   "placelist": {
     "list": "Lijst",
@@ -320,6 +330,7 @@
     "paid": "Betaald",
     "correction": "Correctie",
     "needsMinting": "Nodig voor minten",
+    "refunded": "Terugbetaald",
     "mint": "Mint",
     "source": "Bron",
     "terminal": "Terminal",

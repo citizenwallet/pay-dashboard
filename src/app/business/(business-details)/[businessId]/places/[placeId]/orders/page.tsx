@@ -118,7 +118,10 @@ async function AsyncPage({ params, searchParams }: Props) {
   const currencyLogo = community.community.logo;
 
   const total = (orders || []).reduce(
-    (acc, order) => acc + (order.total - order.fees),
+    (acc, order) =>
+      order.status === 'correction' || order.status === 'refunded'
+        ? acc - order.total - order.fees
+        : acc + order.total - order.fees,
     0
   );
 

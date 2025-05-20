@@ -195,7 +195,17 @@
     "payoutDetailsdescription": "Détails du paiement et les commandes",
     "exportCSV": "Exporter en CSV",
     "date": "Date",
-    "accountBalance": "Solde du compte"
+    "accountBalance": "Solde du compte",
+    "paid": "Payé",
+    "correction": "Correction",
+    "needsMinting": "Nécessite d'être émis",
+    "refunded": "Remboursé",
+    "source": "Source",
+    "terminal": "Terminal",
+    "qr": "Code QR",
+    "app": "App",
+    "system": "Système",
+    "description": "Description"
   },
   "placelist": {
     "list": "Liste",
@@ -320,6 +330,7 @@
     "paid": "Payé",
     "correction": "Correction",
     "needsMinting": "Nécessite d'être émis",
+    "refunded": "Remboursé",
     "mint": "Mint",
     "source": "Source",
     "terminal": "Terminal",

@@ -228,7 +228,7 @@ export const getOrdersByPlace = async (
       .from('orders')
       .select()
       .eq('place_id', placeId)
-      .in('status', ['paid', 'refunded'])
+      .in('status', ['paid', 'refunded', 'correction'])
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
   }
@@ -237,7 +237,7 @@ export const getOrdersByPlace = async (
     .from('orders')
     .select()
     .eq('place_id', placeId)
-    .in('status', ['paid', 'refunded'])
+    .in('status', ['paid', 'refunded', 'correction'])
     .gte('created_at', range.start)
     .lte('created_at', range.end)
     .order('created_at', { ascending: false })
@@ -307,7 +307,7 @@ export const getOrdersNotPayoutBy = async (
       .select()
       .eq('place_id', placeId)
       .is('payout_id', null)
-      .in('status', ['paid', 'needs_minting', 'correction'])
+      .in('status', ['paid', 'refunded', 'needs_minting', 'correction'])
       .order('created_at', { ascending: false });
   }
 
@@ -316,7 +316,7 @@ export const getOrdersNotPayoutBy = async (
     .select()
     .eq('place_id', placeId)
     .is('payout_id', null)
-    .in('status', ['paid', 'needs_minting', 'correction'])
+    .in('status', ['paid', 'refunded', 'needs_minting', 'correction'])
     .gte('created_at', range.start)
     .lte('created_at', range.end)
     .order('created_at', { ascending: false });
@@ -338,7 +338,11 @@ export const getPayoutOrders = async (
   client: SupabaseClient,
   payoutId: number
 ): Promise<PostgrestResponse<Order>> => {
-  return client.from('orders').select().eq('payout_id', payoutId);
+  return client
+    .from('orders')
+    .select()
+    .eq('payout_id', payoutId)
+    .order('created_at', { ascending: false });
 };
 
 export const getPayoutOrdersForTable = async (
