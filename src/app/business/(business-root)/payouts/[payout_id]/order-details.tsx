@@ -146,9 +146,13 @@ export default function OrderViewTable({
             <p
               className={cn('flex items-center gap-1', {
                 'line-through':
-                  row.original.status === 'refunded' && row.original.fees === 0,
+                  (row.original.status === 'refunded' ||
+                    row.original.status === 'refund') &&
+                  row.original.fees === 0,
                 'rounded-full bg-red-100 px-2 py-1 font-medium':
-                  row.original.status === 'refunded' && row.original.fees > 0
+                  (row.original.status === 'refunded' ||
+                    row.original.status === 'refund') &&
+                  row.original.fees > 0
               })}
             >
               <CurrencyLogo logo={currencyLogo} size={18} />
@@ -169,11 +173,11 @@ export default function OrderViewTable({
           <p className="flex w-8 items-center gap-1">
             <CurrencyLogo logo={currencyLogo} size={18} />
             {(row.original.status === 'correction' ||
-              row.original.status === 'refunded') &&
+              row.original.status === 'refund') &&
               row.original.total > 0 &&
               '-'}
             {formatCurrencyNumber(
-              row.original.status === 'refunded'
+              row.original.status === 'refund'
                 ? row.original.total + row.original.fees
                 : row.original.total - row.original.fees
             )}
@@ -202,6 +206,16 @@ export default function OrderViewTable({
             <div className="flex items-center gap-2">
               <div className="rounded-full bg-gray-300 px-2 py-1 text-gray-800">
                 {t('correction')}
+              </div>
+            </div>
+          );
+        }
+
+        if (row.original.status === 'refund') {
+          return (
+            <div className="flex items-center gap-2">
+              <div className="rounded-full bg-gray-300 px-2 py-1 text-gray-800">
+                {t('refund')}
               </div>
             </div>
           );

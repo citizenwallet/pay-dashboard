@@ -85,9 +85,13 @@ const createColumns = (
           <p
             className={cn('flex items-center gap-1', {
               'line-through':
-                row.original.status === 'refunded' && row.original.fees === 0,
+                (row.original.status === 'refunded' ||
+                  row.original.status === 'refund') &&
+                row.original.fees === 0,
               'rounded-full bg-red-100 px-2 py-1 font-medium':
-                row.original.status === 'refunded' && row.original.fees > 0
+                (row.original.status === 'refunded' ||
+                  row.original.status === 'refund') &&
+                row.original.fees > 0
             })}
           >
             <CurrencyLogo logo={currencyLogo} size={18} />
@@ -105,16 +109,17 @@ const createColumns = (
     header: t('net'),
     cell: ({ row }) => {
       return (
-        <p
-          className={cn('flex w-8 items-center gap-1', {
-            'line-through': row.original.status === 'refunded'
-          })}
-        >
+        <p className="flex w-8 items-center gap-1">
           <CurrencyLogo logo={currencyLogo} size={18} />
-          {row.original.status === 'correction' &&
+          {(row.original.status === 'correction' ||
+            row.original.status === 'refund') &&
             row.original.total > 0 &&
             '-'}
-          {formatCurrencyNumber(row.original.total - row.original.fees)}
+          {formatCurrencyNumber(
+            row.original.status === 'refund'
+              ? row.original.total + row.original.fees
+              : row.original.total - row.original.fees
+          )}
         </p>
       );
     }
@@ -129,7 +134,9 @@ const createColumns = (
             'bg-green-100 text-green-800': row.original.status === 'paid',
             'bg-yellow-100 text-yellow-800': row.original.status === 'pending',
             'bg-red-100 text-red-800': row.original.status === 'cancelled',
-            'bg-gray-100 text-gray-800': row.original.status === 'refunded'
+            'bg-gray-100 text-gray-800':
+              row.original.status === 'refunded' ||
+              row.original.status === 'refund'
           })}
         >
           {t(row.original.status) || row.original.status}

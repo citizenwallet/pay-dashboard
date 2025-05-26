@@ -119,7 +119,7 @@ async function AsyncPage({ params, searchParams }: Props) {
 
   const total = (orders || []).reduce(
     (acc, order) =>
-      order.status === 'correction' || order.status === 'refunded'
+      order.status === 'correction' || order.status === 'refund'
         ? acc - order.total - order.fees
         : acc + order.total - order.fees,
     0
