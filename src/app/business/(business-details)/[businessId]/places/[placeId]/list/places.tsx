@@ -40,6 +40,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 export default function PlacesPage({
+  businessId,
   place,
   offset,
   limit,
@@ -47,6 +48,7 @@ export default function PlacesPage({
   count,
   placeId
 }: {
+  businessId: number;
   place: Place[];
   offset: number;
   limit: number;
@@ -412,6 +414,7 @@ export default function PlacesPage({
 
       const image = newPlaceImage ? await uploadImage(newPlaceImage) : '';
       const newPlace = await createPlaceAction(
+        businessId,
         newPlaceName,
         newPlacedescription,
         newPlaceSlug,

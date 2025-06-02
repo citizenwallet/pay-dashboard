@@ -2,6 +2,7 @@
 
 import { auth } from '@/auth';
 import { getServiceRoleClient } from '@/db';
+import { checkUserAccessBusiness } from '@/db/business';
 import { checkUserPlaceAccess } from '@/db/places';
 import { isAdmin, getUserById } from '@/db/users';
 import { SupabaseClient } from '@supabase/supabase-js';
@@ -47,6 +48,20 @@ export async function isUserLinkedToPlaceAction(
   }
 
   const isLinked = await checkUserPlaceAccess(client, userId, placeId);
+
+  return isLinked;
+}
+
+export async function isUserLinkedToBusinessAction(
+  client: SupabaseClient,
+  userId: number,
+  businessId: number
+) {
+  if (await isAdmin(client, userId)) {
+    return true;
+  }
+
+  const isLinked = await checkUserAccessBusiness(client, userId, businessId);
 
   return isLinked;
 }

@@ -2,6 +2,7 @@
 
 import {
   getUserIdFromSessionAction,
+  isUserLinkedToBusinessAction,
   isUserLinkedToPlaceAction
 } from '@/actions/session';
 import { getServiceRoleClient } from '@/db';
@@ -71,6 +72,7 @@ export const generateUniqueSlugAction = async (baseSlug: string) => {
 };
 
 export async function createPlaceAction(
+  businessId: number,
   name: string,
   description: string,
   slug: string,
@@ -78,8 +80,12 @@ export async function createPlaceAction(
 ) {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
-  const { data: business } = await getLinkedBusinessByUserId(client, userId);
-  const { linked_business_id: linkedBusinessId } = business || {};
+
+  const res = await isUserLinkedToBusinessAction(client, userId, businessId);
+  if (!res) {
+    throw new Error('User does not have access to this business');
+  }
+
   const invitationCode = generateRandomString(16);
 
   const newPk = Wallet.createRandom();
@@ -93,7 +99,7 @@ export async function createPlaceAction(
   }
 
   const { data: place, error } = await createPlace(client, {
-    business_id: linkedBusinessId,
+    business_id: businessId,
     slug: slug,
     name: name,
     description: description,

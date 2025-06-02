@@ -209,7 +209,7 @@
   },
   "placelist": {
     "list": "List",
-    "listDescription": "Manage your Place List",
+    "listDescription": "Manage your places",
     "addPlace": "Add Place",
     "addNewPlace": "Add a New Place",
     "addPlaceDescription": "Enter the details for the new place below.",

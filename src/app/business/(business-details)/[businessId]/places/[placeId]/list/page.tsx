@@ -109,6 +109,7 @@ async function AsyncPage({
 
   return (
     <PlacesPage
+      businessId={Number(businessId)}
       placeId={placeId}
       place={places.data ? places.data.flat() : []}
       offset={offset}
