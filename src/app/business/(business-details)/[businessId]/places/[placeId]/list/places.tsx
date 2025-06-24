@@ -628,6 +628,10 @@ export default function PlacesPage({
       header: t('actions'),
       accessorKey: 'actions',
       cell: ({ row }: { row: Row<Place> }) => {
+        if (placeId === row.original.id.toString()) {
+          return null;
+        }
+
         return (
           <div className="flex items-center gap-2">
             <Button
