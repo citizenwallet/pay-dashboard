@@ -23,7 +23,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'ounjigiydhimruivuxjv.supabase.co',
+        hostname: 'engine.pay.brussels',
         port: ''
       },
       {
