@@ -38,6 +38,12 @@ export interface Order {
   processor_tx: number | null;
 }
 
+export interface OrderTotal {
+  status: OrderStatus;
+  total: number;
+  fees: number;
+}
+
 // Helper function to calculate date range filters
 const getDateRangeFilter = (
   dateRange: string,
@@ -243,6 +249,34 @@ export const getOrdersByPlace = async (
     .lte('created_at', range.end)
     .order('created_at', { ascending: false })
     .range(offset, offset + limit - 1);
+};
+
+export const getOrdersTotalByPlace = async (
+  client: SupabaseClient,
+  placeId: number,
+  dateRange: string = 'today',
+  customStartDate?: string,
+  customEndDate?: string
+): Promise<PostgrestResponse<OrderTotal>> => {
+  const range = getDateRangeFilter(dateRange, customStartDate, customEndDate);
+  if (!range) {
+    // Handle invalid date range gracefully (e.g., return all orders or throw an error)
+    return client
+      .from('orders')
+      .select('status,total,fees')
+      .eq('place_id', placeId)
+      .in('status', ['paid', 'refunded', 'refund', 'correction'])
+      .order('created_at', { ascending: false });
+  }
+
+  return client
+    .from('orders')
+    .select('status,total,fees')
+    .eq('place_id', placeId)
+    .in('status', ['paid', 'refunded', 'refund', 'correction'])
+    .gte('created_at', range.start)
+    .lte('created_at', range.end)
+    .order('created_at', { ascending: false });
 };
 
 export const getOrdersByPlaceCount = async (

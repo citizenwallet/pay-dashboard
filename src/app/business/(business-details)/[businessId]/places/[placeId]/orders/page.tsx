@@ -1,4 +1,8 @@
-import { getOrdersByPlace, getOrdersByPlaceCount } from '@/db/orders';
+import {
+  getOrdersByPlace,
+  getOrdersByPlaceCount,
+  getOrdersTotalByPlace
+} from '@/db/orders';
 import { getPlaceById, checkUserPlaceAccess } from '@/db/places';
 import { OrdersPage } from './_components/orders-page';
 import { Suspense } from 'react';
@@ -96,19 +100,21 @@ async function AsyncPage({ params, searchParams }: Props) {
   const limit = parseInt(rawLimit);
   const offset = parseInt(rawOffset);
 
-  const [place, { data: orders }, ordersCount] = await Promise.all([
-    getPlaceById(client, placeid),
-    getOrdersByPlace(
-      client,
-      placeid,
-      limit,
-      offset,
-      dateRange,
-      startDate,
-      endDate
-    ),
-    getOrdersByPlaceCount(client, placeid, dateRange, startDate, endDate)
-  ]);
+  const [place, { data: orders }, { data: ordersTotal }, ordersCount] =
+    await Promise.all([
+      getPlaceById(client, placeid),
+      getOrdersByPlace(
+        client,
+        placeid,
+        limit,
+        offset,
+        dateRange,
+        startDate,
+        endDate
+      ),
+      getOrdersTotalByPlace(client, placeid, dateRange, startDate, endDate),
+      getOrdersByPlaceCount(client, placeid, dateRange, startDate, endDate)
+    ]);
 
   if (!place.data) {
     throw new Error('Place not found');
@@ -117,7 +123,7 @@ async function AsyncPage({ params, searchParams }: Props) {
   const community = new CommunityConfig(Config);
   const currencyLogo = community.community.logo;
 
-  const total = (orders || []).reduce(
+  const total = (ordersTotal || []).reduce(
     (acc, order) =>
       order.status === 'correction' || order.status === 'refund'
         ? acc - order.total - order.fees
