@@ -238,7 +238,8 @@
     "imageUploadedSuccessfully": "Afbeelding succesvol geüpload",
     "placeVisibilityUpdatedSuccessfully": "Locatie zichtbaarheid succesvol bijgewerkt",
     "placeDescriptionUpdatedSuccessfully": "Locatiebeschrijving succesvol bijgewerkt",
-    "placeNameUpdatedSuccessfully": "Locatienaam succesvol bijgewerkt"
+    "placeNameUpdatedSuccessfully": "Locatienaam succesvol bijgewerkt",
+    "select": "Selecteren"
   },
   "placeUpload": {
     "upload": "Uploaden",

@@ -6,7 +6,15 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Place } from '@/db/places';
 import { PaginationState, Row } from '@tanstack/react-table';
-import { Plus, Upload, Loader, Camera, ImagePlus } from 'lucide-react';
+import {
+  Plus,
+  Upload,
+  Loader,
+  Camera,
+  ImagePlus,
+  Edit,
+  ExternalLink
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -454,6 +462,7 @@ export default function PlacesPage({
         return (
           <Link
             href={`/business/${row.original.business_id}/places/${row.original.id}/list`}
+            className="text-blue-500 hover:underline"
           >
             {row.original.id}
           </Link>
@@ -611,6 +620,27 @@ export default function PlacesPage({
             <Label className="text-sm text-gray-600">
               {row.original.hidden ? t('private') : t('public')}
             </Label>
+          </div>
+        );
+      }
+    },
+    {
+      header: t('actions'),
+      accessorKey: 'actions',
+      cell: ({ row }: { row: Row<Place> }) => {
+        return (
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() =>
+                router.push(
+                  `/business/${row.original.business_id}/places/${row.original.id}/list`
+                )
+              }
+            >
+              {t('select')}
+            </Button>
           </div>
         );
       }

@@ -238,7 +238,8 @@
     "imageUploadedSuccessfully": "Image téléchargée avec succès",
     "placeVisibilityUpdatedSuccessfully": "Visibilité du lieu mise à jour avec succès",
     "placeDescriptionUpdatedSuccessfully": "Description du lieu mise à jour avec succès",
-    "placeNameUpdatedSuccessfully": "Nom du lieu mis à jour avec succès"
+    "placeNameUpdatedSuccessfully": "Nom du lieu mis à jour avec succès",
+    "select": "Sélectionner"
   },
   "placeUpload": {
     "upload": "Télécharger",

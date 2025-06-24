@@ -237,7 +237,8 @@
     "imageUploadedSuccessfully": "Image uploaded successfully",
     "placeVisibilityUpdatedSuccessfully": "Place visibility updated successfully",
     "placeDescriptionUpdatedSuccessfully": "Place description updated successfully",
-    "placeNameUpdatedSuccessfully": "Place name updated successfully"
+    "placeNameUpdatedSuccessfully": "Place name updated successfully",
+    "select": "Select"
   },
   "placeUpload": {
     "upload": "Upload",
