@@ -176,7 +176,7 @@ export default function AppSidebar({
           </div>
 
           <div className="flex items-center gap-2 px-4">
-            <UserNav />
+            <UserNav businessId={business?.id} lastPlace={place} />
             <LanguageSwitcher />
           </div>
         </header>

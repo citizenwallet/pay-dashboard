@@ -11,11 +11,18 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
+import { Place } from '@/db/places';
 import { signOut, useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 
-export function UserNav() {
+export function UserNav({
+  businessId,
+  lastPlace
+}: {
+  businessId?: number;
+  lastPlace?: Place
+}) {
   const { data: session } = useSession();
   const router = useRouter();
   const t = useTranslations('userNav');
@@ -47,19 +54,12 @@ export function UserNav() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem onClick={() => router.push('/dashboard/profile')}>
-              {t('profile')}
-              <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            {/*<DropdownMenuItem>*/}
-            {/*  Billing*/}
-            {/*  <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>*/}
-            {/*</DropdownMenuItem>*/}
-            {/*<DropdownMenuItem>*/}
-            {/*  Settings*/}
-            {/*  <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>*/}
-            {/*</DropdownMenuItem>*/}
-            {/*<DropdownMenuItem>New Team</DropdownMenuItem>*/}
+            {businessId && lastPlace && (
+              <DropdownMenuItem onClick={() => router.push(`/business/${businessId}/places/${lastPlace.id}/profile`)}>
+                {t('profile')}
+                <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+              </DropdownMenuItem>
+            )}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => signOut()}>
