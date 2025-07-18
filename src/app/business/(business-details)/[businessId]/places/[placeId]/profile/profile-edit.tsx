@@ -1,8 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -13,23 +11,33 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import Image from 'next/image';
-import { useForm } from 'react-hook-form';
+import { Business } from '@/db/business';
 import { Place } from '@/db/places';
-import { updatePlaceAction } from './action';
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import * as z from 'zod';
+import { updatePlaceAction } from './action';
 
 // Define the form schema
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string().min(1, 'Description is required'),
-  slug: z.string().min(1, 'Slug is required')
+  slug: z.string().min(1, 'Slug is required'),
+  IBANnumber: z.string().optional()
 });
 
-export default function ProfileEdit({ place }: { place: Place | null }) {
+export default function ProfileEdit({
+  place,
+  business
+}: {
+  place: Place | null;
+  business: Business | null;
+}) {
   const [loading, setLoading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     place?.image || null
@@ -44,7 +52,8 @@ export default function ProfileEdit({ place }: { place: Place | null }) {
     defaultValues: {
       name: place?.name || '',
       description: place?.description || '',
-      slug: place?.slug || ''
+      slug: place?.slug || '',
+      IBANnumber: business?.iban_number || ''
     }
   });
 
@@ -73,7 +82,8 @@ export default function ProfileEdit({ place }: { place: Place | null }) {
         description: values.description,
         slug: values.slug,
         image: imageFile || new File([], ''),
-        oldimage: previewUrl || ''
+        oldimage: previewUrl || '',
+        IBANnumber: values.IBANnumber || null
       });
 
       toast.success(t('updateSuccess'));
@@ -89,7 +99,7 @@ export default function ProfileEdit({ place }: { place: Place | null }) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           <FormField
             control={form.control}
             name="name"
@@ -126,6 +136,25 @@ export default function ProfileEdit({ place }: { place: Place | null }) {
             )}
           />
 
+          <FormField
+            control={form.control}
+            name="IBANnumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('IBANnumber')}</FormLabel>
+                <FormControl>
+                  <Input
+                    disabled={loading}
+                    placeholder={t('IBANnumberPlaceholder')}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           <FormItem>
             <FormLabel>{t('image')}</FormLabel>
             <FormControl>
