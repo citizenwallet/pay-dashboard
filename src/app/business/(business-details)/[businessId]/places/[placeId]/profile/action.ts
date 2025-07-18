@@ -5,9 +5,10 @@ import {
   isUserLinkedToPlaceAction
 } from '@/actions/session';
 import { getServiceRoleClient } from '@/db';
-import { getLinkedBusinessByUserId } from '@/db/business';
+import { getLinkedBusinessByUserId, updateBusiness } from '@/db/business';
 import { getPlaceById, updatePlaceById } from '@/db/places';
 import { uploadImage } from '@/services/storage/upload';
+import { revalidatePath } from 'next/cache';
 
 export async function getPlaceDataAction(placeId: number, businessId: number) {
   const client = getServiceRoleClient();
@@ -26,7 +27,8 @@ export async function updatePlaceAction({
   description,
   slug,
   image,
-  oldimage
+  oldimage,
+  IBANnumber
 }: {
   placeId: number;
   name: string;
@@ -34,6 +36,7 @@ export async function updatePlaceAction({
   slug: string;
   image: File;
   oldimage: string;
+  IBANnumber: string | null;
 }) {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
@@ -48,10 +51,20 @@ export async function updatePlaceAction({
   if (image.size != 0) {
     url = await uploadImage(client, image, busid);
   }
-  return await updatePlaceById(client, placeId, {
+  const data = await updatePlaceById(client, placeId, {
     name,
     description,
     slug,
     image: url
   });
+
+  // Update business IBAN number
+  if (IBANnumber) {
+    await updateBusiness(client, busid, {
+      iban_number: IBANnumber
+    });
+  }
+
+  revalidatePath(`/business/${busid}/places/${placeId}/profile`);
+  return data;
 }
