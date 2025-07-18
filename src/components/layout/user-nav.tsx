@@ -11,26 +11,36 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
+import { Place } from '@/db/places';
+import { User } from '@/db/users';
 import { signOut, useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 
-export function UserNav() {
-  const { data: session } = useSession();
+export function UserNav({
+  businessId,
+  lastPlace,
+  user
+}: {
+  businessId?: number;
+  lastPlace?: Place
+  user: User
+}) {
+
   const router = useRouter();
   const t = useTranslations('userNav');
 
-  if (session) {
+  if (user) {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-8 w-8 rounded-full">
             <Avatar className="h-8 w-8">
               <AvatarImage
-                src={session.user?.image ?? ''}
-                alt={session.user?.name ?? ''}
+                src={user.avatar ?? ''}
+                alt={user.name ?? ''}
               />
-              <AvatarFallback>{session.user?.name?.[0]}</AvatarFallback>
+              <AvatarFallback>{user.name?.[0]}</AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
@@ -38,28 +48,21 @@ export function UserNav() {
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
               <p className="text-sm font-medium leading-none">
-                {session.user?.name}
+                {user.name}
               </p>
               <p className="text-xs leading-none text-muted-foreground">
-                {session.user?.email}
+                {user.email}
               </p>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem onClick={() => router.push('/dashboard/profile')}>
-              {t('profile')}
-              <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-            </DropdownMenuItem>
-            {/*<DropdownMenuItem>*/}
-            {/*  Billing*/}
-            {/*  <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>*/}
-            {/*</DropdownMenuItem>*/}
-            {/*<DropdownMenuItem>*/}
-            {/*  Settings*/}
-            {/*  <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>*/}
-            {/*</DropdownMenuItem>*/}
-            {/*<DropdownMenuItem>New Team</DropdownMenuItem>*/}
+            {businessId && lastPlace && (
+              <DropdownMenuItem onClick={() => router.push(`/business/${businessId}/places/${lastPlace.id}/profile`)}>
+                {t('profile')}
+                <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+              </DropdownMenuItem>
+            )}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => signOut()}>

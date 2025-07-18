@@ -257,7 +257,7 @@ export default function RootAppSidebar({
           </div>
 
           <div className="flex items-center gap-2 px-4">
-            <UserNav />
+            {user && <UserNav user={user} />}
             <LanguageSwitcher />
           </div>
         </header>

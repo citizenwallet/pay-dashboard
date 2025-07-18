@@ -235,7 +235,7 @@ export default function PosSidebar({
           </div>
 
           <div className="flex items-center gap-2 px-4">
-            <UserNav />
+            {user && <UserNav user={user} />}
           </div>
         </header>
         {/* page main content */}
