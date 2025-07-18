@@ -3,7 +3,6 @@ import 'server-only';
 import {
   PostgrestResponse,
   PostgrestSingleResponse,
-  // QueryData,
   SupabaseClient
 } from '@supabase/supabase-js';
 
@@ -31,6 +30,10 @@ export interface PlaceSearchResult {
   id: number;
   name: string;
   slug: string;
+}
+
+export interface PlaceWithBusiness extends Place {
+  business: { name: string };
 }
 
 export const getPlaceByUsername = async (
@@ -143,6 +146,15 @@ export const getAllPlaces = async (
     .order('id', { ascending: true });
 
   return placesQuery;
+};
+
+export const getAllPlacesWithBusiness = async (
+  client: SupabaseClient
+): Promise<PostgrestResponse<PlaceWithBusiness>> => {
+  return client
+    .from('places')
+    .select('*,business:businesses!business_id(name)')
+    .order('id', { ascending: true });
 };
 
 export const checkUserPlaceAccess = async (
