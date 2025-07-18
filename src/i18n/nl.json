@@ -143,7 +143,9 @@
     "image": "Afbeelding",
     "updateProfile": "Profiel bijwerken",
     "updating": "Bijwerken...",
-    "updateSuccess": "Locatie succesvol bijgewerkt"
+    "updateSuccess": "Locatie succesvol bijgewerkt",
+    "IBANnumber": "IBAN nummer",
+    "IBANnumberPlaceholder": "Voer IBAN nummer in"
   },
   "manage": {
     "manage": "Beheren",

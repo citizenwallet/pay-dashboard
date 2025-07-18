@@ -143,7 +143,9 @@
     "image": "Image",
     "updateProfile": "Update Profile",
     "updating": "Updating...",
-    "updateSuccess": "Place updated successfully"
+    "updateSuccess": "Place updated successfully",
+    "IBANnumber": "IBAN number",
+    "IBANnumberPlaceholder": "Enter IBAN number"
   },
   "manage": {
     "manage": "Manage",
