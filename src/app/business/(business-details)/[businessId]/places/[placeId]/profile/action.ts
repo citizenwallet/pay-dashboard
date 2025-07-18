@@ -8,6 +8,7 @@ import { getServiceRoleClient } from '@/db';
 import { getLinkedBusinessByUserId } from '@/db/business';
 import { getPlaceById, updatePlaceById } from '@/db/places';
 import { uploadImage } from '@/services/storage/upload';
+import { revalidatePath } from 'next/cache';
 
 export async function getPlaceDataAction(placeId: number, businessId: number) {
   const client = getServiceRoleClient();
@@ -48,10 +49,13 @@ export async function updatePlaceAction({
   if (image.size != 0) {
     url = await uploadImage(client, image, busid);
   }
-  return await updatePlaceById(client, placeId, {
+  const data = await updatePlaceById(client, placeId, {
     name,
     description,
     slug,
     image: url
   });
+  revalidatePath(`/business/${busid}/places/${placeId}/profile`);
+
+  return data;
 }
