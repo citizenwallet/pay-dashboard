@@ -32,6 +32,16 @@ import {
 } from '@/components/ui/select';
 import { DisplayMode } from '@/db/places';
 import { useTranslations } from 'next-intl';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 
 export default function ItemListing({
   placeId,
@@ -62,6 +72,10 @@ export default function ItemListing({
   const [uploadingImage, setUploadingImage] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [handleAddButton, setHandleAddButton] = useState(true);
+
 
   const [isDesktop, setIsDesktop] = useState(false);
   const t = useTranslations('checkout');
@@ -793,7 +807,7 @@ export default function ItemListing({
       />
 
       <div className="mb-4 flex items-center justify-between">
-        <Button
+        {/* <Button
           onClick={handleAddItem}
           disabled={addingItem}
           className="flex items-center gap-2"
@@ -809,7 +823,47 @@ export default function ItemListing({
               {t('addItem')}
             </>
           )}
-        </Button>
+        </Button> */}
+
+
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="mb-4 flex items-center gap-2">
+              <icons.Plus size={16} />
+              {t('addItem')}
+            </Button>
+          </DialogTrigger>
+
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New Item</DialogTitle>
+              <DialogDescription>Add a new item to the checkout</DialogDescription>
+            </DialogHeader>
+
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <label htmlFor="id" className="text-sm font-medium">
+                  Item ID
+                </label>
+                <Input
+                  id="id"
+                  type="text"
+                  placeholder={t('enterTerminalId')}
+                />
+              </div>
+
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button disabled={handleAddButton}>
+                Add
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-600">{t('displayMode')}:</span>
