@@ -37,7 +37,7 @@ export default function ItemListing({
   placeId,
   items: initialItems,
   currencyLogo,
-  displayMode: initialDisplayMode = 'amount'
+  displayMode: initialDisplayMode = 'amountAndMenu'
 }: {
   placeId: number;
   items: Item[];
@@ -850,17 +850,17 @@ export default function ItemListing({
                   key={item.id}
                   {...(isDesktop
                     ? {
-                        draggable: true,
-                        onDragStart: () => handleDragStart(item.id),
-                        onDragOver: (e) => handleDragOver(e, index),
-                        onDrop: (e) => {
-                          e.preventDefault();
-                          if (draggingItem !== null) {
-                            handleDrop(draggingItem, index);
-                            setDraggingItem(null);
-                          }
+                      draggable: true,
+                      onDragStart: () => handleDragStart(item.id),
+                      onDragOver: (e) => handleDragOver(e, index),
+                      onDrop: (e) => {
+                        e.preventDefault();
+                        if (draggingItem !== null) {
+                          handleDrop(draggingItem, index);
+                          setDraggingItem(null);
                         }
                       }
+                    }
                     : {})}
                   className={item.hidden ? 'bg-gray-50 opacity-70' : ''}
                 >
@@ -958,7 +958,7 @@ export default function ItemListing({
                   </td>
                   <td className="border p-2">
                     {editingItemId === item.id &&
-                    editingField === 'description' ? (
+                      editingField === 'description' ? (
                       <textarea
                         value={editingDescription}
                         onChange={handleDescriptionChange}
@@ -984,7 +984,7 @@ export default function ItemListing({
                   </td>
                   <td className="border p-2">
                     {editingItemId === item.id &&
-                    editingField === 'category' ? (
+                      editingField === 'category' ? (
                       <input
                         type="text"
                         value={editingCategory}
