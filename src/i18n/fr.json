@@ -177,7 +177,8 @@
     "andArchivedSuccessfully": "et archivé avec succès",
     "errorArchiveToggle": "Erreur lors du clic sur le bouton d'archivage du lieu",
     "placeDeletedSuccessfully": "Lieu supprimé avec succès",
-    "errorPlaceDelete": "Erreur lors de la suppression du lieu"
+    "errorPlaceDelete": "Erreur lors de la suppression du lieu",
+    "accountsDescription": "Adresses des comptes du lieu, cliquez sur l'icône pour voir sur l'explorateur de bloc."
   },
   "payouts": {
     "payouts": "Versements",
