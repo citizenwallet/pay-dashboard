@@ -1,15 +1,16 @@
 'use client';
 import CurrencyLogo from '@/components/currency-logo';
+import SearchInput from '@/components/search-input';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
+import { PayoutWithBurnAndTransfer } from '@/db/payouts';
 import { formatCurrencyNumber } from '@/lib/currency';
 import { PaginationState, Row } from '@tanstack/react-table';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import SearchInput from '@/components/search-input';
-import { useCallback } from 'react';
 import { useTranslations } from 'next-intl';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useCallback } from 'react';
 
-interface UpdatePayout {
+export interface UpdatePayout {
   id: number;
   created_at: string;
   name: string;
@@ -23,8 +24,8 @@ interface UpdatePayout {
   display: string;
   hidden: boolean;
   archived: boolean;
-  businesses: { name: string };
-  payouts: { created_at: string; id: string }[];
+  business: { name: string };
+  payouts: PayoutWithBurnAndTransfer[];
   balance: number;
 }
 
@@ -57,9 +58,9 @@ export default function PendingPayout({
       const newState =
         typeof updaterOrValue === 'function'
           ? updaterOrValue({
-              pageIndex: offset / limit,
-              pageSize: limit
-            })
+            pageIndex: offset / limit,
+            pageSize: limit
+          })
           : updaterOrValue;
 
       const params = new URLSearchParams(searchParams);
@@ -73,7 +74,7 @@ export default function PendingPayout({
   const columns = [
     {
       header: t('businessName'),
-      accessorKey: 'businesses.name'
+      accessorKey: 'business.name'
     },
     {
       header: t('placeName'),
@@ -93,16 +94,16 @@ export default function PendingPayout({
       header: t('lastPayout'),
       cell: ({ row }: { row: Row<UpdatePayout> }) => {
         const payouts = row.original.payouts;
-        const lastPayout = payouts?.[payouts.length - 1];
+        const lastPayout = payouts[0];
 
         return (
           <>
             {lastPayout
               ? new Date(lastPayout.created_at).toLocaleString('en-US', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric'
-                })
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              })
               : '—'}
           </>
         );
