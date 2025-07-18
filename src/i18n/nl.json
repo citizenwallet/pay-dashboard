@@ -177,7 +177,8 @@
     "andArchivedSuccessfully": "en succesvol gearchiveerd",
     "errorArchiveToggle": "Fout bij het klikken op de archiveren knop van de locatie",
     "placeDeletedSuccessfully": "Locatie succesvol verwijderd",
-    "errorPlaceDelete": "Fout bij het verwijderen van de locatie"
+    "errorPlaceDelete": "Fout bij het verwijderen van de locatie",
+    "accountsDescription": "Locatie account adressen, klik op de icoon om te bekijken op de block explorer."
   },
   "payouts": {
     "payouts": "Uitbetalingen",
