@@ -278,6 +278,7 @@ export default function ItemListing({
     }
   };
 
+
   const handleNameClick = (item: Item) => {
     setEditingItemId(item.id);
     setEditingField('name');
@@ -297,6 +298,11 @@ export default function ItemListing({
     } else if (e.key === 'Escape') {
       setEditingItemId(null);
       setEditingField(null);
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      setEditingField('description');
+      setEditingDescription(item.description);
+
     }
   };
 
@@ -336,6 +342,8 @@ export default function ItemListing({
     }
   };
 
+
+
   const handleDescriptionClick = (item: Item) => {
     setEditingItemId(item.id);
     setEditingField('description');
@@ -357,6 +365,10 @@ export default function ItemListing({
     } else if (e.key === 'Escape') {
       setEditingItemId(null);
       setEditingField(null);
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      setEditingField('category');
+      setEditingCategory(item.category);
     }
   };
 
@@ -396,6 +408,9 @@ export default function ItemListing({
     }
   };
 
+
+
+
   const handlePriceClick = (item: Item) => {
     setEditingItemId(item.id);
     setEditingField('price');
@@ -419,6 +434,10 @@ export default function ItemListing({
     } else if (e.key === 'Escape') {
       setEditingItemId(null);
       setEditingField(null);
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      setEditingField('vat');
+      setEditingVat(item.vat.toString());
     }
   };
 
@@ -475,6 +494,9 @@ export default function ItemListing({
     }
   };
 
+
+
+
   const handleCategoryClick = (item: Item) => {
     setEditingItemId(item.id);
     setEditingField('category');
@@ -494,6 +516,10 @@ export default function ItemListing({
     } else if (e.key === 'Escape') {
       setEditingItemId(null);
       setEditingField(null);
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      setEditingField('price');
+      setEditingPrice(formatCurrencyNumber(item.price));
     }
   };
 
@@ -532,6 +558,8 @@ export default function ItemListing({
       setLoading(null);
     }
   };
+
+
 
   const handleVatClick = (item: Item) => {
     setEditingItemId(item.id);
@@ -608,6 +636,8 @@ export default function ItemListing({
       setLoading(null);
     }
   };
+
+
 
   const handleImageClick = (item: Item) => {
     setEditingItemId(item.id);
@@ -711,6 +741,8 @@ export default function ItemListing({
       setLoading(null);
     }
   };
+
+
 
   const handleAddItem = async () => {
     try {
@@ -850,17 +882,17 @@ export default function ItemListing({
                   key={item.id}
                   {...(isDesktop
                     ? {
-                        draggable: true,
-                        onDragStart: () => handleDragStart(item.id),
-                        onDragOver: (e) => handleDragOver(e, index),
-                        onDrop: (e) => {
-                          e.preventDefault();
-                          if (draggingItem !== null) {
-                            handleDrop(draggingItem, index);
-                            setDraggingItem(null);
-                          }
+                      draggable: true,
+                      onDragStart: () => handleDragStart(item.id),
+                      onDragOver: (e) => handleDragOver(e, index),
+                      onDrop: (e) => {
+                        e.preventDefault();
+                        if (draggingItem !== null) {
+                          handleDrop(draggingItem, index);
+                          setDraggingItem(null);
                         }
                       }
+                    }
                     : {})}
                   className={item.hidden ? 'bg-gray-50 opacity-70' : ''}
                 >
@@ -958,7 +990,7 @@ export default function ItemListing({
                   </td>
                   <td className="border p-2">
                     {editingItemId === item.id &&
-                    editingField === 'description' ? (
+                      editingField === 'description' ? (
                       <textarea
                         value={editingDescription}
                         onChange={handleDescriptionChange}
@@ -984,7 +1016,7 @@ export default function ItemListing({
                   </td>
                   <td className="border p-2">
                     {editingItemId === item.id &&
-                    editingField === 'category' ? (
+                      editingField === 'category' ? (
                       <input
                         type="text"
                         value={editingCategory}
