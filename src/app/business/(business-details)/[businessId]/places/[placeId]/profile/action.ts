@@ -66,5 +66,6 @@ export async function updatePlaceAction({
   }
 
   revalidatePath(`/business/${busid}/places/${placeId}/profile`);
+
   return data;
 }

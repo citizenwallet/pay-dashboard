@@ -179,7 +179,8 @@
     "andArchivedSuccessfully": "and archived successfully",
     "errorArchiveToggle": "Error with Archive button clicked the place",
     "placeDeletedSuccessfully": "Place deleted successfully",
-    "errorPlaceDelete": "Error deleting the place"
+    "errorPlaceDelete": "Error deleting the place",
+    "accountsDescription": "Place account addresses, click the icon to view on block explorer."
   },
   "payouts": {
     "payouts": "Payouts",

@@ -11,16 +11,20 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { Place } from '@/db/places';
-import { EyeOff, Archive, Trash2, Eye } from 'lucide-react';
+import { formatAddress } from '@/lib/address';
+import { Archive, Check, Copy, ExternalLink, Eye, EyeOff, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import {
   deletePlaceAction,
   handleArchiveToggleAction,
   handleVisibilityToggleAction
 } from './action';
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+
+
 
 export default function ManagePage({
   place,
@@ -33,6 +37,7 @@ export default function ManagePage({
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
   const router = useRouter();
   const t = useTranslations('manage');
 
@@ -76,6 +81,15 @@ export default function ManagePage({
     } catch (error) {
       toast.error(`${t('errorPlaceDelete')}`);
     }
+  };
+
+  const copyToClipboard = (address: string) => {
+    navigator.clipboard.writeText(address);
+    setIsCopied(true);
+
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 2000);
   };
 
   return (
@@ -211,6 +225,38 @@ export default function ManagePage({
           </Dialog>
         </div>
       )}
+
+      <div>
+        <p className="mb-2 text-gray-600">{t('accountsDescription')}</p>
+        <div className="space-y-2">
+          {place?.accounts?.map((address, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <div
+                className="flex items-center gap-1 cursor-pointer hover:bg-muted rounded-md p-1"
+                onClick={() => copyToClipboard(address)}
+              >
+                {formatAddress(address)}
+                {isCopied ? (
+                  <Check className="ml-1 h-3 w-3" />
+                ) : (
+                  <Copy className="ml-1 h-3 w-3" />
+                )}
+              </div>
+
+              <Link
+                href={`https://gnosisscan.io/address/${address}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center text-blue-600 hover:text-blue-800 ml-2"
+                title={address}
+              >
+                <ExternalLink className="h-4 w-4" />
+              </Link>
+            </div>
+          ))}
+        </div>
+      </div>
+
     </div>
   );
 }
