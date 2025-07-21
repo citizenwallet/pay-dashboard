@@ -145,7 +145,14 @@
     "updating": "Mise à jour en cours...",
     "updateSuccess": "Lieu mis à jour avec succès",
     "IBANnumber": "IBAN numéro",
-    "IBANnumberPlaceholder": "Entrez le numéro IBAN"
+    "IBANnumberPlaceholder": "Entrez le numéro IBAN",
+    "basicInformation": "Informations de base",
+    "basicInformationDescription": "Configurez les détails fondamentaux de votre lieu, y compris le nom et l'identifiant URL.",
+    "bankingInformation": "Informations bancaires",
+    "bankingInformationDescription": "Configurez vos coordonnées bancaires pour recevoir les paiements et les versements.",
+    "mediaAndDescription": "Médias et description",
+    "mediaAndDescriptionDescription": "Téléchargez des médias et fournissez des informations détaillées sur votre lieu.",
+    "uploadImagePrompt": "Aucune image sélectionnée"
   },
   "manage": {
     "manage": "Gérer",

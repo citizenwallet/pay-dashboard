@@ -145,7 +145,14 @@
     "updating": "Bijwerken...",
     "updateSuccess": "Locatie succesvol bijgewerkt",
     "IBANnumber": "IBAN nummer",
-    "IBANnumberPlaceholder": "Voer IBAN nummer in"
+    "IBANnumberPlaceholder": "Voer IBAN nummer in",
+    "basicInformation": "Basisinformatie",
+    "basicInformationDescription": "Configureer de fundamentele details van uw locatie, inclusief naam en URL-identificatie.",
+    "bankingInformation": "Bankinformatie",
+    "bankingInformationDescription": "Stel uw bankgegevens in voor het ontvangen van betalingen en uitbetalingen.",
+    "mediaAndDescription": "Media en beschrijving",
+    "mediaAndDescriptionDescription": "Upload media en geef gedetailleerde informatie over uw locatie.",
+    "uploadImagePrompt": "Geen afbeelding geselecteerd"
   },
   "manage": {
     "manage": "Beheren",

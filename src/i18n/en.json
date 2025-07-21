@@ -145,7 +145,14 @@
     "updating": "Updating...",
     "updateSuccess": "Place updated successfully",
     "IBANnumber": "IBAN number",
-    "IBANnumberPlaceholder": "Enter IBAN number"
+    "IBANnumberPlaceholder": "Enter IBAN number",
+    "basicInformation": "Basic Information",
+    "basicInformationDescription": "Configure your place's fundamental details including name and URL identifier.",
+    "bankingInformation": "Banking Information",
+    "bankingInformationDescription": "Set up your banking details for receiving payments and payouts.",
+    "mediaAndDescription": "Media & Description",
+    "mediaAndDescriptionDescription": "Upload media and provide detailed information about your place.",
+    "uploadImagePrompt": "No image selected"
   },
   "manage": {
     "manage": "Manage",
