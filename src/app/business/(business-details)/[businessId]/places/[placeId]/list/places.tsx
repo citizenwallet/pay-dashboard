@@ -43,7 +43,8 @@ import { createSlug } from '@/lib/utils';
 import {
   generateUniqueSlugAction,
   uploadImageAction,
-  createPlaceAction
+  createPlaceAction,
+  changeLastPlaceAction
 } from '@/app/business/(business-details)/[businessId]/places/[placeId]/action';
 import { useTranslations } from 'next-intl';
 
@@ -455,18 +456,24 @@ export default function PlacesPage({
     return imageUrl;
   };
 
+  const handleChangePlace = async (placeId: number) => {
+    await changeLastPlaceAction(placeId);
+    router.push(`/business/${businessId}/places/${placeId}/profile`);
+  };
+
+
   const columns = [
     {
       header: t('id'),
       accessorKey: 'id',
       cell: ({ row }: { row: Row<Place> }) => {
         return (
-          <Link
-            href={`/business/${row.original.business_id}/places/${row.original.id}/list`}
-            className="text-blue-500 hover:underline"
+          <div
+            onClick={() => handleChangePlace(row.original.id)}
+            className="text-blue-500 hover:underline cursor-pointer"
           >
             {row.original.id}
-          </Link>
+          </div>
         );
       }
     },
@@ -637,11 +644,7 @@ export default function PlacesPage({
             <Button
               variant="outline"
               size="lg"
-              onClick={() =>
-                router.push(
-                  `/business/${row.original.business_id}/places/${row.original.id}/list`
-                )
-              }
+              onClick={() => handleChangePlace(row.original.id)}
             >
               {t('select')}
             </Button>
