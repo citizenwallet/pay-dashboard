@@ -54,8 +54,7 @@ export default function AddItem({
         // Update button state based on required fields
         const updatedForm = { ...newItemForm, [field]: value };
         const isFormValid = updatedForm.name.trim() !== '' &&
-            updatedForm.price.trim() !== '' &&
-            updatedForm.vat.trim() !== '';
+            updatedForm.price.trim() !== ''
         setHandleAddButton(!isFormValid);
     };
 
@@ -85,21 +84,21 @@ export default function AddItem({
     const handleSubmitNewItem = async () => {
         try {
             setAddingItem(true);
-            if (!newItemForm.image) {
-                toast.error('Please select an image');
-                return;
+            let imageUrl = null;
+            if (newItemForm.image) {
+                imageUrl = await uploadImageAction(
+                    newItemForm.image,
+                    Number(placeId)
+                );
             }
-            const imageUrl = await uploadImageAction(
-                newItemForm.image,
-                Number(placeId)
-            );
+
             const newItem = await addNewItemAction(
                 Number(placeId),
                 newItemForm.name,
                 newItemForm.description,
                 imageUrl,
                 Math.round(parseFloat(newItemForm.price) * 100),
-                parseFloat(newItemForm.vat),
+                parseFloat(newItemForm.vat) || 0,
                 newItemForm.category
             );
             handleAddItem(newItem.data);
