@@ -129,7 +129,15 @@
     "vatUpdateError": "Artikel BTW bijwerken mislukt",
     "imageUpdate": "Artikelafbeelding succesvol bijgewerkt",
     "imageUpdateError": "Artikelafbeelding bijwerken mislukt",
-    "displayModeUpdate": "Locatie weergavemodus succesvol bijgewerkt"
+    "displayModeUpdate": "Locatie weergavemodus succesvol bijgewerkt",
+    "addItemDescription": "Voeg een nieuw artikel toe aan de afrekening",
+    "namePlaceholder": "Voer artikelnaam in",
+    "descriptionPlaceholder": "Voer artikelbeschrijving in",
+    "categoryPlaceholder": "Voer artikelcategorie in",
+    "pricePlaceholder": "Voer artikelprijs in",
+    "vatPlaceholder": "Voer artikel BTW in",
+    "adding": "Toevoegen...",
+    "cancel": "Annuleren"
   },
   "profile": {
     "profile": "Profiel",
@@ -240,7 +248,8 @@
     "placeVisibilityUpdatedSuccessfully": "Locatie zichtbaarheid succesvol bijgewerkt",
     "placeDescriptionUpdatedSuccessfully": "Locatiebeschrijving succesvol bijgewerkt",
     "placeNameUpdatedSuccessfully": "Locatienaam succesvol bijgewerkt",
-    "select": "Selecteren"
+    "select": "Selecteren",
+    "actions": "Acties"
   },
   "placeUpload": {
     "upload": "Uploaden",

@@ -129,7 +129,15 @@
     "vatUpdateError": "'Failed to update item VAT",
     "imageUpdate": "Item image updated successfully",
     "imageUpdateError": "Failed to update item image",
-    "displayModeUpdate": "Place display mode updated successfully"
+    "displayModeUpdate": "Place display mode updated successfully",
+    "addItemDescription": "Add a new item to the checkout",
+    "namePlaceholder": "Enter item name",
+    "descriptionPlaceholder": "Enter item description",
+    "categoryPlaceholder": "Enter item category",
+    "pricePlaceholder": "Enter item price",
+    "vatPlaceholder": "Enter item VAT",
+    "adding": "Adding...",
+    "cancel": "Cancel"
   },
   "profile": {
     "profile": "Profile",
@@ -239,7 +247,8 @@
     "placeVisibilityUpdatedSuccessfully": "Place visibility updated successfully",
     "placeDescriptionUpdatedSuccessfully": "Place description updated successfully",
     "placeNameUpdatedSuccessfully": "Place name updated successfully",
-    "select": "Select"
+    "select": "Select",
+    "actions": "Actions"
   },
   "placeUpload": {
     "upload": "Upload",

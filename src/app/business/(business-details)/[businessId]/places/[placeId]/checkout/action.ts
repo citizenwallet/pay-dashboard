@@ -17,6 +17,7 @@ import { getUserIdFromSessionAction } from '@/actions/session';
 import { uploadImage } from '@/services/storage/image';
 import { getUserBusinessId } from '@/db/users';
 import { DisplayMode, updatePlaceDisplay } from '@/db/places';
+import { revalidatePath } from 'next/cache';
 
 export async function getItemsAction(place_id: number) {
   const client = getServiceRoleClient();
@@ -193,13 +194,27 @@ export async function updateItemHiddenStatusAction(
   return updateItem(client, itemId, { hidden });
 }
 
-export async function addNewItemAction(placeId: number) {
+export async function addNewItemAction(
+  placeId: number,
+  name: string,
+  description: string,
+  image: string,
+  price: number,
+  vat: number,
+  category: string
+) {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
 
   const res = await isUserLinkedToPlaceAction(client, userId, placeId);
   if (!res) {
     throw new Error('User does not have access to this place');
+  }
+
+  // Get the business ID for the user
+  const businessId = await getUserBusinessId(client, userId);
+  if (!businessId) {
+    throw new Error('User does not have a business');
   }
 
   // Get all items to determine the order value for new item
@@ -227,16 +242,23 @@ export async function addNewItemAction(placeId: number) {
   }
 
   // Create a new item with default values
-  const newItem = await insertItem(client, '', '', '', 0, 0, '', placeId);
+  const newItem = await insertItem(
+    client,
+    name,
+    description,
+    image,
+    price,
+    vat,
+    category,
+    placeId
+  );
 
   // Update the order to place it at the top
   if (newItem.data) {
     await updateItemOrder(client, newItem.data.id, newOrder);
-
-    // Fetch the updated item
-    return getItemById(client, placeId, newItem.data.id);
   }
 
+  revalidatePath(`/business/${businessId}/places/${placeId}/checkout`);
   return newItem;
 }
 
@@ -254,4 +276,30 @@ export async function updatePlaceDisplayAction(
   }
 
   return updatePlaceDisplay(client, placeId, display);
+}
+
+export async function uploadImageAction(imageFile: File, placeId: number) {
+  const client = getServiceRoleClient();
+
+  const userId = await getUserIdFromSessionAction();
+
+  const res = await isUserLinkedToPlaceAction(client, userId, placeId);
+  if (!res) {
+    throw new Error('User does not have access to this place');
+  }
+
+  // Get the business ID for the user
+  const businessId = await getUserBusinessId(client, userId);
+  if (!businessId) {
+    throw new Error('User does not have a business');
+  }
+
+  try {
+    // Upload the image to storage
+    const imageUrl = await uploadImage(client, imageFile, businessId, placeId);
+    return imageUrl;
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    throw new Error('Failed to upload image');
+  }
 }
