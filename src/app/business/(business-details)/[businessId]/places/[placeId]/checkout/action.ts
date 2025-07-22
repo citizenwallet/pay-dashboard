@@ -8,7 +8,8 @@ import {
   updateItemOrder,
   updateItem,
   insertItem,
-  getItemById
+  getItemById,
+  rebalanceAllItems
 } from '@/db/items';
 
 import { isUserLinkedToPlaceAction } from '@/actions/session';
@@ -216,15 +217,28 @@ export async function addNewItemAction(
     throw new Error('User does not have a business');
   }
 
-  // Get all items to determine the lowest order value
+  // Get all items to determine the order value for new item
   const { data: items } = await getItemsForPlace(client, placeId);
 
   // Calculate the order value for the new item (put it at the top)
   let newOrder = 0;
+  const LARGE_INCREMENT = 1000;
+  const MIN_ORDER = 0;
+
   if (items && items.length > 0) {
-    // Find the minimum order value and subtract 1
     const minOrder = Math.min(...items.map((item) => item.order));
-    newOrder = minOrder - 1;
+
+    // Never go below MIN_ORDER
+    if (minOrder <= MIN_ORDER + LARGE_INCREMENT) {
+      // Trigger rebalancing if items are too close to minimum
+      await rebalanceAllItems(client, placeId);
+      newOrder = MIN_ORDER;
+    } else {
+      // Safe to subtract
+      newOrder = minOrder - LARGE_INCREMENT;
+    }
+  } else {
+    newOrder = MIN_ORDER; // First item gets minimum order
   }
 
   // Create a new item with default values
