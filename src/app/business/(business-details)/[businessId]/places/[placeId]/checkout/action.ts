@@ -198,7 +198,7 @@ export async function addNewItemAction(
   placeId: number,
   name: string,
   description: string,
-  image: string,
+  image: string | null,
   price: number,
   vat: number,
   category: string
