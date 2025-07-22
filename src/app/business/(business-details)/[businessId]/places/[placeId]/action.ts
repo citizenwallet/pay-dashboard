@@ -24,6 +24,7 @@ import { Wallet } from 'ethers';
 import { getAccountAddress, CommunityConfig } from '@citizenwallet/sdk';
 import Config from '@/cw/community.json';
 import { getLastplace, updateLastplace } from '@/db/users';
+import { revalidatePath } from 'next/cache';
 
 export async function getPlaceAction() {
   const client = getServiceRoleClient();
@@ -115,6 +116,7 @@ export async function createPlaceAction(
     throw new Error('Failed to create place');
   }
 
+  revalidatePath(`/business/${businessId}/places/${place.id}/list`);
   await updateLastplace(client, userId, place.id);
 
   return place;

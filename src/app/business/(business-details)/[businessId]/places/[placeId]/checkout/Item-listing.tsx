@@ -1,28 +1,7 @@
 'use client';
-import { Item } from '@/db/items';
-import { icons } from 'lucide-react';
-import { toast } from 'sonner';
-import { useState, useRef, KeyboardEvent, ChangeEvent, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import {
-  deletePlaceItemAction,
-  updateItemOrderInPlaceAction,
-  updateItemNameAction,
-  updateItemDescriptionAction,
-  updateItemPriceAction,
-  updateItemCategoryAction,
-  updateItemVatAction,
-  uploadItemImageAction,
-  updateItemHiddenStatusAction,
-  addNewItemAction,
-  updatePlaceDisplayAction
-} from './action';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { formatCurrencyNumber } from '@/lib/currency';
 import CurrencyLogo from '@/components/currency-logo';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -30,14 +9,35 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Item } from '@/db/items';
 import { DisplayMode } from '@/db/places';
+import { formatCurrencyNumber } from '@/lib/currency';
+import { icons } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import {
+  deletePlaceItemAction,
+  updateItemCategoryAction,
+  updateItemDescriptionAction,
+  updateItemHiddenStatusAction,
+  updateItemNameAction,
+  updateItemOrderInPlaceAction,
+  updateItemPriceAction,
+  updateItemVatAction,
+  updatePlaceDisplayAction,
+  uploadItemImageAction
+} from './action';
+import AddItem from './add-item';
 
 export default function ItemListing({
   placeId,
   items: initialItems,
   currencyLogo,
-  displayMode: initialDisplayMode = 'amount'
+  displayMode: initialDisplayMode = 'amountAndMenu'
 }: {
   placeId: number;
   items: Item[];
@@ -47,7 +47,6 @@ export default function ItemListing({
   const [items, setItems] = useState<Item[]>(initialItems);
   const [draggingItem, setDraggingItem] = useState<number | null>(null);
   const [loading, setLoading] = useState<number | null>(null);
-  const [addingItem, setAddingItem] = useState<boolean>(false);
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
   const [displayMode, setDisplayMode] =
     useState<DisplayMode>(initialDisplayMode);
@@ -62,6 +61,8 @@ export default function ItemListing({
   const [uploadingImage, setUploadingImage] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+
 
   const [isDesktop, setIsDesktop] = useState(false);
   const t = useTranslations('checkout');
@@ -740,42 +741,8 @@ export default function ItemListing({
 
 
 
-  const handleAddItem = async () => {
-    try {
-      setAddingItem(true);
-
-      const response = await addNewItemAction(placeId);
-
-      if (response.error) {
-        toast.error('Failed to add new item');
-      } else {
-        toast.success('New item added successfully');
-
-        // Add the new item to the top of the list
-        const newItem = response.data;
-        setItems([newItem, ...items]);
-
-        // Automatically start editing the name of the new item
-        setEditingItemId(newItem.id);
-        setEditingField('name');
-        setEditingName(newItem.name);
-
-        // Use setTimeout to ensure the input field is rendered before focusing
-        setTimeout(() => {
-          const inputElement = document.querySelector(
-            `input[data-item-id="${newItem.id}"]`
-          ) as HTMLInputElement;
-          if (inputElement) {
-            inputElement.focus();
-          }
-        }, 0);
-      }
-    } catch (error) {
-      console.error('Failed to add new item:', error);
-      toast.error('Failed to add new item');
-    } finally {
-      setAddingItem(false);
-    }
+  const handleAddItem = async (item: Item) => {
+    setItems([item, ...items]);
   };
 
   const handleDisplayModeChange = async (value: string) => {
@@ -821,23 +788,12 @@ export default function ItemListing({
       />
 
       <div className="mb-4 flex items-center justify-between">
-        <Button
-          onClick={handleAddItem}
-          disabled={addingItem}
-          className="flex items-center gap-2"
-        >
-          {addingItem ? (
-            <>
-              <icons.Loader className="animate-spin" size={16} />
-              Adding...
-            </>
-          ) : (
-            <>
-              <icons.Plus size={16} />
-              {t('addItem')}
-            </>
-          )}
-        </Button>
+
+        <AddItem
+          currencyLogo={currencyLogo}
+          placeId={Number(placeId)}
+          handleAddItem={handleAddItem}
+        />
 
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-600">{t('displayMode')}:</span>
