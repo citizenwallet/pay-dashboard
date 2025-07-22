@@ -35,7 +35,7 @@ export const insertItem = async (
   client: SupabaseClient,
   name: string,
   description: string,
-  image: string,
+  image: string | null,
   price: number,
   vat: number,
   category: string,
