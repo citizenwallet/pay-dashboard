@@ -279,6 +279,7 @@ export default function ItemListing({
     }
   };
 
+
   const handleNameClick = (item: Item) => {
     setEditingItemId(item.id);
     setEditingField('name');
@@ -295,16 +296,22 @@ export default function ItemListing({
   ) => {
     if (e.key === 'Enter') {
       handleNameSave(item);
+      setEditingItemId(null);
+      setEditingField(null);
     } else if (e.key === 'Escape') {
       setEditingItemId(null);
       setEditingField(null);
+    } else if (e.key === 'Tab') {
+      handleNameSave(item);
+      e.preventDefault();
+      setEditingField('description');
+      setEditingDescription(item.description);
+
     }
   };
 
   const handleNameSave = async (item: Item) => {
     if (editingName === item.name) {
-      setEditingItemId(null);
-      setEditingField(null);
       return;
     }
 
@@ -331,11 +338,11 @@ export default function ItemListing({
       console.error('Failed to update item name:', error);
       toast.error('Failed to update item name');
     } finally {
-      setEditingItemId(null);
-      setEditingField(null);
       setLoading(null);
     }
   };
+
+
 
   const handleDescriptionClick = (item: Item) => {
     setEditingItemId(item.id);
@@ -355,16 +362,21 @@ export default function ItemListing({
   ) => {
     if (e.key === 'Enter' && e.ctrlKey) {
       handleDescriptionSave(item);
+      setEditingItemId(null);
+      setEditingField(null);
     } else if (e.key === 'Escape') {
       setEditingItemId(null);
       setEditingField(null);
+    } else if (e.key === 'Tab') {
+      handleDescriptionSave(item);
+      e.preventDefault();
+      setEditingField('category');
+      setEditingCategory(item.category);
     }
   };
 
   const handleDescriptionSave = async (item: Item) => {
     if (editingDescription === item.description) {
-      setEditingItemId(null);
-      setEditingField(null);
       return;
     }
 
@@ -391,11 +403,12 @@ export default function ItemListing({
       console.error('Failed to update item description:', error);
       toast.error(t('descriptionUpdateError'));
     } finally {
-      setEditingItemId(null);
-      setEditingField(null);
       setLoading(null);
     }
   };
+
+
+
 
   const handlePriceClick = (item: Item) => {
     setEditingItemId(item.id);
@@ -417,9 +430,16 @@ export default function ItemListing({
   ) => {
     if (e.key === 'Enter') {
       handlePriceSave(item);
+      setEditingItemId(null);
+      setEditingField(null);
     } else if (e.key === 'Escape') {
       setEditingItemId(null);
       setEditingField(null);
+    } else if (e.key === 'Tab') {
+      handlePriceSave(item);
+      e.preventDefault();
+      setEditingField('vat');
+      setEditingVat(item.vat.toString());
     }
   };
 
@@ -442,8 +462,6 @@ export default function ItemListing({
     }
 
     if (newPrice === item.price) {
-      setEditingItemId(null);
-      setEditingField(null);
       return;
     }
 
@@ -470,11 +488,12 @@ export default function ItemListing({
       console.error('Failed to update item price:', error);
       toast.error(t('priceUpdateError'));
     } finally {
-      setEditingItemId(null);
-      setEditingField(null);
       setLoading(null);
     }
   };
+
+
+
 
   const handleCategoryClick = (item: Item) => {
     setEditingItemId(item.id);
@@ -492,16 +511,21 @@ export default function ItemListing({
   ) => {
     if (e.key === 'Enter') {
       handleCategorySave(item);
+      setEditingItemId(null);
+      setEditingField(null);
     } else if (e.key === 'Escape') {
       setEditingItemId(null);
       setEditingField(null);
+    } else if (e.key === 'Tab') {
+      handleCategorySave(item);
+      e.preventDefault();
+      setEditingField('price');
+      setEditingPrice(formatCurrencyNumber(item.price));
     }
   };
 
   const handleCategorySave = async (item: Item) => {
     if (editingCategory === item.category) {
-      setEditingItemId(null);
-      setEditingField(null);
       return;
     }
 
@@ -528,11 +552,11 @@ export default function ItemListing({
       console.error('Failed to update item category:', error);
       toast.error(t('categoryUpdateError'));
     } finally {
-      setEditingItemId(null);
-      setEditingField(null);
       setLoading(null);
     }
   };
+
+
 
   const handleVatClick = (item: Item) => {
     setEditingItemId(item.id);
@@ -609,6 +633,8 @@ export default function ItemListing({
       setLoading(null);
     }
   };
+
+
 
   const handleImageClick = (item: Item) => {
     setEditingItemId(item.id);
@@ -712,6 +738,8 @@ export default function ItemListing({
       setLoading(null);
     }
   };
+
+
 
   const handleAddItem = async (item: Item) => {
     setItems([item, ...items]);
