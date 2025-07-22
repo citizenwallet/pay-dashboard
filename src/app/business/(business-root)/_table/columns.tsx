@@ -2,18 +2,16 @@
 
 import CurrencyLogo from '@/components/currency-logo';
 import { Skeleton } from '@/components/ui/skeleton';
+import Config from '@/cw/community.json';
 import { Business } from '@/db/business';
 import { formatCurrencyNumber } from '@/lib/currency';
 import { CommunityConfig } from '@citizenwallet/sdk';
 import { ColumnDef } from '@tanstack/react-table';
-import Config from '@/cw/community.json';
-import { getBusinessBalanceAction } from '../action';
-import Link from 'next/link';
 import Image from 'next/image';
-import { useEffect } from 'react';
+import Link from 'next/link';
 
 
-export const columns: ColumnDef<Business>[] = [
+export const columns: ColumnDef<Business & { balance: number }>[] = [
     {
         header: 'Name',
         accessorKey: 'business.name',
@@ -61,13 +59,12 @@ export const columns: ColumnDef<Business>[] = [
             const community = new CommunityConfig(Config);
             const currencyLogo = community.community.logo;
             const tokenDecimals = community.primaryToken.decimals;
-            const balance = 0;
 
             return (
                 <>
                     <p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
                         <CurrencyLogo logo={currencyLogo} size={20} />
-                        {formatCurrencyNumber(balance, tokenDecimals)}
+                        {formatCurrencyNumber(row.original.balance, tokenDecimals)}
                     </p>
                 </>
             )
