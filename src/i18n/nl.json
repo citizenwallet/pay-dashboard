@@ -240,7 +240,8 @@
     "placeVisibilityUpdatedSuccessfully": "Locatie zichtbaarheid succesvol bijgewerkt",
     "placeDescriptionUpdatedSuccessfully": "Locatiebeschrijving succesvol bijgewerkt",
     "placeNameUpdatedSuccessfully": "Locatienaam succesvol bijgewerkt",
-    "select": "Selecteren"
+    "select": "Selecteren",
+    "actions": "Acties"
   },
   "placeUpload": {
     "upload": "Uploaden",
