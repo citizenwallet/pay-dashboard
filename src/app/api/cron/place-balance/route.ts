@@ -10,6 +10,12 @@ import { NextRequest, NextResponse } from 'next/server';
 // This API route will be called by a cron job every 15 minutes
 export async function POST(req: NextRequest) {
   try {
+    const authHeader = req.headers.get('authorization');
+    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+      return new Response('Unauthorized', {
+        status: 401
+      });
+    }
     //update the place balance
     const client = getServiceRoleClient();
     const { data } = await getAllPlacesWithBusiness(client);
