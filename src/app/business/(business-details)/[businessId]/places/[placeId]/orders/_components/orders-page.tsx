@@ -43,167 +43,166 @@ const createColumns = (
   t: (key: string) => string,
   onRefundClick: (orderId: number) => void
 ): ColumnDef<Order>[] => [
-  {
-    accessorKey: 'id',
-    header: t('id'),
-    cell: ({ row }) => {
-      return row.original.id;
-    }
-  },
-  {
-    accessorKey: 'date',
-    header: t('date'),
-    cell: ({ row }) => {
-      return humanizeDate(row.original.created_at);
-    }
-  },
-  {
-    accessorKey: 'total',
-    header: t('total'),
-    cell: ({ row }) => {
-      return (
-        <p
-          className={cn('flex w-8 items-center gap-1', {
-            'line-through': row.original.status === 'refunded'
-          })}
-        >
-          <CurrencyLogo logo={currencyLogo} size={18} />
-          {row.original.status === 'correction' &&
-            row.original.total > 0 &&
-            '-'}
-          {formatCurrencyNumber(row.original.total)}
-        </p>
-      );
-    }
-  },
-  {
-    accessorKey: 'fees',
-    header: t('fees'),
-    cell: ({ row }) => {
-      return (
-        <div className="flex items-center gap-1">
+    {
+      accessorKey: 'id',
+      header: t('id'),
+      cell: ({ row }) => {
+        return row.original.id;
+      }
+    },
+    {
+      accessorKey: 'date',
+      header: t('date'),
+      cell: ({ row }) => {
+        return humanizeDate(row.original.created_at);
+      }
+    },
+    {
+      accessorKey: 'total',
+      header: t('total'),
+      cell: ({ row }) => {
+        return (
           <p
-            className={cn('flex items-center gap-1', {
-              'line-through':
-                (row.original.status === 'refunded' ||
-                  row.original.status === 'refund') &&
-                row.original.fees === 0,
-              'rounded-full bg-red-100 px-2 py-1 font-medium':
-                (row.original.status === 'refunded' ||
-                  row.original.status === 'refund') &&
-                row.original.fees > 0
+            className={cn('flex items-center gap-1 min-w-20', {
+              'line-through': row.original.status === 'refunded'
             })}
           >
             <CurrencyLogo logo={currencyLogo} size={18} />
             {row.original.status === 'correction' &&
-              row.original.fees > 0 &&
+              row.original.total > 0 &&
               '-'}
-            {formatCurrencyNumber(row.original.fees)}
+            {formatCurrencyNumber(row.original.total)}
           </p>
-        </div>
-      );
-    }
-  },
-  {
-    accessorKey: 'net',
-    header: t('net'),
-    cell: ({ row }) => {
-      return (
-        <p className="flex w-8 items-center gap-1">
-          <CurrencyLogo logo={currencyLogo} size={18} />
-          {(row.original.status === 'correction' ||
-            row.original.status === 'refund') &&
-            row.original.total > 0 &&
-            '-'}
-          {formatCurrencyNumber(
-            row.original.status === 'refund'
-              ? row.original.total + row.original.fees
-              : row.original.total - row.original.fees
-          )}
-        </p>
-      );
-    }
-  },
-  {
-    accessorKey: 'status',
-    header: t('status'),
-    cell: ({ row }) => {
-      return (
-        <span
-          className={cn('rounded-full px-2 py-1 text-xs font-medium', {
-            'bg-green-100 text-green-800': row.original.status === 'paid',
-            'bg-yellow-100 text-yellow-800': row.original.status === 'pending',
-            'bg-red-100 text-red-800': row.original.status === 'cancelled',
-            'bg-gray-100 text-gray-800':
-              row.original.status === 'refunded' ||
-              row.original.status === 'refund'
-          })}
-        >
-          {t(row.original.status) || row.original.status}
-        </span>
-      );
-    }
-  },
-  {
-    accessorKey: 'type',
-    header: t('type'),
-    cell: ({ row }) => {
-      const isTerminal = row.original.type === 'terminal' && row.original.pos;
-      if (isTerminal) {
+        );
+      }
+    },
+    {
+      accessorKey: 'fees',
+      header: t('fees'),
+      cell: ({ row }) => {
         return (
-          <div className="flex items-center">
-            <span className="flex gap-1 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium">
-              <SmartphoneNfcIcon className="h-4 w-4" />
-              {`${t('terminal')}: ${
-                row.original.pos?.startsWith('0x')
+          <div className="flex items-center gap-1 min-w-20">
+            <p
+              className={cn('flex items-center gap-1', {
+                'line-through':
+                  (row.original.status === 'refunded' ||
+                    row.original.status === 'refund') &&
+                  row.original.fees === 0,
+                'rounded-full bg-red-100 px-2 py-1 font-medium':
+                  (row.original.status === 'refunded' ||
+                    row.original.status === 'refund') &&
+                  row.original.fees > 0
+              })}
+            >
+              <CurrencyLogo logo={currencyLogo} size={18} />
+              {row.original.status === 'correction' &&
+                row.original.fees > 0 &&
+                '-'}
+              {formatCurrencyNumber(row.original.fees)}
+            </p>
+          </div>
+        );
+      }
+    },
+    {
+      accessorKey: 'net',
+      header: t('net'),
+      cell: ({ row }) => {
+        return (
+          <p className="flex min-w-20 items-center gap-1">
+            <CurrencyLogo logo={currencyLogo} size={18} />
+            {(row.original.status === 'correction' ||
+              row.original.status === 'refund') &&
+              row.original.total > 0 &&
+              '-'}
+            {formatCurrencyNumber(
+              row.original.status === 'refund'
+                ? row.original.total + row.original.fees
+                : row.original.total - row.original.fees
+            )}
+          </p>
+        );
+      }
+    },
+    {
+      accessorKey: 'status',
+      header: t('status'),
+      cell: ({ row }) => {
+        return (
+          <span
+            className={cn('rounded-full px-2 py-1 text-xs font-medium min-w-20', {
+              'bg-green-100 text-green-800': row.original.status === 'paid',
+              'bg-yellow-100 text-yellow-800': row.original.status === 'pending',
+              'bg-red-100 text-red-800': row.original.status === 'cancelled',
+              'bg-gray-100 text-gray-800':
+                row.original.status === 'refunded' ||
+                row.original.status === 'refund'
+            })}
+          >
+            {t(row.original.status) || row.original.status}
+          </span>
+        );
+      }
+    },
+    {
+      accessorKey: 'type',
+      header: t('type'),
+      cell: ({ row }) => {
+        const isTerminal = row.original.type === 'terminal' && row.original.pos;
+        if (isTerminal) {
+          return (
+            <div className="flex items-center min-w-20">
+              <span className="flex gap-1 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium">
+                <SmartphoneNfcIcon className="h-4 w-4" />
+                {`${t('terminal')}: ${row.original.pos?.startsWith('0x')
                   ? formatAddress(row.original.pos)
                   : row.original.pos
-              }`}
-            </span>
-          </div>
-        );
-      }
+                  }`}
+              </span>
+            </div>
+          );
+        }
 
-      if (row.original.type === 'web' || !row.original.type) {
+        if (row.original.type === 'web' || !row.original.type) {
+          return (
+            <div className="flex items-center">
+              <span className="flex gap-1 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium">
+                <QrCodeIcon className="h-4 w-4" />
+                {t('qr')}
+              </span>
+            </div>
+          );
+        }
         return (
           <div className="flex items-center">
             <span className="flex gap-1 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium">
-              <QrCodeIcon className="h-4 w-4" />
-              {t('qr')}
+              <SmartphoneIcon className="h-4 w-4" />
+              {`${t('app')}`}
             </span>
           </div>
         );
       }
-      return (
-        <div className="flex items-center">
-          <span className="flex gap-1 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium">
-            <SmartphoneIcon className="h-4 w-4" />
-            {`${t('app')}`}
-          </span>
-        </div>
-      );
+    },
+    {
+      accessorKey: 'description',
+      header: 'Description'
+    },
+    {
+      accessorKey: 'action',
+      header: 'Actions',
+      cell: ({ row }) => {
+        return (
+          <>
+            {row.original?.processor_tx && row.original?.status === 'paid' && (
+              <Button onClick={() => onRefundClick(row.original.id)} className='min-w-20'>
+                {t('refund')}
+              </Button>
+            )}
+          </>
+        );
+      }
     }
-  },
-  {
-    accessorKey: 'description',
-    header: 'Description'
-  },
-  {
-    accessorKey: 'action',
-    header: 'Actions',
-    cell: ({ row }) => {
-      return (
-        <>
-          {row.original?.processor_tx && row.original?.status === 'paid' && (
-            <Button onClick={() => onRefundClick(row.original.id)}>
-              {t('refund')}
-            </Button>
-          )}
-        </>
-      );
-    }
-  }
-];
+  ];
 
 export const OrdersPage: React.FC<Props> = ({
   place,
@@ -238,9 +237,9 @@ export const OrdersPage: React.FC<Props> = ({
       const newState =
         typeof updaterOrValue === 'function'
           ? updaterOrValue({
-              pageIndex: pagination.offset / pagination.limit,
-              pageSize: pagination.limit
-            })
+            pageIndex: pagination.offset / pagination.limit,
+            pageSize: pagination.limit
+          })
           : updaterOrValue;
 
       const params = new URLSearchParams(searchParams);
