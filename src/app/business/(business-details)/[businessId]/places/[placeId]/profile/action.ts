@@ -8,7 +8,9 @@ import { getServiceRoleClient } from '@/db';
 import { getLinkedBusinessByUserId } from '@/db/business';
 import { getPlaceById, updatePlaceById } from '@/db/places';
 import { uploadImage } from '@/services/storage/upload';
+import { checkUsernameAvailability, CommunityConfig } from '@citizenwallet/sdk';
 import { revalidatePath } from 'next/cache';
+import Config from '@/cw/community.json';
 
 export async function getPlaceDataAction(placeId: number, businessId: number) {
   const client = getServiceRoleClient();
@@ -58,4 +60,19 @@ export async function updatePlaceAction({
   revalidatePath(`/business/${busid}/places/${placeId}/profile`);
 
   return data;
+}
+
+export async function checkSlugAvailableAction(slug: string, placeId: number) {
+  const client = getServiceRoleClient();
+  const userId = await getUserIdFromSessionAction();
+  const res = await isUserLinkedToPlaceAction(client, userId, placeId);
+  if (!res) {
+    throw new Error('User does not have access to this place');
+  }
+
+  const community = new CommunityConfig(Config);
+
+  const available = await checkUsernameAvailability(community, slug);
+
+  return available;
 }
