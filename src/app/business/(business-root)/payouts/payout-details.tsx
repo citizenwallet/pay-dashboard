@@ -75,9 +75,9 @@ export default function PayoutDetailsPage({
       const newState =
         typeof updaterOrValue === 'function'
           ? updaterOrValue({
-              pageIndex: offset / limit,
-              pageSize: limit
-            })
+            pageIndex: offset / limit,
+            pageSize: limit
+          })
           : updaterOrValue;
 
       const params = new URLSearchParams(searchParams);
@@ -114,8 +114,8 @@ export default function PayoutDetailsPage({
             {column.getIsSorted() === 'asc'
               ? ' ↑'
               : column.getIsSorted() === 'desc'
-              ? ' ↓'
-              : ''}
+                ? ' ↓'
+                : ''}
           </Button>
         );
       },
@@ -146,8 +146,8 @@ export default function PayoutDetailsPage({
             {column.getIsSorted() === 'asc'
               ? ' ↑'
               : column.getIsSorted() === 'desc'
-              ? ' ↓'
-              : ''}
+                ? ' ↓'
+                : ''}
           </Button>
         );
       },
@@ -175,8 +175,8 @@ export default function PayoutDetailsPage({
             {column.getIsSorted() === 'asc'
               ? ' ↑'
               : column.getIsSorted() === 'desc'
-              ? ' ↓'
-              : ''}
+                ? ' ↓'
+                : ''}
           </Button>
         );
       },
@@ -202,8 +202,8 @@ export default function PayoutDetailsPage({
             {column.getIsSorted() === 'asc'
               ? ' ↑'
               : column.getIsSorted() === 'desc'
-              ? ' ↓'
-              : ''}
+                ? ' ↓'
+                : ''}
           </Button>
         );
       },
@@ -211,10 +211,10 @@ export default function PayoutDetailsPage({
         <div className="flex h-16 items-center">
           {row.original.created_at
             ? new Date(row.original.created_at).toLocaleString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-              })
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            })
             : '-'}
         </div>
       )
@@ -239,10 +239,10 @@ export default function PayoutDetailsPage({
         <div className="flex h-16 items-center">
           {row.original.from
             ? new Date(row.original.from).toLocaleString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-              })
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            })
             : '-'}
         </div>
       )
@@ -256,10 +256,10 @@ export default function PayoutDetailsPage({
         <div className="flex h-16 items-center">
           {row.original.to
             ? new Date(row.original.to).toLocaleString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-              })
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            })
             : '-'}
         </div>
       )
@@ -282,14 +282,14 @@ export default function PayoutDetailsPage({
             {column.getIsSorted() === 'asc'
               ? ' ↑'
               : column.getIsSorted() === 'desc'
-              ? ' ↓'
-              : ''}
+                ? ' ↓'
+                : ''}
           </Button>
         );
       },
       cell: ({ row }: { row: Row<FullPayout> }) => {
         return (
-          <p className="flex h-16 w-8 items-center gap-1">
+          <p className="flex h-16 w-min-20 items-center gap-1">
             <CurrencyLogo logo={currencyLogo} size={18} />
             {formatCurrencyNumber(row.original.total)}
           </p>
@@ -314,14 +314,14 @@ export default function PayoutDetailsPage({
             {column.getIsSorted() === 'asc'
               ? ' ↑'
               : column.getIsSorted() === 'desc'
-              ? ' ↓'
-              : ''}
+                ? ' ↓'
+                : ''}
           </Button>
         );
       },
       cell: ({ row }: { row: Row<FullPayout> }) => {
         return (
-          <p className="flex h-16 w-8 items-center gap-1">
+          <p className="flex h-16 w-min-20 items-center gap-1">
             <CurrencyLogo logo={currencyLogo} size={18} />
             {formatCurrencyNumber(row.original.fees)}
           </p>
@@ -334,27 +334,29 @@ export default function PayoutDetailsPage({
         return (
           <Button
             variant="ghost"
+            className="min-w-20"
             onClick={() => {
               handleSorting(
                 column,
                 column.getIsSorted() === 'asc' ? 'asc' : 'desc'
               );
               column.toggleSorting(column.getIsSorted() === 'asc');
+
             }}
           >
             {t('net')}
             {column.getIsSorted() === 'asc'
               ? ' ↑'
               : column.getIsSorted() === 'desc'
-              ? ' ↓'
-              : ''}
+                ? ' ↓'
+                : ''}
           </Button>
         );
       },
       cell: ({ row }: { row: Row<FullPayout> }) => {
         const net = row.original.total - row.original.fees;
         return (
-          <p className="flex h-16 w-8 items-center gap-1">
+          <p className="flex h-16 w-min-20 items-center gap-1">
             <CurrencyLogo logo={currencyLogo} size={18} />
             {formatCurrencyNumber(net)}
           </p>
@@ -364,7 +366,7 @@ export default function PayoutDetailsPage({
     {
       accessorKey: t('status'),
       cell: ({ row }: { row: Row<FullPayout> }) => (
-        <div className="flex h-16 items-center space-x-2">
+        <div className="flex h-16 items-center space-x-2 w-min-50">
           {row.original.burn && row.original.transfer ? (
             <Badge className="bg-green-500"> {t('completed')}</Badge>
           ) : (
@@ -377,7 +379,7 @@ export default function PayoutDetailsPage({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <Link href="/business/payouts/new">
           <Button className="flex items-center gap-2">
             <Plus size={16} />
