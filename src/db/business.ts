@@ -10,7 +10,6 @@ export interface Business {
   vat_number: string | null;
   business_status: string | null;
   invite_code: string | null;
-  account: string | null;
   email: string | null;
   phone: string | null;
   iban_number: string | null;

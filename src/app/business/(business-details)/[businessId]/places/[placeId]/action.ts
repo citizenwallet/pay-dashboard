@@ -16,12 +16,13 @@ import {
   getPlaceById,
   getPlacesByBusinessId,
   handleVisibilityToggleceById,
-  uniqueSlugPlace
+  uniqueSlugPlace,
+  updatePlaceAccounts
 } from '@/db/places';
 import { generateRandomString } from '@/lib/utils';
 import { uploadImage } from '@/services/storage/upload';
-import { Wallet } from 'ethers';
-import { getAccountAddress, CommunityConfig } from '@citizenwallet/sdk';
+import { id } from 'ethers';
+import { CommunityConfig, getCardAddress } from '@citizenwallet/sdk';
 import Config from '@/cw/community.json';
 import { getLastplace, updateLastplace } from '@/db/users';
 
@@ -88,22 +89,12 @@ export async function createPlaceAction(
 
   const invitationCode = generateRandomString(16);
 
-  const newPk = Wallet.createRandom();
-  const address = newPk.address;
-
-  const community = new CommunityConfig(Config);
-
-  const account = await getAccountAddress(community, address);
-  if (!account) {
-    throw new Error('Failed to get account address');
-  }
-
   const { data: place, error } = await createPlace(client, {
     business_id: businessId,
     slug: slug,
     name: name,
     description: description,
-    accounts: [account],
+    accounts: [],
     invite_code: invitationCode,
     image: image || null,
     hidden: true,
@@ -114,6 +105,17 @@ export async function createPlaceAction(
   if (!place || error) {
     throw new Error('Failed to create place');
   }
+
+  const community = new CommunityConfig(Config);
+
+  const hashedSerial = id(`${businessId}:${place.id}`);
+
+  const account = await getCardAddress(community, hashedSerial);
+  if (!account) {
+    return { error: 'Failed to get account address' };
+  }
+
+  await updatePlaceAccounts(client, place.id, [account]);
 
   await updateLastplace(client, userId, place.id);
 

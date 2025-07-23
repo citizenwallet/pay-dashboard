@@ -7,11 +7,11 @@ import {
 import { getServiceRoleClient } from '@/db';
 import { createSlug, generateRandomString } from '@/lib/utils';
 import { generateUniqueSlugAction } from '../../action';
-import { createPlace } from '@/db/places';
+import { createPlace, updatePlaceAccounts } from '@/db/places';
 import { getLinkedBusinessByUserId } from '@/db/business';
-import { Wallet } from 'ethers';
-import { getAccountAddress, CommunityConfig } from '@citizenwallet/sdk';
+import { CommunityConfig, getCardAddress } from '@citizenwallet/sdk';
 import Config from '@/cw/community.json';
+import { id } from 'ethers';
 
 export async function downloadCsvTemplateAction() {
   const headers = ['Name', 'Description'];
@@ -43,28 +43,37 @@ export async function createPlaceWithoutSlugAction(
     const { linked_business_id: linkedBusinessId } = business || {};
     const invitationCode = generateRandomString(16);
 
-    const newPk = Wallet.createRandom();
-    const address = newPk.address;
-
-    const community = new CommunityConfig(Config);
-
-    const account = await getAccountAddress(community, address);
-    if (!account) {
-      throw new Error('Failed to get account address');
-    }
-
-    const { data: place } = await createPlace(client, {
+    const { data: place, error: placeError } = await createPlace(client, {
       business_id: linkedBusinessId,
       slug: uniqueSlug,
       name: name,
       description: description,
-      accounts: [account],
+      accounts: [],
       invite_code: invitationCode,
       image: null,
       hidden: true,
       archived: false,
       display: 'amount'
     });
+
+    if (placeError) {
+      return { error: placeError.message };
+    }
+
+    if (!place) {
+      return null;
+    }
+
+    const community = new CommunityConfig(Config);
+
+    const hashedSerial = id(`${linkedBusinessId}:${place.id}`);
+
+    const account = await getCardAddress(community, hashedSerial);
+    if (!account) {
+      return { error: 'Failed to get account address' };
+    }
+
+    await updatePlaceAccounts(client, place.id, [account]);
 
     return place;
   } catch (error) {
