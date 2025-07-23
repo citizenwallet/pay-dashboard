@@ -422,13 +422,22 @@ export default function PlacesPage({
       }
 
       const image = newPlaceImage ? await uploadImage(newPlaceImage) : '';
-      const newPlace = await createPlaceAction(
+
+      const result = await createPlaceAction(
         businessId,
         newPlaceName,
         newPlacedescription,
         newPlaceSlug,
         image
       );
+
+      if ('error' in result) {
+        toast.error(t('failedToAddPlace'));
+        return;
+      }
+
+      const newPlace = result;
+
 
       toast.success(t('placeAddedSuccessfully'));
 
