@@ -37,7 +37,7 @@ export async function addVivaPosAction(
     throw new Error('User does not have access to this place');
   }
 
-  const pos = await createPos(client, id, name, place_id, 'viva', true);
+  const pos = await createPos(client, name, id, place_id, 'viva', true);
   return pos;
 }
 
