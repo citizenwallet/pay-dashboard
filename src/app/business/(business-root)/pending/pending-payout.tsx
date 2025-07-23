@@ -1,15 +1,17 @@
 'use client';
 import CurrencyLogo from '@/components/currency-logo';
+import SearchInput from '@/components/search-input';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
+import { PayoutWithBurnAndTransfer } from '@/db/payouts';
+import { PlaceWithBalance } from '@/db/places';
 import { formatCurrencyNumber } from '@/lib/currency';
 import { PaginationState, Row } from '@tanstack/react-table';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import SearchInput from '@/components/search-input';
-import { useCallback } from 'react';
 import { useTranslations } from 'next-intl';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useCallback } from 'react';
 
-interface UpdatePayout {
+export interface UpdatePayout {
   id: number;
   created_at: string;
   name: string;
@@ -23,8 +25,8 @@ interface UpdatePayout {
   display: string;
   hidden: boolean;
   archived: boolean;
-  businesses: { name: string };
-  payouts: { created_at: string; id: string }[];
+  business: { name: string };
+  payouts: PayoutWithBurnAndTransfer[];
   balance: number;
 }
 
@@ -36,7 +38,7 @@ export default function PendingPayout({
   limit,
   offset
 }: {
-  payouts: UpdatePayout[];
+  payouts: PlaceWithBalance[];
   currencyLogo: string;
   tokenDecimals: number;
   count: number;
@@ -48,6 +50,9 @@ export default function PendingPayout({
   const pathname = usePathname();
   const t = useTranslations('pendingpayout');
 
+
+
+
   const onPaginationChange = useCallback(
     (
       updaterOrValue:
@@ -57,9 +62,9 @@ export default function PendingPayout({
       const newState =
         typeof updaterOrValue === 'function'
           ? updaterOrValue({
-              pageIndex: offset / limit,
-              pageSize: limit
-            })
+            pageIndex: offset / limit,
+            pageSize: limit
+          })
           : updaterOrValue;
 
       const params = new URLSearchParams(searchParams);
@@ -73,7 +78,7 @@ export default function PendingPayout({
   const columns = [
     {
       header: t('businessName'),
-      accessorKey: 'businesses.name'
+      accessorKey: 'business.name'
     },
     {
       header: t('placeName'),
@@ -82,27 +87,27 @@ export default function PendingPayout({
     {
       header: t('balance'),
       accessorKey: 'balance',
-      cell: ({ row }: { row: Row<UpdatePayout> }) => (
+      cell: ({ row }: { row: Row<PlaceWithBalance> }) => (
         <p className="flex items-center gap-2 text-sm font-medium">
           <CurrencyLogo logo={currencyLogo} size={18} />
-          {formatCurrencyNumber(row.original.balance, tokenDecimals)}
+          {formatCurrencyNumber(row.original.places_balances / 100, tokenDecimals)}
         </p>
       )
     },
     {
       header: t('lastPayout'),
-      cell: ({ row }: { row: Row<UpdatePayout> }) => {
+      cell: ({ row }: { row: Row<PlaceWithBalance> }) => {
         const payouts = row.original.payouts;
-        const lastPayout = payouts?.[payouts.length - 1];
+        const lastPayout = payouts[payouts.length - 1];
 
         return (
           <>
             {lastPayout
               ? new Date(lastPayout.created_at).toLocaleString('en-US', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric'
-                })
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              })
               : '—'}
           </>
         );
@@ -110,7 +115,7 @@ export default function PendingPayout({
     },
     {
       header: t('action'),
-      cell: ({ row }: { row: Row<UpdatePayout> }) => (
+      cell: ({ row }: { row: Row<PlaceWithBalance> }) => (
         <Button
           variant="outline"
           size="sm"
