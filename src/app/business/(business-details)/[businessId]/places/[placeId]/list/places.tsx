@@ -672,8 +672,8 @@ export default function PlacesPage({
         }}
       />
 
-      <div className="mb-8 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="mb-8 flex items-center justify-between flex-wrap gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
               <Button className="flex items-center gap-2">
@@ -798,7 +798,7 @@ export default function PlacesPage({
         <SearchInput className="w-80" />
       </div>
 
-      <div className="w-[95vw] overflow-x-auto md:w-full">
+      <div className="w-[90vw] overflow-x-auto md:w-full">
         <DataTable
           columns={columns}
           data={places}
