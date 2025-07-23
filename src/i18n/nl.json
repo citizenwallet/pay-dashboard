@@ -280,7 +280,29 @@
     "payouts": "Uitbetalingen",
     "logout": "Uitloggen",
     "pending": "In behandeling",
-    "history": "Geschiedenis"
+    "history": "Geschiedenis",
+    "admin": "Admin",
+    "adminDescription": "Admin pagina",
+    "profiles": "Profielen"
+  },
+  "profileSearch": {
+    "title": "Profiel Zoeken",
+    "searchProfile": "Profiel Zoeken",
+    "enterUsername": "Voer gebruikersnaam in...",
+    "searching": "Zoeken...",
+    "search": "Zoeken",
+    "searchingForProfile": "Zoeken naar profiel...",
+    "profileNotFound": "Profiel Niet Gevonden",
+    "noProfileFoundFor": "Geen profiel gevonden voor gebruikersnaam:",
+    "profileFound": "Profiel Gevonden",
+    "description": "Beschrijving",
+    "accountAddress": "Account Adres",
+    "clear": "Wissen",
+    "rawJson": "Raw JSON Data",
+    "copyJson": "JSON Kopieren",
+    "copied": "Gekopieerd!",
+    "delete": "Verwijderen",
+    "areYouSureYouWantToDelete": "Weet u zeker dat u dit profiel wilt verwijderen?"
   },
   "rootpayouts": {
     "payouts": "Uitbetalingen",

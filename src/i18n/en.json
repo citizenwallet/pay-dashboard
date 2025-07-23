@@ -279,7 +279,29 @@
     "payouts": "Payouts",
     "logout": "Logout",
     "pending": "Pending",
-    "history": "History"
+    "history": "History",
+    "admin": "Admin",
+    "adminDescription": "Admin page",
+    "profiles": "Profiles"
+  },
+  "profileSearch": {
+    "title": "Profile Search",
+    "searchProfile": "Search Profile",
+    "enterUsername": "Enter username...",
+    "searching": "Searching...",
+    "search": "Search",
+    "searchingForProfile": "Searching for profile...",
+    "profileNotFound": "Profile Not Found",
+    "noProfileFoundFor": "No profile found for username:",
+    "profileFound": "Profile Found",
+    "description": "Description",
+    "accountAddress": "Account Address",
+    "clear": "Clear",
+    "rawJson": "Raw JSON Data",
+    "copyJson": "Copy JSON",
+    "copied": "Copied!",
+    "delete": "Delete",
+    "areYouSureYouWantToDelete": "Are you sure you want to delete this profile?"
   },
   "rootpayouts": {
     "payouts": "Payouts",
