@@ -4,6 +4,7 @@ import { getServiceRoleClient } from '@/db';
 import { upsertPlaceBalance } from '@/db/placeBalance';
 import { getAllPlacesWithBusiness } from '@/db/places';
 import { CommunityConfig, getAccountBalance } from '@citizenwallet/sdk';
+import { formatUnits } from 'ethers';
 import { StatusCodes } from 'http-status-codes';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -24,10 +25,15 @@ export async function POST(req: NextRequest) {
     if (data) {
       data.map(async (place) => {
         const balance = await getAccountBalance(community, place.accounts[0]);
+        if (!balance) {
+          return;
+        }
+        const formattedBalance =
+          Number(formatUnits(balance, community.primaryToken.decimals)) * 100;
         await upsertPlaceBalance(client, {
           token: token,
           place_id: place.id,
-          balance: Number(balance)
+          balance: formattedBalance
         });
       });
     }
