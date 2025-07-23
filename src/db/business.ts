@@ -94,3 +94,20 @@ export const getBusinessByVatNumber = async (
     .eq('vat_number', vatNumber)
     .single();
 };
+
+export const getBusinessesBySearch = async (
+  client: SupabaseClient,
+  limit: number = 15,
+  offset: number = 0,
+  search: string = ''
+): Promise<PostgrestSingleResponse<Business[]>> => {
+  let query = client.from('businesses').select('*', { count: 'exact' });
+
+  if (search && search.trim() !== '') {
+    query = query.ilike('name', `%${search}%`);
+  }
+
+  return query
+    .order('name', { ascending: true })
+    .range(offset, offset + limit - 1);
+};
