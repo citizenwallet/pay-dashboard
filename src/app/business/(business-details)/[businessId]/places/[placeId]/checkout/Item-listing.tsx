@@ -1,28 +1,7 @@
 'use client';
-import { Item } from '@/db/items';
-import { icons } from 'lucide-react';
-import { toast } from 'sonner';
-import { useState, useRef, KeyboardEvent, ChangeEvent, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import {
-  deletePlaceItemAction,
-  updateItemOrderInPlaceAction,
-  updateItemNameAction,
-  updateItemDescriptionAction,
-  updateItemPriceAction,
-  updateItemCategoryAction,
-  updateItemVatAction,
-  uploadItemImageAction,
-  updateItemHiddenStatusAction,
-  addNewItemAction,
-  updatePlaceDisplayAction
-} from './action';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { formatCurrencyNumber } from '@/lib/currency';
 import CurrencyLogo from '@/components/currency-logo';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -30,14 +9,35 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Item } from '@/db/items';
 import { DisplayMode } from '@/db/places';
+import { formatCurrencyNumber } from '@/lib/currency';
+import { icons } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import {
+  deletePlaceItemAction,
+  updateItemCategoryAction,
+  updateItemDescriptionAction,
+  updateItemHiddenStatusAction,
+  updateItemNameAction,
+  updateItemOrderInPlaceAction,
+  updateItemPriceAction,
+  updateItemVatAction,
+  updatePlaceDisplayAction,
+  uploadItemImageAction
+} from './action';
+import AddItem from './add-item';
 
 export default function ItemListing({
   placeId,
   items: initialItems,
   currencyLogo,
-  displayMode: initialDisplayMode = 'amount'
+  displayMode: initialDisplayMode = 'amountAndMenu'
 }: {
   placeId: number;
   items: Item[];
@@ -47,7 +47,6 @@ export default function ItemListing({
   const [items, setItems] = useState<Item[]>(initialItems);
   const [draggingItem, setDraggingItem] = useState<number | null>(null);
   const [loading, setLoading] = useState<number | null>(null);
-  const [addingItem, setAddingItem] = useState<boolean>(false);
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
   const [displayMode, setDisplayMode] =
     useState<DisplayMode>(initialDisplayMode);
@@ -62,6 +61,8 @@ export default function ItemListing({
   const [uploadingImage, setUploadingImage] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+
 
   const [isDesktop, setIsDesktop] = useState(false);
   const t = useTranslations('checkout');
@@ -278,6 +279,7 @@ export default function ItemListing({
     }
   };
 
+
   const handleNameClick = (item: Item) => {
     setEditingItemId(item.id);
     setEditingField('name');
@@ -294,16 +296,22 @@ export default function ItemListing({
   ) => {
     if (e.key === 'Enter') {
       handleNameSave(item);
+      setEditingItemId(null);
+      setEditingField(null);
     } else if (e.key === 'Escape') {
       setEditingItemId(null);
       setEditingField(null);
+    } else if (e.key === 'Tab') {
+      handleNameSave(item);
+      e.preventDefault();
+      setEditingField('description');
+      setEditingDescription(item.description);
+
     }
   };
 
   const handleNameSave = async (item: Item) => {
     if (editingName === item.name) {
-      setEditingItemId(null);
-      setEditingField(null);
       return;
     }
 
@@ -330,11 +338,11 @@ export default function ItemListing({
       console.error('Failed to update item name:', error);
       toast.error('Failed to update item name');
     } finally {
-      setEditingItemId(null);
-      setEditingField(null);
       setLoading(null);
     }
   };
+
+
 
   const handleDescriptionClick = (item: Item) => {
     setEditingItemId(item.id);
@@ -354,16 +362,21 @@ export default function ItemListing({
   ) => {
     if (e.key === 'Enter' && e.ctrlKey) {
       handleDescriptionSave(item);
+      setEditingItemId(null);
+      setEditingField(null);
     } else if (e.key === 'Escape') {
       setEditingItemId(null);
       setEditingField(null);
+    } else if (e.key === 'Tab') {
+      handleDescriptionSave(item);
+      e.preventDefault();
+      setEditingField('category');
+      setEditingCategory(item.category);
     }
   };
 
   const handleDescriptionSave = async (item: Item) => {
     if (editingDescription === item.description) {
-      setEditingItemId(null);
-      setEditingField(null);
       return;
     }
 
@@ -390,11 +403,12 @@ export default function ItemListing({
       console.error('Failed to update item description:', error);
       toast.error(t('descriptionUpdateError'));
     } finally {
-      setEditingItemId(null);
-      setEditingField(null);
       setLoading(null);
     }
   };
+
+
+
 
   const handlePriceClick = (item: Item) => {
     setEditingItemId(item.id);
@@ -416,9 +430,16 @@ export default function ItemListing({
   ) => {
     if (e.key === 'Enter') {
       handlePriceSave(item);
+      setEditingItemId(null);
+      setEditingField(null);
     } else if (e.key === 'Escape') {
       setEditingItemId(null);
       setEditingField(null);
+    } else if (e.key === 'Tab') {
+      handlePriceSave(item);
+      e.preventDefault();
+      setEditingField('vat');
+      setEditingVat(item.vat.toString());
     }
   };
 
@@ -441,8 +462,6 @@ export default function ItemListing({
     }
 
     if (newPrice === item.price) {
-      setEditingItemId(null);
-      setEditingField(null);
       return;
     }
 
@@ -469,11 +488,12 @@ export default function ItemListing({
       console.error('Failed to update item price:', error);
       toast.error(t('priceUpdateError'));
     } finally {
-      setEditingItemId(null);
-      setEditingField(null);
       setLoading(null);
     }
   };
+
+
+
 
   const handleCategoryClick = (item: Item) => {
     setEditingItemId(item.id);
@@ -491,16 +511,21 @@ export default function ItemListing({
   ) => {
     if (e.key === 'Enter') {
       handleCategorySave(item);
+      setEditingItemId(null);
+      setEditingField(null);
     } else if (e.key === 'Escape') {
       setEditingItemId(null);
       setEditingField(null);
+    } else if (e.key === 'Tab') {
+      handleCategorySave(item);
+      e.preventDefault();
+      setEditingField('price');
+      setEditingPrice(formatCurrencyNumber(item.price));
     }
   };
 
   const handleCategorySave = async (item: Item) => {
     if (editingCategory === item.category) {
-      setEditingItemId(null);
-      setEditingField(null);
       return;
     }
 
@@ -527,11 +552,11 @@ export default function ItemListing({
       console.error('Failed to update item category:', error);
       toast.error(t('categoryUpdateError'));
     } finally {
-      setEditingItemId(null);
-      setEditingField(null);
       setLoading(null);
     }
   };
+
+
 
   const handleVatClick = (item: Item) => {
     setEditingItemId(item.id);
@@ -608,6 +633,8 @@ export default function ItemListing({
       setLoading(null);
     }
   };
+
+
 
   const handleImageClick = (item: Item) => {
     setEditingItemId(item.id);
@@ -712,42 +739,10 @@ export default function ItemListing({
     }
   };
 
-  const handleAddItem = async () => {
-    try {
-      setAddingItem(true);
 
-      const response = await addNewItemAction(placeId);
 
-      if (response.error) {
-        toast.error('Failed to add new item');
-      } else {
-        toast.success('New item added successfully');
-
-        // Add the new item to the top of the list
-        const newItem = response.data;
-        setItems([newItem, ...items]);
-
-        // Automatically start editing the name of the new item
-        setEditingItemId(newItem.id);
-        setEditingField('name');
-        setEditingName(newItem.name);
-
-        // Use setTimeout to ensure the input field is rendered before focusing
-        setTimeout(() => {
-          const inputElement = document.querySelector(
-            `input[data-item-id="${newItem.id}"]`
-          ) as HTMLInputElement;
-          if (inputElement) {
-            inputElement.focus();
-          }
-        }, 0);
-      }
-    } catch (error) {
-      console.error('Failed to add new item:', error);
-      toast.error('Failed to add new item');
-    } finally {
-      setAddingItem(false);
-    }
+  const handleAddItem = async (item: Item) => {
+    setItems([item, ...items]);
   };
 
   const handleDisplayModeChange = async (value: string) => {
@@ -793,23 +788,12 @@ export default function ItemListing({
       />
 
       <div className="mb-4 flex items-center justify-between">
-        <Button
-          onClick={handleAddItem}
-          disabled={addingItem}
-          className="flex items-center gap-2"
-        >
-          {addingItem ? (
-            <>
-              <icons.Loader className="animate-spin" size={16} />
-              Adding...
-            </>
-          ) : (
-            <>
-              <icons.Plus size={16} />
-              {t('addItem')}
-            </>
-          )}
-        </Button>
+
+        <AddItem
+          currencyLogo={currencyLogo}
+          placeId={Number(placeId)}
+          handleAddItem={handleAddItem}
+        />
 
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-600">{t('displayMode')}:</span>
@@ -850,17 +834,17 @@ export default function ItemListing({
                   key={item.id}
                   {...(isDesktop
                     ? {
-                        draggable: true,
-                        onDragStart: () => handleDragStart(item.id),
-                        onDragOver: (e) => handleDragOver(e, index),
-                        onDrop: (e) => {
-                          e.preventDefault();
-                          if (draggingItem !== null) {
-                            handleDrop(draggingItem, index);
-                            setDraggingItem(null);
-                          }
+                      draggable: true,
+                      onDragStart: () => handleDragStart(item.id),
+                      onDragOver: (e) => handleDragOver(e, index),
+                      onDrop: (e) => {
+                        e.preventDefault();
+                        if (draggingItem !== null) {
+                          handleDrop(draggingItem, index);
+                          setDraggingItem(null);
                         }
                       }
+                    }
                     : {})}
                   className={item.hidden ? 'bg-gray-50 opacity-70' : ''}
                 >
@@ -958,7 +942,7 @@ export default function ItemListing({
                   </td>
                   <td className="border p-2">
                     {editingItemId === item.id &&
-                    editingField === 'description' ? (
+                      editingField === 'description' ? (
                       <textarea
                         value={editingDescription}
                         onChange={handleDescriptionChange}
@@ -984,7 +968,7 @@ export default function ItemListing({
                   </td>
                   <td className="border p-2">
                     {editingItemId === item.id &&
-                    editingField === 'category' ? (
+                      editingField === 'category' ? (
                       <input
                         type="text"
                         value={editingCategory}

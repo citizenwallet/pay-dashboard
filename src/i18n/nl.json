@@ -129,7 +129,15 @@
     "vatUpdateError": "Artikel BTW bijwerken mislukt",
     "imageUpdate": "Artikelafbeelding succesvol bijgewerkt",
     "imageUpdateError": "Artikelafbeelding bijwerken mislukt",
-    "displayModeUpdate": "Locatie weergavemodus succesvol bijgewerkt"
+    "displayModeUpdate": "Locatie weergavemodus succesvol bijgewerkt",
+    "addItemDescription": "Voeg een nieuw artikel toe aan de afrekening",
+    "namePlaceholder": "Voer artikelnaam in",
+    "descriptionPlaceholder": "Voer artikelbeschrijving in",
+    "categoryPlaceholder": "Voer artikelcategorie in",
+    "pricePlaceholder": "Voer artikelprijs in",
+    "vatPlaceholder": "Voer artikel BTW in",
+    "adding": "Toevoegen...",
+    "cancel": "Annuleren"
   },
   "profile": {
     "profile": "Profiel",
@@ -177,7 +185,8 @@
     "andArchivedSuccessfully": "en succesvol gearchiveerd",
     "errorArchiveToggle": "Fout bij het klikken op de archiveren knop van de locatie",
     "placeDeletedSuccessfully": "Locatie succesvol verwijderd",
-    "errorPlaceDelete": "Fout bij het verwijderen van de locatie"
+    "errorPlaceDelete": "Fout bij het verwijderen van de locatie",
+    "accountsDescription": "Locatie account adressen, klik op de icoon om te bekijken op de block explorer."
   },
   "payouts": {
     "payouts": "Uitbetalingen",
@@ -239,7 +248,8 @@
     "placeVisibilityUpdatedSuccessfully": "Locatie zichtbaarheid succesvol bijgewerkt",
     "placeDescriptionUpdatedSuccessfully": "Locatiebeschrijving succesvol bijgewerkt",
     "placeNameUpdatedSuccessfully": "Locatienaam succesvol bijgewerkt",
-    "select": "Selecteren"
+    "select": "Selecteren",
+    "actions": "Acties"
   },
   "placeUpload": {
     "upload": "Uploaden",

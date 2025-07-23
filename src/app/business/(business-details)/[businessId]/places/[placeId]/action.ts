@@ -25,6 +25,7 @@ import { id } from 'ethers';
 import { CommunityConfig, getCardAddress } from '@citizenwallet/sdk';
 import Config from '@/cw/community.json';
 import { getLastplace, updateLastplace } from '@/db/users';
+import { revalidatePath } from 'next/cache';
 
 export async function getPlaceAction() {
   const client = getServiceRoleClient();
@@ -118,6 +119,8 @@ export async function createPlaceAction(
   await updatePlaceAccounts(client, place.id, [account]);
 
   await updateLastplace(client, userId, place.id);
+
+  revalidatePath(`/business/${businessId}/places/${place.id}/list`);
 
   return place;
 }

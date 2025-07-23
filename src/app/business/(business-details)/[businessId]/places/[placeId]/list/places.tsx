@@ -43,7 +43,8 @@ import { createSlug } from '@/lib/utils';
 import {
   generateUniqueSlugAction,
   uploadImageAction,
-  createPlaceAction
+  createPlaceAction,
+  changeLastPlaceAction
 } from '@/app/business/(business-details)/[businessId]/places/[placeId]/action';
 import { useTranslations } from 'next-intl';
 
@@ -381,9 +382,9 @@ export default function PlacesPage({
       const newState =
         typeof updaterOrValue === 'function'
           ? updaterOrValue({
-              pageIndex: offset / limit,
-              pageSize: limit
-            })
+            pageIndex: offset / limit,
+            pageSize: limit
+          })
           : updaterOrValue;
 
       const params = new URLSearchParams(searchParams);
@@ -441,6 +442,7 @@ export default function PlacesPage({
       setIsAddDialogOpen(false);
 
       setPlaces([...places, newPlace]);
+      router.push(`/business/${businessId}/places/${newPlace.id}/list`);
     } catch (error) {
       console.error('Failed to add place:', error);
       toast.error(t('failedToAddPlace'));
@@ -454,18 +456,24 @@ export default function PlacesPage({
     return imageUrl;
   };
 
+  const handleChangePlace = async (placeId: number) => {
+    await changeLastPlaceAction(placeId);
+    router.push(`/business/${businessId}/places/${placeId}/profile`);
+  };
+
+
   const columns = [
     {
       header: t('id'),
       accessorKey: 'id',
       cell: ({ row }: { row: Row<Place> }) => {
         return (
-          <Link
-            href={`/business/${row.original.business_id}/places/${row.original.id}/list`}
-            className="text-blue-500 hover:underline"
+          <div
+            onClick={() => handleChangePlace(row.original.id)}
+            className="text-blue-500 hover:underline cursor-pointer"
           >
             {row.original.id}
-          </Link>
+          </div>
         );
       }
     },
@@ -547,7 +555,7 @@ export default function PlacesPage({
         return (
           <div className="p-2">
             {editingItemId === row.original.id &&
-            editingField === 'description' ? (
+              editingField === 'description' ? (
               <input
                 type="text"
                 value={editingDescription}
@@ -586,9 +594,8 @@ export default function PlacesPage({
                 onBlur={() => handleSlugSave(row.original)}
                 autoFocus
                 data-item-id={row.original.id}
-                className={`w-40 rounded border ${
-                  editingSlugError ? 'border-red-500' : 'border-gray-300'
-                } p-1`}
+                className={`w-40 rounded border ${editingSlugError ? 'border-red-500' : 'border-gray-300'
+                  } p-1`}
                 placeholder="Enter slug"
               />
             ) : (
@@ -637,11 +644,7 @@ export default function PlacesPage({
             <Button
               variant="outline"
               size="lg"
-              onClick={() =>
-                router.push(
-                  `/business/${row.original.business_id}/places/${row.original.id}/list`
-                )
-              }
+              onClick={() => handleChangePlace(row.original.id)}
             >
               {t('select')}
             </Button>
