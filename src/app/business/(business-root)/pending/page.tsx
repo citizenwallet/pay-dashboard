@@ -5,12 +5,11 @@ import { Separator } from '@/components/ui/separator';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
 import Config from '@/cw/community.json';
 import { getServiceRoleClient } from '@/db';
-import { getPayoutsByPlaceId } from '@/db/payouts';
-import { getAllPlacesWithBusiness, PlaceWithBusiness } from '@/db/places';
-import { CommunityConfig, getAccountBalance } from '@citizenwallet/sdk';
+import { getAlPlaceBalanceForTable } from '@/db/places';
+import { CommunityConfig } from '@citizenwallet/sdk';
 import { getTranslations } from 'next-intl/server';
 import { Suspense } from 'react';
-import PendingPayout, { UpdatePayout } from './pending-payout';
+import PendingPayout from './pending-payout';
 
 interface PendingPayoutsPageProps {
   searchParams: Promise<{
@@ -60,7 +59,7 @@ async function AsyncPayoutsLoader({
 }) {
   const admin = await isUserAdminAction();
   if (!admin) {
-    return null;
+    return <div>You are not authorized to access pending payouts</div>;
   }
 
   const community = new CommunityConfig(Config);
@@ -68,49 +67,19 @@ async function AsyncPayoutsLoader({
   const tokenDecimals = community.primaryToken.decimals;
 
   const client = getServiceRoleClient();
-  let allplaces: PlaceWithBusiness[] = [];
-  const { data: allplacesData } = await getAllPlacesWithBusiness(client);
-
-  if (allplacesData) {
-    allplaces = allplacesData;
-  }
-
-  if (search) {
-    allplaces = allplaces?.filter((place) => place.name.toLowerCase().includes(search.toLowerCase()) || place.business?.name.toLowerCase().includes(search.toLowerCase()));
-  }
-
-
-  const allplacesWithBalance = await Promise.all(
-    allplaces?.map(async (place) => {
-      try {
-        const balance = await getAccountBalance(community, place.accounts[0]);
-        return { ...place, balance: Number(balance) };
-      } catch (error) {
-        console.error(error);
-        return { ...place, balance: 0 };
-      }
-
-    }) ?? []
+  const { data, count } = await getAlPlaceBalanceForTable(
+    client,
+    Number(offset),
+    Number(limit),
+    search
   );
-
-  const sortedAllplacesWithBalance = allplacesWithBalance.sort((a, b) => b.balance - a.balance);
-  const allplacesWithBalanceSlice = sortedAllplacesWithBalance.slice(Number(offset), Number(offset) + Number(limit) - 1);
-
-
-  const allplacesWithBalanceSliceWithPayouts = await Promise.all(
-    allplacesWithBalanceSlice.map(async (place) => {
-      const { data: payouts } = await getPayoutsByPlaceId(client, place.id.toString());
-      return { ...place, payouts: payouts ?? [] };
-    })
-  ) as UpdatePayout[];
-
 
   return (
     <PendingPayout
-      payouts={allplacesWithBalanceSliceWithPayouts}
+      payouts={data}
       currencyLogo={currencyLogo}
       tokenDecimals={tokenDecimals}
-      count={allplaces?.length ?? 0}
+      count={count}
       limit={Number(limit)}
       offset={Number(offset)}
     />

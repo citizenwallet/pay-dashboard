@@ -4,6 +4,7 @@ import SearchInput from '@/components/search-input';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
 import { PayoutWithBurnAndTransfer } from '@/db/payouts';
+import { PlaceWithBalance } from '@/db/places';
 import { formatCurrencyNumber } from '@/lib/currency';
 import { PaginationState, Row } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
@@ -37,7 +38,7 @@ export default function PendingPayout({
   limit,
   offset
 }: {
-  payouts: UpdatePayout[];
+  payouts: PlaceWithBalance[];
   currencyLogo: string;
   tokenDecimals: number;
   count: number;
@@ -48,6 +49,9 @@ export default function PendingPayout({
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const t = useTranslations('pendingpayout');
+
+
+
 
   const onPaginationChange = useCallback(
     (
@@ -83,18 +87,18 @@ export default function PendingPayout({
     {
       header: t('balance'),
       accessorKey: 'balance',
-      cell: ({ row }: { row: Row<UpdatePayout> }) => (
+      cell: ({ row }: { row: Row<PlaceWithBalance> }) => (
         <p className="flex items-center gap-2 text-sm font-medium">
           <CurrencyLogo logo={currencyLogo} size={18} />
-          {formatCurrencyNumber(row.original.balance, tokenDecimals)}
+          {formatCurrencyNumber(row.original.places_balances, tokenDecimals)}
         </p>
       )
     },
     {
       header: t('lastPayout'),
-      cell: ({ row }: { row: Row<UpdatePayout> }) => {
+      cell: ({ row }: { row: Row<PlaceWithBalance> }) => {
         const payouts = row.original.payouts;
-        const lastPayout = payouts[0];
+        const lastPayout = payouts[payouts.length - 1];
 
         return (
           <>
@@ -111,7 +115,7 @@ export default function PendingPayout({
     },
     {
       header: t('action'),
-      cell: ({ row }: { row: Row<UpdatePayout> }) => (
+      cell: ({ row }: { row: Row<PlaceWithBalance> }) => (
         <Button
           variant="outline"
           size="sm"
