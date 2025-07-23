@@ -357,105 +357,106 @@ export default function PosListing({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      <table className="w-full border-collapse">
-        <thead>
-          <tr>
-            <th className="border p-2 text-left">{t('id')}</th>
-            <th className="border p-2 text-left">{t('name')}</th>
-            <th className="border p-2 text-left">{t('type')}</th>
-            <th className="border p-2 text-left">{t('createdAt')}</th>
-            <th className="border p-2 text-left">{t('active')}</th>
-            <th className="border p-2 text-left">{t('action')}</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {posItems.map((item) => (
-            <tr key={item.id} className="hover:bg-gray-50">
-              <td className="border p-2">{item.id} </td>
-
-              <td className="border p-2">
-                {editingItemId === item.id && editingField === 'name' ? (
-                  <input
-                    type="text"
-                    value={editingName}
-                    onChange={(e) => setEditingName(e.target.value)}
-                    onBlur={() => handleSave(item)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSave(item)}
-                    autoFocus
-                    className="w-full rounded border border-gray-300 p-1"
-                  />
-                ) : (
-                  <div
-                    onClick={() => handleEditClick(item, 'name')}
-                    className="cursor-pointer rounded p-1 hover:bg-gray-100"
-                  >
-                    {item.name}
-                  </div>
-                )}
-              </td>
-
-              <td className="border p-2">
-                {editingItemId === item.id && editingField === 'type' ? (
-                  <input
-                    type="text"
-                    value={editingType}
-                    onChange={(e) => setEditingType(e.target.value)}
-                    onBlur={() => handleSave(item)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSave(item)}
-                    autoFocus
-                    className="w-full rounded border border-gray-300 p-1"
-                  />
-                ) : (
-                  <div
-                    onClick={() => handleEditClick(item, 'type')}
-                    className="cursor-pointer rounded p-1 hover:bg-gray-100"
-                  >
-                    {item.type || (
-                      <span className="italic text-gray-400">
-                        {t('noType')}
-                      </span>
-                    )}
-                  </div>
-                )}
-              </td>
-
-              <td className="border p-2">
-                {new Date(item.created_at).toLocaleDateString()}{' '}
-                {new Date(item.created_at).toLocaleTimeString()}
-              </td>
-
-              <td className="border p-2">
-                <Switch
-                  checked={item.is_active !== false}
-                  onCheckedChange={() =>
-                    handleToggleActive(item.id, item.is_active !== false)
-                  }
-                  disabled={loading === item.id}
-                />
-              </td>
-
-              <td className="border p-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-red-500 hover:bg-red-100 hover:text-red-700"
-                  onClick={() => handleDelete(item.id)}
-                  disabled={loading === item.id}
-                >
-                  {loading === item.id ? (
-                    <Loader className="h-5 w-5 animate-spin" />
-                  ) : (
-                    <Trash className="h-5 w-5" />
-                  )}
-                  <span className="sr-only">{t('delete')}</span>
-                </Button>
-              </td>
+      <div className="w-[90vw] overflow-x-auto md:w-full">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr>
+              <th className="border p-2 text-left min-w-20">{t('id')}</th>
+              <th className="border p-2 text-left min-w-20">{t('name')}</th>
+              <th className="border p-2 text-left min-w-20">{t('type')}</th>
+              <th className="border p-2 text-left min-w-20">{t('createdAt')}</th>
+              <th className="border p-2 text-left min-w-20">{t('active')}</th>
+              <th className="border p-2 text-left min-w-20">{t('action')}</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {posItems.map((item) => (
+              <tr key={item.id} className="hover:bg-gray-50">
+                <td className="border p-2">{item.id} </td>
+
+                <td className="border p-2">
+                  {editingItemId === item.id && editingField === 'name' ? (
+                    <input
+                      type="text"
+                      value={editingName}
+                      onChange={(e) => setEditingName(e.target.value)}
+                      onBlur={() => handleSave(item)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleSave(item)}
+                      autoFocus
+                      className="w-full rounded border border-gray-300 p-1"
+                    />
+                  ) : (
+                    <div
+                      onClick={() => handleEditClick(item, 'name')}
+                      className="cursor-pointer rounded p-1 hover:bg-gray-100"
+                    >
+                      {item.name}
+                    </div>
+                  )}
+                </td>
+
+                <td className="border p-2">
+                  {editingItemId === item.id && editingField === 'type' ? (
+                    <input
+                      type="text"
+                      value={editingType}
+                      onChange={(e) => setEditingType(e.target.value)}
+                      onBlur={() => handleSave(item)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleSave(item)}
+                      autoFocus
+                      className="w-full rounded border border-gray-300 p-1"
+                    />
+                  ) : (
+                    <div
+                      onClick={() => handleEditClick(item, 'type')}
+                      className="cursor-pointer rounded p-1 hover:bg-gray-100"
+                    >
+                      {item.type || (
+                        <span className="italic text-gray-400">
+                          {t('noType')}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </td>
+
+                <td className="border p-2">
+                  {new Date(item.created_at).toLocaleDateString()}{' '}
+                  {new Date(item.created_at).toLocaleTimeString()}
+                </td>
+
+                <td className="border p-2">
+                  <Switch
+                    checked={item.is_active !== false}
+                    onCheckedChange={() =>
+                      handleToggleActive(item.id, item.is_active !== false)
+                    }
+                    disabled={loading === item.id}
+                  />
+                </td>
+
+                <td className="border p-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-red-500 hover:bg-red-100 hover:text-red-700"
+                    onClick={() => handleDelete(item.id)}
+                    disabled={loading === item.id}
+                  >
+                    {loading === item.id ? (
+                      <Loader className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <Trash className="h-5 w-5" />
+                    )}
+                    <span className="sr-only">{t('delete')}</span>
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
