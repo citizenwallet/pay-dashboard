@@ -10,7 +10,6 @@ export interface Business {
   vat_number: string | null;
   business_status: string | null;
   invite_code: string | null;
-  account: string | null;
   email: string | null;
   phone: string | null;
   iban_number: string | null;
@@ -94,4 +93,21 @@ export const getBusinessByVatNumber = async (
     .select('*')
     .eq('vat_number', vatNumber)
     .single();
+};
+
+export const getBusinessesBySearch = async (
+  client: SupabaseClient,
+  limit: number = 15,
+  offset: number = 0,
+  search: string = ''
+): Promise<PostgrestSingleResponse<Business[]>> => {
+  let query = client.from('businesses').select('*', { count: 'exact' });
+
+  if (search && search.trim() !== '') {
+    query = query.ilike('name', `%${search}%`);
+  }
+
+  return query
+    .order('name', { ascending: true })
+    .range(offset, offset + limit - 1);
 };

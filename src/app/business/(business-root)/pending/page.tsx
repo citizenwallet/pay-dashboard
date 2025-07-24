@@ -1,14 +1,15 @@
+import { isUserAdminAction } from '@/actions/session';
 import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
+import Config from '@/cw/community.json';
+import { getServiceRoleClient } from '@/db';
+import { getAlPlaceBalanceForTable } from '@/db/places';
+import { CommunityConfig } from '@citizenwallet/sdk';
+import { getTranslations } from 'next-intl/server';
 import { Suspense } from 'react';
 import PendingPayout from './pending-payout';
-import { isUserAdminAction } from '@/actions/session';
-import { getPendingPayoutsAction } from './action';
-import Config from '@/cw/community.json';
-import { CommunityConfig, getAccountBalance } from '@citizenwallet/sdk';
-import { getTranslations } from 'next-intl/server';
 
 interface PendingPayoutsPageProps {
   searchParams: Promise<{
@@ -58,30 +59,27 @@ async function AsyncPayoutsLoader({
 }) {
   const admin = await isUserAdminAction();
   if (!admin) {
-    return null;
+    return <div>You are not authorized to access pending payouts</div>;
   }
 
   const community = new CommunityConfig(Config);
   const currencyLogo = community.community.logo;
   const tokenDecimals = community.primaryToken.decimals;
 
-  const payouts = await getPendingPayoutsAction(offset, limit, search);
-
-  const payoutsWithBalance = await Promise.all(
-    (payouts && 'error' in payouts ? [] : payouts?.data ?? []).map(
-      async (payout: any) => {
-        const balance = await getAccountBalance(community, payout.accounts[0]);
-        return { ...payout, balance: Number(balance) };
-      }
-    )
+  const client = getServiceRoleClient();
+  const { data, count } = await getAlPlaceBalanceForTable(
+    client,
+    Number(offset),
+    Number(limit),
+    search
   );
 
   return (
     <PendingPayout
-      payouts={payoutsWithBalance}
+      payouts={data}
       currencyLogo={currencyLogo}
       tokenDecimals={tokenDecimals}
-      count={payouts?.count ?? 0}
+      count={count}
       limit={Number(limit)}
       offset={Number(offset)}
     />
