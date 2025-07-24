@@ -1,58 +1,103 @@
-import { isUserAdminAction } from '@/actions/session';
-import { Suspense } from 'react';
-import { getLinkedBusinessAction } from '../(business-details)/[businessId]/places/[placeId]/action';
-import BusinessCard from './business-card';
-import { getAllBusinessAction, getBusinessBalanceAction } from './action';
-import { SkeletonCard } from '@/components/skeleton-card';
+import { auth } from '@/auth';
+import { DataTable } from '@/components/ui/data-table';
 import Config from '@/cw/community.json';
-import { CommunityConfig, getAccountBalance } from '@citizenwallet/sdk';
+import { getServiceRoleClient } from '@/db';
+import { Business, getBusinessById, getBusinessesBySearch, getLinkedBusinessByUserId } from '@/db/business';
+import { isAdmin } from '@/db/users';
+import { CommunityConfig } from '@citizenwallet/sdk';
+import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import BusinessTable from './_table/business-table';
+import { placeholderData, skeletonColumns } from './_table/columns';
+import { getBusinessBalanceAction } from './action';
 
-export default function BusinessPage() {
+
+interface BusinessPageProps {
+  searchParams: Promise<{
+    offset?: string;
+    limit?: string;
+    search?: string;
+  }>;
+}
+
+export default async function Page({ searchParams }: BusinessPageProps) {
+  const { offset, limit, search } = await searchParams;
+
   return (
     <>
-      <Suspense fallback={<SkeletonCard count={4} />}>
-        {asyncBusinessPage()}
+
+      <Suspense fallback={<DataTable columns={skeletonColumns} data={placeholderData} />}>
+        {asyncBusinessPage(offset ?? '0', limit ?? '15', search ?? '')}
       </Suspense>
+
     </>
   );
 }
 
-const asyncBusinessPage = async () => {
-  const admin = await isUserAdminAction();
+const asyncBusinessPage = async (
+  offset: string,
+  limit: string,
+  search: string
+) => {
 
+  const session = await auth();
+  if (!session?.user?.id) {
+    redirect('/login');
+  }
+
+  const client = getServiceRoleClient();
+  const admin = await isAdmin(client, parseInt(session.user.id));
+
+  let businessesWithBalance: (Business & { balance: number })[] | null = null;
   const community = new CommunityConfig(Config);
-  const currencyLogo = community.community.logo;
-  const tokenDecimals = community.primaryToken.decimals;
+  let count = 0;
 
   if (admin) {
-    const businesses = await getAllBusinessAction();
-    const businessesWithBalance = await Promise.all(
-      businesses?.map(async (business) => {
+
+    const businesses = await getBusinessesBySearch(
+      client,
+      Number(limit),
+      Number(offset),
+      search
+    );
+
+
+    businessesWithBalance = await Promise.all(
+      businesses.data?.map(async (business) => {
         const balance = await getBusinessBalanceAction(business.id, community);
         return { ...business, balance };
       }) ?? []
     );
-    return (
-      <BusinessCard
-        business={businessesWithBalance}
-        currencyLogo={currencyLogo}
-        tokenDecimals={tokenDecimals}
-      />
-    );
+
+    count = businesses.count ?? 0;
+
   } else {
-    const business = await getLinkedBusinessAction();
-    if (!business) {
+    const businessid = await getLinkedBusinessByUserId(
+      client,
+      parseInt(session.user.id)
+    );
+
+    if (!businessid.data?.linked_business_id) {
       return null;
     }
-    const balance = await getBusinessBalanceAction(business.id, community);
-    const businessWithBalance = { ...business, balance };
-
-    return (
-      <BusinessCard
-        business={[businessWithBalance]}
-        currencyLogo={currencyLogo}
-        tokenDecimals={tokenDecimals}
-      />
+    const business = await getBusinessById(
+      client,
+      businessid.data.linked_business_id
     );
+    if (!business.data) {
+      return null;
+    }
+    const balance = await getBusinessBalanceAction(business.data.id, community);
+    businessesWithBalance = [{ ...business.data, balance }];
+
   }
+
+
+  return <BusinessTable
+    businesses={businessesWithBalance ?? []}
+    count={count}
+    offset={Number(offset)}
+    limit={Number(limit)}
+  />;
 };
+

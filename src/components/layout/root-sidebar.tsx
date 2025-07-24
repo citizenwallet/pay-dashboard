@@ -249,7 +249,7 @@ export default function RootAppSidebar({
         <SidebarRail />
       </Sidebar>
 
-      <SidebarInset>
+      <SidebarInset className="flex flex-col h-screen overflow-hidden">
         <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
@@ -257,11 +257,10 @@ export default function RootAppSidebar({
           </div>
 
           <div className="flex items-center gap-2 px-4">
-            <UserNav />
+            {user && <UserNav user={user} />}
             <LanguageSwitcher />
           </div>
         </header>
-        {/* page main content */}
         {children}
       </SidebarInset>
     </SidebarProvider>

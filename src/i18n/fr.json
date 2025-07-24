@@ -129,7 +129,15 @@
     "vatUpdateError": "Échec de la mise à jour de la TVA de l'article",
     "imageUpdate": "Image de l'article mise à jour avec succès",
     "imageUpdateError": "Échec de la mise à jour de l'image de l'article",
-    "displayModeUpdate": "Mode d'affichage du lieu mis à jour avec succès"
+    "displayModeUpdate": "Mode d'affichage du lieu mis à jour avec succès",
+    "addItemDescription": "Ajouter un nouvel article au paiement",
+    "namePlaceholder": "Entrez le nom de l'article",
+    "descriptionPlaceholder": "Entrez la description de l'article",
+    "categoryPlaceholder": "Entrez la catégorie de l'article",
+    "pricePlaceholder": "Entrez le prix de l'article",
+    "vatPlaceholder": "Entrez la TVA de l'article",
+    "adding": "Ajout en cours...",
+    "cancel": "Annuler"
   },
   "profile": {
     "profile": "Profil",
@@ -249,7 +257,8 @@
     "placeVisibilityUpdatedSuccessfully": "Visibilité du lieu mise à jour avec succès",
     "placeDescriptionUpdatedSuccessfully": "Description du lieu mise à jour avec succès",
     "placeNameUpdatedSuccessfully": "Nom du lieu mis à jour avec succès",
-    "select": "Sélectionner"
+    "select": "Sélectionner",
+    "actions": "Actions"
   },
   "placeUpload": {
     "upload": "Télécharger",

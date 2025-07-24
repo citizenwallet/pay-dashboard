@@ -51,7 +51,7 @@ async function ListItemLoader(place_id: string) {
       placeId={parseInt(place_id)}
       currencyLogo={community.community.logo}
       items={items.data ?? []}
-      displayMode={placeDisplay.data?.display ?? 'amount'}
+      displayMode={placeDisplay.data?.display ?? 'amountAndMenu'}
     />
   );
 }

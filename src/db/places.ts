@@ -3,7 +3,6 @@ import 'server-only';
 import {
   PostgrestResponse,
   PostgrestSingleResponse,
-  // QueryData,
   SupabaseClient
 } from '@supabase/supabase-js';
 
@@ -31,6 +30,22 @@ export interface PlaceSearchResult {
   id: number;
   name: string;
   slug: string;
+}
+
+interface PlaceWithBalanceArray extends Place {
+  business: { name: string };
+  places_balances: { balance: number }[];
+  payouts: { id: number; created_at: string }[];
+}
+
+export interface PlaceWithBalance extends Place {
+  business: { name: string };
+  places_balances: number;
+  payouts: { id: number; created_at: string }[];
+}
+
+export interface PlaceWithBusiness extends Place {
+  business: { name: string };
 }
 
 export const getPlaceByUsername = async (
@@ -134,6 +149,19 @@ export const createPlace = async (
   return client.from('places').insert(place).select().single();
 };
 
+export const updatePlaceAccounts = async (
+  client: SupabaseClient,
+  placeId: number,
+  accounts: string[]
+): Promise<PostgrestSingleResponse<Place>> => {
+  return client
+    .from('places')
+    .update({ accounts })
+    .eq('id', placeId)
+    .select()
+    .single();
+};
+
 export const getAllPlaces = async (
   client: SupabaseClient
 ): Promise<PostgrestResponse<Place>> => {
@@ -143,6 +171,15 @@ export const getAllPlaces = async (
     .order('id', { ascending: true });
 
   return placesQuery;
+};
+
+export const getAllPlacesWithBusiness = async (
+  client: SupabaseClient
+): Promise<PostgrestResponse<PlaceWithBusiness>> => {
+  return client
+    .from('places')
+    .select('*,business:businesses!business_id(name)')
+    .order('id', { ascending: true });
 };
 
 export const checkUserPlaceAccess = async (
@@ -289,4 +326,44 @@ export const getPlaceBySlug = async (
   slug: string
 ): Promise<PostgrestSingleResponse<Place | null>> => {
   return client.from('places').select('*').eq('slug', slug).maybeSingle();
+};
+
+export const getAlPlaceBalanceForTable = async (
+  client: SupabaseClient,
+  offset: number,
+  limit: number,
+  search: string
+): Promise<{ data: PlaceWithBalance[]; count: number }> => {
+  const query = client.from('places').select(
+    `*,
+      business:businesses!business_id(name),
+     places_balances!left(balance),
+     payouts:payouts!place_id(id,created_at)
+      `
+  );
+
+  if (search) {
+    query.ilike('name', `%${search}%`);
+    query.ilike('business.name', `%${search}%`);
+  }
+  const result = await query;
+
+  const count = result.data?.length;
+
+  if (result.data) {
+    result.data = result.data.map((place: PlaceWithBalanceArray) => ({
+      ...place,
+      places_balances: place.places_balances?.[0]?.balance ?? 0
+    }));
+  }
+
+  const sortedData = result.data?.sort(
+    (a: PlaceWithBalance, b: PlaceWithBalance) =>
+      b.places_balances - a.places_balances
+  );
+
+  return {
+    data: sortedData?.slice(offset, offset + limit) ?? [],
+    count: count ?? 0
+  };
 };
