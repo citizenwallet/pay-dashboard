@@ -41,6 +41,15 @@ export interface Order {
   token: string | null;
 }
 
+export interface OrderWithPlace extends Order {
+  place: {
+    id: number;
+    business: {
+      id: number;
+    };
+  };
+}
+
 export interface OrderTotal {
   status: OrderStatus;
   total: number;
@@ -290,13 +299,13 @@ export const getOrdersByPlace = async (
   dateRange: string = 'today',
   customStartDate?: string,
   customEndDate?: string
-): Promise<PostgrestResponse<Order>> => {
+): Promise<PostgrestResponse<OrderWithPlace>> => {
   const range = getDateRangeFilter(dateRange, customStartDate, customEndDate);
   if (!range) {
     // Handle invalid date range gracefully (e.g., return all orders or throw an error)
     return client
       .from('orders')
-      .select()
+      .select('*, place:place_id(id, business:business_id(id))')
       .eq('place_id', placeId)
       .in('status', ['paid', 'refunded', 'refund', 'correction'])
       .order('created_at', { ascending: false })
@@ -305,7 +314,7 @@ export const getOrdersByPlace = async (
 
   return client
     .from('orders')
-    .select()
+    .select('*, place:place_id(id, business:business_id(id))')
     .eq('place_id', placeId)
     .in('status', ['paid', 'refunded', 'refund', 'correction'])
     .gte('created_at', range.start)

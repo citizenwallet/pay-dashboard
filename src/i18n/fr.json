@@ -62,6 +62,7 @@
     "fees": "Frais",
     "net": "Net",
     "status": "Statut",
+    "payout": "Versement",
     "type": "Type",
     "description": "Description",
     "pending": "En attente",

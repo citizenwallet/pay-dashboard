@@ -6,7 +6,7 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { Order } from '@/db/orders';
+import { Order, OrderWithPlace } from '@/db/orders';
 import { Place } from '@/db/places';
 import { formatCurrencyNumber } from '@/lib/currency';
 import { cn, humanizeDate } from '@/lib/utils';
@@ -17,6 +17,7 @@ import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { exportCsvAction, postRefundAction } from '../action';
 import {
+  ExternalLinkIcon,
   Loader2,
   QrCodeIcon,
   SmartphoneIcon,
@@ -25,10 +26,11 @@ import {
 import { formatAddress } from '@/lib/address';
 import { DatePicker } from '@/components/ui/DatePicker';
 import { AlertModal } from '@/components/modal/alert-modal';
+import Link from 'next/link';
 
 interface Props {
   place: Place;
-  orders: Order[];
+  orders: OrderWithPlace[];
   currencyLogo: string;
   pagination: {
     limit: number;
@@ -42,7 +44,7 @@ const createColumns = (
   currencyLogo: string,
   t: (key: string) => string,
   onRefundClick: (orderId: number) => void
-): ColumnDef<Order>[] => [
+): ColumnDef<OrderWithPlace>[] => [
   {
     accessorKey: 'id',
     header: t('id'),
@@ -141,6 +143,28 @@ const createColumns = (
         >
           {t(row.original.status) || row.original.status}
         </span>
+      );
+    }
+  },
+  {
+    accessorKey: 'payout_id',
+    header: t('payout'),
+    cell: ({ row }) => {
+      if (!row.original.payout_id) {
+        return null;
+      }
+
+      return (
+        <Link
+          href={`/business/${row.original.place.business.id}/places/${row.original.place_id}/payouts/${row.original.payout_id}`}
+          target="_blank"
+          className="flex min-w-24 cursor-pointer items-center"
+        >
+          <span className="flex items-center justify-center gap-1 rounded-full bg-blue-100 px-2 py-1 text-xs font-medium hover:bg-blue-200">
+            #{row.original.payout_id}
+            <ExternalLinkIcon className="h-4 w-4" />
+          </span>
+        </Link>
       );
     }
   },

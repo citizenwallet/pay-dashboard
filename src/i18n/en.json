@@ -62,6 +62,7 @@
     "fees": "Fees",
     "net": "Net",
     "status": "Status",
+    "payout": "Payout",
     "type": "Type",
     "description": "Description",
     "pending": "Pending",

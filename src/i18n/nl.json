@@ -62,6 +62,7 @@
     "fees": "Kosten",
     "net": "Netto",
     "status": "Status",
+    "payout": "Uitbetaling",
     "type": "Type",
     "description": "Beschrijving",
     "pending": "In behandeling",
