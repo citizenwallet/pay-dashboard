@@ -27,8 +27,7 @@ import { updatePlaceAction } from './action';
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string().min(1, 'Description is required'),
-  slug: z.string().min(1, 'Slug is required'),
-  IBANnumber: z.string().optional()
+  slug: z.string().min(1, 'Slug is required')
 });
 
 export default function ProfileEdit({
@@ -52,8 +51,7 @@ export default function ProfileEdit({
     defaultValues: {
       name: place?.name || '',
       description: place?.description || '',
-      slug: place?.slug || '',
-      IBANnumber: business?.iban_number || ''
+      slug: place?.slug || ''
     }
   });
 
@@ -82,8 +80,7 @@ export default function ProfileEdit({
         description: values.description,
         slug: values.slug,
         image: imageFile || new File([], ''),
-        oldimage: previewUrl || '',
-        IBANnumber: values.IBANnumber || null
+        oldimage: previewUrl || ''
       });
 
       toast.success(t('updateSuccess'));
@@ -142,39 +139,6 @@ export default function ProfileEdit({
                     <Input
                       disabled={loading}
                       placeholder={t('slugPlaceholder')}
-                      className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        </div>
-
-        <div className="rounded-lg border bg-card  p-6">
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold text-foreground">
-              {t('bankingInformation')}
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {t('bankingInformationDescription')}
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-6">
-            <FormField
-              control={form.control}
-              name="IBANnumber"
-              render={({ field }) => (
-                <FormItem className="space-y-2">
-                  <FormLabel className="text-sm font-medium text-foreground">
-                    {t('IBANnumber')}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={loading}
-                      placeholder={t('IBANnumberPlaceholder')}
                       className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
                       {...field}
                     />

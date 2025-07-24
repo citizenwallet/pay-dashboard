@@ -27,8 +27,7 @@ export async function updatePlaceAction({
   description,
   slug,
   image,
-  oldimage,
-  IBANnumber
+  oldimage
 }: {
   placeId: number;
   name: string;
@@ -36,7 +35,6 @@ export async function updatePlaceAction({
   slug: string;
   image: File;
   oldimage: string;
-  IBANnumber: string | null;
 }) {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
@@ -57,13 +55,6 @@ export async function updatePlaceAction({
     slug,
     image: url
   });
-
-  // Update business IBAN number
-  if (IBANnumber) {
-    await updateBusiness(client, busid, {
-      iban_number: IBANnumber
-    });
-  }
 
   revalidatePath(`/business/${busid}/places/${placeId}/profile`);
 
