@@ -2,15 +2,16 @@
 
 import {
   getUserIdFromSessionAction,
-  isUserLinkedToBusinessAction,
   isUserLinkedToPlaceAction
 } from '@/actions/session';
+import Config from '@/cw/community.json';
 import { getServiceRoleClient } from '@/db';
 import {
-  getLinkedBusinessByUserId,
+  checkUserAccessBusiness,
   getBusinessById,
-  checkUserAccessBusiness
+  getLinkedBusinessByUserId
 } from '@/db/business';
+import { isOwnerOfBusiness } from '@/db/businessUser';
 import {
   createPlace,
   getPlaceById,
@@ -19,12 +20,11 @@ import {
   uniqueSlugPlace,
   updatePlaceAccounts
 } from '@/db/places';
+import { getLastplace, isAdmin, updateLastplace } from '@/db/users';
 import { generateRandomString } from '@/lib/utils';
 import { uploadImage } from '@/services/storage/upload';
-import { id } from 'ethers';
 import { CommunityConfig, getCardAddress } from '@citizenwallet/sdk';
-import Config from '@/cw/community.json';
-import { getLastplace, updateLastplace } from '@/db/users';
+import { id } from 'ethers';
 import { revalidatePath } from 'next/cache';
 
 export async function getPlaceAction() {
@@ -83,9 +83,14 @@ export async function createPlaceAction(
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
 
-  const res = await isUserLinkedToBusinessAction(client, userId, businessId);
-  if (!res) {
-    throw new Error('User does not have access to this business');
+  const admin = await isAdmin(client, userId);
+
+  if (!admin) {
+    const isOwner = await isOwnerOfBusiness(client, userId, businessId);
+
+    if (!isOwner) {
+      throw new Error('User does not have access to this Activity');
+    }
   }
 
   const invitationCode = generateRandomString(16);

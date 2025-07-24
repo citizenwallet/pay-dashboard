@@ -1,16 +1,17 @@
-import PageContainer from '@/components/layout/page-container';
-import { Heading } from '@/components/ui/heading';
-import { Separator } from '@/components/ui/separator';
-import { Suspense } from 'react';
-import { getServiceRoleClient } from '@/db';
 import {
   getUserIdFromSessionAction,
   isUserAdminAction
 } from '@/actions/session';
-import { checkUserPlaceAccess } from '@/db/places';
+import PageContainer from '@/components/layout/page-container';
+import { Heading } from '@/components/ui/heading';
+import { Separator } from '@/components/ui/separator';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
-import UploadPlace from './upload-place';
+import { getServiceRoleClient } from '@/db';
+import { isOwnerOfBusiness } from '@/db/businessUser';
+import { checkUserPlaceAccess } from '@/db/places';
 import { getTranslations } from 'next-intl/server';
+import { Suspense } from 'react';
+import UploadPlace from './upload-place';
 
 interface Props {
   params: Promise<{
@@ -54,6 +55,15 @@ async function AsyncPage({
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
   const admin = await isUserAdminAction();
+
+  if (!admin) {
+    const isOwner = await isOwnerOfBusiness(client, userId, Number(businessId));
+
+    if (!isOwner) {
+      throw new Error('User does not have access to this Place');
+    }
+  }
+
 
   if (!admin) {
     const hasPlaceAccess = await checkUserPlaceAccess(
