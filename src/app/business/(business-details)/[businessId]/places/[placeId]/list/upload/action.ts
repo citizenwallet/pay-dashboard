@@ -9,9 +9,14 @@ import { createSlug, generateRandomString } from '@/lib/utils';
 import { generateUniqueSlugAction } from '../../action';
 import { createPlace, updatePlaceAccounts } from '@/db/places';
 import { getLinkedBusinessByUserId } from '@/db/business';
-import { CommunityConfig, getCardAddress } from '@citizenwallet/sdk';
+import {
+  CommunityConfig,
+  getCardAddress,
+  verifyAndSuggestUsername
+} from '@citizenwallet/sdk';
 import Config from '@/cw/community.json';
 import { id } from 'ethers';
+import { upsertProfile } from '@/cw/profiles';
 
 export async function downloadCsvTemplateAction() {
   const headers = ['Name', 'Description'];
@@ -37,7 +42,13 @@ export async function createPlaceWithoutSlugAction(
 
   try {
     const baseSlug = createSlug(name);
-    const uniqueSlug = await generateUniqueSlugAction(baseSlug);
+
+    const community = new CommunityConfig(Config);
+
+    const username = await verifyAndSuggestUsername(community, baseSlug);
+    if (!username) {
+      return { error: 'Unable to generate unique slug for place' };
+    }
 
     const { data: business } = await getLinkedBusinessByUserId(client, userId);
     const { linked_business_id: linkedBusinessId } = business || {};
@@ -45,7 +56,7 @@ export async function createPlaceWithoutSlugAction(
 
     const { data: place, error: placeError } = await createPlace(client, {
       business_id: linkedBusinessId,
-      slug: uniqueSlug,
+      slug: username,
       name: name,
       description: description,
       accounts: [],
@@ -64,13 +75,17 @@ export async function createPlaceWithoutSlugAction(
       return null;
     }
 
-    const community = new CommunityConfig(Config);
-
     const hashedSerial = id(`${linkedBusinessId}:${place.id}`);
 
     const account = await getCardAddress(community, hashedSerial);
     if (!account) {
       return { error: 'Failed to get account address' };
+    }
+
+    try {
+      await upsertProfile(community, username, name, account, description);
+    } catch (error) {
+      console.error('Failed to upsert profile', error);
     }
 
     await updatePlaceAccounts(client, place.id, [account]);
