@@ -87,7 +87,7 @@ export default function PendingPayout({
     {
       header: t('balance'),
       accessorKey: 'balance',
-      cell: ({ row }: { row: Row<UpdatePayout> }) => (
+      cell: ({ row }: { row: Row<PlaceWithBalance> }) => (
         <p className="flex items-center gap-2 text-sm font-medium min-w-20">
           <CurrencyLogo logo={currencyLogo} size={18} />
           {formatCurrencyNumber(row.original.places_balances / 100, tokenDecimals)}
