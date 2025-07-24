@@ -88,7 +88,7 @@ export default function PendingPayout({
       header: t('balance'),
       accessorKey: 'balance',
       cell: ({ row }: { row: Row<PlaceWithBalance> }) => (
-        <p className="flex items-center gap-2 text-sm font-medium">
+        <p className="flex items-center gap-2 text-sm font-medium min-w-20">
           <CurrencyLogo logo={currencyLogo} size={18} />
           {formatCurrencyNumber(row.original.places_balances / 100, tokenDecimals)}
         </p>
@@ -101,7 +101,7 @@ export default function PendingPayout({
         const lastPayout = payouts[payouts.length - 1];
 
         return (
-          <>
+          <div className="min-w-20">
             {lastPayout
               ? new Date(lastPayout.created_at).toLocaleString('en-US', {
                 year: 'numeric',
@@ -109,7 +109,7 @@ export default function PendingPayout({
                 day: 'numeric'
               })
               : '—'}
-          </>
+          </div>
         );
       }
     },
@@ -119,6 +119,7 @@ export default function PendingPayout({
         <Button
           variant="outline"
           size="sm"
+          className="min-w-20"
           onClick={() => {
             const lastPayout =
               row.original.payouts[row.original.payouts.length - 1];

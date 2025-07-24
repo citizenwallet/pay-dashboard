@@ -1,21 +1,21 @@
-import PageContainer from '@/components/layout/page-container';
-import { Heading } from '@/components/ui/heading';
-import { Separator } from '@/components/ui/separator';
-import { Suspense } from 'react';
-import { getServiceRoleClient } from '@/db';
 import {
   getUserIdFromSessionAction,
   isUserAdminAction
 } from '@/actions/session';
+import PageContainer from '@/components/layout/page-container';
+import { Heading } from '@/components/ui/heading';
+import { Separator } from '@/components/ui/separator';
+import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
+import { getServiceRoleClient } from '@/db';
+import { isOwnerOfBusiness } from '@/db/businessUser';
 import {
   checkUserPlaceAccess,
-  getPlaceById,
   getPlacesByBusinessIdWithLimit,
   getPlacesCountByBusinessId
 } from '@/db/places';
-import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
-import PlacesPage from './places';
 import { getTranslations } from 'next-intl/server';
+import { Suspense } from 'react';
+import PlacesPage from './places';
 
 interface Props {
   params: Promise<{
@@ -75,6 +75,7 @@ async function AsyncPage({
   offset?: number;
   limit?: number;
 }) {
+  let isOwner = false;
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
   const admin = await isUserAdminAction();
@@ -107,6 +108,16 @@ async function AsyncPage({
     Number(businessId)
   );
 
+  isOwner = admin
+  if (!admin) {
+    isOwner = await isOwnerOfBusiness(
+      client,
+      userId,
+      Number(businessId)
+    );
+
+  }
+
   return (
     <PlacesPage
       businessId={Number(businessId)}
@@ -116,6 +127,7 @@ async function AsyncPage({
       limit={limit}
       search={search ?? null}
       count={placesCount.count}
+      isOwner={isOwner}
     />
   );
 }

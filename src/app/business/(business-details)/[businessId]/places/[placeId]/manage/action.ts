@@ -5,6 +5,7 @@ import {
   isUserLinkedToPlaceAction
 } from '@/actions/session';
 import { getServiceRoleClient } from '@/db';
+import { isOwnerOfBusiness } from '@/db/businessUser';
 import { placeHasOrders } from '@/db/orders';
 import {
   deletePlaceById,
@@ -12,7 +13,7 @@ import {
   handleArchiveToggleById,
   handleVisibilityToggleceById
 } from '@/db/places';
-import { getFirstPlace, updateLastplace } from '@/db/users';
+import { getFirstPlace, isAdmin, updateLastplace } from '@/db/users';
 
 export async function getPlaceDataAction(placeId: number) {
   const client = getServiceRoleClient();
@@ -70,6 +71,8 @@ export const deletePlaceAction = async (placeId: number) => {
     throw new Error('User does not have access to this place');
   }
 
+  const admin = await isAdmin(client, userId);
+
   const hasOrders = await placeHasOrders(client, placeId);
   if (hasOrders) {
     throw new Error('Place has orders, cannot delete');
@@ -81,6 +84,14 @@ export const deletePlaceAction = async (placeId: number) => {
   );
   if (!place || placeError) {
     throw new Error('Place not found');
+  }
+
+  if (!admin) {
+    const isOwner = await isOwnerOfBusiness(client, userId, place.business_id);
+
+    if (!isOwner) {
+      throw new Error('User does not have access to this place');
+    }
   }
 
   const { data: firstPlace, error } = await getFirstPlace(

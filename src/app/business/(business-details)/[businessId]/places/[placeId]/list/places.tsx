@@ -1,33 +1,13 @@
 'use client';
+import {
+  changeLastPlaceAction,
+  createPlaceAction,
+  generateUniqueSlugAction,
+  uploadImageAction
+} from '@/app/business/(business-details)/[businessId]/places/[placeId]/action';
 import SearchInput from '@/components/search-input';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Place } from '@/db/places';
-import { PaginationState, Row } from '@tanstack/react-table';
-import {
-  Plus,
-  Upload,
-  Loader,
-  Camera,
-  ImagePlus,
-  Edit,
-  ExternalLink
-} from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
-import {
-  checkPlaceSlugAlreadyExistsAction,
-  updatePlaceDescriptionAction,
-  updatePlaceHiddenAction,
-  updatePlaceImageAction,
-  updatePlaceNameAction,
-  updatePlaceSlugAction
-} from './action';
 import {
   Dialog,
   DialogContent,
@@ -38,15 +18,32 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { useDebounce } from 'use-debounce';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Place } from '@/db/places';
 import { createSlug } from '@/lib/utils';
+import { PaginationState, Row } from '@tanstack/react-table';
 import {
-  generateUniqueSlugAction,
-  uploadImageAction,
-  createPlaceAction,
-  changeLastPlaceAction
-} from '@/app/business/(business-details)/[businessId]/places/[placeId]/action';
+  Camera,
+  ImagePlus,
+  Loader,
+  Plus,
+  Upload
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import React, { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { useDebounce } from 'use-debounce';
+import {
+  checkPlaceSlugAlreadyExistsAction,
+  updatePlaceDescriptionAction,
+  updatePlaceHiddenAction,
+  updatePlaceImageAction,
+  updatePlaceNameAction,
+  updatePlaceSlugAction
+} from './action';
 
 export default function PlacesPage({
   businessId,
@@ -55,7 +52,8 @@ export default function PlacesPage({
   limit,
   search,
   count,
-  placeId
+  placeId,
+  isOwner
 }: {
   businessId: number;
   place: Place[];
@@ -64,6 +62,7 @@ export default function PlacesPage({
   search: string | null;
   count: number;
   placeId: string;
+  isOwner: boolean;
 }) {
   const t = useTranslations('placelist');
   const router = useRouter();
@@ -681,133 +680,135 @@ export default function PlacesPage({
         }}
       />
 
-      <div className="mb-8 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="flex items-center gap-2">
-                <Plus size={16} />
-                {t('addPlace')}
-              </Button>
-            </DialogTrigger>
+      <div className="mb-8 flex items-center justify-between flex-wrap gap-2">
+        {isOwner && (
+          <div className="flex items-center gap-2 flex-wrap">
+            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="flex items-center gap-2">
+                  <Plus size={16} />
+                  {t('addPlace')}
+                </Button>
+              </DialogTrigger>
 
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{t('addNewPlace')}</DialogTitle>
-                <DialogDescription>
-                  {t('addPlaceDescription')}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <label htmlFor="name" className="text-sm font-medium">
-                    {t('placeName')}
-                  </label>
-                  <Input
-                    className="text-base"
-                    id="name"
-                    value={newPlaceName}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setNewPlaceName(e.target.value)
-                    }
-                    placeholder={t('namePlaceholder')}
-                  />
-                </div>
-
-                <div className="grid gap-2">
-                  <label htmlFor="description" className="text-sm font-medium">
-                    {t('description')}
-                  </label>
-                  <Input
-                    className="text-base"
-                    id="description"
-                    value={newPlacedescription}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setNewPlacedescription(e.target.value)
-                    }
-                    placeholder={t('descriptionPlaceholder')}
-                  />
-                </div>
-
-                <div className="grid gap-2">
-                  <label htmlFor="slug" className="text-sm font-medium">
-                    {t('slug')}
-                  </label>
-                  <Input
-                    className="text-base"
-                    id="slug"
-                    value={newPlaceSlug}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      setNewPlaceSlug(e.target.value);
-                      setSlugTouched(true);
-                    }}
-                    placeholder={t('slugPlaceholder')}
-                  />
-                  {slugError && (
-                    <p className="text-sm text-red-500">{slugError}</p>
-                  )}
-                </div>
-                <div className="grid gap-2">
-                  <label htmlFor="image" className="text-sm font-medium">
-                    {t('image')}
-                  </label>
-                  <input
-                    id="image"
-                    type="file"
-                    accept="image/*"
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        setNewPlaceImage(file);
-                        setImagePreview(URL.createObjectURL(file));
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>{t('addNewPlace')}</DialogTitle>
+                  <DialogDescription>
+                    {t('addPlaceDescription')}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid gap-2">
+                    <label htmlFor="name" className="text-sm font-medium">
+                      {t('placeName')}
+                    </label>
+                    <Input
+                      className="text-base"
+                      id="name"
+                      value={newPlaceName}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setNewPlaceName(e.target.value)
                       }
-                    }}
-                  />
-                  {imagePreview && (
-                    <Image
-                      src={imagePreview}
-                      alt="Preview"
-                      className="mt-2 h-20 w-20 rounded-md object-cover"
-                      width={80}
-                      height={80}
+                      placeholder={t('namePlaceholder')}
                     />
-                  )}
+                  </div>
+
+                  <div className="grid gap-2">
+                    <label htmlFor="description" className="text-sm font-medium">
+                      {t('description')}
+                    </label>
+                    <Input
+                      className="text-base"
+                      id="description"
+                      value={newPlacedescription}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setNewPlacedescription(e.target.value)
+                      }
+                      placeholder={t('descriptionPlaceholder')}
+                    />
+                  </div>
+
+                  <div className="grid gap-2">
+                    <label htmlFor="slug" className="text-sm font-medium">
+                      {t('slug')}
+                    </label>
+                    <Input
+                      className="text-base"
+                      id="slug"
+                      value={newPlaceSlug}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setNewPlaceSlug(e.target.value);
+                        setSlugTouched(true);
+                      }}
+                      placeholder={t('slugPlaceholder')}
+                    />
+                    {slugError && (
+                      <p className="text-sm text-red-500">{slugError}</p>
+                    )}
+                  </div>
+                  <div className="grid gap-2">
+                    <label htmlFor="image" className="text-sm font-medium">
+                      {t('image')}
+                    </label>
+                    <input
+                      id="image"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setNewPlaceImage(file);
+                          setImagePreview(URL.createObjectURL(file));
+                        }
+                      }}
+                    />
+                    {imagePreview && (
+                      <Image
+                        src={imagePreview}
+                        alt="Preview"
+                        className="mt-2 h-20 w-20 rounded-md object-cover"
+                        width={80}
+                        height={80}
+                      />
+                    )}
+                  </div>
                 </div>
-              </div>
-              <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => setIsAddDialogOpen(false)}
-                >
-                  {t('cancel')}
-                </Button>
-                <Button
-                  className="mb-2 md:mb-0"
-                  onClick={handleAddPlace}
-                  disabled={isAddLoading}
-                >
-                  {isAddLoading ? t('adding') : t('add')}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-          <Button
-            className="flex items-center gap-2"
-            onClick={() =>
-              router.push(
-                `/business/${places[0].business_id}/places/${placeId}/list/upload`
-              )
-            }
-          >
-            <Upload size={16} />
-            {t('updatePlace')}
-          </Button>
-        </div>
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsAddDialogOpen(false)}
+                  >
+                    {t('cancel')}
+                  </Button>
+                  <Button
+                    className="mb-2 md:mb-0"
+                    onClick={handleAddPlace}
+                    disabled={isAddLoading}
+                  >
+                    {isAddLoading ? t('adding') : t('add')}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+            <Button
+              className="flex items-center gap-2"
+              onClick={() =>
+                router.push(
+                  `/business/${places[0].business_id}/places/${placeId}/list/upload`
+                )
+              }
+            >
+              <Upload size={16} />
+              {t('updatePlace')}
+            </Button>
+          </div>
+        )}
 
         <SearchInput className="w-80" />
       </div>
 
-      <div className="w-[95vw] overflow-x-auto md:w-full">
+      <div className="w-[90vw] overflow-x-auto md:w-full">
         <DataTable
           columns={columns}
           data={places}

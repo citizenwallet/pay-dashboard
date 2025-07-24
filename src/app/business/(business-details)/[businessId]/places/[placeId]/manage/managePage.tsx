@@ -28,10 +28,12 @@ import {
 
 export default function ManagePage({
   place,
-  hasOrders
+  hasOrders,
+  isOwner
 }: {
   place: Place | null;
   hasOrders: boolean;
+  isOwner: boolean;
 }) {
   const [isHideDialogOpen, setIsHideDialogOpen] = useState(false);
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
@@ -186,7 +188,7 @@ export default function ManagePage({
         </Dialog>
       </div>
 
-      {!hasOrders && (
+      {!hasOrders && isOwner && (
         <div>
           <p className="mb-2 text-gray-600">{t('deleteDescription')}</p>
           <Dialog
