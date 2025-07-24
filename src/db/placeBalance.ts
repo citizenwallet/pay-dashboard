@@ -5,6 +5,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
 export interface PlaceBalance {
   token: string;
   place_id: number;
+  updated_at: string;
   balance: number;
 }
 

@@ -28,11 +28,15 @@ export async function GET(req: NextRequest) {
         if (!balance) {
           return;
         }
+
+        const now = new Date().toISOString();
+
         const formattedBalance =
           Number(formatUnits(balance, community.primaryToken.decimals)) * 100;
         await upsertPlaceBalance(client, {
           token: token,
           place_id: place.id,
+          updated_at: now,
           balance: formattedBalance
         });
       });
