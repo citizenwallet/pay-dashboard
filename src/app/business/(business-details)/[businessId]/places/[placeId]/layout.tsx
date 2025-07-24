@@ -16,6 +16,7 @@ import {
   getPlaceByIdAction
 } from './action';
 import { redirect } from 'next/navigation';
+import { isOwnerOfBusiness } from '@/db/businessUser';
 export const metadata: Metadata = {
   title: 'Dashboard',
   description: 'Basic dashboard with Next.js and Shadcn'
@@ -34,6 +35,7 @@ export default async function DashboardLayout({
   let places: Place[] = [];
   let business: Business = {} as Business;
   let lastplace: Place = {} as Place;
+  let isOwner: boolean = false;
 
   const userId = await getUserIdFromSessionAction();
   const client = getServiceRoleClient();
@@ -45,7 +47,17 @@ export default async function DashboardLayout({
 
   const admin = await isUserAdminAction();
 
+  if (!admin) {
+    isOwner = await isOwnerOfBusiness(
+      client,
+      userId,
+      Number(businessId)
+    );
+
+  }
+
   if (admin) {
+    isOwner = true;
     const adminBusiness = await getBusinessAction(Number(businessId));
     if (adminBusiness) {
       business = adminBusiness;
@@ -99,6 +111,7 @@ export default async function DashboardLayout({
         lastPlace={lastplace ?? ({} as Place)}
         isAdmin={admin}
         user={user}
+        isOwner={isOwner}
       >
         {children}
       </AppSidebar>

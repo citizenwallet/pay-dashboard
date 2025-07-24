@@ -8,6 +8,7 @@ import {
   Settings,
   ShoppingCartIcon,
   SmartphoneNfcIcon,
+  StoreIcon,
   User,
   type LucideIcon
 } from 'lucide-react';
@@ -149,15 +150,15 @@ function SidebarMenuItems({
 
 export function NavMain({
   businessId,
-  lastPlace
+  lastPlace,
+  isOwner
 }: {
   businessId: number;
   lastPlace: Place;
+  isOwner: boolean;
 }) {
   const t = useTranslations('sidebar');
   const pathname = usePathname();
-
-  console.log(pathname);
 
   const data: SidebarItem[] = [
     {
@@ -216,7 +217,13 @@ export function NavMain({
       url: `/business/${businessId}/places/${lastPlace.id}/manage`,
       icon: Settings,
       items: []
-    }
+    },
+    ...(isOwner ? [{
+      title: 'Business',
+      url: `/business/${businessId}/places/${lastPlace.id}/business`,
+      icon: StoreIcon,
+      items: []
+    }] : [])
   ];
 
   const activePath = pathname.split('/places/').pop() || '';
