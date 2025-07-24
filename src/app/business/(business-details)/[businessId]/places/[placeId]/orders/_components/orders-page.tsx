@@ -194,28 +194,6 @@ const createColumns = (
     cell: ({ row }) => {
       return (
         <>
-          {row.original?.processor_tx && row.original?.status === 'paid' && (
-            <Button
-              onClick={() => onRefundClick(row.original.id)}
-              className="min-w-20"
-            >
-              {t('refund')}
-            </Button>
-          )}
-        </>
-      );
-    }
-  },
-  {
-    accessorKey: 'description',
-    header: 'Description'
-  },
-  {
-    accessorKey: 'action',
-    header: 'Actions',
-    cell: ({ row }) => {
-      return (
-        <>
           {(row.original?.processor_tx || row.original?.account) &&
             row.original?.status === 'paid' &&
             row.original?.payout_id === null && (
