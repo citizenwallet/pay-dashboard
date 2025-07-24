@@ -121,7 +121,6 @@ export const upsertProfile = async (
     );
 
     if (uri) {
-      console.error('Failed to get profile URI');
       const response = await unpin(uri);
 
       if (!response?.ok) {
@@ -149,13 +148,11 @@ export const upsertProfile = async (
 
   const bundler = new BundlerService(community);
 
-  const tx = await bundler.setProfile(
+  await bundler.setProfile(
     signer,
     profileManagerAddress,
     profile.account,
     profile.username,
     response
   );
-
-  await bundler.awaitSuccess(tx);
 };
