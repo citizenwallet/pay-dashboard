@@ -195,7 +195,8 @@ const createColumns = (
       return (
         <>
           {(row.original?.processor_tx || row.original?.account) &&
-            row.original?.status === 'paid' && (
+            row.original?.status === 'paid' &&
+            row.original?.payout_id === null && (
               <Button onClick={() => onRefundClick(row.original.id)}>
                 {t('refund')}
               </Button>
