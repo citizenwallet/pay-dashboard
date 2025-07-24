@@ -7,6 +7,7 @@ import { getBusinessById } from '@/db/business';
 import { isOwnerOfBusiness } from '@/db/businessUser';
 import { isAdmin } from '@/db/users';
 import { Separator } from '@radix-ui/react-separator';
+import { getTranslations } from 'next-intl/server';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import BusinessEdit from './businessUpdate';
@@ -25,6 +26,7 @@ export default async function page({
     if (!session?.user?.id) {
         redirect('/login');
     }
+    const t = await getTranslations('business');
 
     return (
         <>
@@ -32,7 +34,7 @@ export default async function page({
                 <PageContainer>
                     <div className="space-y-4">
                         <div className="flex items-start justify-between">
-                            <Heading title='Business Details' description='Update your business contact information' />
+                            <Heading title={t('businessDetails')} description={t('businessDetailsDescription')} />
                         </div>
                         <Separator />
                         <div className="flex flex-col gap-4 overflow-y-auto">

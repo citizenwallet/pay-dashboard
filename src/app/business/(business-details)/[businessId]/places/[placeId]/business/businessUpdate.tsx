@@ -22,6 +22,7 @@ import { toast } from 'sonner';
 import { useDebounce } from 'use-debounce';
 import * as z from 'zod';
 import { fetchBusinessDetailsAction, updateBusinessDetailsAction } from './action';
+import { useTranslations } from 'next-intl';
 
 // Define the form schema
 const formSchema = z.object({
@@ -49,6 +50,7 @@ export default function BusinessEdit({
     const [companyStatus, setCompanyStatus] = useState<'verified' | 'verifying' | 'created' | null>
         (business.business_status as 'verified' | 'verifying' | 'created' | null);
     const router = useRouter();
+    const t = useTranslations('business');
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -115,13 +117,16 @@ export default function BusinessEdit({
     // Handle form submission
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         setLoading(true);
+        let businessStatusValue = companyStatus as 'verified' | 'verifying' | 'created' | null;
         if (
             values.vat_number != business.vat_number ||
             values.legal_name != business.legal_name ||
             values.address_legal != business.address_legal
         ) {
+            businessStatusValue = 'verifying';
             setCompanyStatus('verifying');
         }
+
 
         try {
 
@@ -133,13 +138,13 @@ export default function BusinessEdit({
                 address_legal: values.address_legal,
                 legal_name: values.legal_name,
                 iban_number: values.iban_number,
-                business_status: companyStatus
+                business_status: businessStatusValue
             });
 
-            toast.success('Business updated successfully');
+            toast.success(t('businessUpdatedSuccessfully'));
         } catch (error) {
             console.error('Error updating business:', error);
-            toast.error('Failed to update business');
+            toast.error(t('failedToUpdateBusiness'));
         } finally {
             setLoading(false);
             router.refresh();
@@ -155,10 +160,10 @@ export default function BusinessEdit({
                 <div className="rounded-lg border bg-card p-6">
                     <div className="mb-4">
                         <h3 className="text-lg font-semibold text-foreground">
-                            Basic Information
+                            {t('basicInformation')}
                         </h3>
                         <p className="text-sm text-muted-foreground">
-                            Update your business contact information
+                            {t('basicInformationDescription')}
                         </p>
                     </div>
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -168,7 +173,7 @@ export default function BusinessEdit({
                             render={({ field }) => (
                                 <FormItem className="space-y-2">
                                     <FormLabel className="text-sm font-medium text-foreground">
-                                        Business Name
+                                        {t('businessName')}
                                     </FormLabel>
                                     <FormControl>
                                         <Input
@@ -189,7 +194,7 @@ export default function BusinessEdit({
                             render={({ field }) => (
                                 <FormItem className="space-y-2">
                                     <FormLabel className="text-sm font-medium text-foreground">
-                                        Email Address
+                                        {t('emailAddress')}
                                     </FormLabel>
                                     <FormControl>
                                         <Input
@@ -211,7 +216,7 @@ export default function BusinessEdit({
                             render={({ field }) => (
                                 <FormItem className="space-y-2">
                                     <FormLabel className="text-sm font-medium text-foreground">
-                                        Phone Number
+                                        {t('phoneNumber')}
                                     </FormLabel>
                                     <FormControl>
                                         <Input
@@ -232,10 +237,10 @@ export default function BusinessEdit({
                 <div className="rounded-lg border bg-card p-6">
                     <div className="mb-4">
                         <h3 className="text-lg font-semibold text-foreground">
-                            Legal Information
+                            {t('legalInformation')}
                         </h3>
                         <p className="text-sm text-muted-foreground">
-                            Business legal details and banking information. Modifying these fields will require verification.
+                            {t('legalInformationDescription')}
                         </p>
                     </div>
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -245,7 +250,7 @@ export default function BusinessEdit({
                             render={({ field }) => (
                                 <FormItem className="space-y-2">
                                     <FormLabel className="text-sm font-medium text-foreground">
-                                        VAT Number
+                                        {t('vatNumber')}
                                     </FormLabel>
                                     <FormControl>
                                         <Input
@@ -266,7 +271,7 @@ export default function BusinessEdit({
                             render={({ field }) => (
                                 <FormItem className="space-y-2">
                                     <FormLabel className="text-sm font-medium text-foreground">
-                                        Legal Name
+                                        {t('legalName')}
                                     </FormLabel>
                                     <FormControl>
                                         <Input
@@ -287,7 +292,7 @@ export default function BusinessEdit({
                             render={({ field }) => (
                                 <FormItem className="space-y-2">
                                     <FormLabel className="text-sm font-medium text-foreground">
-                                        IBAN Number
+                                        {t('ibanNumber')}
                                     </FormLabel>
                                     <FormControl>
                                         <Input
@@ -308,7 +313,7 @@ export default function BusinessEdit({
                             render={({ field }) => (
                                 <FormItem className="space-y-2 md:col-span-2">
                                     <FormLabel className="text-sm font-medium text-foreground">
-                                        Legal Address
+                                        {t('legaladdress')}
                                     </FormLabel>
                                     <FormControl>
                                         <Textarea
@@ -329,17 +334,17 @@ export default function BusinessEdit({
                 <div className="rounded-lg border bg-card p-6">
                     <div className="mb-4">
                         <h3 className="text-lg font-semibold text-foreground">
-                            Business Status
+                            {t('businessStatus')}
                         </h3>
                         <p className="text-sm text-muted-foreground">
-                            Current verification status and agreement acceptance
+                            {t('businessStatusDescription')}
                         </p>
                     </div>
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                         {/* Business Status */}
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-foreground">
-                                Verification Status
+                                {t('verificationStatus')}
                             </label>
                             <div className="flex items-center space-x-2">
                                 <Badge
@@ -357,12 +362,12 @@ export default function BusinessEdit({
                         {/* Membership Agreement */}
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-foreground">
-                                Membership Agreement
+                                {t('membershipAgreement')}
                             </label>
                             <div className="flex items-center space-x-2">
                                 <CheckCircle className="h-5 w-5 text-green-600" />
                                 <span className="text-sm text-muted-foreground">
-                                    Accepted on {formatDate(business?.accepted_membership_agreement || null)}
+                                    {t('acceptedOn')} {formatDate(business?.accepted_membership_agreement || null)}
                                 </span>
                             </div>
                         </div>
@@ -370,12 +375,12 @@ export default function BusinessEdit({
                         {/* Terms and Conditions */}
                         <div className="space-y-2">
                             <label className="text-sm font-medium text-foreground">
-                                Terms & Conditions
+                                {t('termsAndConditions')}
                             </label>
                             <div className="flex items-center space-x-2">
                                 <CheckCircle className="h-5 w-5 text-green-600" />
                                 <span className="text-sm text-muted-foreground">
-                                    Accepted on {formatDate(business?.accepted_terms_and_conditions || null)}
+                                    {t('acceptedOn')} {formatDate(business?.accepted_terms_and_conditions || null)}
                                 </span>
                             </div>
                         </div>
@@ -393,10 +398,10 @@ export default function BusinessEdit({
                         {loading ? (
                             <div className="flex items-center space-x-2">
                                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent" />
-                                <span>Updating...</span>
+                                <span>{t('updating')}</span>
                             </div>
                         ) : (
-                            'Update Business'
+                            t('update')
                         )}
                     </Button>
                 </div>

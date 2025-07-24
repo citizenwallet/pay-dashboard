@@ -13,7 +13,8 @@
     "light": "Licht",
     "dark": "Donker",
     "systemAdmin": "SYSTEEMBEHEERDER",
-    "logout": "Uitloggen"
+    "logout": "Uitloggen",
+    "business": "Bedrijf"
   },
   "navButton": {
     "linkCopied": "Link gekopieerd",
@@ -505,5 +506,30 @@
     "lastPayout": "Laatste uitbetaling",
     "action": "Actie",
     "payout": "Uitbetaling"
+  },
+  "business": {
+    "businessDetails": "Bedrijfsdetails",
+    "businessDetailsDescription": "Werk uw bedrijfscontactgegevens bij",
+    "basicInformation": "Basisinformatie",
+    "basicInformationDescription": "Werk uw bedrijfscontactgegevens bij",
+    "businessName": "Bedrijfsnaam",
+    "emailAddress": "E-mailadres",
+    "phoneNumber": "Telefoonnummer",
+    "legalInformation": "Juridische informatie",
+    "legalInformationDescription": "Juridische details en bankgegevens van het bedrijf. Het wijzigen van deze velden vereist verificatie.",
+    "vatNumber": "BTW-nummer",
+    "legalName": "Juridische naam",
+    "ibanNumber": "IBAN",
+    "legaladdress": "Juridische adres",
+    "businessStatus": "Bedrijfsstatus",
+    "businessStatusDescription": "Huidige verificatiestatus en overeenkomstacceptatie",
+    "verificationStatus": "Verificatiestatus",
+    "membershipAgreement": "Lidmaatschapsovereenkomst",
+    "acceptedOn": "Geaccepteerd op",
+    "termsAndConditions": "Voorwaarden",
+    "update": "Bedrijf bijwerken",
+    "updating": "Bijwerken...",
+    "businessUpdatedSuccessfully": "Bedrijf succesvol bijgewerkt",
+    "failedToUpdateBusiness": "Bedrijf bijwerken mislukt"
   }
 }

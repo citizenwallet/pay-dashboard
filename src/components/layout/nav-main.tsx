@@ -219,7 +219,7 @@ export function NavMain({
       items: []
     },
     ...(isOwner ? [{
-      title: 'Business',
+      title: t('business'),
       url: `/business/${businessId}/places/${lastPlace.id}/business`,
       icon: StoreIcon,
       items: []
