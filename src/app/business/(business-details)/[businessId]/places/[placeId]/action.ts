@@ -5,6 +5,7 @@ import {
   isUserLinkedToPlaceAction
 } from '@/actions/session';
 import Config from '@/cw/community.json';
+import { upsertProfile } from '@/cw/profiles';
 import { getServiceRoleClient } from '@/db';
 import {
   checkUserAccessBusiness,
@@ -23,7 +24,11 @@ import {
 import { getLastplace, isAdmin, updateLastplace } from '@/db/users';
 import { generateRandomString } from '@/lib/utils';
 import { uploadImage } from '@/services/storage/upload';
-import { CommunityConfig, getCardAddress } from '@citizenwallet/sdk';
+import {
+  CommunityConfig,
+  getCardAddress,
+  verifyAndSuggestUsername
+} from '@citizenwallet/sdk';
 import { id } from 'ethers';
 import { revalidatePath } from 'next/cache';
 
@@ -95,9 +100,16 @@ export async function createPlaceAction(
 
   const invitationCode = generateRandomString(16);
 
+  const community = new CommunityConfig(Config);
+
+  const username = await verifyAndSuggestUsername(community, slug);
+  if (!username) {
+    return { error: 'Unable to generate unique slug for place' };
+  }
+
   const { data: place, error } = await createPlace(client, {
     business_id: businessId,
-    slug: slug,
+    slug: username,
     name: name,
     description: description,
     accounts: [],
@@ -112,13 +124,17 @@ export async function createPlaceAction(
     throw new Error('Failed to create place');
   }
 
-  const community = new CommunityConfig(Config);
-
   const hashedSerial = id(`${businessId}:${place.id}`);
 
   const account = await getCardAddress(community, hashedSerial);
   if (!account) {
     return { error: 'Failed to get account address' };
+  }
+
+  try {
+    await upsertProfile(community, username, name, account, description, image);
+  } catch (error) {
+    console.error('Failed to upsert profile', error);
   }
 
   await updatePlaceAccounts(client, place.id, [account]);
