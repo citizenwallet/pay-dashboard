@@ -87,7 +87,7 @@ export default function PendingPayout({
       cell: ({ row }: { row: Row<BalanceWithPlace> }) => (
         <p className="flex min-w-20 items-center gap-2 text-sm font-medium">
           <CurrencyLogo logo={currencyLogo} size={18} />
-          {formatCurrencyNumber(row.original.balance, tokenDecimals)}
+          {(row.original.balance / 100).toFixed(2)}
         </p>
       )
     },

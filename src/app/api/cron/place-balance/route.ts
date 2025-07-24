@@ -55,18 +55,26 @@ export async function GET(req: NextRequest) {
             tokenAddress: token.address
           });
         } catch (error) {
-          console.error('Error getting account balance:', error);
+          console.error(
+            `Error getting account balance for place ${place.name}:`,
+            error
+          );
         }
 
         const now = new Date().toISOString();
 
-        const formattedBalance =
-          Number(formatUnits(balance ?? 0, token.decimals)) * 100;
+        const formattedBalance = formatUnits(
+          (balance ?? BigInt(0)) * BigInt(100),
+          token.decimals
+        );
+
+        const formattedBalanceNumber = parseInt(formattedBalance);
+
         await upsertPlaceBalance(client, {
           token: token.address,
           place_id: place.id,
           updated_at: now,
-          balance: formattedBalance
+          balance: formattedBalanceNumber
         });
 
         await new Promise((resolve) => setTimeout(resolve, 100));
