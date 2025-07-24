@@ -54,7 +54,7 @@ export const upsertProfile = async (
     throw new Error('Failed to get profile manager address');
   }
 
-  let image_small = defaultCardProfileImage;
+  let image_small = `ipfs://${defaultCardProfileImage}`;
   if (image) {
     // process image down to 128x128
     const imageFile = await resizeImageFromUrl(image, 256);
@@ -68,7 +68,7 @@ export const upsertProfile = async (
     image_small = `ipfs://${cid}`;
   }
 
-  let image_medium = defaultCardProfileImage;
+  let image_medium = `ipfs://${defaultCardProfileImage}`;
   if (image) {
     const imageFile = await resizeImageFromUrl(image, 512);
 
@@ -80,7 +80,7 @@ export const upsertProfile = async (
     image_medium = `ipfs://${cid}`;
   }
 
-  let image_large = defaultCardProfileImage;
+  let image_large = `ipfs://${defaultCardProfileImage}`;
   if (image) {
     const imageFile = await resizeImageFromUrl(image, 1024);
 
