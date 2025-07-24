@@ -60,12 +60,6 @@ export async function updatePlaceAction({
 
   const community = new CommunityConfig(Config);
 
-  console.log('slug', slug);
-  console.log('name', name);
-  console.log('place.accounts[0]', place.accounts[0]);
-  console.log('description', description);
-  console.log('url', url);
-
   // Only pass the URL to upsertProfile if it's not a blob URL
   const imageUrl = url && !url.startsWith('blob:') ? url : null;
 

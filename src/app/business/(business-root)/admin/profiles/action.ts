@@ -70,8 +70,6 @@ export async function deleteProfile(profile: ProfileWithTokenId) {
 
   const unpinResponse = await unpin(uri);
 
-  console.log('unpinResponse', unpinResponse);
-
   if (!unpinResponse?.ok) {
     return NextResponse.json(
       { error: 'Failed to unpin profile' },
