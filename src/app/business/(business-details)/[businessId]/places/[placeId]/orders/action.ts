@@ -2,7 +2,11 @@
 import { getUserIdFromSessionAction } from '@/actions/session';
 import { isUserLinkedToPlaceAction } from '@/actions/session';
 import { getServiceRoleClient } from '@/db';
-import { getOrder, getOrdersByPlaceWithOutLimit } from '@/db/orders';
+import {
+  getOrder,
+  getOrdersByPlaceWithOutLimit,
+  refundOrder
+} from '@/db/orders';
 import { getOrderProcessorTx } from '@/db/ordersProcessorTx';
 import { getFnsLocale } from '@/i18n';
 import { createStripeRefund } from '@/services/stripe';
@@ -83,17 +87,34 @@ export async function postRefundAction(orderId: number) {
     throw new Error('Order already refunded');
   }
 
-  console.log(orderData);
-
-  if (!orderData.processor_tx) {
-    throw new Error('Order has no processor tx');
-  }
-
   const place_id = orderData.place_id;
 
   const res = await isUserLinkedToPlaceAction(client, userId, place_id);
   if (!res) {
     throw new Error('User does not have access to this place');
+  }
+
+  if (!orderData.processor_tx && orderData.account) {
+    // refund via transfer
+
+    const { error: refundError } = await refundOrder(
+      client,
+      orderId,
+      orderData.total,
+      orderData.fees,
+      null,
+      'refund_pending'
+    );
+
+    if (refundError) {
+      throw new Error('Unable to refund this order');
+    }
+
+    return;
+  }
+
+  if (!orderData.processor_tx) {
+    throw new Error('Order has no processor tx');
   }
 
   const { data: processorTx, error: processorTxError } =

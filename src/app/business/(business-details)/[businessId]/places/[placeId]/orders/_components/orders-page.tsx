@@ -194,11 +194,12 @@ const createColumns = (
     cell: ({ row }) => {
       return (
         <>
-          {row.original?.processor_tx && row.original?.status === 'paid' && (
-            <Button onClick={() => onRefundClick(row.original.id)}>
-              {t('refund')}
-            </Button>
-          )}
+          {(row.original?.processor_tx || row.original?.account) &&
+            row.original?.status === 'paid' && (
+              <Button onClick={() => onRefundClick(row.original.id)}>
+                {t('refund')}
+              </Button>
+            )}
         </>
       );
     }

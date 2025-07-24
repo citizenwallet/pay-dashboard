@@ -15,6 +15,7 @@ export type OrderStatus =
   | 'needs_minting'
   | 'needs_burning'
   | 'refunded'
+  | 'refund_pending'
   | 'refund'
   | 'correction';
 
@@ -33,9 +34,13 @@ export interface Order {
   status: OrderStatus;
   description: string;
   tx_hash: string | null;
-  type: 'web' | 'app' | 'terminal' | 'system' | null;
+  type: 'web' | 'app' | 'terminal' | null;
+  account: string | null;
+  payout_id: number | null;
   pos: string | null;
   processor_tx: number | null;
+  refund_id: number | null;
+  token: string | null;
 }
 
 export interface OrderTotal {
@@ -176,6 +181,64 @@ export const completeOrder = async (
     .update({ status: 'paid', due: 0, completed_at: new Date().toISOString() })
     .eq('id', orderId)
     .single();
+};
+
+export const refundOrder = async (
+  client: SupabaseClient,
+  orderId: number,
+  amount: number,
+  fees: number,
+  processorTxId: number | null,
+  status: OrderStatus = 'refund'
+): Promise<PostgrestSingleResponse<Order | null>> => {
+  const orderResponse = await getOrder(client, orderId);
+  const { data: order, error } = orderResponse;
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (order.status === 'refunded') {
+    return orderResponse;
+  }
+
+  const newOrder: Omit<
+    Order,
+    'id' | 'created_at' | 'completed_at' | 'tx_hash' | 'refund_id'
+  > = {
+    place_id: order.place_id,
+    items: order.items,
+    total: amount,
+    fees,
+    due: 0,
+    status,
+    description: order.description,
+    type: order.type,
+    payout_id: order.payout_id,
+    pos: order.pos,
+    processor_tx: processorTxId,
+    token: order.token,
+    account: order.account
+  };
+
+  const result = await client
+    .from('orders')
+    .insert(newOrder)
+    .select()
+    .maybeSingle();
+
+  const { data: refundOrder, error: refundOrderError } = result;
+  const refundOrderId: number | null = refundOrder?.id;
+
+  if (refundOrderError === null && refundOrderId !== null) {
+    const { error: updatedOrderError } = await client
+      .from('orders')
+      .update({ status: 'refunded', refund_id: refundOrderId })
+      .eq('id', orderId);
+
+    console.error('updatedOrderError', updatedOrderError);
+  }
+
+  return result;
 };
 
 export const cancelOrder = async (
