@@ -5,8 +5,6 @@ import {
   PostgrestSingleResponse,
   SupabaseClient
 } from '@supabase/supabase-js';
-import { encodeBase64 } from 'ethers';
-import Stripe from 'stripe';
 
 export type OrderStatus =
   | 'pending'
