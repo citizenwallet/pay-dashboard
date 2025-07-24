@@ -25,7 +25,7 @@ import { useTranslations } from 'next-intl';
 // Define the form schema
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required'),
-  description: z.string().min(1, 'Description is required'),
+  description: z.string(),
   slug: z.string().min(1, 'Slug is required')
 });
 
@@ -152,18 +152,28 @@ export default function ProfileEdit({ place }: { place: Place | null }) {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setLoading(true);
     try {
+      // Only pass the original place image if no new image is selected
+      // and previewUrl is not a blob URL
+      const oldImageUrl =
+        previewUrl && !previewUrl.startsWith('blob:')
+          ? previewUrl
+          : place?.image || '';
+
       await updatePlaceAction({
         placeId: place?.id || 0,
         name: values.name,
-        description: values.description,
+        description: values.description || null,
         slug: values.slug,
-        image: imageFile || new File([], ''),
-        oldimage: previewUrl || ''
+        image: imageFile || null,
+        oldimage: oldImageUrl
       });
 
       toast.success(t('updateSuccess'));
     } catch (error) {
       console.error('Error submitting form:', error);
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to update profile'
+      );
     } finally {
       setLoading(false);
       await new Promise((resolve) => setTimeout(resolve, 1000));

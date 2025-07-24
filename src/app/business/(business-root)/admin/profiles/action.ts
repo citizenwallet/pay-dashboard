@@ -14,6 +14,7 @@ import { unpin } from '@/services/pinata/pinata';
 import { Wallet } from 'ethers';
 import { isUserAdminAction } from '@/actions/session';
 import { revalidatePath } from 'next/cache';
+import { getCidFromUri } from '@/utils/ipfs';
 
 export async function getProfile(username: string) {
   const isAdmin = await isUserAdminAction();
@@ -59,14 +60,41 @@ export async function deleteProfile(profile: ProfileWithTokenId) {
     );
   }
 
+  const defaultCardProfileImage =
+    process.env.DEFAULT_SHOP_PROFILE_IMAGE_IPFS_HASH;
+  if (!defaultCardProfileImage) {
+    throw new Error('Default shop profile image not found');
+  }
+
+  console.log('uri to unpin', uri);
+
   const unpinResponse = await unpin(uri);
 
-  if (!unpinResponse.ok) {
+  console.log('unpinResponse', unpinResponse);
+
+  if (!unpinResponse?.ok) {
     return NextResponse.json(
       { error: 'Failed to unpin profile' },
       { status: 500 }
     );
   }
+
+  const smallCid = getCidFromUri(profile.image_small);
+  const mediumCid = getCidFromUri(profile.image_medium);
+  const largeCid = getCidFromUri(profile.image);
+
+  const toUnpin = [];
+  if (smallCid !== defaultCardProfileImage) {
+    toUnpin.push(smallCid);
+  }
+  if (mediumCid !== defaultCardProfileImage) {
+    toUnpin.push(mediumCid);
+  }
+  if (largeCid !== defaultCardProfileImage) {
+    toUnpin.push(largeCid);
+  }
+
+  await Promise.all(toUnpin.map(unpin));
 
   const profileManagerPrivateKey = process.env.PROFILE_MANAGER_PRIVATE_KEY;
   if (!profileManagerPrivateKey) {
