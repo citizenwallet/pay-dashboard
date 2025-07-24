@@ -4,7 +4,7 @@ import SearchInput from '@/components/search-input';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
 import { PayoutWithBurnAndTransfer } from '@/db/payouts';
-import { PlaceWithBalance } from '@/db/places';
+import { BalanceWithPlace } from '@/db/placeBalance';
 import { formatCurrencyNumber } from '@/lib/currency';
 import { PaginationState, Row } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
@@ -38,7 +38,7 @@ export default function PendingPayout({
   limit,
   offset
 }: {
-  payouts: PlaceWithBalance[];
+  payouts: BalanceWithPlace[];
   currencyLogo: string;
   tokenDecimals: number;
   count: number;
@@ -50,9 +50,6 @@ export default function PendingPayout({
   const pathname = usePathname();
   const t = useTranslations('pendingpayout');
 
-
-
-
   const onPaginationChange = useCallback(
     (
       updaterOrValue:
@@ -62,9 +59,9 @@ export default function PendingPayout({
       const newState =
         typeof updaterOrValue === 'function'
           ? updaterOrValue({
-            pageIndex: offset / limit,
-            pageSize: limit
-          })
+              pageIndex: offset / limit,
+              pageSize: limit
+            })
           : updaterOrValue;
 
       const params = new URLSearchParams(searchParams);
@@ -78,36 +75,36 @@ export default function PendingPayout({
   const columns = [
     {
       header: t('businessName'),
-      accessorKey: 'business.name'
+      accessorKey: 'place.business.name'
     },
     {
       header: t('placeName'),
-      accessorKey: 'name'
+      accessorKey: 'place.name'
     },
     {
       header: t('balance'),
       accessorKey: 'balance',
-      cell: ({ row }: { row: Row<PlaceWithBalance> }) => (
-        <p className="flex items-center gap-2 text-sm font-medium min-w-20">
+      cell: ({ row }: { row: Row<BalanceWithPlace> }) => (
+        <p className="flex min-w-20 items-center gap-2 text-sm font-medium">
           <CurrencyLogo logo={currencyLogo} size={18} />
-          {formatCurrencyNumber(row.original.places_balances / 100, tokenDecimals)}
+          {formatCurrencyNumber(row.original.balance, tokenDecimals)}
         </p>
       )
     },
     {
       header: t('lastPayout'),
-      cell: ({ row }: { row: Row<PlaceWithBalance> }) => {
-        const payouts = row.original.payouts;
+      cell: ({ row }: { row: Row<BalanceWithPlace> }) => {
+        const payouts = row.original.place.payouts;
         const lastPayout = payouts[payouts.length - 1];
 
         return (
           <div className="min-w-20">
             {lastPayout
               ? new Date(lastPayout.created_at).toLocaleString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-              })
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                })
               : '—'}
           </div>
         );
@@ -115,20 +112,21 @@ export default function PendingPayout({
     },
     {
       header: t('action'),
-      cell: ({ row }: { row: Row<PlaceWithBalance> }) => (
+      cell: ({ row }: { row: Row<BalanceWithPlace> }) => (
         <Button
           variant="outline"
           size="sm"
           className="min-w-20"
           onClick={() => {
-            const lastPayout =
-              row.original.payouts[row.original.payouts.length - 1];
+            const lastPayout = row.original.place.payouts[0];
             if (lastPayout) {
               router.push(
-                `/business/payouts/new?placeId=${row.original.id}&lastPayoutId=${lastPayout.id}`
+                `/business/payouts/new?placeId=${row.original.place_id}&lastPayoutId=${lastPayout.id}`
               );
             } else {
-              router.push(`/business/payouts/new?placeId=${row.original.id}`);
+              router.push(
+                `/business/payouts/new?placeId=${row.original.place_id}`
+              );
             }
           }}
         >
