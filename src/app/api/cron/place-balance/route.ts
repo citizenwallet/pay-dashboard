@@ -9,7 +9,7 @@ import { StatusCodes } from 'http-status-codes';
 import { NextRequest, NextResponse } from 'next/server';
 
 // This API route will be called by a cron job every 15 minutes
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
     const authHeader = req.headers.get('authorization');
     if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
