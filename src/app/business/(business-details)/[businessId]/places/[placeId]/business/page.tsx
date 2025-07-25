@@ -5,7 +5,6 @@ import { Heading } from '@/components/ui/heading';
 import { getServiceRoleClient } from '@/db';
 import { getBusinessById } from '@/db/business';
 import { isOwnerOfBusiness } from '@/db/businessUser';
-import { isAdmin } from '@/db/users';
 import { Separator } from '@radix-ui/react-separator';
 import { getTranslations } from 'next-intl/server';
 import { redirect } from 'next/navigation';
@@ -63,18 +62,12 @@ async function AsyncPage({
     placeId: string;
 }) {
     const client = getServiceRoleClient();
-    const admin = await isAdmin(client, parseInt(userId));
 
-    if (!admin) {
-        const isOwner = await isOwnerOfBusiness(
-            client,
-            parseInt(userId),
-            Number(businessId)
-        );
-        if (!isOwner) {
-            redirect(`/business/${businessId}/places/${placeId}/profile`);
-        }
-    }
+    const isOwner = await isOwnerOfBusiness(
+        client,
+        parseInt(userId),
+        Number(businessId)
+    );
 
     const { data: business } = await getBusinessById(client, Number(businessId));
 
@@ -86,5 +79,6 @@ async function AsyncPage({
         business={business}
         userId={parseInt(userId)}
         placeId={Number(placeId)}
+        isOwner={isOwner}
     />;
 }

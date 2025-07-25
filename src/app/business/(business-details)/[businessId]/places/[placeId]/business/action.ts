@@ -3,7 +3,6 @@
 import { getServiceRoleClient } from '@/db';
 import { Business, updateBusiness } from '@/db/business';
 import { isOwnerOfBusiness } from '@/db/businessUser';
-import { isAdmin } from '@/db/users';
 import { fetchCompanyForVatNumber } from '@/services/vat';
 import { revalidatePath } from 'next/cache';
 
@@ -34,15 +33,13 @@ export const updateBusinessDetailsAction = async (
   >
 ) => {
   const client = getServiceRoleClient();
-  const admin = await isAdmin(client, userId);
 
-  if (!admin) {
-    const isOwner = await isOwnerOfBusiness(client, userId, businessId);
+  const isOwner = await isOwnerOfBusiness(client, userId, businessId);
 
-    if (!isOwner) {
-      throw new Error('User does not have access to this Activity');
-    }
+  if (!isOwner) {
+    throw new Error('User does not have access to this Activity');
   }
+
   revalidatePath(`/business/${businessId}/places/${placeId}/business`);
   return await updateBusiness(client, businessId, business);
 };

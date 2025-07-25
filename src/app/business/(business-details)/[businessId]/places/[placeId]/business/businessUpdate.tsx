@@ -40,11 +40,13 @@ const formSchema = z.object({
 export default function BusinessEdit({
     business,
     userId,
-    placeId
+    placeId,
+    isOwner
 }: {
     business: Business;
     userId: number;
     placeId: number;
+    isOwner: boolean;
 }) {
     const [loading, setLoading] = useState(false);
     const [companyStatus, setCompanyStatus] = useState<'verified' | 'verifying' | 'created' | null>
@@ -177,7 +179,7 @@ export default function BusinessEdit({
                                     </FormLabel>
                                     <FormControl>
                                         <Input
-                                            disabled={loading}
+                                            disabled={loading || !isOwner}
                                             placeholder="Enter business name"
                                             className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
                                             {...field}
@@ -198,7 +200,7 @@ export default function BusinessEdit({
                                     </FormLabel>
                                     <FormControl>
                                         <Input
-                                            disabled={loading}
+                                            disabled={loading || !isOwner}
                                             type="email"
                                             placeholder="Enter email address"
                                             className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
@@ -220,7 +222,7 @@ export default function BusinessEdit({
                                     </FormLabel>
                                     <FormControl>
                                         <Input
-                                            disabled={loading}
+                                            disabled={loading || !isOwner}
                                             placeholder="Enter phone number"
                                             className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
                                             {...field}
@@ -254,7 +256,7 @@ export default function BusinessEdit({
                                     </FormLabel>
                                     <FormControl>
                                         <Input
-                                            disabled={loading}
+                                            disabled={loading || !isOwner}
                                             placeholder="Enter VAT number"
                                             className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
                                             {...field}
@@ -275,7 +277,7 @@ export default function BusinessEdit({
                                     </FormLabel>
                                     <FormControl>
                                         <Input
-                                            disabled={loading}
+                                            disabled={loading || !isOwner}
                                             placeholder="Enter legal business name"
                                             className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
                                             {...field}
@@ -296,7 +298,7 @@ export default function BusinessEdit({
                                     </FormLabel>
                                     <FormControl>
                                         <Input
-                                            disabled={loading}
+                                            disabled={loading || !isOwner}
                                             placeholder="Enter IBAN number"
                                             className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
                                             {...field}
@@ -317,7 +319,7 @@ export default function BusinessEdit({
                                     </FormLabel>
                                     <FormControl>
                                         <Textarea
-                                            disabled={loading}
+                                            disabled={loading || !isOwner}
                                             placeholder="Enter complete legal address"
                                             className="min-h-[6rem] resize-none transition-all duration-200 focus:ring-2 focus:ring-primary/20"
                                             {...field}
@@ -388,23 +390,25 @@ export default function BusinessEdit({
                 </div>
 
                 {/* Submit Button */}
-                <div className="flex items-center justify-end rounded-lg p-6">
-                    <Button
-                        disabled={loading}
-                        type="submit"
-                        className="min-w-[120px] transition-all duration-200"
-                        size="lg"
-                    >
-                        {loading ? (
-                            <div className="flex items-center space-x-2">
-                                <div className="h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent" />
-                                <span>{t('updating')}</span>
-                            </div>
-                        ) : (
-                            t('update')
-                        )}
-                    </Button>
-                </div>
+                {isOwner && (
+                    <div className="flex items-center justify-end rounded-lg p-6">
+                        <Button
+                            disabled={loading}
+                            type="submit"
+                            className="min-w-[120px] transition-all duration-200"
+                            size="lg"
+                        >
+                            {loading ? (
+                                <div className="flex items-center space-x-2">
+                                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent" />
+                                    <span>{t('updating')}</span>
+                                </div>
+                            ) : (
+                                t('update')
+                            )}
+                        </Button>
+                    </div>
+                )}
             </form>
         </Form>
 
