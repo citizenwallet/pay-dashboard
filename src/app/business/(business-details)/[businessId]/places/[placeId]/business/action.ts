@@ -1,8 +1,8 @@
 'use server';
 
+import { isUserOwnerOrAdminOfBusinessAction } from '@/actions/session';
 import { getServiceRoleClient } from '@/db';
 import { Business, updateBusiness } from '@/db/business';
-import { isOwnerOfBusiness } from '@/db/businessUser';
 import { fetchCompanyForVatNumber } from '@/services/vat';
 import { revalidatePath } from 'next/cache';
 
@@ -34,7 +34,11 @@ export const updateBusinessDetailsAction = async (
 ) => {
   const client = getServiceRoleClient();
 
-  const isOwner = await isOwnerOfBusiness(client, userId, businessId);
+  const isOwner = await isUserOwnerOrAdminOfBusinessAction(
+    client,
+    userId,
+    businessId
+  );
 
   if (!isOwner) {
     throw new Error('User does not have access to this Activity');

@@ -1,6 +1,7 @@
 import {
   getUserIdFromSessionAction,
-  isUserAdminAction
+  isUserAdminAction,
+  isUserOwnerOrAdminOfBusinessAction
 } from '@/actions/session';
 import AppSidebar from '@/components/layout/app-sidebar';
 import { getServiceRoleClient } from '@/db';
@@ -35,7 +36,7 @@ export default async function DashboardLayout({
   let places: Place[] = [];
   let business: Business = {} as Business;
   let lastplace: Place = {} as Place;
-  let isOwner: boolean = false;
+
 
   const userId = await getUserIdFromSessionAction();
   const client = getServiceRoleClient();
@@ -45,19 +46,16 @@ export default async function DashboardLayout({
     return null;
   }
 
+  const isOwner = await isUserOwnerOrAdminOfBusinessAction(
+    client,
+    userId,
+    Number(businessId)
+  );
+
   const admin = await isUserAdminAction();
 
-  if (!admin) {
-    isOwner = await isOwnerOfBusiness(
-      client,
-      userId,
-      Number(businessId)
-    );
-
-  }
-
   if (admin) {
-    isOwner = true;
+
     const adminBusiness = await getBusinessAction(Number(businessId));
     if (adminBusiness) {
       business = adminBusiness;
