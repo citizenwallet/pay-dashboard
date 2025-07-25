@@ -818,14 +818,14 @@ export default function ItemListing({
             <thead>
               <tr>
                 <th className="border p-2 text-left"></th>
-                <th className="border p-2 text-left">{t('image')}</th>
-                <th className="border p-2 text-left">{t('name')}</th>
-                <th className="border p-2 text-left">{t('description')}</th>
-                <th className="border p-2 text-left">{t('category')}</th>
-                <th className="border p-2 text-left">{t('price')}</th>
-                <th className="border p-2 text-left">{t('vat')}%</th>
-                <th className="border p-2 text-left">{t('visible')}</th>
-                <th className="border p-2 text-left">{t('actions')}</th>
+                <th className="border p-2 text-left min-w-20">{t('image')}</th>
+                <th className="border p-2 text-left min-w-20">{t('name')}</th>
+                <th className="border p-2 text-left min-w-20">{t('description')}</th>
+                <th className="border p-2 text-left min-w-20">{t('category')}</th>
+                <th className="border p-2 text-left min-w-20">{t('price')}</th>
+                <th className="border p-2 text-left min-w-20">{t('vat')}%</th>
+                <th className="border p-2 text-left min-w-40">{t('visible')}</th>
+                <th className="border p-2 text-left min-w-20">{t('actions')}</th>
               </tr>
             </thead>
             <tbody>

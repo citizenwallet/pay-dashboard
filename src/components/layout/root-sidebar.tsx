@@ -172,6 +172,52 @@ export default function RootAppSidebar({
                     </SidebarMenuItem>
                   </Collapsible>
                 )}
+                {isAdmin && (
+                  <Collapsible
+                    key={'/business/admin'}
+                    asChild
+                    defaultOpen={pathname === '/business/admin'}
+                    className="group/collapsible"
+                  >
+                    <SidebarMenuItem>
+                      <CollapsibleTrigger asChild>
+                        <SidebarMenuButton tooltip="admin">
+                          <CreditCard className="h-4 w-4" />
+
+                          <span
+                            className={cn(
+                              pathname === '/business/admin'
+                                ? 'font-bold text-gray-950'
+                                : 'text-gray-700'
+                            )}
+                          >
+                            {t('admin')}
+                          </span>
+                          <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                        </SidebarMenuButton>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <SidebarMenuSub>
+                          <SidebarMenuSubItem key="Profiles">
+                            <SidebarMenuSubButton asChild>
+                              <Link href="/business/admin/profiles">
+                                <span
+                                  className={cn(
+                                    pathname === '/business/admin/profiles'
+                                      ? 'font-bold text-gray-950'
+                                      : 'text-gray-700'
+                                  )}
+                                >
+                                  {t('profiles')}
+                                </span>
+                              </Link>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                        </SidebarMenuSub>
+                      </CollapsibleContent>
+                    </SidebarMenuItem>
+                  </Collapsible>
+                )}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -249,7 +295,7 @@ export default function RootAppSidebar({
         <SidebarRail />
       </Sidebar>
 
-      <SidebarInset className="flex flex-col h-screen overflow-hidden">
+      <SidebarInset className="flex h-screen flex-col overflow-hidden">
         <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />

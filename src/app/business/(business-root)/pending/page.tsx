@@ -5,11 +5,11 @@ import { Separator } from '@/components/ui/separator';
 import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
 import Config from '@/cw/community.json';
 import { getServiceRoleClient } from '@/db';
-import { getAlPlaceBalanceForTable } from '@/db/places';
 import { CommunityConfig } from '@citizenwallet/sdk';
 import { getTranslations } from 'next-intl/server';
 import { Suspense } from 'react';
 import PendingPayout from './pending-payout';
+import { getAllBalancesForToken } from '@/db/placeBalance';
 
 interface PendingPayoutsPageProps {
   searchParams: Promise<{
@@ -67,8 +67,9 @@ async function AsyncPayoutsLoader({
   const tokenDecimals = community.primaryToken.decimals;
 
   const client = getServiceRoleClient();
-  const { data, count } = await getAlPlaceBalanceForTable(
+  const { data, count } = await getAllBalancesForToken(
     client,
+    community.primaryToken.address,
     Number(offset),
     Number(limit),
     search

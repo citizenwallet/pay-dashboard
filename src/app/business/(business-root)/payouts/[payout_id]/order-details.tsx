@@ -58,8 +58,8 @@ export default function OrderViewTable({
             {column.getIsSorted() === 'asc'
               ? ' ↑'
               : column.getIsSorted() === 'desc'
-              ? ' ↓'
-              : ''}
+                ? ' ↓'
+                : ''}
           </Button>
         );
       }
@@ -82,8 +82,8 @@ export default function OrderViewTable({
             {column.getIsSorted() === 'asc'
               ? ' ↑'
               : column.getIsSorted() === 'desc'
-              ? ' ↓'
-              : ''}
+                ? ' ↓'
+                : ''}
           </Button>
         );
       },
@@ -104,6 +104,7 @@ export default function OrderViewTable({
         return (
           <Button
             variant="ghost"
+            className='min-w-20'
             onClick={() => {
               handleSorting(
                 column,
@@ -116,8 +117,8 @@ export default function OrderViewTable({
             {column.getIsSorted() === 'asc'
               ? ' ↑'
               : column.getIsSorted() === 'desc'
-              ? ' ↓'
-              : ''}
+                ? ' ↓'
+                : ''}
           </Button>
         );
       },
@@ -142,7 +143,7 @@ export default function OrderViewTable({
       header: t('fees'),
       cell: ({ row }) => {
         return (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 min-w-20">
             <p
               className={cn('flex items-center gap-1', {
                 'line-through':
@@ -170,7 +171,7 @@ export default function OrderViewTable({
       header: t('net'),
       cell: ({ row }) => {
         return (
-          <p className="flex w-8 items-center gap-1">
+          <p className="flex w-8 items-center gap-1 min-w-20">
             <CurrencyLogo logo={currencyLogo} size={18} />
             {(row.original.status === 'correction' ||
               row.original.status === 'refund') &&
@@ -193,7 +194,7 @@ export default function OrderViewTable({
       cell: ({ row }) => {
         if (row.original.status === 'needs_minting') {
           return (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 min-w-20">
               <div className="rounded-full bg-yellow-300 px-2 py-1 text-yellow-800">
                 {t('needsMinting')}
               </div>
@@ -203,7 +204,7 @@ export default function OrderViewTable({
 
         if (row.original.status === 'correction') {
           return (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 min-w-20">
               <div className="rounded-full bg-gray-300 px-2 py-1 text-gray-800">
                 {t('correction')}
               </div>
@@ -213,7 +214,7 @@ export default function OrderViewTable({
 
         if (row.original.status === 'refund') {
           return (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 min-w-20">
               <div className="rounded-full bg-gray-300 px-2 py-1 text-gray-800">
                 {t('refund')}
               </div>
@@ -223,7 +224,7 @@ export default function OrderViewTable({
 
         if (row.original.status === 'refunded') {
           return (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 min-w-20">
               <div className="rounded-full bg-gray-300 px-2 py-1 text-gray-800">
                 {t('refunded')}
               </div>
@@ -233,7 +234,7 @@ export default function OrderViewTable({
 
         if (row.original.status === 'paid') {
           return (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 min-w-20">
               <div className="rounded-full bg-green-300 px-2 py-1 text-green-800">
                 {t('paid')}
               </div>
@@ -246,7 +247,7 @@ export default function OrderViewTable({
     {
       accessorKey: 'source',
       header: ({ column }: { column: Column<Order> }) => {
-        return <div>{t('source')}</div>;
+        return <div className="min-w-20">{t('source')}</div>;
       },
       cell: ({ row }) => {
         const isTerminal = row.original.type === 'terminal' && row.original.pos;
@@ -255,11 +256,10 @@ export default function OrderViewTable({
             <div className="flex items-center">
               <span className="flex gap-1 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium">
                 <SmartphoneNfcIcon className="h-4 w-4" />
-                {`${t('terminal')}: ${
-                  row.original.pos?.startsWith('0x')
-                    ? formatAddress(row.original.pos)
-                    : row.original.pos
-                }`}
+                {`${t('terminal')}: ${row.original.pos?.startsWith('0x')
+                  ? formatAddress(row.original.pos)
+                  : row.original.pos
+                  }`}
               </span>
             </div>
           );
@@ -300,7 +300,7 @@ export default function OrderViewTable({
     {
       accessorKey: 'description',
       header: ({ column }: { column: Column<Order> }) => {
-        return <div>{t('description')}</div>;
+        return <div className="min-w-20">{t('description')}</div>;
       }
     }
   ];
@@ -314,9 +314,9 @@ export default function OrderViewTable({
       const newState =
         typeof updaterOrValue === 'function'
           ? updaterOrValue({
-              pageIndex: Number(offset) / Number(limit),
-              pageSize: Number(limit)
-            })
+            pageIndex: Number(offset) / Number(limit),
+            pageSize: Number(limit)
+          })
           : updaterOrValue;
 
       const params = new URLSearchParams(searchParams);
@@ -328,7 +328,7 @@ export default function OrderViewTable({
   );
 
   return (
-    <div>
+    <div className="w-[90vw] overflow-x-auto md:w-full">
       <DataTable
         columns={columns}
         data={orders}

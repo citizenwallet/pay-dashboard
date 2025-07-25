@@ -6,7 +6,7 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { Order } from '@/db/orders';
+import { Order, OrderWithPlace } from '@/db/orders';
 import { Place } from '@/db/places';
 import { formatCurrencyNumber } from '@/lib/currency';
 import { cn, humanizeDate } from '@/lib/utils';
@@ -17,6 +17,7 @@ import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { exportCsvAction, postRefundAction } from '../action';
 import {
+  ExternalLinkIcon,
   Loader2,
   QrCodeIcon,
   SmartphoneIcon,
@@ -25,10 +26,11 @@ import {
 import { formatAddress } from '@/lib/address';
 import { DatePicker } from '@/components/ui/DatePicker';
 import { AlertModal } from '@/components/modal/alert-modal';
+import Link from 'next/link';
 
 interface Props {
   place: Place;
-  orders: Order[];
+  orders: OrderWithPlace[];
   currencyLogo: string;
   pagination: {
     limit: number;
@@ -42,7 +44,7 @@ const createColumns = (
   currencyLogo: string,
   t: (key: string) => string,
   onRefundClick: (orderId: number) => void
-): ColumnDef<Order>[] => [
+): ColumnDef<OrderWithPlace>[] => [
   {
     accessorKey: 'id',
     header: t('id'),
@@ -63,7 +65,7 @@ const createColumns = (
     cell: ({ row }) => {
       return (
         <p
-          className={cn('flex w-8 items-center gap-1', {
+          className={cn('flex min-w-20 items-center gap-1', {
             'line-through': row.original.status === 'refunded'
           })}
         >
@@ -81,7 +83,7 @@ const createColumns = (
     header: t('fees'),
     cell: ({ row }) => {
       return (
-        <div className="flex items-center gap-1">
+        <div className="flex min-w-20 items-center gap-1">
           <p
             className={cn('flex items-center gap-1', {
               'line-through':
@@ -109,7 +111,7 @@ const createColumns = (
     header: t('net'),
     cell: ({ row }) => {
       return (
-        <p className="flex w-8 items-center gap-1">
+        <p className="flex min-w-20 items-center gap-1">
           <CurrencyLogo logo={currencyLogo} size={18} />
           {(row.original.status === 'correction' ||
             row.original.status === 'refund') &&
@@ -130,7 +132,7 @@ const createColumns = (
     cell: ({ row }) => {
       return (
         <span
-          className={cn('rounded-full px-2 py-1 text-xs font-medium', {
+          className={cn('min-w-20 rounded-full px-2 py-1 text-xs font-medium', {
             'bg-green-100 text-green-800': row.original.status === 'paid',
             'bg-yellow-100 text-yellow-800': row.original.status === 'pending',
             'bg-red-100 text-red-800': row.original.status === 'cancelled',
@@ -145,13 +147,35 @@ const createColumns = (
     }
   },
   {
+    accessorKey: 'payout_id',
+    header: t('payout'),
+    cell: ({ row }) => {
+      if (!row.original.payout_id) {
+        return null;
+      }
+
+      return (
+        <Link
+          href={`/business/${row.original.place.business.id}/places/${row.original.place_id}/payouts/${row.original.payout_id}`}
+          target="_blank"
+          className="flex min-w-24 cursor-pointer items-center"
+        >
+          <span className="flex items-center justify-center gap-1 rounded-full bg-blue-100 px-2 py-1 text-xs font-medium hover:bg-blue-200">
+            #{row.original.payout_id}
+            <ExternalLinkIcon className="h-4 w-4" />
+          </span>
+        </Link>
+      );
+    }
+  },
+  {
     accessorKey: 'type',
     header: t('type'),
     cell: ({ row }) => {
       const isTerminal = row.original.type === 'terminal' && row.original.pos;
       if (isTerminal) {
         return (
-          <div className="flex items-center">
+          <div className="flex min-w-20 items-center">
             <span className="flex gap-1 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium">
               <SmartphoneNfcIcon className="h-4 w-4" />
               {`${t('terminal')}: ${
@@ -194,11 +218,13 @@ const createColumns = (
     cell: ({ row }) => {
       return (
         <>
-          {row.original?.processor_tx && row.original?.status === 'paid' && (
-            <Button onClick={() => onRefundClick(row.original.id)}>
-              {t('refund')}
-            </Button>
-          )}
+          {(row.original?.processor_tx || row.original?.account) &&
+            row.original?.status === 'paid' &&
+            row.original?.payout_id === null && (
+              <Button onClick={() => onRefundClick(row.original.id)}>
+                {t('refund')}
+              </Button>
+            )}
         </>
       );
     }
