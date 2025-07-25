@@ -96,7 +96,7 @@ export default async function DashboardLayout({
 
   return (
     <>
-      <AppSidebar business={business} lastPlace={place} isAdmin={admin} user={user} isOwner={isOwner}>
+      <AppSidebar business={business} place={place} isAdmin={admin} user={user} isOwner={isOwner}>
         {children}
       </AppSidebar>
     </>

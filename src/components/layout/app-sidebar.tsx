@@ -42,19 +42,19 @@ export default function AppSidebar({
   isAdmin,
   user: initialUser,
   business,
-  lastPlace,
+  place: initialPlace,
   isOwner,
   children
 }: {
   isAdmin?: boolean;
   user?: User | null;
   business: Business | null;
-  lastPlace: Place;
+  place: Place;
   isOwner: boolean;
   children: React.ReactNode;
 }) {
   const [user, setUser] = useState<User | null | undefined>(initialUser);
-  const [place, setPlace] = useState<Place | null>(lastPlace);
+  const [place, setPlace] = useState<Place | null>(initialPlace);
   const session = useSession();
   const t = useTranslations('sidebar');
 
@@ -65,8 +65,8 @@ export default function AppSidebar({
       });
     }
 
-    setPlace(lastPlace);
-  }, [session, user, lastPlace]);
+    setPlace(initialPlace);
+  }, [session, user, initialPlace]);
 
   return (
     <SidebarProvider>
