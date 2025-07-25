@@ -1,13 +1,13 @@
 'use server';
 
-import { getServiceRoleClient } from '@/db';
-import { getAllPlaces, getAllPlacesByUserId } from '@/db/places';
 import {
   getUserIdFromSessionAction,
   isUserLinkedToPlaceAction
 } from '@/actions/session';
-import { isAdmin } from '@/db/users';
+import { getServiceRoleClient } from '@/db';
+import { getAllPlaces, getAllPlacesByUserId, getPlaceById } from '@/db/places';
 import { createPos, getPosById } from '@/db/pos';
+import { isAdmin, updateLastplace } from '@/db/users';
 
 export async function getAllPlacesDataAction() {
   const client = getServiceRoleClient();
@@ -50,6 +50,8 @@ export async function createPosAction(
 
   const result = await createPos(client, name, posId, placeId, 'app', true);
 
+  await updateLastplace(client, userId, placeId);
+
   return result;
 }
 
@@ -59,4 +61,17 @@ export async function isPosAlreadyActiveAction(
   const client = getServiceRoleClient();
   const posData = await getPosById(client, posId);
   return !posData.data;
+}
+
+export async function getPosByPlaceIdAction(placeId: number) {
+  const client = getServiceRoleClient();
+  const userId = await getUserIdFromSessionAction();
+
+  const res = await isUserLinkedToPlaceAction(client, userId, placeId);
+  if (!res) {
+    throw new Error('User does not have access to this place');
+  }
+
+  const posData = await getPlaceById(client, placeId);
+  return posData;
 }
