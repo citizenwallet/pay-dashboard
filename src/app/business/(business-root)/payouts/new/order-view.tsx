@@ -60,8 +60,20 @@ export default function OrderView({
   }, [place, dateRange]);
 
   useEffect(() => {
-    const calculatedTotal = orders.reduce((acc, order) => acc + order.total, 0);
-    const calculatedFees = orders.reduce((acc, order) => acc + order.fees, 0);
+
+    const calculatedTotal = orders.reduce(
+      (acc, order) =>
+        acc +
+        (order.status === 'correction' || order.status === 'refund'
+          ? order.total * -1
+          : order.total),
+      0
+    );
+    const calculatedFees = orders.reduce(
+      (acc, order) =>
+        acc + (order.status === 'correction' ? order.fees * -1 : order.fees),
+      0
+    );
 
     setTotal(calculatedTotal - calculatedFees);
   }, [orders]);
