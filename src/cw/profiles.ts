@@ -156,3 +156,78 @@ export const upsertProfile = async (
     response
   );
 };
+
+export const deleteProfile = async (
+  community: CommunityConfig,
+  account: string
+) => {
+  const ipfsDomain = process.env.IPFS_DOMAIN;
+  if (!ipfsDomain) {
+    throw new Error('IPFS domain not found');
+  }
+
+  const existingProfile = await getProfileFromAddress(
+    ipfsDomain,
+    community,
+    account
+  );
+
+  if (!existingProfile) {
+    return;
+  }
+
+  const defaultCardProfileImage =
+    process.env.DEFAULT_SHOP_PROFILE_IMAGE_IPFS_HASH;
+  if (!defaultCardProfileImage) {
+    throw new Error('Default shop profile image not found');
+  }
+
+  const profileManagerPrivateKey = process.env.PROFILE_MANAGER_PRIVATE_KEY;
+  if (!profileManagerPrivateKey) {
+    throw new Error('Profile manager private key not found');
+  }
+
+  const signer = new Wallet(profileManagerPrivateKey);
+
+  const profileManagerAddress = await getAccountAddress(
+    community,
+    signer.address
+  );
+  if (!profileManagerAddress) {
+    throw new Error('Failed to get profile manager address');
+  }
+
+  const uri = await getProfileUriFromId(
+    community,
+    BigInt(existingProfile.token_id)
+  );
+
+  if (uri) {
+    const response = await unpin(uri);
+
+    if (!response?.ok) {
+      console.error('Failed to unpin profile', response);
+    }
+  }
+
+  const smallCid = getCidFromUri(existingProfile.image_small);
+  const mediumCid = getCidFromUri(existingProfile.image_medium);
+  const largeCid = getCidFromUri(existingProfile.image);
+
+  const toUnpin = [];
+  if (smallCid !== defaultCardProfileImage) {
+    toUnpin.push(smallCid);
+  }
+  if (mediumCid !== defaultCardProfileImage) {
+    toUnpin.push(mediumCid);
+  }
+  if (largeCid !== defaultCardProfileImage) {
+    toUnpin.push(largeCid);
+  }
+
+  await Promise.all(toUnpin.map(unpin));
+
+  const bundler = new BundlerService(community);
+
+  await bundler.burnProfile(signer, profileManagerAddress, account);
+};

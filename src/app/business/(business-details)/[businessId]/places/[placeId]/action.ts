@@ -2,16 +2,13 @@
 
 import {
   getUserIdFromSessionAction,
+  isUserLinkedToBusinessAction,
   isUserLinkedToPlaceAction
 } from '@/actions/session';
 import Config from '@/cw/community.json';
 import { upsertProfile } from '@/cw/profiles';
 import { getServiceRoleClient } from '@/db';
-import {
-  checkUserAccessBusiness,
-  getBusinessById,
-  getLinkedBusinessByUserId
-} from '@/db/business';
+import { checkUserAccessBusiness, getBusinessById } from '@/db/business';
 import { isOwnerOfBusiness } from '@/db/businessUser';
 import {
   createPlace,
@@ -21,7 +18,7 @@ import {
   uniqueSlugPlace,
   updatePlaceAccounts
 } from '@/db/places';
-import { getLastplace, isAdmin, updateLastplace } from '@/db/users';
+import { getUserLastPlace, isAdmin, updateLastplace } from '@/db/users';
 import { generateRandomString } from '@/lib/utils';
 import { uploadImage } from '@/services/storage/upload';
 import {
@@ -32,24 +29,23 @@ import {
 import { id } from 'ethers';
 import { revalidatePath } from 'next/cache';
 
-export async function getPlaceAction() {
+export async function uploadImageAction(
+  businessId: number,
+  file: File
+): Promise<string> {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
-  const businessid = await getLinkedBusinessByUserId(client, userId);
-  const places = await getPlacesByBusinessId(
+
+  const isLinked = await isUserLinkedToBusinessAction(
     client,
-    businessid.data?.linked_business_id
+    userId,
+    businessId
   );
-  return places.data;
-}
+  if (!isLinked) {
+    throw new Error('User does not have access to this business');
+  }
 
-export async function uploadImageAction(file: File): Promise<string> {
-  const client = getServiceRoleClient();
-  const userId = await getUserIdFromSessionAction();
-  const businessid = await getLinkedBusinessByUserId(client, userId);
-  const busId = businessid.data?.linked_business_id;
-
-  const url = await uploadImage(client, file, busId);
+  const url = await uploadImage(client, file, businessId);
   return url;
 }
 
@@ -146,25 +142,6 @@ export async function createPlaceAction(
   return place;
 }
 
-export async function getBusinessIdAction(): Promise<number> {
-  const client = getServiceRoleClient();
-  const userId = await getUserIdFromSessionAction();
-  const businessid = await getLinkedBusinessByUserId(client, userId);
-  const busid = businessid.data?.linked_business_id;
-  return busid;
-}
-
-export const getLinkedBusinessAction = async () => {
-  const client = getServiceRoleClient();
-  const userId = await getUserIdFromSessionAction();
-  const businessid = await getLinkedBusinessByUserId(client, userId);
-  const business = await getBusinessById(
-    client,
-    businessid.data?.linked_business_id
-  );
-  return business.data;
-};
-
 export const changeLastPlaceAction = async (placeid: number) => {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
@@ -175,17 +152,15 @@ export const changeLastPlaceAction = async (placeid: number) => {
 export const getLastPlaceIdAction = async () => {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
-  const data = await getLastplace(client, userId);
-  let lastId = data.data?.last_place;
-  if (!lastId) {
-    const places = await getPlaceAction();
-    if (places && places.length > 0) {
-      lastId = places[0].id;
-    }
-    return lastId;
+  const { data, error } = await getUserLastPlace(client, userId);
+  if (error) {
+    throw new Error('Failed to get last place');
+  }
+  if (!data) {
+    throw new Error('Failed to get last place');
   }
 
-  return lastId;
+  return data.place.id;
 };
 
 export const getLastPlaceAction = async () => {

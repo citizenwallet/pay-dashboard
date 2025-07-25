@@ -23,13 +23,7 @@ import { Switch } from '@/components/ui/switch';
 import { Place } from '@/db/places';
 import { createSlug } from '@/lib/utils';
 import { PaginationState, Row } from '@tanstack/react-table';
-import {
-  Camera,
-  ImagePlus,
-  Loader,
-  Plus,
-  Upload
-} from 'lucide-react';
+import { Camera, ImagePlus, Loader, Plus, Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -381,9 +375,9 @@ export default function PlacesPage({
       const newState =
         typeof updaterOrValue === 'function'
           ? updaterOrValue({
-            pageIndex: offset / limit,
-            pageSize: limit
-          })
+              pageIndex: offset / limit,
+              pageSize: limit
+            })
           : updaterOrValue;
 
       const params = new URLSearchParams(searchParams);
@@ -437,7 +431,6 @@ export default function PlacesPage({
 
       const newPlace = result;
 
-
       toast.success(t('placeAddedSuccessfully'));
 
       setNewPlaceName('');
@@ -460,7 +453,7 @@ export default function PlacesPage({
   };
 
   const uploadImage = async (file: File): Promise<string> => {
-    const imageUrl = await uploadImageAction(file);
+    const imageUrl = await uploadImageAction(businessId, file);
     return imageUrl;
   };
 
@@ -468,7 +461,6 @@ export default function PlacesPage({
     await changeLastPlaceAction(placeId);
     router.push(`/business/${businessId}/places/${placeId}/profile`);
   };
-
 
   const columns = [
     {
@@ -478,7 +470,7 @@ export default function PlacesPage({
         return (
           <div
             onClick={() => handleChangePlace(row.original.id)}
-            className="text-blue-500 hover:underline cursor-pointer"
+            className="cursor-pointer text-blue-500 hover:underline"
           >
             {row.original.id}
           </div>
@@ -563,7 +555,7 @@ export default function PlacesPage({
         return (
           <div className="p-2">
             {editingItemId === row.original.id &&
-              editingField === 'description' ? (
+            editingField === 'description' ? (
               <input
                 type="text"
                 value={editingDescription}
@@ -602,8 +594,9 @@ export default function PlacesPage({
                 onBlur={() => handleSlugSave(row.original)}
                 autoFocus
                 data-item-id={row.original.id}
-                className={`w-40 rounded border ${editingSlugError ? 'border-red-500' : 'border-gray-300'
-                  } p-1`}
+                className={`w-40 rounded border ${
+                  editingSlugError ? 'border-red-500' : 'border-gray-300'
+                } p-1`}
                 placeholder="Enter slug"
               />
             ) : (
@@ -680,9 +673,9 @@ export default function PlacesPage({
         }}
       />
 
-      <div className="mb-8 flex items-center justify-between flex-wrap gap-2">
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-2">
         {isOwner && (
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex flex-wrap items-center gap-2">
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
               <DialogTrigger asChild>
                 <Button className="flex items-center gap-2">
@@ -715,7 +708,10 @@ export default function PlacesPage({
                   </div>
 
                   <div className="grid gap-2">
-                    <label htmlFor="description" className="text-sm font-medium">
+                    <label
+                      htmlFor="description"
+                      className="text-sm font-medium"
+                    >
                       {t('description')}
                     </label>
                     <Input

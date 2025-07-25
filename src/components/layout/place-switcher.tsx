@@ -20,13 +20,11 @@ import { toast } from 'sonner';
 
 export function PlaceSwitcher({
   business,
-  lastPlace
+  place
 }: {
   business: Business;
-  lastPlace: Place;
+  place: Place;
 }) {
-  const [activePlace, setActivePlace] = useState<Place | null>(lastPlace);
-
   const router = useRouter();
   const t = useTranslations('navButton');
 
@@ -46,10 +44,10 @@ export function PlaceSwitcher({
             <SidebarMenuButton
               size="lg"
               className=" data-[state=open]:text-sidebar-accent-foreground"
-              onClick={() => activePlace && changePlace(activePlace)}
+              onClick={() => place && changePlace(place)}
             >
               <Image
-                src={activePlace?.image ?? '/shop.png'}
+                src={place?.image ?? '/shop.png'}
                 alt="Logo"
                 width={32}
                 height={32}
@@ -57,11 +55,9 @@ export function PlaceSwitcher({
               />
 
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">
-                  {activePlace?.name}
-                </span>
+                <span className="truncate font-semibold">{place?.name}</span>
               </div>
-              {activePlace?.hidden == true ? (
+              {place?.hidden == true ? (
                 <Badge variant="destructive">{t('private')}</Badge>
               ) : (
                 <Badge variant="secondary">{t('public')}</Badge>

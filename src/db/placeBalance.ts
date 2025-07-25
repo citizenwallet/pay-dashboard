@@ -31,8 +31,7 @@ export const getAllBalancesForToken = async (
   client: SupabaseClient,
   token: string,
   offset: number = 0,
-  limit: number = 15,
-  search: string
+  limit: number = 15
 ): Promise<{ data: BalanceWithPlace[]; count: number }> => {
   let query = client
     .from('places_balances')
@@ -44,10 +43,6 @@ export const getAllBalancesForToken = async (
     )
     .eq('token', token)
     .gt('balance', 0);
-
-  if (search) {
-    query = query.or(`name.ilike.%${search}%,business.name.ilike.%${search}%`);
-  }
 
   // Add sorting - order by balance descending
   query = query.order('balance', {

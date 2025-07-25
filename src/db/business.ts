@@ -1,6 +1,10 @@
 import 'server-only';
 
-import { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
+import {
+  PostgrestResponse,
+  PostgrestSingleResponse,
+  SupabaseClient
+} from '@supabase/supabase-js';
 
 export interface Business {
   id: number;
@@ -17,6 +21,20 @@ export interface Business {
   legal_name: string | null;
   accepted_membership_agreement: string | null;
   accepted_terms_and_conditions: string | null;
+}
+
+export interface BusinessSearch
+  extends Pick<Business, 'id' | 'name' | 'vat_number'> {
+  places: {
+    balances: {
+      balance: number;
+      token: string;
+    }[];
+  }[];
+  business_users: {
+    user_id: number;
+    role: string;
+  }[];
 }
 
 export type NewBusiness = Omit<Business, 'id' | 'created_at'>;
@@ -36,17 +54,6 @@ export const getBusinessByToken = async (
     .from('businesses')
     .select('*')
     .eq('invite_code', token)
-    .single();
-};
-
-export const getLinkedBusinessByUserId = async (
-  client: SupabaseClient,
-  userid: number
-) => {
-  return client
-    .from('users')
-    .select('linked_business_id')
-    .eq('id', userid)
     .single();
 };
 
@@ -99,12 +106,26 @@ export const getBusinessesBySearch = async (
   client: SupabaseClient,
   limit: number = 15,
   offset: number = 0,
-  search: string = ''
-): Promise<PostgrestSingleResponse<Business[]>> => {
-  let query = client.from('businesses').select('*', { count: 'exact' });
+  search: string = '',
+  userId: number | null = null
+): Promise<PostgrestResponse<BusinessSearch>> => {
+  let query = client.from('businesses').select(
+    `id,
+      name,
+      vat_number,
+      places:places!business_id(balances:places_balances!place_id(balance,token)),
+      business_users:business_users!business_id!inner(user_id,role)`,
+    {
+      count: 'exact'
+    }
+  );
+
+  if (userId) {
+    query = query.eq('business_users.user_id', userId);
+  }
 
   if (search && search.trim() !== '') {
-    query = query.ilike('name', `%${search}%`);
+    query = query.or(`name.ilike.%${search}%,vat_number.ilike.%${search}%`);
   }
 
   return query

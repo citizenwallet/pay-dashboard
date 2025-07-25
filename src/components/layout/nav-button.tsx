@@ -26,7 +26,7 @@ import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
 
-export function NavButton({ lastPlace }: { lastPlace: Place }) {
+export function NavButton({ place }: { place: Place }) {
   const [copied, setCopied] = useState(false);
   const [copiedOrdersFeed, setCopiedOrdersFeed] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -39,7 +39,7 @@ export function NavButton({ lastPlace }: { lastPlace: Place }) {
       setCopied(false);
     }, 1000);
 
-    const checkoutUrl = `${process.env.NEXT_PUBLIC_CHECKOUT_BASE_URL}/${lastPlace.slug}`;
+    const checkoutUrl = `${process.env.NEXT_PUBLIC_CHECKOUT_BASE_URL}/${place.slug}`;
     navigator.clipboard
       .writeText(checkoutUrl)
       .then(() => {
@@ -57,7 +57,7 @@ export function NavButton({ lastPlace }: { lastPlace: Place }) {
       setCopiedOrdersFeed(false);
     }, 1000);
 
-    const ordersFeedUrl = `${process.env.NEXT_PUBLIC_CHECKOUT_BASE_URL}/${lastPlace.slug}/orders`;
+    const ordersFeedUrl = `${process.env.NEXT_PUBLIC_CHECKOUT_BASE_URL}/${place.slug}/orders`;
     navigator.clipboard
       .writeText(ordersFeedUrl)
       .then(() => {
@@ -72,9 +72,9 @@ export function NavButton({ lastPlace }: { lastPlace: Place }) {
   const handleVisibilityToggle = async () => {
     try {
       setIsDialogOpen(false);
-      await handleVisibilityToggleAction(lastPlace.id);
+      await handleVisibilityToggleAction(place.id);
       toast.success(
-        `${t('place')} ${lastPlace.hidden ? t('public') : t('private')} ${t(
+        `${t('place')} ${place.hidden ? t('public') : t('private')} ${t(
           'successfully'
         )}`
       );
@@ -91,10 +91,8 @@ export function NavButton({ lastPlace }: { lastPlace: Place }) {
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <SidebarMenuButton>
-                {lastPlace.hidden ? <Eye /> : <EyeOff />}
-                <span>
-                  {lastPlace.hidden ? t('makePublic') : t('makePrivate')}
-                </span>
+                {place.hidden ? <Eye /> : <EyeOff />}
+                <span>{place.hidden ? t('makePublic') : t('makePrivate')}</span>
               </SidebarMenuButton>
             </DialogTrigger>
             <DialogContent>
@@ -102,7 +100,7 @@ export function NavButton({ lastPlace }: { lastPlace: Place }) {
                 <DialogTitle>{t('areYouSure')}</DialogTitle>
                 <DialogDescription>
                   {`${t('doYouWantTo')} ${
-                    lastPlace.hidden
+                    place.hidden
                       ? t('makePublicDescription')
                       : t('makePrivateDescription')
                   }?`}
@@ -120,7 +118,7 @@ export function NavButton({ lastPlace }: { lastPlace: Place }) {
             </DialogContent>
           </Dialog>
 
-          {!lastPlace.archived && (
+          {!place.archived && (
             <SidebarMenuButton
               onClick={handleCopyCheckoutLink}
               className={cn(
@@ -132,7 +130,7 @@ export function NavButton({ lastPlace }: { lastPlace: Place }) {
               <span>{t('copyCheckoutLink')}</span>
             </SidebarMenuButton>
           )}
-          {!lastPlace.archived && (
+          {!place.archived && (
             <SidebarMenuButton
               onClick={handleCopyOrdersFeedLink}
               className={cn(

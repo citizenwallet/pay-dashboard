@@ -149,10 +149,10 @@ function SidebarMenuItems({
 
 export function NavMain({
   businessId,
-  lastPlace
+  place
 }: {
   businessId: number;
-  lastPlace: Place;
+  place: Place;
 }) {
   const t = useTranslations('sidebar');
   const pathname = usePathname();
@@ -162,22 +162,22 @@ export function NavMain({
   const data: SidebarItem[] = [
     {
       title: t('profile'),
-      url: `/business/${businessId}/places/${lastPlace.id}/profile`,
+      url: `/business/${businessId}/places/${place.id}/profile`,
       icon: User,
       items: []
     },
     {
       title: t('qrcode'),
-      url: `/business/${businessId}/places/${lastPlace.id}/qr`,
+      url: `/business/${businessId}/places/${place.id}/qr`,
       icon: QrCode,
       items: [
         {
           title: t('light'),
-          url: `/business/${businessId}/places/${lastPlace.id}/qr/light`
+          url: `/business/${businessId}/places/${place.id}/qr/light`
         },
         {
           title: t('dark'),
-          url: `/business/${businessId}/places/${lastPlace.id}/qr/dark`
+          url: `/business/${businessId}/places/${place.id}/qr/dark`
         }
       ]
     }
@@ -186,25 +186,25 @@ export function NavMain({
   const salesData: SidebarItem[] = [
     {
       title: t('orders'),
-      url: `/business/${businessId}/places/${lastPlace.id}/orders`,
+      url: `/business/${businessId}/places/${place.id}/orders`,
       icon: BoxesIcon,
       items: []
     },
     {
       title: t('checkout'),
-      url: `/business/${businessId}/places/${lastPlace.id}/checkout`,
+      url: `/business/${businessId}/places/${place.id}/checkout`,
       icon: ShoppingCartIcon,
       items: []
     },
     {
       title: t('terminal'),
-      url: `/business/${businessId}/places/${lastPlace.id}/pos`,
+      url: `/business/${businessId}/places/${place.id}/pos`,
       icon: SmartphoneNfcIcon,
       items: []
     },
     {
       title: t('payouts'),
-      url: `/business/${businessId}/places/${lastPlace.id}/payouts`,
+      url: `/business/${businessId}/places/${place.id}/payouts`,
       icon: BanknoteIcon,
       items: []
     }
@@ -213,7 +213,7 @@ export function NavMain({
   const adminData: SidebarItem[] = [
     {
       title: t('manage'),
-      url: `/business/${businessId}/places/${lastPlace.id}/manage`,
+      url: `/business/${businessId}/places/${place.id}/manage`,
       icon: Settings,
       items: []
     }

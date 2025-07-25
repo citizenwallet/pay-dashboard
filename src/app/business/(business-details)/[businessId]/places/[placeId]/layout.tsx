@@ -11,8 +11,6 @@ import type { Metadata } from 'next';
 import {
   changeLastPlaceAction,
   getBusinessAction,
-  getLinkedBusinessAction,
-  getPlaceAction,
   getPlaceByIdAction
 } from './action';
 import { redirect } from 'next/navigation';
@@ -31,9 +29,8 @@ export default async function DashboardLayout({
   const { businessId } = await params;
   const { placeId } = await params;
 
-  let places: Place[] = [];
   let business: Business = {} as Business;
-  let lastplace: Place = {} as Place;
+  let place: Place = {} as Place;
 
   const userId = await getUserIdFromSessionAction();
   const client = getServiceRoleClient();
@@ -51,19 +48,24 @@ export default async function DashboardLayout({
       business = adminBusiness;
     }
 
-    const userLastPlace = await getPlaceByIdAction(Number(placeId));
-    if (userLastPlace) {
-      lastplace = userLastPlace;
+    const userPlace = await getPlaceByIdAction(Number(placeId));
+    if (userPlace) {
+      place = userPlace;
     }
   } else {
     //check if the business is accepted agreement
-    const businessData = await getBusinessById(client, Number(businessId));
+    const { data: businessData } = await getBusinessById(
+      client,
+      Number(businessId)
+    );
     if (
-      !businessData.data?.accepted_membership_agreement ||
-      !businessData.data?.accepted_terms_and_conditions
+      !businessData?.accepted_membership_agreement ||
+      !businessData?.accepted_terms_and_conditions
     ) {
       redirect(`/business/${businessId}/legal`);
     }
+
+    business = businessData;
 
     const hasPlaceAccess = await checkUserPlaceAccess(
       client,
@@ -74,19 +76,9 @@ export default async function DashboardLayout({
       throw new Error('You do not have access to this place');
     }
 
-    const userPlaces = await getPlaceAction();
-    if (userPlaces) {
-      places = userPlaces;
-    }
-
-    const userBusiness = await getLinkedBusinessAction();
-    if (userBusiness) {
-      business = userBusiness;
-    }
-
-    const userLastPlace = await getPlaceByIdAction(Number(placeId));
-    if (userLastPlace) {
-      lastplace = userLastPlace;
+    const userPlace = await getPlaceByIdAction(Number(placeId));
+    if (userPlace) {
+      place = userPlace;
     }
 
     await changeLastPlaceAction(Number(placeId));
@@ -94,12 +86,7 @@ export default async function DashboardLayout({
 
   return (
     <>
-      <AppSidebar
-        business={business}
-        lastPlace={lastplace ?? ({} as Place)}
-        isAdmin={admin}
-        user={user}
-      >
+      <AppSidebar business={business} place={place} isAdmin={admin} user={user}>
         {children}
       </AppSidebar>
     </>

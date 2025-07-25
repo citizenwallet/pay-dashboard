@@ -15,6 +15,7 @@ import Config from '@/cw/community.json';
 import { createSlug } from '@/lib/utils';
 import { createUser } from '@/db/users';
 import { upsertProfile } from '@/cw/profiles';
+import { createBusinessUser } from '@/db/businessUser';
 
 const joinFormSchema = z.object({
   name: z.string().min(1, {
@@ -63,6 +64,29 @@ export async function joinAction(
 
   if (businessError) {
     return { error: businessError.message };
+  }
+
+  //create the new user
+  const { data: user, error: userError } = await createUser(client, {
+    name: data.name,
+    email: data.email,
+    phone: data.phone,
+    linked_business_id: business.id
+  });
+
+  if (userError) {
+    return { error: userError.message };
+  }
+
+  const { error: businessUserError } = await createBusinessUser(
+    client,
+    user.id,
+    business.id,
+    'owner'
+  );
+
+  if (businessUserError) {
+    return { error: businessUserError.message };
   }
 
   // Try to create a unique slug
@@ -117,14 +141,6 @@ export async function joinAction(
   }
 
   await updatePlaceAccounts(client, place.id, [account]);
-
-  //create the new user
-  const user = await createUser(client, {
-    name: data.name,
-    email: data.email,
-    phone: data.phone,
-    linked_business_id: business.id
-  });
 
   return { success: true };
 }

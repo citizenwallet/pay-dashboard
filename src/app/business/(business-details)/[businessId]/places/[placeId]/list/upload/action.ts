@@ -2,13 +2,11 @@
 
 import {
   getUserIdFromSessionAction,
-  isUserLinkedToPlaceAction
+  isUserLinkedToBusinessAction
 } from '@/actions/session';
 import { getServiceRoleClient } from '@/db';
 import { createSlug, generateRandomString } from '@/lib/utils';
-import { generateUniqueSlugAction } from '../../action';
 import { createPlace, updatePlaceAccounts } from '@/db/places';
-import { getLinkedBusinessByUserId } from '@/db/business';
 import {
   CommunityConfig,
   getCardAddress,
@@ -30,13 +28,17 @@ export async function downloadCsvTemplateAction() {
 export async function createPlaceWithoutSlugAction(
   name: string,
   description: string,
-  placeId: number
+  businessId: number
 ) {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
 
-  const res = await isUserLinkedToPlaceAction(client, userId, placeId);
-  if (!res) {
+  const isLinked = await isUserLinkedToBusinessAction(
+    client,
+    userId,
+    businessId
+  );
+  if (!isLinked) {
     throw new Error('User does not have access to this place');
   }
 
@@ -50,12 +52,10 @@ export async function createPlaceWithoutSlugAction(
       return { error: 'Unable to generate unique slug for place' };
     }
 
-    const { data: business } = await getLinkedBusinessByUserId(client, userId);
-    const { linked_business_id: linkedBusinessId } = business || {};
     const invitationCode = generateRandomString(16);
 
     const { data: place, error: placeError } = await createPlace(client, {
-      business_id: linkedBusinessId,
+      business_id: businessId,
       slug: username,
       name: name,
       description: description,
@@ -75,7 +75,7 @@ export async function createPlaceWithoutSlugAction(
       return null;
     }
 
-    const hashedSerial = id(`${linkedBusinessId}:${place.id}`);
+    const hashedSerial = id(`${businessId}:${place.id}`);
 
     const account = await getCardAddress(community, hashedSerial);
     if (!account) {
