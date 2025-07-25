@@ -54,7 +54,7 @@ export default function AppSidebar({
   children: React.ReactNode;
 }) {
   const [user, setUser] = useState<User | null | undefined>(initialUser);
-  const [place, setPlace] = useState<Place>(lastPlace);
+  const [place, setPlace] = useState<Place | null>(lastPlace);
   const session = useSession();
   const t = useTranslations('sidebar');
 
@@ -90,16 +90,16 @@ export default function AppSidebar({
             </div>
           </div>
 
-          {business && <PlaceSwitcher business={business} lastPlace={place} />}
+          {business && place && (
+            <PlaceSwitcher business={business} place={place} />
+          )}
         </SidebarHeader>
 
         <SidebarContent>
-          <NavButton lastPlace={place} />
-          {business && <NavMain
-            businessId={business.id}
-            lastPlace={place}
-            isOwner={isOwner}
-          />}
+          {place && <NavButton place={place} />}
+          {business && place && (
+            <NavMain businessId={business.id} place={place} isOwner={isOwner} />
+          )}
         </SidebarContent>
 
         <SidebarFooter>
@@ -182,7 +182,9 @@ export default function AppSidebar({
           </div>
 
           <div className="flex items-center gap-2 px-4">
-            {user && <UserNav businessId={business?.id} lastPlace={place} user={user} />}
+            {user && (
+              <UserNav businessId={business?.id} place={place} user={user} />
+            )}
             <LanguageSwitcher />
           </div>
         </header>

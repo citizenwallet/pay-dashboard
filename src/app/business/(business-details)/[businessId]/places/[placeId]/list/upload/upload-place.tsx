@@ -22,7 +22,7 @@ interface CsvPlace {
   uploaded: boolean;
 }
 
-export default function UploadPlace({ placeId }: { placeId: string }) {
+export default function UploadPlace({ businessId }: { businessId: string }) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -384,7 +384,7 @@ export default function UploadPlace({ placeId }: { placeId: string }) {
           const result = await createPlaceWithoutSlugAction(
             place.name,
             place.description,
-            Number(placeId)
+            Number(businessId)
           );
 
           if (result && 'error' in result) {

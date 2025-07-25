@@ -5,7 +5,7 @@ import { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
 export interface BusinessUser {
   user_id: number;
   business_id: number;
-  role: string;
+  role: 'member' | 'owner';
 }
 
 export const createBusinessUser = async (

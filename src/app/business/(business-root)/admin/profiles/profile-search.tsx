@@ -15,7 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Search, User, UserX, Copy, Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { deleteProfile, getProfile } from './action';
+import { deleteProfileAction, getProfile } from './action';
 import { ProfileWithTokenId } from '@citizenwallet/sdk';
 
 interface Profile {
@@ -115,9 +115,14 @@ export default function ProfileSearch({
 
       setDeleting(true);
 
-      await deleteProfile(profile);
+      await deleteProfileAction(profile);
 
-      router.refresh();
+      setError(null);
+      setProfile(null);
+      setLoading(false);
+      setEnteredUsername('');
+
+      router.push(`/business/admin/profiles`);
     }
   };
 

@@ -4,14 +4,13 @@ import {
   getUserIdFromSessionAction,
   isUserLinkedToPlaceAction
 } from '@/actions/session';
+import Config from '@/cw/community.json';
+import { upsertProfile } from '@/cw/profiles';
 import { getServiceRoleClient } from '@/db';
-import { getLinkedBusinessByUserId, updateBusiness } from '@/db/business';
 import { getPlaceById, updatePlaceById } from '@/db/places';
 import { uploadImage } from '@/services/storage/upload';
 import { checkUsernameAvailability, CommunityConfig } from '@citizenwallet/sdk';
 import { revalidatePath } from 'next/cache';
-import Config from '@/cw/community.json';
-import { upsertProfile } from '@/cw/profiles';
 
 export async function getPlaceDataAction(placeId: number, businessId: number) {
   const client = getServiceRoleClient();
@@ -41,8 +40,12 @@ export async function updatePlaceAction({
 }) {
   const client = getServiceRoleClient();
   const userId = await getUserIdFromSessionAction();
-  const businessid = await getLinkedBusinessByUserId(client, userId);
-  const busid = businessid.data?.linked_business_id;
+
+  const { data: place } = await getPlaceById(client, placeId);
+  if (!place) {
+    throw new Error('Place not found');
+  }
+
   let url = oldimage;
   const res = await isUserLinkedToPlaceAction(client, userId, placeId);
   if (!res) {
@@ -50,12 +53,7 @@ export async function updatePlaceAction({
   }
 
   if (image && image.size > 0) {
-    url = await uploadImage(client, image, busid);
-  }
-
-  const { data: place } = await getPlaceById(client, placeId);
-  if (!place) {
-    throw new Error('Place not found');
+    url = await uploadImage(client, image, place.business_id);
   }
 
   const community = new CommunityConfig(Config);
@@ -78,8 +76,7 @@ export async function updatePlaceAction({
     slug,
     image: url
   });
-
-  revalidatePath(`/business/${busid}/places/${placeId}/profile`);
+  revalidatePath(`/business/${place.business_id}/places/${placeId}/profile`);
 
   return data;
 }

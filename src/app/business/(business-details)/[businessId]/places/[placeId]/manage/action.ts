@@ -14,6 +14,9 @@ import {
   handleVisibilityToggleceById
 } from '@/db/places';
 import { getFirstPlace, isAdmin, updateLastplace } from '@/db/users';
+import { CommunityConfig } from '@citizenwallet/sdk';
+import Config from '@/cw/community.json';
+import { deleteProfile } from '@/cw/profiles';
 
 export async function getPlaceDataAction(placeId: number) {
   const client = getServiceRoleClient();
@@ -104,6 +107,14 @@ export const deletePlaceAction = async (placeId: number) => {
 
   if (!firstPlace) {
     throw new Error('No places found');
+  }
+
+  const community = new CommunityConfig(Config);
+
+  try {
+    await deleteProfile(community, place.accounts[0]);
+  } catch (error) {
+    console.error('Error deleting profile:', error);
   }
 
   const { error: deletedPlaceError } = await deletePlaceById(client, placeId);

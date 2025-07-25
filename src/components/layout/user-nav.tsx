@@ -19,14 +19,13 @@ import { useRouter } from 'next/navigation';
 
 export function UserNav({
   businessId,
-  lastPlace,
+  place,
   user
 }: {
   businessId?: number;
-  lastPlace?: Place
-  user: User
+  place: Place | null;
+  user: User;
 }) {
-
   const router = useRouter();
   const t = useTranslations('userNav');
 
@@ -36,10 +35,7 @@ export function UserNav({
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-8 w-8 rounded-full">
             <Avatar className="h-8 w-8">
-              <AvatarImage
-                src={user.avatar ?? ''}
-                alt={user.name ?? ''}
-              />
+              <AvatarImage src={user.avatar ?? ''} alt={user.name ?? ''} />
               <AvatarFallback>{user.name?.[0]}</AvatarFallback>
             </Avatar>
           </Button>
@@ -47,9 +43,7 @@ export function UserNav({
         <DropdownMenuContent className="w-56" align="end" forceMount>
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">
-                {user.name}
-              </p>
+              <p className="text-sm font-medium leading-none">{user.name}</p>
               <p className="text-xs leading-none text-muted-foreground">
                 {user.email}
               </p>
@@ -57,8 +51,14 @@ export function UserNav({
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            {businessId && lastPlace && (
-              <DropdownMenuItem onClick={() => router.push(`/business/${businessId}/places/${lastPlace.id}/profile`)}>
+            {businessId && place && (
+              <DropdownMenuItem
+                onClick={() =>
+                  router.push(
+                    `/business/${businessId}/places/${place.id}/profile`
+                  )
+                }
+              >
                 {t('profile')}
                 <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
               </DropdownMenuItem>

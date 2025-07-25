@@ -1,24 +1,32 @@
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
-import { getPlaceAction } from './action';
 import { getBusinessById } from '@/db/business';
 import { getServiceRoleClient } from '@/db';
+import { getUserLastPlace } from '@/db/users';
 
 export default async function Page() {
   const session = await auth();
 
-  if (!session?.user) {
+  if (!session?.user?.id) {
     return redirect('/login');
   } else {
     //check the user completed the registation flow
-    const data = await getPlaceAction();
     const client = getServiceRoleClient();
-    const business = await getBusinessById(client, data.busId);
-    if (business.data?.status == 'Registered') {
-      return redirect(`/business/${data.busId}/places/${data.lastId}/orders`);
+    const { data: user, error } = await getUserLastPlace(
+      client,
+      Number(session.user.id)
+    );
+    if (error || !user) {
+      return redirect('/business');
+    }
+
+    if (user.place.business.status == 'Registered') {
+      return redirect(
+        `/business/${user.place.business.id}/places/${user.place.id}/orders`
+      );
     } else {
       return redirect(
-        `/onboarding/vat?invite_code=${business.data?.invite_code}`
+        `/onboarding/vat?invite_code=${user.place.business.invite_code}`
       );
     }
   }

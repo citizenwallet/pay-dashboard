@@ -1,11 +1,9 @@
 'use client';
 import CurrencyLogo from '@/components/currency-logo';
-import SearchInput from '@/components/search-input';
 import { Button } from '@/components/ui/button';
 import { DataTable } from '@/components/ui/data-table';
 import { PayoutWithBurnAndTransfer } from '@/db/payouts';
 import { BalanceWithPlace } from '@/db/placeBalance';
-import { formatCurrencyNumber } from '@/lib/currency';
 import { PaginationState, Row } from '@tanstack/react-table';
 import { useTranslations } from 'next-intl';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -138,10 +136,6 @@ export default function PendingPayout({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-end">
-        <SearchInput className="w-80" />
-      </div>
-
       <div className="w-[90vw] overflow-x-auto md:w-full">
         <DataTable
           columns={columns}

@@ -64,7 +64,6 @@ async function AsyncPage({
     }
   }
 
-
   if (!admin) {
     const hasPlaceAccess = await checkUserPlaceAccess(
       client,
@@ -76,5 +75,5 @@ async function AsyncPage({
     }
   }
 
-  return <UploadPlace placeId={placeId} />;
+  return <UploadPlace businessId={businessId} />;
 }

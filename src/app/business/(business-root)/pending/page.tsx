@@ -15,12 +15,11 @@ interface PendingPayoutsPageProps {
   searchParams: Promise<{
     offset?: string;
     limit?: string;
-    search?: string;
   }>;
 }
 
 export default async function Page({ searchParams }: PendingPayoutsPageProps) {
-  const { offset, limit, search } = await searchParams;
+  const { offset, limit } = await searchParams;
   const t = await getTranslations('pendingpayout');
   return (
     <>
@@ -36,11 +35,7 @@ export default async function Page({ searchParams }: PendingPayoutsPageProps) {
           <Suspense
             fallback={<DataTableSkeleton columnCount={5} rowCount={10} />}
           >
-            <AsyncPayoutsLoader
-              offset={offset ?? '0'}
-              limit={limit ?? '15'}
-              search={search ? search : ''}
-            />
+            <AsyncPayoutsLoader offset={offset ?? '0'} limit={limit ?? '15'} />
           </Suspense>
         </div>
       </PageContainer>
@@ -50,12 +45,10 @@ export default async function Page({ searchParams }: PendingPayoutsPageProps) {
 
 async function AsyncPayoutsLoader({
   offset,
-  limit,
-  search
+  limit
 }: {
   offset: string;
   limit: string;
-  search: string;
 }) {
   const admin = await isUserAdminAction();
   if (!admin) {
@@ -71,8 +64,7 @@ async function AsyncPayoutsLoader({
     client,
     community.primaryToken.address,
     Number(offset),
-    Number(limit),
-    search
+    Number(limit)
   );
 
   return (

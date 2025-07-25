@@ -20,6 +20,22 @@ export interface User {
   user_id: string;
 }
 
+export interface UserWithLastPlace {
+  id: number;
+  last_place: number | null;
+  place: {
+    id: number;
+    business_id: number;
+    name: string;
+    business: {
+      id: number;
+      name: string;
+      status: string;
+      invite_code: string;
+    };
+  };
+}
+
 export const getUserBusinessId = async (
   client: SupabaseClient,
   userId: number
@@ -101,8 +117,17 @@ export const getFirstPlace = async (
     .single();
 };
 
-export const getLastplace = async (client: SupabaseClient, userid: number) => {
-  return client.from('users').select('last_place').eq('id', userid).single();
+export const getUserLastPlace = async (
+  client: SupabaseClient,
+  userid: number
+): Promise<PostgrestSingleResponse<UserWithLastPlace | null>> => {
+  return client
+    .from('users')
+    .select(
+      `id,last_place,place:places!last_place(id,business_id,name,business:businesses!business_id(id,name,status,invite_code))`
+    )
+    .eq('id', userid)
+    .single();
 };
 export const userExists = async (
   client: SupabaseClient,
@@ -128,6 +153,6 @@ export const createUser = async (
     phone: string;
     linked_business_id: number;
   }
-) => {
-  return await client.from('users').insert(user);
+): Promise<PostgrestSingleResponse<User>> => {
+  return await client.from('users').insert(user).select().single();
 };
