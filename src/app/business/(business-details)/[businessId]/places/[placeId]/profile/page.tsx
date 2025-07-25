@@ -1,12 +1,10 @@
 import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { getServiceRoleClient } from '@/db';
-import { getBusinessById } from '@/db/business';
-import { getTranslations } from 'next-intl/server';
 import { Suspense } from 'react';
-import { getPlaceDataAction } from './action';
 import ProfileEdit from './profile-edit';
+import { getPlaceDataAction } from './action';
+import { getTranslations } from 'next-intl/server';
 
 export default async function page({
   params
@@ -44,21 +42,10 @@ async function AsyncPage({
   businessId: string;
   placeId: string;
 }) {
-  const client = getServiceRoleClient();
   const response = await getPlaceDataAction(
     parseInt(placeId),
     parseInt(businessId)
   );
-  if (!response.data) {
-    throw new Error('Place not found');
-  }
   const place = response.data;
-
-  const business = await getBusinessById(client, Number(businessId));
-  if (!business.data) {
-    throw new Error('Business not found');
-  }
-  const businessData = business.data;
-
-  return <ProfileEdit place={place} business={businessData} />;
+  return <ProfileEdit place={place} />;
 }
