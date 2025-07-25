@@ -43,12 +43,14 @@ export default function AppSidebar({
   user: initialUser,
   business,
   place: initialPlace,
+  isOwner,
   children
 }: {
   isAdmin?: boolean;
   user?: User | null;
   business: Business | null;
-  place: Place | null;
+  place: Place;
+  isOwner: boolean;
   children: React.ReactNode;
 }) {
   const [user, setUser] = useState<User | null | undefined>(initialUser);
@@ -96,7 +98,7 @@ export default function AppSidebar({
         <SidebarContent>
           {place && <NavButton place={place} />}
           {business && place && (
-            <NavMain businessId={business.id} place={place} />
+            <NavMain businessId={business.id} place={place} isOwner={isOwner} />
           )}
         </SidebarContent>
 

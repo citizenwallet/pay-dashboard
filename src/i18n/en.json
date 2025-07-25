@@ -13,7 +13,8 @@
     "light": "Light",
     "dark": "Dark",
     "systemAdmin": "SYSTEM ADMIN",
-    "logout": "Logout"
+    "logout": "Logout",
+    "business": "Business"
   },
   "navButton": {
     "linkCopied": "Link copied",
@@ -153,7 +154,16 @@
     "image": "Image",
     "updateProfile": "Update Profile",
     "updating": "Updating...",
-    "updateSuccess": "Place updated successfully"
+    "updateSuccess": "Place updated successfully",
+    "IBANnumber": "IBAN number",
+    "IBANnumberPlaceholder": "Enter IBAN number",
+    "basicInformation": "Basic Information",
+    "basicInformationDescription": "Configure your place's fundamental details including name and URL identifier.",
+    "bankingInformation": "Banking Information",
+    "bankingInformationDescription": "Set up your banking details for receiving payments and payouts.",
+    "mediaAndDescription": "Media & Description",
+    "mediaAndDescriptionDescription": "Upload media and provide detailed information about your place.",
+    "uploadImagePrompt": "No image selected"
   },
   "manage": {
     "manage": "Manage",
@@ -523,5 +533,30 @@
     "lastPayout": "Last Payout",
     "action": "Action",
     "payout": "Payout"
+  },
+  "business": {
+    "businessDetails": "Business Details",
+    "businessDetailsDescription": "Update your business contact information",
+    "basicInformation": "Basic Information",
+    "basicInformationDescription": "Update your business contact information",
+    "businessName": "Business Name",
+    "emailAddress": "Email Address",
+    "phoneNumber": "Phone Number",
+    "legalInformation": "Legal Information",
+    "legalInformationDescription": "Business legal details and banking information. Modifying these fields will require verification.",
+    "vatNumber": "VAT Number",
+    "legalName": "Legal Name",
+    "ibanNumber": "IBAN Number",
+    "legaladdress": "Legal Address",
+    "businessStatus": "Business Status",
+    "businessStatusDescription": "Current verification status and agreement acceptance",
+    "verificationStatus": "Verification Status",
+    "membershipAgreement": "Membership Agreement",
+    "acceptedOn": "Accepted On",
+    "termsAndConditions": "Terms & Conditions",
+    "update": "Update Business",
+    "updating": "Updating...",
+    "businessUpdatedSuccessfully": "Business updated successfully",
+    "failedToUpdateBusiness": "Failed to update business"
   }
 }

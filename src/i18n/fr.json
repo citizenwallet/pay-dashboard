@@ -13,7 +13,8 @@
     "light": "Clair",
     "dark": "Sombre",
     "systemAdmin": "ADMIN SYSTÈME",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "business": "Entreprise"
   },
   "navButton": {
     "linkCopied": "Lien copié",
@@ -153,7 +154,16 @@
     "image": "Image",
     "updateProfile": "Mettre à jour le profil",
     "updating": "Mise à jour en cours...",
-    "updateSuccess": "Lieu mis à jour avec succès"
+    "updateSuccess": "Lieu mis à jour avec succès",
+    "IBANnumber": "IBAN numéro",
+    "IBANnumberPlaceholder": "Entrez le numéro IBAN",
+    "basicInformation": "Informations de base",
+    "basicInformationDescription": "Configurez les détails fondamentaux de votre lieu, y compris le nom et l'identifiant URL.",
+    "bankingInformation": "Informations bancaires",
+    "bankingInformationDescription": "Configurez vos coordonnées bancaires pour recevoir les paiements et les versements.",
+    "mediaAndDescription": "Médias et description",
+    "mediaAndDescriptionDescription": "Téléchargez des médias et fournissez des informations détaillées sur votre lieu.",
+    "uploadImagePrompt": "Aucune image sélectionnée"
   },
   "manage": {
     "manage": "Gérer",
@@ -522,5 +532,30 @@
     "lastPayout": "Dernier paiement",
     "action": "Action",
     "payout": "Paiement"
+  },
+  "business": {
+    "businessDetails": "Détails de l'entreprise",
+    "businessDetailsDescription": "Mettre à jour les informations de contact de votre entreprise",
+    "basicInformation": "Informations de base",
+    "basicInformationDescription": "Mettre à jour les informations de contact de votre entreprise",
+    "businessName": "Nom de l'entreprise",
+    "emailAddress": "Adresse email",
+    "phoneNumber": "Numéro de téléphone",
+    "legalInformation": "Informations légales",
+    "legalInformationDescription": "Informations légales et bancaires de l'entreprise. La modification de ces champs nécessitera une vérification.",
+    "vatNumber": "Numéro de TVA",
+    "legalName": "Nom légal",
+    "ibanNumber": "IBAN",
+    "legaladdress": "Adresse légale",
+    "businessStatus": "Statut de l'entreprise",
+    "businessStatusDescription": "Statut actuel de vérification et d'acceptation de l'accord",
+    "verificationStatus": "Statut de vérification",
+    "membershipAgreement": "Accord de membership",
+    "acceptedOn": "Accepté le",
+    "termsAndConditions": "Conditions d'utilisation",
+    "update": "Mettre à jour l'entreprise",
+    "updating": "Mise à jour en cours...",
+    "businessUpdatedSuccessfully": "Entreprise mise à jour avec succès",
+    "failedToUpdateBusiness": "Échec de la mise à jour de l'entreprise"
   }
 }

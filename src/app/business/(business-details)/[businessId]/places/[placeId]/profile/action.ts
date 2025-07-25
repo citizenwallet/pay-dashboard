@@ -4,13 +4,13 @@ import {
   getUserIdFromSessionAction,
   isUserLinkedToPlaceAction
 } from '@/actions/session';
+import Config from '@/cw/community.json';
+import { upsertProfile } from '@/cw/profiles';
 import { getServiceRoleClient } from '@/db';
 import { getPlaceById, updatePlaceById } from '@/db/places';
 import { uploadImage } from '@/services/storage/upload';
 import { checkUsernameAvailability, CommunityConfig } from '@citizenwallet/sdk';
 import { revalidatePath } from 'next/cache';
-import Config from '@/cw/community.json';
-import { upsertProfile } from '@/cw/profiles';
 
 export async function getPlaceDataAction(placeId: number, businessId: number) {
   const client = getServiceRoleClient();
