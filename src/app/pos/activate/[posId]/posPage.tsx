@@ -48,11 +48,15 @@ export default function PosPage({
 
   const submitForm = async () => {
     try {
-      const res = await createPosAction(Number(selectedPlace), name, posId);
       const { data } = await getPosByPlaceIdAction(Number(selectedPlace));
+      if (!data) {
+        toast.error('Place not found');
+        return;
+      }
+      const res = await createPosAction(Number(selectedPlace), name, posId);
       toast.success('Successfully Active Point of Sales App');
       router.push(
-        `/business/${data?.business_id}/places/${selectedPlace}/pos`
+        `/business/${data.business_id}/places/${selectedPlace}/pos`
       );
     } catch (error) {
       console.error('Failed to update place display:', error);
