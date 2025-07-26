@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Search, User, UserX, Copy, Check } from 'lucide-react';
+import { Loader2, Search, User, UserX, Copy, Check, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { deleteProfileAction, getProfile } from './action';
 import { ProfileWithTokenId } from '@citizenwallet/sdk';
@@ -128,9 +128,18 @@ export default function ProfileSearch({
 
   return (
     <div className="container mx-auto max-w-4xl p-6">
-      <div className="mb-8">
-        <h1 className="mb-2 text-3xl font-bold">{t('title')}</h1>
-        <p className="text-muted-foreground">{t('description')}</p>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="mb-2 text-3xl font-bold">{t('title')}</h1>
+          <p className="text-muted-foreground">{t('description')}</p>
+        </div>
+        <Button
+          onClick={() => router.push('/business/admin/profiles/create')}
+          className="flex items-center gap-2"
+        >
+          <Plus className="h-4 w-4" />
+          Create Profile
+        </Button>
       </div>
 
       {/* Search Form */}

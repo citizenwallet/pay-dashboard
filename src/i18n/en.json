@@ -314,7 +314,28 @@
     "copyJson": "Copy JSON",
     "copied": "Copied!",
     "delete": "Delete",
-    "areYouSureYouWantToDelete": "Are you sure you want to delete this profile?"
+    "areYouSureYouWantToDelete": "Are you sure you want to delete this profile?",
+    "createProfile": "Create Profile"
+  },
+  "createProfile": {
+    "title": "Create Profile",
+    "description": "Create a new profile and attribute it to an address",
+    "addressInformation": "Address Information",
+    "addressDescription": "Enter the Ethereum address to attribute the profile to",
+    "ethereumAddress": "Ethereum Address",
+    "profileInformation": "Profile Information",
+    "profileDescription": "Fill out the profile details",
+    "username": "Username",
+    "displayName": "Display Name",
+    "description": "Description",
+    "profileImage": "Profile Image",
+    "profileImageDescription": "Upload a profile image (optional)",
+    "uploadImagePrompt": "Upload a profile image",
+    "cancel": "Cancel",
+    "createProfile": "Create Profile",
+    "creating": "Creating...",
+    "profileCreatedSuccessfully": "Profile created successfully",
+    "failedToCreateProfile": "Failed to create profile"
   },
   "rootpayouts": {
     "payouts": "Payouts",
