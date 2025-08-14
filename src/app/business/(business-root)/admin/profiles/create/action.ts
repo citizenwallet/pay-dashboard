@@ -1,7 +1,6 @@
 'use server';
 
 import { isUserAdminAction } from '@/actions/session';
-import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { upsertProfile } from '@/cw/profiles';
 import Config from '@/cw/community.json';
@@ -13,6 +12,7 @@ interface CreateProfileData {
   name: string;
   description: string;
   image: File | null;
+  parent: string | null;
 }
 
 export async function createProfileAction(data: CreateProfileData) {
@@ -24,7 +24,7 @@ export async function createProfileAction(data: CreateProfileData) {
 
   try {
     const community = new CommunityConfig(Config);
-    
+
     // Convert image file to data URL if provided
     let imageUrl: string | null = null;
     if (data.image) {
@@ -40,11 +40,12 @@ export async function createProfileAction(data: CreateProfileData) {
       data.name,
       data.address,
       data.description,
-      imageUrl
+      imageUrl,
+      data.parent
     );
 
     revalidatePath('/business/admin/profiles');
-    
+
     return { success: true };
   } catch (error) {
     console.error('Error creating profile:', error);
@@ -52,4 +53,4 @@ export async function createProfileAction(data: CreateProfileData) {
       error instanceof Error ? error.message : 'Failed to create profile'
     );
   }
-} 
+}

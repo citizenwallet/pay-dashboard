@@ -20,7 +20,8 @@ export const upsertProfile = async (
   name: string,
   account: string,
   description: string,
-  image?: string | null
+  image?: string | null,
+  parent?: string | null
 ) => {
   const ipfsDomain = process.env.IPFS_DOMAIN;
   if (!ipfsDomain) {
@@ -99,7 +100,8 @@ export const upsertProfile = async (
     description,
     image_small,
     image_medium,
-    image: image_large
+    image: image_large,
+    parent: parent || undefined
   };
 
   const formattedProfile = formatProfileImageLinks(

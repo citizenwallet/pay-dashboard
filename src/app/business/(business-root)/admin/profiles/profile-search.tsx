@@ -18,16 +18,6 @@ import { useTranslations } from 'next-intl';
 import { deleteProfileAction, getProfile } from './action';
 import { ProfileWithTokenId } from '@citizenwallet/sdk';
 
-interface Profile {
-  account: string;
-  description: string;
-  image: string;
-  image_medium: string;
-  image_small: string;
-  name: string;
-  username: string;
-}
-
 interface ProfileSearchProps {
   username?: string;
   initialProfile?: ProfileWithTokenId | null;
@@ -271,6 +261,15 @@ export default function ProfileSearch({
                     {profile.account}
                   </code>
                 </div>
+
+                {profile.parent && (
+                  <div>
+                    <h4 className="mb-2 font-semibold">{t('parent')}</h4>
+                    <code className="rounded bg-muted px-2 py-1 text-sm">
+                      {profile.parent}
+                    </code>
+                  </div>
+                )}
               </div>
             </div>
           </CardContent>

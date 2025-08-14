@@ -35,7 +35,8 @@ const formSchema = z.object({
       'Username can only contain letters, numbers, and underscores'
     ),
   name: z.string().min(1, 'Name is required'),
-  description: z.string().optional()
+  description: z.string().optional(),
+  parent: z.string().optional()
 });
 
 export default function CreateProfileForm() {
@@ -51,7 +52,8 @@ export default function CreateProfileForm() {
       address: '',
       username: '',
       name: '',
-      description: ''
+      description: '',
+      parent: ''
     }
   });
 
@@ -79,7 +81,8 @@ export default function CreateProfileForm() {
         username: values.username,
         name: values.name,
         description: values.description || '',
-        image: imageFile || null
+        image: imageFile || null,
+        parent: values.parent || null
       });
 
       toast.success(t('profileCreatedSuccessfully'));
@@ -125,6 +128,27 @@ export default function CreateProfileForm() {
                       disabled={loading}
                       placeholder="0x..."
                       className="font-mono transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="parent"
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel className="text-sm font-medium text-foreground">
+                    {t('parent')}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={loading}
+                      placeholder="Parent address"
+                      className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
                       {...field}
                     />
                   </FormControl>
