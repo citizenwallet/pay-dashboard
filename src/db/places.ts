@@ -22,6 +22,7 @@ export interface Place {
   hidden: boolean;
   archived: boolean;
   display: DisplayMode;
+  tokens: string[];
 }
 
 export type NewPlace = Omit<Place, 'id' | 'created_at' | 'terminal_id'>;

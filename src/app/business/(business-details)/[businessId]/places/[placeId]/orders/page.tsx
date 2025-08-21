@@ -8,7 +8,11 @@ import { OrdersPage } from './_components/orders-page';
 import { Suspense } from 'react';
 import { getServiceRoleClient } from '@/db';
 import Config from '@/cw/community.json';
-import { CommunityConfig, getAccountBalance } from '@citizenwallet/sdk';
+import {
+  CommunityConfig,
+  ConfigToken,
+  getAccountBalance
+} from '@citizenwallet/sdk';
 import { isAdmin } from '@/db/users';
 import { getUserIdFromSessionAction } from '@/actions/session';
 import { formatCurrencyNumber } from '@/lib/currency';
@@ -40,7 +44,7 @@ export default async function Page(props: Props) {
   const t = await getTranslations('order');
 
   const community = new CommunityConfig(Config);
-  const currencyLogo = community.community.logo;
+  const currency = community.getToken();
 
   return (
     <Suspense
@@ -51,7 +55,7 @@ export default async function Page(props: Props) {
               <div className="flex flex-col gap-2">
                 <Heading title={''} description={t('ordersFor')} />
                 <div className="flex items-center gap-1 text-2xl font-bold">
-                  <CurrencyLogo logo={currencyLogo} size={32} />{' '}
+                  <CurrencyLogo logo={currency.logo} size={32} />{' '}
                   <Skeleton className="h-6 w-40" />
                 </div>
               </div>
@@ -121,27 +125,40 @@ async function AsyncPage({ params, searchParams }: Props) {
   }
 
   const community = new CommunityConfig(Config);
-  const currencyLogo = community.community.logo;
+  const currencies = community.tokens;
 
-  const total = (ordersTotal || []).reduce(
-    (acc, order) =>
-      order.status === 'correction' || order.status === 'refund'
-        ? acc - order.total - order.fees
-        : acc + order.total - order.fees,
-    0
+  const totals = Object.values(currencies).reduce<Record<string, string>>(
+    (acc, currency) => {
+      const total = (ordersTotal || [])
+        .filter(
+          (order) =>
+            place.data?.tokens.includes(order.token) &&
+            order.token === currency.address
+        )
+        .reduce(
+          (acc, order) =>
+            order.status === 'correction' || order.status === 'refund'
+              ? acc - order.total - order.fees
+              : acc + order.total - order.fees,
+          0
+        );
+      acc[currency.address] = formatCurrencyNumber(total, 2);
+      return acc;
+    },
+    {}
   );
 
   return (
     <OrdersPage
       place={place.data}
       orders={orders || []}
-      currencyLogo={currencyLogo}
+      currencies={currencies}
       pagination={{
         limit,
         offset,
         totalItems: ordersCount.count || 0
       }}
-      total={formatCurrencyNumber(total, 2)}
+      totals={totals}
     />
   );
 }

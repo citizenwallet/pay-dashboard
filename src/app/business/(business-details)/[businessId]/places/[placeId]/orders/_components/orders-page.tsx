@@ -27,21 +27,22 @@ import { formatAddress } from '@/lib/address';
 import { DatePicker } from '@/components/ui/DatePicker';
 import { AlertModal } from '@/components/modal/alert-modal';
 import Link from 'next/link';
+import { ConfigToken } from '@citizenwallet/sdk';
 
 interface Props {
   place: Place;
   orders: OrderWithPlace[];
-  currencyLogo: string;
+  currencies: Record<string, ConfigToken>;
   pagination: {
     limit: number;
     offset: number;
     totalItems: number;
   };
-  total: string;
+  totals: Record<string, string>;
 }
 
 const createColumns = (
-  currencyLogo: string,
+  currencies: Record<string, ConfigToken>,
   t: (key: string) => string,
   onRefundClick: (orderId: number) => void
 ): ColumnDef<OrderWithPlace>[] => [
@@ -69,7 +70,10 @@ const createColumns = (
             'line-through': row.original.status === 'refunded'
           })}
         >
-          <CurrencyLogo logo={currencyLogo} size={18} />
+          <CurrencyLogo
+            logo={currencies[`100:${row.original.token}`].logo}
+            size={18}
+          />
           {row.original.status === 'correction' &&
             row.original.total > 0 &&
             '-'}
@@ -96,7 +100,10 @@ const createColumns = (
                 row.original.fees > 0
             })}
           >
-            <CurrencyLogo logo={currencyLogo} size={18} />
+            <CurrencyLogo
+              logo={currencies[`100:${row.original.token}`].logo}
+              size={18}
+            />
             {row.original.status === 'correction' &&
               row.original.fees > 0 &&
               '-'}
@@ -112,7 +119,10 @@ const createColumns = (
     cell: ({ row }) => {
       return (
         <p className="flex min-w-20 items-center gap-1">
-          <CurrencyLogo logo={currencyLogo} size={18} />
+          <CurrencyLogo
+            logo={currencies[`100:${row.original.token}`].logo}
+            size={18}
+          />
           {(row.original.status === 'correction' ||
             row.original.status === 'refund') &&
             row.original.total > 0 &&
@@ -234,9 +244,9 @@ const createColumns = (
 export const OrdersPage: React.FC<Props> = ({
   place,
   orders,
-  currencyLogo,
+  currencies,
   pagination,
-  total
+  totals
 }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -411,9 +421,20 @@ export const OrdersPage: React.FC<Props> = ({
               title={place.name}
               description={`${t('ordersFor')} ${place.name}`}
             />
-            <p className="flex items-center gap-1 text-2xl font-bold">
-              <CurrencyLogo logo={currencyLogo} size={32} /> {total}
-            </p>
+            <div className="flex items-center gap-2">
+              {Object.keys(totals).map((total) => (
+                <p
+                  key={total}
+                  className="flex items-center gap-1 text-2xl font-bold"
+                >
+                  <CurrencyLogo
+                    logo={currencies[`100:${total}`].logo}
+                    size={32}
+                  />{' '}
+                  {totals[total]}
+                </p>
+              ))}
+            </div>
           </div>
           {/* Export CSV Button  */}
           <button
@@ -487,7 +508,7 @@ export const OrdersPage: React.FC<Props> = ({
         </div>
         <div className="w-[92vw] overflow-x-auto md:w-full">
           <DataTable
-            columns={createColumns(currencyLogo, t, handleRefundClick)}
+            columns={createColumns(currencies, t, handleRefundClick)}
             data={orders}
             pageCount={Math.ceil(pagination.totalItems / pagination.limit)}
             pageSize={pagination.limit}

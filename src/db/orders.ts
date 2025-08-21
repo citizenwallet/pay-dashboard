@@ -38,7 +38,7 @@ export interface Order {
   pos: string | null;
   processor_tx: number | null;
   refund_id: number | null;
-  token: string | null;
+  token: string;
 }
 
 export interface OrderWithPlace extends Order {
@@ -54,6 +54,7 @@ export interface OrderTotal {
   status: OrderStatus;
   total: number;
   fees: number;
+  token: string;
 }
 
 // Helper function to calculate date range filters
@@ -335,7 +336,7 @@ export const getOrdersTotalByPlace = async (
     // Handle invalid date range gracefully (e.g., return all orders or throw an error)
     return client
       .from('orders')
-      .select('status,total,fees')
+      .select('status,total,fees,token')
       .eq('place_id', placeId)
       .in('status', ['paid', 'refunded', 'refund', 'correction'])
       .order('created_at', { ascending: false });
@@ -343,7 +344,7 @@ export const getOrdersTotalByPlace = async (
 
   return client
     .from('orders')
-    .select('status,total,fees')
+    .select('status,total,fees,token')
     .eq('place_id', placeId)
     .in('status', ['paid', 'refunded', 'refund', 'correction'])
     .gte('created_at', range.start)
