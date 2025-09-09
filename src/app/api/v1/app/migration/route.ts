@@ -5,7 +5,7 @@ import { StatusCodes } from 'http-status-codes';
 
 /**
  * Simple migration endpoint that checks if the app needs to be migrated
- * Returns HTTP 451 when migration is required
+ * Returns HTTP 404 when migration is required
  */
 export async function GET(req: NextRequest) {
   try {
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
           code: 'MIGRATION_REQUIRED'
         },
         {
-          status: StatusCodes.UNAVAILABLE_FOR_LEGAL_REASONS //451
+          status: StatusCodes.NOT_FOUND // 404
         }
       );
     }
