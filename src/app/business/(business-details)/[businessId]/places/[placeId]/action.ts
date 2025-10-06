@@ -98,6 +98,8 @@ export async function createPlaceAction(
 
   const community = new CommunityConfig(Config);
 
+  const token = community.getToken();
+
   const username = await verifyAndSuggestUsername(community, slug);
   if (!username) {
     return { error: 'Unable to generate unique slug for place' };
@@ -113,7 +115,8 @@ export async function createPlaceAction(
     image: image || null,
     hidden: true,
     archived: false,
-    display: 'amount'
+    display: 'amount',
+    tokens: [token.address]
   });
 
   if (!place || error) {
