@@ -16,7 +16,7 @@ import { isUserLinkedToPlaceAction } from '@/actions/session';
 import { getUserIdFromSessionAction } from '@/actions/session';
 import { uploadImage } from '@/services/storage/image';
 import { getUserBusinessId } from '@/db/users';
-import { DisplayMode, updatePlaceDisplay } from '@/db/places';
+import { DisplayMode, getPlaceById, updatePlaceDisplay } from '@/db/places';
 import { revalidatePath } from 'next/cache';
 
 export async function getItemsAction(place_id: number) {
@@ -160,15 +160,20 @@ export async function uploadItemImageAction(formData: FormData) {
     throw new Error('User does not have access to this place');
   }
 
-  // Get the business ID for the user
-  const businessId = await getUserBusinessId(client, userId);
-  if (!businessId) {
-    throw new Error('User does not have a business');
+  // Get the place
+  const { data: place, error } = await getPlaceById(client, placeId);
+  if (!place || error) {
+    throw new Error('Place not found');
   }
 
   try {
     // Upload the image to storage
-    const imageUrl = await uploadImage(client, imageFile, businessId, placeId);
+    const imageUrl = await uploadImage(
+      client,
+      imageFile,
+      place.business_id,
+      placeId
+    );
 
     // Update the item with the image URL
     return updateItem(client, itemId, { image: imageUrl });
@@ -288,15 +293,20 @@ export async function uploadImageAction(imageFile: File, placeId: number) {
     throw new Error('User does not have access to this place');
   }
 
-  // Get the business ID for the user
-  const businessId = await getUserBusinessId(client, userId);
-  if (!businessId) {
-    throw new Error('User does not have a business');
+  // Get the place
+  const { data: place, error } = await getPlaceById(client, placeId);
+  if (!place || error) {
+    throw new Error('Place not found');
   }
 
   try {
     // Upload the image to storage
-    const imageUrl = await uploadImage(client, imageFile, businessId, placeId);
+    const imageUrl = await uploadImage(
+      client,
+      imageFile,
+      place.business_id,
+      placeId
+    );
     return imageUrl;
   } catch (error) {
     console.error('Error uploading image:', error);

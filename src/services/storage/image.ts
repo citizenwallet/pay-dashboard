@@ -9,17 +9,15 @@ export const uploadImage = async (
   place_id: number
 ): Promise<string> => {
   let url = '';
-  const fileName = `${Date.now()}-${image.name}`;
+  const fileName = `${business_id}/${place_id}/${Date.now()}-${image.name}`;
   const { data, error } = await client.storage
-    .from(`uploads/${business_id}/${place_id}`)
+    .from('uploads')
     .upload(fileName, image);
 
   if (error) {
     throw error;
   }
-  url = client.storage
-    .from(`uploads/${business_id}/${place_id}`)
-    .getPublicUrl(fileName).data.publicUrl;
+  url = client.storage.from('uploads').getPublicUrl(fileName).data.publicUrl;
 
   return url;
 };
