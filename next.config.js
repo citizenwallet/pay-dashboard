@@ -32,6 +32,13 @@ const nextConfig = {
         port: ''
       }
     ]
+  },
+  experimental: {
+    serverComponentsExternalPackages: []
+  },
+  // Configure body size limit for server actions
+  serverActions: {
+    bodySizeLimit: '10mb'
   }
 };
 
