@@ -19,7 +19,7 @@
       "chain_id": 100
     },
     "primary_account_factory": {
-      "address": "0x940Cbb155161dc0C4aade27a4826a16Ed8ca0cb2",
+      "address": "0x7cC54D54bBFc65d1f0af7ACee5e4042654AF8185",
       "chain_id": 100
     },
     "primary_card_manager": {
@@ -67,11 +67,11 @@
       "account_factory_address": "0xBABCf159c4e3186cf48e4a48bC0AeC17CF9d90FE",
       "paymaster_type": "cw"
     },
-    "100:0x940Cbb155161dc0C4aade27a4826a16Ed8ca0cb2": {
+    "100:0x7cC54D54bBFc65d1f0af7ACee5e4042654AF8185": {
       "chain_id": 100,
       "entrypoint_address": "0x7079253c0358eF9Fd87E16488299Ef6e06F403B6",
       "paymaster_address": "0xE69C843898E21C0E95eA7DD310cD850AAc0aB897",
-      "account_factory_address": "0x940Cbb155161dc0C4aade27a4826a16Ed8ca0cb2",
+      "account_factory_address": "0x7cC54D54bBFc65d1f0af7ACee5e4042654AF8185",
       "paymaster_type": "cw-safe"
     }
   },
