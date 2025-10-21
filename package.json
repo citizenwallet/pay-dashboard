@@ -16,11 +16,16 @@
     "sync-wallet": "curl https://raw.githubusercontent.com/citizenwallet/pay-checkout/refs/heads/main/src/cw/community.json -o ./src/cw/community.json",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "migrate:businesses": "tsx scripts/migrate_businesses.ts",
+    "migrate:places": "tsx scripts/migrate_places.ts",
+    "migrate:orders": "tsx scripts/migrate_orders.ts",
+    "migrate:terminals": "tsx scripts/migrate_terminals.ts",
+    "migrate:items": "tsx scripts/migrate_items.ts"
   },
   "dependencies": {
     "@auth/supabase-adapter": "^1.7.3",
-    "@citizenwallet/sdk": "^2.0.117",
+    "@citizenwallet/sdk": "^2.0.120",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
@@ -133,7 +138,8 @@
     "prettier-plugin-tailwindcss": "^0.5.14",
     "prisma": "^6.3.1",
     "supabase": "^1.223.10",
-    "ts-jest": "^29.2.6"
+    "ts-jest": "^29.2.6",
+    "tsx": "^4.20.6"
   },
   "overrides": {
     "@types/react": "19.1.8",
