@@ -5,7 +5,7 @@ import {
   isUserLinkedToPlaceAction
 } from '@/actions/session';
 import { getServiceRoleClient } from '@/db';
-import { getPlaceBySlug, updatePlaceById } from '@/db/places';
+import { getPlaceById, getPlaceBySlug, updatePlaceById } from '@/db/places';
 import { getUserBusinessId } from '@/db/users';
 import { uploadImage } from '@/services/storage/upload';
 
@@ -88,15 +88,15 @@ export async function updatePlaceImageAction(formData: FormData) {
     throw new Error('User does not have access to this place');
   }
 
-  // Get the business ID for the user
-  const businessId = await getUserBusinessId(client, userId);
-  if (!businessId) {
-    throw new Error('User does not have a business');
+  // Get the place
+  const { data: place, error } = await getPlaceById(client, placeId);
+  if (!place || error) {
+    throw new Error('Place not found');
   }
 
   try {
     // Upload the image to storage
-    const imageUrl = await uploadImage(client, imageFile, businessId);
+    const imageUrl = await uploadImage(client, imageFile, place.business_id);
 
     // Update the item with the image URL
     const response = await updatePlaceById(client, placeId, {

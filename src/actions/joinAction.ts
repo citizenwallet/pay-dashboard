@@ -94,6 +94,8 @@ export async function joinAction(
 
   const community = new CommunityConfig(Config);
 
+  const token = community.getToken();
+
   const username = await verifyAndSuggestUsername(community, baseSlug);
   if (!username) {
     return { error: 'Unable to generate unique slug for place' };
@@ -109,7 +111,8 @@ export async function joinAction(
     display: 'amount',
     hidden: true,
     description: '',
-    archived: false
+    archived: false,
+    tokens: [token.address]
   });
 
   if (placeError) {

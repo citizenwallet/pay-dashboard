@@ -62,8 +62,6 @@ export default function ItemListing({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-
-
   const [isDesktop, setIsDesktop] = useState(false);
   const t = useTranslations('checkout');
 
@@ -279,7 +277,6 @@ export default function ItemListing({
     }
   };
 
-
   const handleNameClick = (item: Item) => {
     setEditingItemId(item.id);
     setEditingField('name');
@@ -306,7 +303,6 @@ export default function ItemListing({
       e.preventDefault();
       setEditingField('description');
       setEditingDescription(item.description);
-
     }
   };
 
@@ -341,8 +337,6 @@ export default function ItemListing({
       setLoading(null);
     }
   };
-
-
 
   const handleDescriptionClick = (item: Item) => {
     setEditingItemId(item.id);
@@ -406,9 +400,6 @@ export default function ItemListing({
       setLoading(null);
     }
   };
-
-
-
 
   const handlePriceClick = (item: Item) => {
     setEditingItemId(item.id);
@@ -492,9 +483,6 @@ export default function ItemListing({
     }
   };
 
-
-
-
   const handleCategoryClick = (item: Item) => {
     setEditingItemId(item.id);
     setEditingField('category');
@@ -555,8 +543,6 @@ export default function ItemListing({
       setLoading(null);
     }
   };
-
-
 
   const handleVatClick = (item: Item) => {
     setEditingItemId(item.id);
@@ -633,8 +619,6 @@ export default function ItemListing({
       setLoading(null);
     }
   };
-
-
 
   const handleImageClick = (item: Item) => {
     setEditingItemId(item.id);
@@ -739,8 +723,6 @@ export default function ItemListing({
     }
   };
 
-
-
   const handleAddItem = async (item: Item) => {
     setItems([item, ...items]);
   };
@@ -788,7 +770,6 @@ export default function ItemListing({
       />
 
       <div className="mb-4 flex items-center justify-between">
-
         <AddItem
           currencyLogo={currencyLogo}
           placeId={Number(placeId)}
@@ -818,14 +799,22 @@ export default function ItemListing({
             <thead>
               <tr>
                 <th className="border p-2 text-left"></th>
-                <th className="border p-2 text-left min-w-20">{t('image')}</th>
-                <th className="border p-2 text-left min-w-20">{t('name')}</th>
-                <th className="border p-2 text-left min-w-20">{t('description')}</th>
-                <th className="border p-2 text-left min-w-20">{t('category')}</th>
-                <th className="border p-2 text-left min-w-20">{t('price')}</th>
-                <th className="border p-2 text-left min-w-20">{t('vat')}%</th>
-                <th className="border p-2 text-left min-w-40">{t('visible')}</th>
-                <th className="border p-2 text-left min-w-20">{t('actions')}</th>
+                <th className="min-w-20 border p-2 text-left">{t('image')}</th>
+                <th className="min-w-20 border p-2 text-left">{t('name')}</th>
+                <th className="min-w-20 border p-2 text-left">
+                  {t('description')}
+                </th>
+                <th className="min-w-20 border p-2 text-left">
+                  {t('category')}
+                </th>
+                <th className="min-w-20 border p-2 text-left">{t('price')}</th>
+                <th className="min-w-20 border p-2 text-left">{t('vat')}%</th>
+                <th className="min-w-40 border p-2 text-left">
+                  {t('visible')}
+                </th>
+                <th className="min-w-20 border p-2 text-left">
+                  {t('actions')}
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -834,17 +823,17 @@ export default function ItemListing({
                   key={item.id}
                   {...(isDesktop
                     ? {
-                      draggable: true,
-                      onDragStart: () => handleDragStart(item.id),
-                      onDragOver: (e) => handleDragOver(e, index),
-                      onDrop: (e) => {
-                        e.preventDefault();
-                        if (draggingItem !== null) {
-                          handleDrop(draggingItem, index);
-                          setDraggingItem(null);
+                        draggable: true,
+                        onDragStart: () => handleDragStart(item.id),
+                        onDragOver: (e) => handleDragOver(e, index),
+                        onDrop: (e) => {
+                          e.preventDefault();
+                          if (draggingItem !== null) {
+                            handleDrop(draggingItem, index);
+                            setDraggingItem(null);
+                          }
                         }
                       }
-                    }
                     : {})}
                   className={item.hidden ? 'bg-gray-50 opacity-70' : ''}
                 >
@@ -942,7 +931,7 @@ export default function ItemListing({
                   </td>
                   <td className="border p-2">
                     {editingItemId === item.id &&
-                      editingField === 'description' ? (
+                    editingField === 'description' ? (
                       <textarea
                         value={editingDescription}
                         onChange={handleDescriptionChange}
@@ -968,7 +957,7 @@ export default function ItemListing({
                   </td>
                   <td className="border p-2">
                     {editingItemId === item.id &&
-                      editingField === 'category' ? (
+                    editingField === 'category' ? (
                       <input
                         type="text"
                         value={editingCategory}

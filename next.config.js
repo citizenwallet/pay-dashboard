@@ -32,6 +32,12 @@ const nextConfig = {
         port: ''
       }
     ]
+  },
+  serverExternalPackages: [],
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '10mb'
+    }
   }
 };
 

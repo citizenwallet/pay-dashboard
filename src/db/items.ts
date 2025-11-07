@@ -18,6 +18,7 @@ export interface Item {
   vat: number;
   category: string;
   hidden: boolean;
+  tokens: string[];
 }
 
 export const getItemsForPlace = async (
