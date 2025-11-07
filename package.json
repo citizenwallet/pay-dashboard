@@ -21,7 +21,8 @@
     "migrate:places": "tsx scripts/migrate_places.ts",
     "migrate:orders": "tsx scripts/migrate_orders.ts",
     "migrate:terminals": "tsx scripts/migrate_terminals.ts",
-    "migrate:items": "tsx scripts/migrate_items.ts"
+    "migrate:items": "tsx scripts/migrate_items.ts",
+    "generate:place-account-address": "tsx scripts/generate_place_account_address.ts"
   },
   "dependencies": {
     "@auth/supabase-adapter": "^1.7.3",

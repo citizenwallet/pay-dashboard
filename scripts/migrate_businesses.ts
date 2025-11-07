@@ -1,8 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { createClient } from '@supabase/supabase-js';
-import { v4 as uuidv4 } from 'uuid';
-import * as fs from 'fs';
-import * as path from 'path';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -79,6 +76,29 @@ const checkExistingBusiness = async (
     id: data?.id || '',
     exists: !!data
   };
+};
+
+/**
+ * Checks if a business_user relationship already exists
+ */
+const checkExistingBusinessUser = async (
+  client: SupabaseClient,
+  userId: string,
+  businessId: string
+): Promise<boolean> => {
+  const { data, error } = await client
+    .from('business_users')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('business_id', businessId)
+    .single();
+
+  if (error && error.code !== 'PGRST116') {
+    // PGRST116 = no rows returned
+    throw error;
+  }
+
+  return !!data;
 };
 
 /**
@@ -288,8 +308,13 @@ const main = async () => {
     }
     if (!hasOwner) {
       console.log(
-        `Skipping business ${business.name || 'unnamed'} - no owner found`
+        `Business ${business.name || 'unnamed'} - ${
+          hasValidFields ? 'missing required fields' : 'no owner found'
+        }`
       );
+      businessToUserMapping[business.id] =
+        '7a7d30d2-feb1-43bb-815f-312ec8cf1e14';
+      return !hasValidFields;
     }
 
     return !hasValidFields || !hasOwner;
@@ -402,6 +427,151 @@ const main = async () => {
     }`
   );
   console.log('===================================\n');
+
+  // Migrate business_users relationships
+  console.log('Starting business_users migration...');
+
+  let newBusinessUsersCount = 0;
+  let existingBusinessUsersCount = 0;
+  let businessUsersErrorCount = 0;
+
+  // Create business_users entries for all migrated businesses
+  // Owners get role 'owner', others get role 'admin'
+  for (const business of migratedBusinesses) {
+    const originalBusinessId = business.original_business_id;
+    const newBusinessId = businessMapping[originalBusinessId];
+
+    if (!newBusinessId) {
+      console.log(
+        `Skipping business_users for business ${business.commercial_name} - business not migrated`
+      );
+      continue;
+    }
+
+    const ownerUserId = business.owner_id;
+
+    try {
+      // Check if business_user relationship already exists
+      const exists = await checkExistingBusinessUser(
+        remoteClient,
+        ownerUserId,
+        newBusinessId
+      );
+
+      if (exists) {
+        console.log(
+          `Business_user relationship already exists: user ${ownerUserId} -> business ${newBusinessId} (owner)`
+        );
+        existingBusinessUsersCount++;
+      } else {
+        // Insert business_user with owner role
+        const { error: insertError } = await remoteClient
+          .from('business_users')
+          .insert({
+            user_id: ownerUserId,
+            business_id: newBusinessId,
+            role: 'owner'
+          });
+
+        if (insertError) {
+          console.error(
+            `Error inserting business_user for business ${business.commercial_name}:`,
+            insertError
+          );
+          businessUsersErrorCount++;
+        } else {
+          console.log(
+            `Successfully created business_user: user ${ownerUserId} -> business ${newBusinessId} (owner)`
+          );
+          newBusinessUsersCount++;
+        }
+      }
+    } catch (err) {
+      console.error(
+        `Unexpected error creating business_user for business ${business.commercial_name}:`,
+        err
+      );
+      businessUsersErrorCount++;
+    }
+  }
+
+  // Also handle any other migrated users that might be linked to businesses but not as owners
+  // These would get 'admin' role
+  for (const [originalUserId, newUserId] of Object.entries(userMapping)) {
+    const user = uniqueUsers.find((u) => u.id === parseInt(originalUserId));
+    if (!user || !user.linked_business_id) {
+      continue;
+    }
+
+    const originalBusinessId = user.linked_business_id;
+    const newBusinessId = businessMapping[originalBusinessId];
+
+    // Skip if this user is already the owner (we already handled owners above)
+    const business = migratedBusinesses.find(
+      (b) => b.original_business_id === originalBusinessId
+    );
+    if (business && business.owner_id === newUserId) {
+      continue; // Already handled as owner
+    }
+
+    // If business was migrated but user is not the owner, add them as admin
+    if (newBusinessId) {
+      try {
+        const exists = await checkExistingBusinessUser(
+          remoteClient,
+          newUserId,
+          newBusinessId
+        );
+
+        if (exists) {
+          console.log(
+            `Business_user relationship already exists: user ${newUserId} -> business ${newBusinessId} (admin)`
+          );
+          existingBusinessUsersCount++;
+        } else {
+          const { error: insertError } = await remoteClient
+            .from('business_users')
+            .insert({
+              user_id: newUserId,
+              business_id: newBusinessId,
+              role: 'admin'
+            });
+
+          if (insertError) {
+            console.error(
+              `Error inserting business_user (admin) for user ${newUserId} and business ${newBusinessId}:`,
+              insertError
+            );
+            businessUsersErrorCount++;
+          } else {
+            console.log(
+              `Successfully created business_user: user ${newUserId} -> business ${newBusinessId} (admin)`
+            );
+            newBusinessUsersCount++;
+          }
+        }
+      } catch (err) {
+        console.error(
+          `Unexpected error creating business_user (admin) for user ${newUserId}:`,
+          err
+        );
+        businessUsersErrorCount++;
+      }
+    }
+  }
+
+  console.log('Business_users migration completed');
+
+  // Final summary
+  console.log('\n=== BUSINESS_USERS MIGRATION SUMMARY ===');
+  console.log(
+    `New business_user relationships created: ${newBusinessUsersCount}`
+  );
+  console.log(
+    `Existing business_user relationships found: ${existingBusinessUsersCount}`
+  );
+  console.log(`Failed business_user migrations: ${businessUsersErrorCount}`);
+  console.log('==========================================\n');
 };
 
 main();

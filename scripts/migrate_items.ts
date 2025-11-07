@@ -1,7 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { createClient } from '@supabase/supabase-js';
-import * as fs from 'fs';
-import * as path from 'path';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -82,6 +80,7 @@ const convertTokens = (tokens: unknown): string[] => {
  * - tokens -> tokens (jsonb array to text array)
  * - created_at -> created_at
  * - updated_at -> updated_at (set to current timestamp)
+ * - id -> old_id (stores the original item ID from source database)
  *
  * Fields not migrated (source has more info):
  * - emoji (not present in destination schema)
@@ -189,7 +188,8 @@ const main = async () => {
         hidden: item.hidden || false, // Default to false in destination
         tokens: convertTokens(item.tokens),
         created_at: item.created_at,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
+        old_id: originalItemId // Store the old ID for reference
       };
 
       // Check if item already exists by a combination of unique fields
@@ -208,6 +208,20 @@ const main = async () => {
       }
 
       if (existingItem) {
+        // Update old_id if it's not set
+        const { error: updateError } = await remoteClient
+          .from('items')
+          .update({ old_id: originalItemId })
+          .eq('id', existingItem.id)
+          .is('old_id', null);
+
+        if (updateError && updateError.code !== 'PGRST116') {
+          console.error(
+            `Error updating old_id for existing item ${existingItem.id}:`,
+            updateError
+          );
+        }
+
         console.log(
           `Item already exists, skipping: Item ID ${originalItemId} (Place: ${placeId}, Name: ${item.name}, Price: ${item.price})`
         );
@@ -239,11 +253,6 @@ const main = async () => {
 
   console.log('Items migration completed');
   console.log('Item ID mapping:', itemMapping);
-
-  // Save item mapping to file for potential future use
-  const itemMappingPath = path.join(__dirname, 'item_mapping.json');
-  fs.writeFileSync(itemMappingPath, JSON.stringify(itemMapping, null, 2));
-  console.log(`Item mapping saved to: ${itemMappingPath}`);
 
   // Final summary
   console.log('\n=== ITEMS MIGRATION SUMMARY ===');

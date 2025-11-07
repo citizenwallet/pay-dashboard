@@ -1,7 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { createClient } from '@supabase/supabase-js';
-import * as fs from 'fs';
-import * as path from 'path';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -240,14 +238,6 @@ const main = async () => {
 
   console.log('Terminals migration completed');
   console.log('Terminal ID mapping:', terminalMapping);
-
-  // Save terminal mapping to file for potential future use
-  const terminalMappingPath = path.join(__dirname, 'terminal_mapping.json');
-  fs.writeFileSync(
-    terminalMappingPath,
-    JSON.stringify(terminalMapping, null, 2)
-  );
-  console.log(`Terminal mapping saved to: ${terminalMappingPath}`);
 
   // Final summary
   console.log('\n=== TERMINALS MIGRATION SUMMARY ===');

@@ -1,7 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { createClient } from '@supabase/supabase-js';
-import * as fs from 'fs';
-import * as path from 'path';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -273,11 +271,6 @@ const main = async () => {
 
   console.log('Places migration completed');
   console.log('Place ID mapping:', placeMapping);
-
-  // Save place mapping to file for potential future use
-  const placeMappingPath = path.join(__dirname, 'place_mapping.json');
-  fs.writeFileSync(placeMappingPath, JSON.stringify(placeMapping, null, 2));
-  console.log(`Place mapping saved to: ${placeMappingPath}`);
 
   // Final summary
   console.log('\n=== PLACES MIGRATION SUMMARY ===');
